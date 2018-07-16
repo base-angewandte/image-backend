@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block extra_scripts %}
+<script type='text/javascript'>
+$(document).ready(function() {
+    const id = {{ id }};
+    const url = id + '_overlay.html';
+    $('#overlay').addClass('shown');
+    $('#thumbnailbrowser').removeClass('shown');
+    updateInspector( id );
+});
+</script>
+{% endblock extra_scripts %}
+
+{% block artwork %}
+<img class="image-big" src="{{big_url}}"/>
+
+<a href="./"><button name="close" id="hideoverlay">Close</button></a>
+{% endblock artwork %}

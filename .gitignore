@@ -1,0 +1,16 @@
+.DS_Store
+.Spotlight-V100
+.Trashes
+
+### virtualenv **
+workenv
+
+### django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
+
+secret_settings.py
+media
+db.sqlite3

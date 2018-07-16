@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if artworks %}
+    <h2>all {{title}}</h2>
+    <div id="thumbnails">
+        {% for artwork in artworks %}
+        <div data-artworkid="{{artwork.id}}" class="thumbnail">
+            <div class="vertically-center">
+                {% if not artwork.original %}
+                <div class="picture-thumbnail picture-thumbnail-missing"></div>
+                {% else %}
+                <img class="picture-thumbnail" src="{{artwork.thumbnail.url}}"/>
+                {% endif %}
+            </div>
+            <div class="thumbnail-title">{{artwork.title}}</div>
+            {% if artwork.artist %}
+            <div class="thumbnail-artist">{{artwork.artist}}</div>
+            {% endif %}
+        </div>        
+    {% endfor %}
+    </div>
+    {% else %}
+    <p>no artworks there</p>
+    {% endif %}
+{% endblock content %}

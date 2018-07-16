@@ -1,0 +1,36 @@
+{% load static %}
+
+<html>
+    <head>
+        <title>artdb</title>
+        <link type="text/css" rel="stylesheet" href="{% static 'css/base.css' %}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
+        <script type="text/javascript" src="{% static 'js/artworks.js' %}"></script>
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600" rel="stylesheet">
+        {% block extra_scripts %}
+        {% endblock extra_scripts %}
+    </head>
+    <body class="show-thumbnailbrowser">
+        <div id="topbar">
+            <nav>
+                <ul>
+                    <li><a href="/artworks/artwork_new.html">upload</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div id="thumbnailbrowser">
+            {% block content %}
+            {% endblock content %}
+        </div>
+        <div id="view-overlay">
+                {% block artwork %}
+                {% endblock artwork %}
+            </div>
+        <div id="sidebar">
+            <aside id="inspector">
+            </aside>
+        </div>
+        <div id="edit-overlay">
+        </div>
+    </body>
+</html>

@@ -1,0 +1,85 @@
+{% block extra_scripts %}
+<script type='text/javascript'>
+$(document).ready(function() {
+
+    var reader = new FileReader();
+    reader.onload = function (e) {
+        $('.image-big').attr('src', e.target.result);
+    }
+   
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    $('.imageselector').change(function(){
+        readURL(this);
+    });
+
+    /*$('.image-big').on() {
+        console.log("{{ form.original.label_tag }}");
+        var test = {{ form.original.label_tag }};
+        $(test).trigger();
+    }*/
+
+});
+</script>
+{% endblock extra_scripts %}
+
+<form method="POST" enctype="multipart/form-data" class="editform" action="/artworks/edit/{{id}}.html">
+    {% csrf_token %}
+<div class="imagearea">
+        <div class="center">
+                <img class="image-big" src="{{big_url}}"/>
+        </div>
+</div>
+<div class="metadataarea">
+    <button name="cancel" class="button-close" id="hideoverlay" onClick="hideEditOverlay()"></button>
+    <h2>Edit {{title}}</h2>
+                <div>
+                    {{ form.title.errors }}
+                    {{ form.title.label_tag }}
+                    {{ form.title }}
+                </div>
+                <div>
+                    {{ form.artist.errors }}
+                    {{ form.artist.label_tag }}
+                    {{ form.artist }}
+                </div>
+                <div>
+                    {{ form.date.errors }}
+                    {{ form.date.label_tag }}
+                    {{ form.date }}
+                </div>
+                <div>
+                    {{ form.material.errors }}
+                    {{ form.material.label_tag }}
+                    {{ form.material }}
+                </div>
+                <div>
+                    {{ form.dimensions.errors }}
+                    {{ form.dimensions.label_tag }}
+                    {{ form.dimensions }}
+                </div>
+                <div>
+                    {{ form.locationOfCreation.errors }}
+                    {{ form.locationOfCreation.label_tag }}
+                    {{ form.locationOfCreation }}
+                </div>
+                <div>
+                    {{ form.credits.errors }}
+                    {{ form.credits.label_tag }}
+                    {{ form.credits }}
+                </div>
+                <div>
+                    {{ form.original.errors }}
+                    {{ form.original.label_tag }}
+                    {{ form.original }}
+                </div>
+            <button type="submit">Save</button>
+        <a href="/artworks/delete/{{id}}.html"><button name="close">Delete</button></a>
+        <button name="close" class="button-close" id="hideoverlay" onClick="hideEditOverlay()"></button>
+    </div>
+</div>
+</form>

@@ -1,0 +1,395 @@
+:root {
+    --light-bg-color: #FBFBFB;
+    --dark-grey-1-color: #2F2F2F;
+    --dark-grey-2-color: #3C3C3C;
+    --dark-grey-3-color: #636363;
+    --light-grey-1-color: #B6B6B6;  /* sidebar key values */
+    --light-grey-2-color: #F4F4F4;  /* top-nav background*/
+    --selected-field: #43B6E0;
+    --topbar-height: 50px;
+    --sidebar-width: 240px;
+    --edit-overlay-formwidth: 448px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    background-color: var(--dark-grey-1-color);
+    min-width: 1280px;
+}
+
+/* the classes of body are used as a state indicator */
+/* thumbnails   = normal thumbnail browsing */
+/* view-overlay = show the artwork view overlay */
+/* edit-overlay = show the artwork edit overlay */
+body.show-thumbnailbrowser #thumbnailbrowser {
+    display: table-cell !important;
+}
+body.show-thumbnailbrowser #view-overlay,
+body.show-thumbnailbrowser #edit-overlay {
+    display: none;
+}
+
+body.show-view-overlay #view-overlay {
+    display: table-cell !important;
+}
+body.show-view-overlay #thumbnailbrowser,
+body.show-view-overlay #edit-overlay {
+    display: none;
+}
+body.show-view-overlay #sidebar {
+    display: table-cell !important;
+    position: relative;
+    vertical-align: top;
+}
+body.show-view-overlay {
+    min-width: 1280px;
+}
+
+body.show-edit-overlay #edit-overlay {
+    display: block !important;
+}
+body.show-edit-overlay #thumbnailbrowser,
+body.show-edit-overlay #view-overlay,
+body.show-edit-overlay #sidebar {
+    display: none;
+}
+
+
+/* thumbnailbrowser */
+
+#thumbnailbrowser {
+    height: 100vh;
+    width: 100vw;
+    background-color: var(--light-bg-color);
+    border-right: solid var(--sidebar-width) var(--dark-grey-1-color);
+    padding: var(--topbar-height) 0 0 0;
+}
+
+
+/* sidebar */
+
+#sidebar {
+    position: fixed;
+    top: 0;
+    z-index: 1;
+    width: var(--sidebar-width);
+    height: 100vh;
+    margin-left: calc(100% - var(--sidebar-width));
+    background-color: var(--dark-grey-1-color);
+    padding: var(--topbar-height) 16px 16px 16px;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+}
+
+
+/* top navigation */
+
+#topbar {
+    display: block;
+    position: fixed;
+    z-index: 3;
+    top: 0;
+    width: 100%;
+    height: var(--topbar-height);
+    background-color: var(--light-grey-2-color);
+    color: #000;
+    padding: 0 18px 0 18px;
+    box-shadow: 0px 2px 2px 0px rgba(40,40,40,0.5);
+}
+
+#topbar nav {
+    margin: 0 0 14px 0;
+}
+
+#topbar ul {
+    list-style-type: none;
+}
+
+#topbar nav a {
+    display: block;
+    margin: 0 0 14px 0;
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 50px;
+}
+
+#topbar-placeholder {
+    width: 100%;
+    height: var(--topbar-height);
+}
+
+
+/* view-overlay */
+
+#view-overlay {
+    height: 100vh;
+    background-color: var(--light-bg-color);
+    padding: var(--topbar-height) 0 0 0;
+    width: 100%;
+    z-index: 1;
+}
+
+.center {
+    display: grid;
+    min-height: 100%;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.image-big {
+    display: none;
+    margin: auto;
+}
+.image-big.shown {
+    display: block;
+}
+
+.button-close {
+    display: block;
+    position: fixed;
+    top: 68px;
+    right: calc(var(--sidebar-width) + 18px);
+    background: url(close_button.svg) no-repeat top left;
+    background-size: contain;
+    width: 18px;
+    height: 18px;
+    border: 0;
+}
+
+
+/* sidebar */
+
+.sidebar {
+    width: var(--sidebar-width);
+    height: calc(100vh - var(--topbar-height));
+    position: fixed;
+    margin-left: calc(100% - var(--sidebar-width));
+    margin-top: var(--topbar-height);
+    background-color: var(--dark-grey-1-color);
+    padding: var(--topbar-height) 16px 16px 16px;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    z-index: 1;
+}
+
+/* media queries */
+
+@media (max-width: 1280px) {
+    #sidebar {
+        margin-left: calc(1280px - var(--sidebar-width)) !important;
+    }
+    .button-close {
+        right: auto !important;
+        left: calc(1245px - var(--sidebar-width)) !important;
+    }
+}
+
+#inspector {
+    padding-top: 16px;
+}
+
+#inspector dt {
+    color: var(--light-grey-1-color);
+    font-size: 12px;
+    line-height: 14px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+#inspector dd {
+    color: #fff;
+    font-size: 14px;
+    line-height: 16px;
+    margin: 0 0 24px 0;
+}
+
+.inspector-button {
+    display: block;
+    width: 208px;
+    height: 38px;
+    border: 0;
+    background-color: var(--dark-grey-2-color);
+    color: #fff;
+    padding-bottom: 4px;
+}
+
+.artwork-details {
+    padding-top: 16px;
+}
+
+
+
+/* thumbnails */
+#thumbnails {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+}
+
+.thumbnail {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 3px;
+    width: 200px;
+    height: 248px;
+    padding: 10px;
+}
+
+.thumbnail:hover {
+    background-color: var(--light-grey-2-color);
+}
+
+.thumbnail.selected {
+    background-color: #fff;
+    box-shadow: 0px 2px 2px 0px rgba(71,71,71,0.5);
+}
+
+.picture-thumbnail {
+    display: block;
+    margin: 0 auto 10 auto;
+}
+
+.picture-thumbnail-missing {
+    width: 180px;
+    height: 180px;
+    background-color: #E8E8E8;
+}
+
+.thumbnail-title {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0 0 6px 0;
+}
+
+.thumbnail-artist {
+    text-align: center;
+    font-size: 12px;
+    color: var(--dark-grey-3-color);
+}
+
+
+
+
+/* fonts  */
+
+body {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 14px;
+}
+
+h2 {
+    width: 100%;    
+    display: block;
+}
+
+/* edit forms */
+
+.hidden {
+    display: none !important;
+}
+
+#edit-overlay {
+    display: block;
+    position: relative;
+    z-index: 2;
+    height: calc(100vh - var(--topbar-height));
+    width: 100vw;
+    padding-top: var(--topbar-height);
+    background-color: var(--light-grey-2-color);
+}
+
+#edit-overlay form {
+    display: flex;
+}
+
+#edit-overlay .imagearea {
+    vertical-align: top;
+    width: calc(100% - var(--edit-overlay-formwidth));
+    background-color: var(--light-grey-2-color);
+    min-width: calc(1280px - var(--edit-overlay-formwidth));
+}
+
+#edit-overlay .metadataarea {
+    width: var(--edit-overlay-formwidth);
+    background-color: var(--dark-grey-1-color);
+    text-align: left;
+    padding: 16px 16px 16px 16px;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+}
+#edit-overlay  .metadataarea div {
+    margin-bottom: 7px;
+}
+#edit-overlay  .metadataarea label {
+    width: 140px;
+    vertical-align: top;
+    padding-top: 8px;
+    color: var(--light-grey-2-color);
+}
+#edit-overlay  .metadataarea input, select, textarea {
+    height: 32px;
+    width: 416px;
+    padding: 0 8px 0 8px;
+    border-radius: 3px;
+    border: 1px solid #cccccc;
+    background-color: var(--dark-grey-2-color);
+    font-size: 14px;
+    font-family: 'Source Sans Pro', sans-serif;
+    color: #fff;
+}
+#edit-overlay  .metadataarea input:focus {
+    border: 2px solid var(--selected-field);
+    padding: 0 7px 0 7px;
+}
+#edit-overlay  .metadataarea textarea {
+    resize: none;
+    height: 76px;
+    padding: 0 7px 0 7px;
+}
+
+#edit-overlay  .metadataarea textarea:focus {
+    padding: 0 12px 0 7px;
+}
+
+input[type=file] {
+    width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+label[for="id_original"] {
+    font-size: 14px;
+    font-weight: 700;
+    width: 208px;
+    height: 38px;
+    line-height: 38px;
+    padding: 0 8px 0 8px;
+    border: 0;
+    background-color: var(--dark-grey-2-color);
+    color: #fff;
+    text-align: center;
+    display: inline-block;
+}
+
+label[for="id_original"]:focus + label[for="id_original"]:hover {
+    background-color: red;
+}
+
+#edit-overlay .image-big {
+    max-width: 720px;
+    max-height: 720px;
+}

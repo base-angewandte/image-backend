@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Delete {{title}}</h2>
+
+    Are you sure, you want to delete this artwork?
+    <form method="POST">{% csrf_token %}
+        <button type="submit">Delete</button>
+    </form>
+{% endblock content %}
