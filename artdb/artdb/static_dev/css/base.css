@@ -256,7 +256,7 @@ body.show-edit-overlay #sidebar {
 
 .picture-thumbnail {
     display: block;
-    margin: 0 auto 10 auto;
+    margin: 0 auto 8 auto;
 }
 
 .picture-thumbnail-missing {
@@ -269,7 +269,7 @@ body.show-edit-overlay #sidebar {
     text-align: center;
     font-size: 12px;
     font-weight: 600;
-    margin: 0 0 6px 0;
+    margin: 0 0 4px 0;
 }
 
 .thumbnail-artist {
