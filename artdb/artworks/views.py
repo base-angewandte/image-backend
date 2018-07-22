@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from datetime import datetime
 from artworks.models import *
 from artworks.forms import *
-
+from dal import autocomplete
 
 def index(request):
     context = {}
@@ -15,9 +15,12 @@ def index(request):
 # return the artwork details in json format
 def details(request, id=None):
     artwork = get_object_or_404(Artwork, id=id)
+    artistName = ''
+    if artwork.artist:
+        artistName = artwork.artist.name
     data = {
         'Title' : artwork.title,
-        'Artist' : artwork.artist,
+        'Artist' : artistName,
         'Location of creation': artwork.locationOfCreation,
         'Date of creation' : artwork.date,
         'Material' : artwork.material,
@@ -103,3 +106,17 @@ def collection(request, id=None):
     # TODO: figure out/use .order_by of the m2m manager
     context['artworks'] = artworkCollection.artworks.all()
     return render(request, 'artworks/collection.html', context)
+
+
+class ArtistAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        # Don't forget to filter out results depending on the visitor !
+        # if not self.request.user.is_authenticated():
+            # return Artist.objects.none()
+
+        qs = Artist.objects.all()
+
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
+
+        return qs

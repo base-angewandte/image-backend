@@ -5,10 +5,9 @@ from imagekit.processors import ResizeToFit
 
 
 class Artist(models.Model):
-    firstname = models.CharField(max_length=255)
-    surname = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
     def __str__(self):
-        return '{0} by {1}'.format(self.firstname, self.surname)
+        return self.name
 
 
 class Artwork(models.Model):

@@ -1,5 +1,6 @@
 from django import forms
-from artworks.models import Artwork
+from artworks.models import Artwork, Artist
+from dal import autocomplete
 
 class ArtworkForm(forms.ModelForm):
     # TODO: localization
@@ -11,6 +12,9 @@ class ArtworkForm(forms.ModelForm):
     class Meta:
         model = Artwork
         exclude = ['id','createdAt','updatedAt']
+        widgets = {
+            'artist': autocomplete.ModelSelect2(url='artist-autocomplete')
+        }
         # labels = {
            # "original": "Upload"
         # }
