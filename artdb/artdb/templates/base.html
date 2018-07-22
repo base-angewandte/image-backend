@@ -4,9 +4,11 @@
     <head>
         <title>artdb</title>
         <link type="text/css" rel="stylesheet" href="{% static 'css/base.css' %}">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
+        <script type="text/javascript" src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/artworks.js' %}"></script>
-        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600" rel="stylesheet">
+        <!-- <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600" rel="stylesheet">-->
+
         {% block extra_scripts %}
         {% endblock extra_scripts %}
     </head>

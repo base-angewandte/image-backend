@@ -303,7 +303,6 @@ h2 {
     display: block;
     position: relative;
     z-index: 2;
-    height: calc(100vh - var(--topbar-height));
     width: 100vw;
     padding-top: var(--topbar-height);
     background-color: var(--light-grey-2-color);
@@ -311,6 +310,7 @@ h2 {
 
 #edit-overlay form {
     display: flex;
+    min-height: calc(100vh - var(--topbar-height));
 }
 
 #edit-overlay .imagearea {
@@ -392,4 +392,37 @@ label[for="id_original"]:focus + label[for="id_original"]:hover {
 #edit-overlay .image-big {
     max-width: 720px;
     max-height: 720px;
+}
+
+/* autocomplete light modifications */
+
+.show-edit-overlay .select2-container--default .select2-selection--single {
+    height: 32px;
+    border-radius: 3px;
+    border: 1px solid #cccccc;
+    background-color: var(--dark-grey-2-color);
+    color: #fff;
+}
+
+.show-edit-overlay .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #fff;
+}
+
+.show-edit-overlay .select2-dropdown {
+    border-radius: 3px;
+    border: 1px solid #cccccc;
+    background-color: var(--dark-grey-2-color) !important;
+    color: #fff;
+}
+
+.show-edit-overlay .select2-search--dropdown {
+    height: 32px;
+    background-color: var(--dark-grey-2-color);
+    color: #fff;
+    padding: 0;
+}
+
+.show-edit-overlay .select2-search__field {
+    height: 30px;
+    border: 0 !important;
 }
