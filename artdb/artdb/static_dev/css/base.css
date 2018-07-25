@@ -1,11 +1,16 @@
 :root {
     --light-bg-color: #FBFBFB;
+    --dark-grey-0-color: #212121;
     --dark-grey-1-color: #2F2F2F;
-    --dark-grey-2-color: #3C3C3C;
     --dark-grey-3-color: #636363;
+ 
+    --mid-grey-1-color: #3C3C3C;
+    --mid-grey-2-color: #4C4C4C;
+
     --light-grey-1-color: #B6B6B6;  /* sidebar key values */
-    --light-grey-2-color: #F4F4F4;  /* top-nav background*/
-    --selected-field: #43B6E0;
+    --light-grey-2-color: #CCC;
+    --light-grey-3-color: #F4F4F4;  /* top-nav background*/
+    --selected-field: #3686C2;
     --topbar-height: 50px;
     --sidebar-width: 240px;
     --edit-overlay-formwidth: 448px;
@@ -98,7 +103,7 @@ body.show-edit-overlay #sidebar {
     top: 0;
     width: 100%;
     height: var(--topbar-height);
-    background-color: var(--light-grey-2-color);
+    background-color: var(--light-grey-3-color);
     color: #000;
     padding: 0 18px 0 18px;
     box-shadow: 0px 2px 2px 0px rgba(40,40,40,0.5);
@@ -213,13 +218,25 @@ body.show-edit-overlay #sidebar {
 }
 
 .inspector-button {
-    display: block;
-    width: 208px;
+    display: inline-block;
+    width: 200px;
     height: 38px;
     border: 0;
-    background-color: var(--dark-grey-2-color);
+    background-color: var(--mid-grey-2-color);
     color: #fff;
     padding-bottom: 4px;
+}
+
+.inspector-button .confirm {
+    display: inline-block;
+    width: 100px;
+    background-color: green;
+}
+
+.inspector-button .cancel {
+    display: inline-block;
+    width: 100px;
+    background-color: red;
 }
 
 .artwork-details {
@@ -246,7 +263,7 @@ body.show-edit-overlay #sidebar {
 }
 
 .thumbnail:hover {
-    background-color: var(--light-grey-2-color);
+    background-color: var(--light-grey-3-color);
 }
 
 .thumbnail.selected {
@@ -305,22 +322,29 @@ h2 {
     z-index: 2;
     width: 100vw;
     padding-top: var(--topbar-height);
-    background-color: var(--light-grey-2-color);
+    background-color: var(--light-grey-3-color);
 }
 
-#edit-overlay form {
+.show-edit-overlay form {
     display: flex;
     min-height: calc(100vh - var(--topbar-height));
 }
 
-#edit-overlay .imagearea {
+.show-edit-overlay .imagearea {
     vertical-align: top;
     width: calc(100% - var(--edit-overlay-formwidth));
-    background-color: var(--light-grey-2-color);
+    background-color: var(--light-grey-3-color);
     min-width: calc(1280px - var(--edit-overlay-formwidth));
 }
 
-#edit-overlay .metadataarea {
+.show-edit-overlay .editsidebar {
+    width: var(--edit-overlay-formwidth);
+    text-align: left;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;    
+}
+
+.show-edit-overlay .metadataarea {
     width: var(--edit-overlay-formwidth);
     background-color: var(--dark-grey-1-color);
     text-align: left;
@@ -328,37 +352,43 @@ h2 {
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
 }
-#edit-overlay  .metadataarea div {
-    margin-bottom: 7px;
+.show-edit-overlay .confirmationarea {
+    background-color: var(--mid-grey-1-color);
+    padding: 16px;
 }
-#edit-overlay  .metadataarea label {
+.show-edit-overlay .metadataarea div {
+    margin-bottom: 20px;
+}
+.show-edit-overlay .metadataarea label {
     width: 140px;
     vertical-align: top;
     padding-top: 8px;
     color: var(--light-grey-2-color);
+    font-size: 12px;
+    text-transform: uppercase;
 }
-#edit-overlay  .metadataarea input, select, textarea {
+.show-edit-overlay .metadataarea input, select, textarea {
     height: 32px;
     width: 416px;
     padding: 0 8px 0 8px;
     border-radius: 3px;
-    border: 1px solid #cccccc;
-    background-color: var(--dark-grey-2-color);
+    border: 1px solid #373737;
+    background-color: var(--dark-grey-0-color);
     font-size: 14px;
     font-family: 'Source Sans Pro', sans-serif;
     color: #fff;
 }
-#edit-overlay  .metadataarea input:focus {
-    border: 2px solid var(--selected-field);
+.show-edit-overlay .metadataarea input:focus {
+    border: 1px solid var(--selected-field);
     padding: 0 7px 0 7px;
 }
-#edit-overlay  .metadataarea textarea {
+.show-edit-overlay .metadataarea textarea {
     resize: none;
     height: 76px;
     padding: 0 7px 0 7px;
 }
 
-#edit-overlay  .metadataarea textarea:focus {
+.show-edit-overlay .metadataarea textarea:focus {
     padding: 0 12px 0 7px;
 }
 
@@ -379,7 +409,7 @@ label[for="id_original"] {
     line-height: 38px;
     padding: 0 8px 0 8px;
     border: 0;
-    background-color: var(--dark-grey-2-color);
+    background-color: var(--mid-grey-2-color);
     color: #fff;
     text-align: center;
     display: inline-block;
@@ -389,40 +419,68 @@ label[for="id_original"]:focus + label[for="id_original"]:hover {
     background-color: red;
 }
 
-#edit-overlay .image-big {
+.show-edit-overlay .image-big {
     max-width: 720px;
     max-height: 720px;
 }
 
 /* autocomplete light modifications */
 
+.show-edit-overlay .select2-container {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+}
+
 .show-edit-overlay .select2-container--default .select2-selection--single {
     height: 32px;
-    border-radius: 3px;
-    border: 1px solid #cccccc;
-    background-color: var(--dark-grey-2-color);
+    border-radius: 5px;
+    border: 1px solid #616161;
+    background-color: #3C3C3C;
     color: #fff;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
 }
 
 .show-edit-overlay .select2-container--default .select2-selection--single .select2-selection__rendered {
     color: #fff;
 }
 
+.show-edit-overlay .select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--mid-grey-2-color);
+}
+
 .show-edit-overlay .select2-dropdown {
-    border-radius: 3px;
-    border: 1px solid #cccccc;
-    background-color: var(--dark-grey-2-color) !important;
+    border-radius: 0px;
+    border: 1px solid #616161;
+    background-color: var(--mid-grey-1-color) !important;
     color: #fff;
 }
 
 .show-edit-overlay .select2-search--dropdown {
-    height: 32px;
-    background-color: var(--dark-grey-2-color);
+    height: 30px;
+    background-color: var(--mid-grey-1-color);
     color: #fff;
     padding: 0;
 }
 
 .show-edit-overlay .select2-search__field {
-    height: 30px;
-    border: 0 !important;
+    height: 32px;
+    border: 1px solid var(--selected-field) !important;
+    background-color: var(--dark-grey-0-color);
+    color: #fff;
+    width: calc(100% + 2px) !important;
+    margin-left: -1px;
+    margin-top: -1px;
+}
+
+.show-edit-overlay .select2-results {
+    box-shadow: 0px 4px 2px 0px rgba(40,40,40,0.5);
+}
+
+.show-edit-overlay .select2-container--default .select2-results__option[aria-selected="true"] {
+    background-color: var(--mid-grey-2-color) !important;
+}
+
+.show-edit-overlay .inspector-button.cancel {
+    margin-right: 16px !important;
 }

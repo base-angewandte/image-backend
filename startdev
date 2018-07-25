@@ -1,0 +1,5 @@
+source workenv/bin/activate
+cd artdb
+code ./
+python3 manage.py runserver
+
