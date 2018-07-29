@@ -31,11 +31,15 @@ $(document).ready(function() {
 <form method="POST" enctype="multipart/form-data" class="editform" action="/artworks/edit/{{id}}.html">
     {% csrf_token %}
 <div class="imagearea">
-        <div class="center">
-                    <img class="image-big" src="{{big_url}}"/>
-                    {{ form.original.label_tag }}
-                    {{ form.original }}
-                    {{ form.original.errors }}
+        <div class="image-wrapperA">
+            <div class="image-wrapperB">
+                <img class="image-big" src="{{big_url}}"/>
+                <div class="image-wrapperC">
+                        {{ form.original.label_tag }}
+                        {{ form.original }}
+                        {{ form.original.errors }}
+                </div>  
+            </div>
         </div>
 </div>
 <div class="editsidebar">
