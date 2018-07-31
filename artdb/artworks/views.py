@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
+from django.core.paginator import Paginator
 from datetime import datetime
 from artworks.models import *
 from artworks.forms import *
@@ -7,7 +8,11 @@ from dal import autocomplete
 
 def index(request):
     context = {}
+    # TODO: do not get *all* objects here! (just the latest?)
     artworks = Artwork.objects.all()
+    paginator = Paginator(artworks, 3)
+    page = request.GET.get('page')
+    artworks = paginator.get_page(page)
     context['title'] = 'artworks'
     context['artworks'] = artworks
     return render(request, 'artworks/index.html', context)

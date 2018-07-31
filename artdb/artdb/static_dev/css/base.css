@@ -6,11 +6,13 @@
  
     --mid-grey-1-color: #3C3C3C;
     --mid-grey-2-color: #4C4C4C;
+    --mid-grey-3-color: #5F5F5F;
 
     --light-grey-1-color: #B6B6B6;  /* sidebar key values */
     --light-grey-2-color: #CCC;
     --light-grey-3-color: #F4F4F4;  /* top-nav background*/
     --selected-field: #3686C2;
+    --primary-button-color: #029290;
     --topbar-height: 50px;
     --sidebar-width: 240px;
     --edit-overlay-formwidth: 448px;
@@ -234,19 +236,9 @@ body.show-edit-overlay #sidebar {
     border: 0;
     background-color: var(--mid-grey-2-color);
     color: #fff;
-    padding-bottom: 4px;
-}
-
-.inspector-button .confirm {
-    display: inline-block;
-    width: 100px;
-    background-color: green;
-}
-
-.inspector-button .cancel {
-    display: inline-block;
-    width: 100px;
-    background-color: red;
+    text-transform: uppercase;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 14px;
 }
 
 .artwork-details {
@@ -495,8 +487,13 @@ label[for="id_original"]:focus + label[for="id_original"]:hover {
     background-color: var(--mid-grey-2-color) !important;
 }
 
+.show-edit-overlay .inspector-button.confirm {
+    margin-left: 16px !important;
+    background-color: var(--primary-button-color);
+}
+
 .show-edit-overlay .inspector-button.cancel {
-    margin-right: 16px !important;
+    background-color: var(--mid-grey-3-color);
 }
 
 .show-edit-overlay .select2-selection__clear {
@@ -507,4 +504,9 @@ label[for="id_original"]:focus + label[for="id_original"]:hover {
     top: 10px;
     background: url(close_button_white.svg) no-repeat center left;
     background-size: 10px;
+}
+
+/* pagination */
+.paginator .current-page {
+    font-weight: 700;
 }

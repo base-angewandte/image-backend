@@ -3,6 +3,34 @@
 {% block content %}
     {% if artworks %}
     <h2>all {{title}}</h2>
+    <div class="paginator">
+        {{ artworks.has_previous }}
+        {{ artworks.number }}
+        {{ artworks.paginator.count }}
+        {{ artworks.paginator.num_pages }}
+        {{ artworks.paginator.page_range }}
+        {{ artworks.has_next }}
+
+        {% if artworks.has_previous %}
+            <a href="?page=1"><<</a>
+            <a href="?page={{artworks.previous_page_number}}"><</a>
+        {% endif %}
+
+        {% for num in artworks.paginator.page_range %}
+            {% if artworks.number == num %}
+                <span class="current-page">{{num}}</span>
+            {% elif num > artworks.number|add:'-3' and num < artworks.number|add:'3' %}
+                <a href="?page={{num}}">{{num}}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if artworks.has_next %}
+        <a href="?page={{artworks.next_page_number}}">></a>
+            <a href="?page={{artworks.num_pages}}">>></a>
+        {% endif %}
+
+
+    </div>
     <div id="thumbnails">
         {% for artwork in artworks %}
         <div data-artworkid="{{artwork.id}}" class="thumbnail">
