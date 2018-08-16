@@ -13,4 +13,6 @@ __pycache__/
 
 secret_settings.py
 media
+fixtures
+migration
 db.sqlite3

@@ -16,5 +16,5 @@ class ArtworkForm(forms.ModelForm):
             'artist': autocomplete.ModelSelect2(url='artist-autocomplete')
         }
         # labels = {
-           # "original": "Upload"
+           # "imageOriginal": "Upload"
         # }

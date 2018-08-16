@@ -143,6 +143,7 @@ body.show-edit-overlay #sidebar {
     padding: var(--topbar-height) 0 0 0;
     width: 100%;
     z-index: 1;
+    vertical-align: center;
 }
 
 .image-wrapperA {

@@ -12,35 +12,58 @@ class Artist(models.Model):
 
 class Artwork(models.Model):
     # mandatory fields
-    title = models.CharField(max_length=255)
-    original = models.ImageField(max_length = 127, upload_to='artworks/original/', null=False, blank=True)
+    imageOriginal = models.ImageField(max_length = 127, null=False, blank=True)
 
     # hidden fields
     createdAt = models.DateTimeField(auto_now_add = True)
-    updatedAt = models.DateTimeField(auto_now = True)
+    updatedAt = models.DateTimeField(auto_now = True, null=True)
+
+    # hidden, auto-filled fields
+    # fileID = models.IntegerField(null=False, blank=False, default=0)
 
     # optional fields
+    title = models.CharField(max_length=255, blank=True)
     artist = models.ForeignKey(Artist, on_delete=models.SET_NULL, null=True, blank=True)
     date = models.CharField(max_length=255, blank=True)
     dateFrom = models.DateField(null=True, blank=True)
     dateTo = models.DateField(null=True, blank=True)
     material = models.CharField(max_length=255, blank=True)
-    dimensions = models.CharField(max_length=255,blank=True)
-    locationOfCreation = models.CharField(max_length=255, blank=True)
+    dimensions = models.CharField(max_length=255, blank=True)
+    locationOfCreation = models.CharField(max_length=255, null=True)
     credits = models.TextField(blank=True)
     # TODO: tags
 
-    # shrinked versions of the original image are crated using django-imagekit
+    # shrinked versions of the original image are created using django-imagekit
     # imagekit uses Pillow
-    thumbnail = ImageSpecField(source='original',
+    thumbnail = ImageSpecField(source='imageOriginal',
                 processors=[ResizeToFit(180, 180)],
                 format='JPEG',
                 options={'quality': 80})
-    big = ImageSpecField(source='original',
+    big = ImageSpecField(source='imageOriginal',
                 processors=[ResizeToFit(930, 768)],
                 format='JPEG',
                 options={'quality': 92})
-                            
+
+    def get_path_to_original_file(self):
+        print("getpath ")
+        return 'artworks/imageOriginal/{0}/{1}'.format(self.pk, self.imageOriginal.name)
+
+    def save(self, *args, **kwargs):
+        # call save to create a primary key. See: https://stackoverflow.com/questions/651949
+        super(Artwork, self).save( *args, **kwargs )
+        imageOriginal = self.imageOriginal
+        if imageOriginal:
+            oldPath = self.imageOriginal.name
+            print(oldPath)
+            newPath = self.get_path_to_original_file()
+            print(newPath)
+            self.imageOriginal.storage.save(newPath, imageOriginal)
+            self.imageOriginal.name = newPath
+            #self.imageOriginal.close()
+            self.imageOriginal.storage.delete(oldPath)
+            print("saving")
+        super( Artwork, self ).save( *args, **kwargs )
+
     def __str__(self):
         return self.title
 
