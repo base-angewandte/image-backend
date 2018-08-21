@@ -22,8 +22,7 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('artworks/', include('artworks.urls')),
-    path('artworkusers/', include('artworks.urls'))
+    path('', include('artworks.urls')),
 ]
 
 # adding this, so MEDIA dir can be served during development

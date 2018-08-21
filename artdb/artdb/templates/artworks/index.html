@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load search_tags %}
 
 {% block content %}
     {% if artworks %}
@@ -12,21 +13,21 @@
         {{ artworks.has_next }}
 
         {% if artworks.has_previous %}
-            <a href="?page=1"><<</a>
-            <a href="?page={{artworks.previous_page_number}}"><</a>
+            <a href="?{% url_replace request 'page' 'page=1' %}"><<</a>
+            <a href="?{% url_replace request 'page' artworks.previous_page_number %}"><</a>
         {% endif %}
 
         {% for num in artworks.paginator.page_range %}
             {% if artworks.number == num %}
                 <span class="current-page">{{num}}</span>
             {% elif num > artworks.number|add:'-3' and num < artworks.number|add:'3' %}
-                <a href="?page={{num}}">{{num}}</a>
+                <a href="?{% url_replace request 'page' num %}">{{num}}</a>
             {% endif %}
         {% endfor %}
 
         {% if artworks.has_next %}
-        <a href="?page={{artworks.next_page_number}}">></a>
-            <a href="?page={{artworks.paginator.num_pages}}">>></a>
+        <a href="?{% url_replace request 'page' artworks.next_page_number %}">></a>
+            <a href="?{% url_replace request 'page' artworks.paginator.num_pages %}">>></a>
         {% endif %}
     </div>
     <div id="thumbnails">

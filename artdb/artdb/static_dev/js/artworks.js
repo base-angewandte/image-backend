@@ -14,7 +14,7 @@ $(document).ready(function() {
 
     // load artwork data (JSON) and show it in the inspector
     updateInspector = function(artworkId) {
-        $.getJSON(artworkId+'.json', function( data) {
+        $.getJSON('artwork/'+artworkId+'.json', function( data) {
             var items = [];
             items.push('<button name="edit" id="editartwork" class="inspector-button")>Edit</button>');
             items.push('<dl class="artwork-details">');
@@ -61,12 +61,11 @@ $(document).ready(function() {
         }
     });
 
-
     // show the image of a selected artwork in an overlay
     function showViewOverlay(artworkId) {
         const body = $('body');
         const shownClass = 'shown';
-        const url = artworkId + '_overlay.html';
+        const url = 'artwork/' + artworkId + '_overlay.html';
         thumnailbrowserScrollPosition = $(window).scrollTop();
         body.addClass('show-view-overlay');
         $('.image-big').removeClass(shownClass);

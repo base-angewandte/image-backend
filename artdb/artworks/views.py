@@ -9,10 +9,15 @@ from rest_framework.response import Response
 from dal import autocomplete
 
 def index(request):
+    query = request.GET.get('artist')
     context = {}
     # TODO: do not get *all* objects here! (just the latest?)
-    artworks = Artwork.objects.all()
-    paginator = Paginator(artworks, 3)
+    if not query:
+        queryset = Artwork.objects.all().order_by('title')
+    if query:
+        # artist = get_object_or_404(Artist, id=id)
+        queryset = Artwork.objects.filter(artists__id=str(query)).order_by('title')
+    paginator = Paginator(queryset, 3)
     page = request.GET.get('page')
     artworks = paginator.get_page(page)
     context['title'] = 'artworks'
@@ -113,3 +118,11 @@ class ArtistAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(name__icontains=self.q)
 
         return qs
+
+def artist_artworks(request, id=None):
+    # artist = get_object_or_404(Artist, id=id)
+    # artworks = Artwork.objects.get(pk=artist.id)
+    # context = {}
+    # context['title'] = artworks.title
+    return index(request, artist=id)
+    #return render(request, 'artists/artworks.html', context)
