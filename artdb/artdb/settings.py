@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     'artworkusers',
     'artworks',
     
+    'rest_framework',
     'imagekit',
+    'django_cleanup',
 ]
 
 MIDDLEWARE = [

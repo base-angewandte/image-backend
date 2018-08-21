@@ -4,6 +4,8 @@ from django.core.paginator import Paginator
 from datetime import datetime
 from artworks.models import *
 from artworks.forms import *
+from artworks.serializers import ArtworkSerializer
+from rest_framework.response import Response
 from dal import autocomplete
 
 def index(request):
@@ -20,22 +22,8 @@ def index(request):
 # return the artwork details in json format
 def details(request, id=None):
     artwork = get_object_or_404(Artwork, id=id)
-    artistName = ''
-    if artwork.artist:
-        artistName = artwork.artist.name
-    data = {
-        'Title' : artwork.title,
-        'Artist' : artistName,
-        'Location of creation': artwork.locationOfCreation,
-        'Date of creation' : artwork.date,
-        'Material' : artwork.material,
-        'Dimensions' : artwork.dimensions,
-        'Credits' : artwork.credits
-    }
-    jsonData = {key:value for key, value in data.items() 
-        if ((value is not '') and (value is not None))}
-    return JsonResponse(jsonData)
-
+    serializer = ArtworkSerializer(artwork)
+    return JsonResponse(serializer.data)
 
 # return the artwork page
 # to be placed into the overlay via js

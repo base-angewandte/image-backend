@@ -5,7 +5,8 @@ from imagekit.processors import ResizeToFit
 
 
 class Artist(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, null=False)
+    synonyms = models.CharField(max_length=255, null=False, blank=True)
     def __str__(self):
         return self.name
 
@@ -23,7 +24,8 @@ class Artwork(models.Model):
 
     # optional fields
     title = models.CharField(max_length=255, blank=True)
-    artist = models.ForeignKey(Artist, on_delete=models.SET_NULL, null=True, blank=True)
+    # artist = models.ForeignKey(Artist, on_delete=models.SET_NULL, null=True, blank=True)
+    artists = models.ManyToManyField(Artist)
     date = models.CharField(max_length=255, blank=True)
     dateFrom = models.DateField(null=True, blank=True)
     dateTo = models.DateField(null=True, blank=True)

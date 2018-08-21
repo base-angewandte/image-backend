@@ -21,7 +21,16 @@ $(document).ready(function() {
             // TODO: do not use html here
             // for security reasons we construct it
             $.each( data, function( key, val ) {
-                items.push('<dt>' + key + '</dt> <dd>' + val + '</dd>');
+                if (key === "artists") {
+                    var artists = "";
+                    for (var i = 0; i < val.length; i++) { 
+                        artists = artists + val[i].name;
+                    }
+                    val = artists;
+                }
+                if ((val !== "") && (val !== null)) {
+                    items.push('<dt>' + key + '</dt> <dd>' + val + '</dd>');
+                }
             });
             items.push('</dl>');
             $('#inspector').html(items.join(''));
