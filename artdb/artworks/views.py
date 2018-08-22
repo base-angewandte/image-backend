@@ -11,11 +11,11 @@ from dal import autocomplete
 def index(request):
     query = request.GET.get('artist')
     context = {}
-    # TODO: do not get *all* objects here! (just the latest?)
     if not query:
-        queryset = Artwork.objects.all().order_by('title')
+        # per default, the artworks are shown that were modified most recently
+        queryset = Artwork.objects.all().order_by('title').order_by('-updatedAt')
     if query:
-        # artist = get_object_or_404(Artist, id=id)
+        # TODO: add date filter
         queryset = Artwork.objects.filter(artists__id=str(query)).order_by('title')
     paginator = Paginator(queryset, 3)
     page = request.GET.get('page')

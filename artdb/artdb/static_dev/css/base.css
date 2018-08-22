@@ -290,12 +290,18 @@ body.show-edit-overlay #sidebar {
     font-size: 12px;
     font-weight: 600;
     margin: 0 0 4px 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .thumbnail-artist {
     text-align: center;
     font-size: 12px;
     color: var(--dark-grey-3-color);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 

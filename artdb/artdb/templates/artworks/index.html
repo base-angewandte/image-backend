@@ -35,15 +35,17 @@
         <div data-artworkid="{{artwork.id}}" class="thumbnail">
             <div class="vertically-center">
                 {% if not artwork.imageOriginal %}
-                <div class="picture-thumbnail picture-thumbnail-missing"></div>
+                    <div class="picture-thumbnail picture-thumbnail-missing"></div>
                 {% else %}
-                <img class="picture-thumbnail" src="{{artwork.thumbnail.url}}"/>
+                    <img class="picture-thumbnail" src="{{artwork.thumbnail.url}}"/>
                 {% endif %}
             </div>
             <div class="thumbnail-title">{{artwork.title}}</div>
-            {% if artwork.artist %}
-            <div class="thumbnail-artist">{{artwork.artist}}</div>
-            {% endif %}
+            <div class="thumbnail-artist">
+                {% for artist in artwork.artists.all %}
+                    {{ artist.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </div>
         </div>        
     {% endfor %}
     </div>
