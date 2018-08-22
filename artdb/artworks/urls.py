@@ -4,7 +4,7 @@ from artworks.views import *
 urlpatterns = [
     path('', index, name='artworks_list'),
     path('artwork/<int:id>.json', details, name='artwork_details'),
-    path('artwork/<int:id>_overlay.html', artwork_overlay_only, name='artwork_overlay_only'),
+    path('artwork/<int:id>_detail_overlay.html', artwork_detail_overlay, name='artwork_detail_overlay'),
     path('artwork/<int:id>.html', artwork, name='artwork'),    
     path('artwork_new.html', artwork_new, name='artwork_new'),
     path('artwork/edit/<int:id>.html', artwork_edit, name='artwork_edit'),

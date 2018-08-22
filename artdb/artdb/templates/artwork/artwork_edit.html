@@ -28,7 +28,7 @@ $(document).ready(function() {
 {{ form.media }}
 {% endblock extra_scripts %}
 
-<form method="POST" enctype="multipart/form-data" class="editform" action="/artworks/edit/{{id}}.html">
+<form method="POST" enctype="multipart/form-data" class="editform" action="/artwork/edit/{{id}}.html">
     {% csrf_token %}
 <div class="imagearea">
         <div class="image-wrapperA">

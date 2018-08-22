@@ -33,29 +33,29 @@ body {
 
 /* the classes of body are used as a state indicator */
 /* thumbnails   = normal thumbnail browsing */
-/* view-overlay = show the artwork view overlay */
+/* detail-overlay = show the artwork detail overlay */
 /* edit-overlay = show the artwork edit overlay */
 body.show-thumbnailbrowser #thumbnailbrowser {
     display: table-cell !important;
 }
-body.show-thumbnailbrowser #view-overlay,
+body.show-thumbnailbrowser #detail-overlay,
 body.show-thumbnailbrowser #edit-overlay {
     display: none;
 }
 
-body.show-view-overlay #view-overlay {
+body.show-detail-overlay #detail-overlay {
     display: table-cell !important;
 }
-body.show-view-overlay #thumbnailbrowser,
-body.show-view-overlay #edit-overlay {
+body.show-detail-overlay #thumbnailbrowser,
+body.show-detail-overlay #edit-overlay {
     display: none;
 }
-body.show-view-overlay #sidebar {
+body.show-detail-overlay #sidebar {
     display: table-cell !important;
     position: relative;
     vertical-align: top;
 }
-body.show-view-overlay {
+body.show-detail-overlay {
     min-width: 1280px;
 }
 
@@ -63,7 +63,7 @@ body.show-edit-overlay #edit-overlay {
     display: block !important;
 }
 body.show-edit-overlay #thumbnailbrowser,
-body.show-edit-overlay #view-overlay,
+body.show-edit-overlay #detail-overlay,
 body.show-edit-overlay #sidebar {
     display: none;
 }
@@ -135,15 +135,15 @@ body.show-edit-overlay #sidebar {
 }
 
 
-/* view-overlay */
+/* detail-overlay */
 
-#view-overlay {
+#detail-overlay {
     height: 100vh;
     background-color: var(--light-bg-color);
     padding: var(--topbar-height) 0 0 0;
     width: 100%;
     z-index: 1;
-    vertical-align: center;
+    vertical-align: middle;
 }
 
 .image-wrapperA {

@@ -22,7 +22,7 @@ def index(request):
     artworks = paginator.get_page(page)
     context['title'] = 'artworks'
     context['artworks'] = artworks
-    return render(request, 'artworks/index.html', context)
+    return render(request, 'artwork/index.html', context)
 
 # return the artwork details in json format
 def details(request, id=None):
@@ -37,16 +37,16 @@ def getArtworkContext(artwork):
     context['big_url'] = artwork.big.url
     return context
 
-def artwork_overlay_only(request, id=None):
+def artwork_detail_overlay(request, id=None):
     artwork = get_object_or_404(Artwork, id=id)
-    return render(request, 'artworks/artwork_overlay_only.html', getArtworkContext(artwork))
+    return render(request, 'artwork/artwork_detail_overlay.html', getArtworkContext(artwork))
 
 
 def artwork(request, id=None):
     artwork = get_object_or_404(Artwork, id=id)
     context = getArtworkContext(artwork)
     context['id'] = artwork.id
-    return render(request, 'artworks/artwork.html', context)
+    return render(request, 'artwork/artwork.html', context)
 
 
 def artwork_new(request):
@@ -61,7 +61,7 @@ def artwork_new(request):
             return redirect(redirectURL)
     else:
         form = ArtworkForm()
-        return render(request, 'artworks/artwork_new.html', {'form': form})
+        return render(request, 'artwork/artwork_new.html', {'form': form})
 
 
 def artwork_edit(request, id):
@@ -74,24 +74,24 @@ def artwork_edit(request, id):
             artwork.updatedAt = datetime.now()
             artwork.save()
             # TODO: redirectURL = "%i.json" % artwork.id
-            return redirect('/artworks', id=artwork.id)
+            return redirect('/artwork', id=artwork.id)
     else:
         context = {}
         context['form'] = ArtworkForm(instance=artwork)
         context['id'] = artwork.id
         context['big_url'] = artwork.big.url
-        return render(request, 'artworks/artwork_edit.html', context)
+        return render(request, 'artwork/artwork_edit.html', context)
 
 
 def artwork_delete(request, id):
     artwork = get_object_or_404(Artwork, id=id)
     if request.method == "POST":
         artwork.delete()
-        return redirect('/artworks', id=artwork.id)
+        return redirect('/artwork', id=artwork.id)
     else:
         context = {}
         context['id'] = artwork.id
-        return render(request, 'artworks/artwork_delete.html', context)
+        return render(request, 'artwork/artwork_delete.html', context)
 
 
 def collection(request, id=None):
@@ -103,7 +103,7 @@ def collection(request, id=None):
     context['created_by_fullname'] = artworkCollection.user.get_full_name()
     # TODO: figure out/use .order_by of the m2m manager
     context['artworks'] = artworkCollection.artworks.all()
-    return render(request, 'artworks/collection.html', context)
+    return render(request, 'artwork/collection.html', context)
 
 
 class ArtistAutocomplete(autocomplete.Select2QuerySetView):

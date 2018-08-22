@@ -1,15 +1,12 @@
 // functions available to other scripts:
-var updateInspector;
-var hideOverlay;
-var state;
-
-function loadUrl(url) {
+/*function loadUrl(url) {
     window.location.href = url;
     return false;
-}
+}*/
 
 $(document).ready(function() {
     var selectedThumbnail = null;
+    var bLastStateThumbnailbrowser = false; // needed for hideEditOverlay
     var thumnailbrowserScrollPosition = $(window).scrollTop();
 
     // load artwork data (JSON) and show it in the inspector
@@ -42,13 +39,13 @@ $(document).ready(function() {
     }
 
     // the page consists of a sidebar and a main view
-    // per default, the main view shows thumbnails
+    // per default, the thumbnails are shown
     $('.thumbnail').on('click', function (e) {
         const selectClass = 'selected';
         var clickedThumbnail = e.currentTarget;
         if ($(clickedThumbnail).hasClass(selectClass)) {
-            // Clicking it twice, shows the overlay and loads its content.
-            showViewOverlay(clickedThumbnail.dataset.artworkid);
+            // Clicking it twice, shows the detail overlay
+            showDetailOverlay(clickedThumbnail.dataset.artworkid);
         } else {
             // Clicking a thumbnail once, selects it and shows the details
             // in the inspector.
@@ -62,14 +59,14 @@ $(document).ready(function() {
     });
 
     // show the image of a selected artwork in an overlay
-    function showViewOverlay(artworkId) {
+    function showDetailOverlay(artworkId) {
         const body = $('body');
         const shownClass = 'shown';
-        const url = 'artwork/' + artworkId + '_overlay.html';
+        const url = 'artwork/' + artworkId + '_detail_overlay.html';
         thumnailbrowserScrollPosition = $(window).scrollTop();
-        body.addClass('show-view-overlay');
+        body.addClass('show-detail-overlay');
         $('.image-big').removeClass(shownClass);
-        $('#view-overlay').load(url, function() {
+        $('#detail-overlay').load(url, function() {
             $('.image-big').addClass(shownClass);
         });
         body.removeClass('show-thumbnailbrowser');
@@ -77,10 +74,10 @@ $(document).ready(function() {
     }
 
     // hide the overlay
-    hideViewOverlay = function() {
+    hideDetailOverlay = function() {
         const body = $('body');
         body.addClass('show-thumbnailbrowser');
-        body.removeClass('show-view-overlay');
+        body.removeClass('show-detail-overlay');
         $(window).scrollTop(thumnailbrowserScrollPosition);
     };
 
@@ -88,9 +85,10 @@ $(document).ready(function() {
     function showEditOverlay(artworkId) {
         const body = $('body');
         const shownClass = 'shown';
-        const url = 'edit/' + artworkId + '.html';
+        const url = 'artwork/edit/' + artworkId + '.html';
+        bLastStateThumbnailbrowser = $('body').hasClass("show-thumbnailbrowser");
         body.addClass('show-edit-overlay');
-        body.removeClass('show-view-overlay');
+        body.removeClass('show-detail-overlay');
         body.removeClass('show-thumbnailbrowser');
         $('.image-big').removeClass(shownClass);
         $('#edit-overlay').load(url, function() {
@@ -100,8 +98,12 @@ $(document).ready(function() {
 
     hideEditOverlay = function() {
         const body = $('body');
-        body.addClass('show-view-overlay');
+        // TODO: reload data!
+        if (bLastStateThumbnailbrowser) {
+            body.addClass('show-thumbnailbrowser');          
+        } else {
+            body.addClass('show-detail-overlay');
+        }
         body.removeClass('show-edit-overlay');
-        // TODO update artwork data
     };
 });
