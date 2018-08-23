@@ -14,7 +14,7 @@
     --selected-field: #3686C2;
     --primary-button-color: #029290;
     --topbar-height: 50px;
-    --sidebar-width: 240px;
+    --sidebar-width: 232px;
     --edit-overlay-formwidth: 448px;
 }
 
@@ -329,7 +329,7 @@ h2 {
     display: block;
     position: relative;
     z-index: 2;
-    width: 100vw;
+    width: 100%;
     padding-top: var(--topbar-height);
     background-color: var(--light-grey-3-color);
 }
@@ -380,26 +380,38 @@ h2 {
 .show-edit-overlay .metadataarea input, select, textarea {
     height: 32px;
     width: 416px;
-    padding: 0 7px 0 7px;
+    padding: 0px 7px 0px 7px;
     border-radius: 3px;
     border: 1px solid #373737;
     background-color: var(--dark-grey-0-color);
     font-size: 14px;
     font-family: 'Source Sans Pro', sans-serif;
     color: #fff;
+    caret-color: #fff;
 }
-.show-edit-overlay .metadataarea input:focus {
-    border: 1px solid var(--selected-field);
-    padding: 0 7px 0 7px;
-}
-.show-edit-overlay .metadataarea textarea {
-    resize: none;
-    height: 76px;
+
+.show-edit-overlay .metadataarea .select2-selection--multiple {
+    border-radius: 3px;
+    border: 1px solid #373737;
     padding: 0 7px 0 7px;
 }
 
-.show-edit-overlay .metadataarea textarea:focus {
-    padding: 0 12px 0 7px;
+.show-edit-overlay .metadataarea input:focus, textarea:focus {
+    border: 1px solid var(--selected-field);
+}
+
+.show-edit-overlay .metadataarea input.select2-search__field:focus {
+    border: 0;
+}
+
+.show-edit-overlay .metadataarea  .select2-container--default.select2-container--focus .select2-selection--multiple {
+    border: 1px solid var(--selected-field);
+}
+
+.show-edit-overlay .metadataarea textarea {
+    resize: none;
+    height: 76px !important;
+    padding: 4px 7px 4px 7px !important;
 }
 
 input[type=file] {
@@ -478,12 +490,15 @@ label[for="id_original"]:focus + label[for="id_original"]:hover {
 
 .show-edit-overlay .select2-search__field {
     height: 32px;
-    border: 1px solid var(--selected-field) !important;
     background-color: var(--dark-grey-0-color);
     color: #fff;
-    width: calc(100% + 2px) !important;
     margin-left: -1px;
-    margin-top: -1px;
+    margin-top: -1px !important;
+}
+
+.show-edit-overlay .select2-container--default .select2-selection--multiple {
+    background-color: var(--dark-grey-0-color);
+    color: #fff;
 }
 
 .show-edit-overlay .select2-dropdown.select2-dropdown--below {
@@ -512,6 +527,33 @@ label[for="id_original"]:focus + label[for="id_original"]:hover {
     background: url(close_button_white.svg) no-repeat center left;
     background-size: 10px;
 }
+
+.show-edit-overlay .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    margin: 4px 8px 4px 0px;
+    background-color: #31576C;
+    border-color: #35627A;
+    border-radius: 20px;
+    height: 23px;
+    line-height: 21px;
+    font-size: 12px;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding-right: 8px;
+}
+
+.show-edit-overlay .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    margin: 0px 4px 0px 4px;
+    width: 8px;
+    color: rgba(0,0,0,0) !important;
+    background: url(close_button_white.svg) no-repeat center left;
+}
+
+.show-edit-overlay .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:focus {
+    color: rgba(0,0,0,0) !important;
+    background: url(close_button_white.svg) no-repeat bottom 5px left;
+}
+
 
 /* pagination */
 .paginator .current-page {

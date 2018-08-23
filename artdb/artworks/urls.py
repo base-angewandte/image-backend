@@ -18,6 +18,7 @@ urlpatterns = [
     path('artist/<int:id>.html', artist_artworks, name='artist_artworks'),
 ]
 
+# artist-autocomplete/q=NAME returns json
 # TODO: do not expose autocomplete publicly without permission check
 
 #    path(r'^artist-autocomplete/', ArtistAutocomplete.as_view(),

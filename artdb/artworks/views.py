@@ -108,15 +108,13 @@ def collection(request, id=None):
 
 class ArtistAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
-        # Don't forget to filter out results depending on the visitor !
+        # TODO: Don't forget to filter out results depending on the visitor !
         # if not self.request.user.is_authenticated():
-            # return Artist.objects.none()
-
-        qs = Artist.objects.all()
-
+        # return Artist.objects.none()
+        print("autocomplete")
+        qs = Artist.objects.all().order_by('name')
         if self.q:
-            qs = qs.filter(name__icontains=self.q)
-
+            qs = qs.filter(name__icontains=self.q).order_by('name')
         return qs
 
 def artist_artworks(request, id=None):

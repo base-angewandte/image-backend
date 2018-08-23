@@ -13,7 +13,9 @@ class ArtworkForm(forms.ModelForm):
         model = Artwork
         exclude = ['id','createdAt','updatedAt']
         widgets = {
-            'artist': autocomplete.ModelSelect2(url='artist-autocomplete')
+            #'artists': autocomplete.ModelSelect2
+            'artists': autocomplete.ModelSelect2Multiple
+            (url='artist-autocomplete')
         }
         # labels = {
            # "imageOriginal": "Upload"
