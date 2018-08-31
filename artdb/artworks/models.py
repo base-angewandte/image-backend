@@ -6,30 +6,39 @@ from django.conf import settings
 import os
 
 class Artist(models.Model):
+    """
+    One Artist can be the maker of 0-n artworks.
+    """
     name = models.CharField(max_length=255, null=False)
     synonyms = models.CharField(max_length=255, null=False, blank=True)
-
-    def __str__(self):
-        return self.name
 
     class Meta:
         ordering = ['name']
 
+    def __str__(self):
+        return self.name
+
+
 def get_path_to_original_file(instance, filename):
+    """
+    The uploaded images of artworks are stored in a specifc directory structure
+    based on the pk of the artwork.
+    Example: artwork.pk==16320, filename=='example.jpg'
+    filename = 'artworks/imageOriginal/16000/16320/example.jpg'
+    """
     if instance.pk:
         dirA = (instance.pk // 1000) * 1000
         return 'artworks/imageOriginal/{0}/{1}/{2}'.format(dirA, instance.pk, filename)
     return filename
 
+
 class Artwork(models.Model):
-    # mandatory fields
+    """
+    Each Artwork has an image and metadata
+    """
+    # VersatileImageField allows to create resized versions of the
+    # image (renditions) on demand
     imageOriginal = VersatileImageField(max_length = 127, null=False, blank=True, upload_to=get_path_to_original_file)
-
-    # hidden fields
-    createdAt = models.DateTimeField(auto_now_add = True)
-    updatedAt = models.DateTimeField(auto_now = True, null=True)
-
-    # optional fields
     title = models.CharField(max_length=255, blank=True)
     artists = models.ManyToManyField(Artist, blank=True)
     date = models.CharField(max_length=255, blank=True)
@@ -41,16 +50,13 @@ class Artwork(models.Model):
     credits = models.TextField(blank=True)
     # TODO: tags
 
-    def delete_renditions(self):
-        print("deleting renditions")
-        storage = self.imageOriginal.storage
-        storage.delete(self.big)
-        self.big.cachefile_backend.set_state(self.big, 'does_not_exist')
-        storage.delete(self.thumbnail)
-        self.thumbnail.cachefile_backend.set_state(self.thumbnail, 'does_not_exist')
+    # hidden fields
+    createdAt = models.DateTimeField(auto_now_add = True)
+    updatedAt = models.DateTimeField(auto_now = True, null=True)
 
     def __str__(self):
         return self.title
+
 
 @receiver(models.signals.post_save, sender=Artwork)
 def move_uploaded_image(sender, instance, created, **kwargs):
@@ -71,10 +77,11 @@ def move_uploaded_image(sender, instance, created, **kwargs):
         imagefile.name=relative_path
         instance.save()
 
+
 @receiver(models.signals.post_delete, sender=Artwork)
 def delete_Artwork_images(sender, instance, **kwargs):
     """
-    Deletes Artwork originalImage and all renditions on post_delete.
+    Delete Artwork's originalImage and all renditions on post_delete.
     """
     instance.imageOriginal.delete_all_created_images()
     instance.imageOriginal.delete(save=False)
@@ -83,17 +90,11 @@ def delete_Artwork_images(sender, instance, **kwargs):
 @receiver(models.signals.pre_save, sender=Artwork)
 def delete_renditions_on_change(sender, update_fields, instance, **kwargs):
     """
-    When the image of an Artwork gets exchanged, the old 
-    renditions get deleted.
+    When the image of an Artwork gets exchanged, the old renditions get deleted.
     """
-    print("CHANGED")
     if instance._state.adding is False:
         oldArtwork = Artwork.objects.get(pk=instance.id)
         oldArtwork.imageOriginal.delete_all_created_images()
-        print("not created. instance is:")
-        print(instance)
-        print(instance.imageOriginal)
-        print(sender.imageOriginal)
 
 
 # Every users can create her own collections of artworks
