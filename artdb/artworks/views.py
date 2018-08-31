@@ -34,7 +34,7 @@ def details(request, id=None):
 # to be placed into the overlay via js
 def getArtworkContext(artwork):
     context = {}
-    context['big_url'] = artwork.big.url
+    context['artwork'] = artwork
     return context
 
 def artwork_detail_overlay(request, id=None):
@@ -69,17 +69,18 @@ def artwork_edit(request, id):
     if request.method == "POST":
         form = ArtworkForm(request.POST, request.FILES, instance=artwork)
         if form.is_valid():
-            artwork = form.save(commit=False)
+            updatedArtwork = form.save(commit=False)
             # TODO: artwork.user = request.user
-            artwork.updatedAt = datetime.now()
-            artwork.save()
+            updatedArtwork.updatedAt = datetime.now()
+            updatedArtwork.save()
             # TODO: redirectURL = "%i.json" % artwork.id
-            return redirect('/artwork', id=artwork.id)
+            # TODO: just close the popup?
+            return redirect('/', id=artwork.id)
     else:
         context = {}
         context['form'] = ArtworkForm(instance=artwork)
         context['id'] = artwork.id
-        context['big_url'] = artwork.big.url
+        context['imageOriginal'] = artwork.imageOriginal
         return render(request, 'artwork/artwork_edit.html', context)
 
 

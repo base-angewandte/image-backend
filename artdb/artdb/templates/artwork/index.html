@@ -37,7 +37,7 @@
                 {% if not artwork.imageOriginal %}
                     <div class="picture-thumbnail picture-thumbnail-missing"></div>
                 {% else %}
-                    <img class="picture-thumbnail" src="{{artwork.thumbnail.url}}"/>
+                    <img class="picture-thumbnail" src="{{artwork.imageOriginal.thumbnail.180x180}}"/>
                 {% endif %}
             </div>
             <div class="thumbnail-title">{{artwork.title}}</div>

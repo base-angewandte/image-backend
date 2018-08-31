@@ -13,7 +13,7 @@ $(document).ready(function() {
 {% endblock extra_scripts %}
 
 {% block artwork %}
-<img class="image-big" src="{{big_url}}"/>
+<img class="image-big" src="{{artwork.imageOriginal.thumbnail.930x768}}"/>
 
 <a href="./"><button name="close" id="hideoverlay">Close</button></a>
 {% endblock artwork %}

@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'artworks',
     
     'rest_framework',
-    'imagekit',
+    'versatileimagefield',
     'django_cleanup',
 ]
 
@@ -146,4 +146,21 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'artdb/static_dev'),)
 INTERNAL_IPS = ('127.0.0.1')
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': lambda r: False,  # disables it
+}
+
+# config of versatileimagefield
+VERSATILEIMAGEFIELD_SETTINGS = {
+    # The amount of time, in seconds, that references to created images
+    # should be stored in the cache. Defaults to `2592000` (30 days)
+    'cache_length': 2592000,
+    # The save quality of modified JPEG images. More info here:
+    # https://pillow.readthedocs.io/en/latest/handbook/image-file-formats.html#jpeg
+    'jpeg_resize_quality': 82,
+    # Whether or not to create new images on-the-fly. Set this to `False` for
+    # speedy performance but don't forget to 'pre-warm' to ensure they're
+    # created and available at the appropriate URL.
+    'create_images_on_demand': True,
+    # Whether to create progressive JPEGs. Read more about progressive JPEGs
+    # here: https://optimus.io/support/progressive-jpeg/
+    'progressive_jpeg': False
 }

@@ -423,7 +423,7 @@ input[type=file] {
 	z-index: -1;
 }
 
-label[for="id_original"] {
+label[for="id_imageOriginal"] {
     font-size: 25px;
     font-weight: 400;
     min-width: 220px;
@@ -440,7 +440,7 @@ label[for="id_original"] {
     border-radius: 8px;
 }
 
-label[for="id_original"]:focus + label[for="id_original"]:hover {
+label[for="id_imageOriginal"]:focus + label[for="id_imageOriginal"]:hover {
     background-color: red;
 }
 
