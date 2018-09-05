@@ -15,12 +15,10 @@ urlpatterns = [
         ArtistAutocomplete.as_view(),
         name='artist-autocomplete',
     ),
+        re_path(
+        r'^artwork-autocomplete/$',
+        ArtworkAutocomplete.as_view(),
+        name='artwork-autocomplete',
+    ),
     path('artist/<int:id>.html', artist_artworks, name='artist_artworks'),
 ]
-
-# artist-autocomplete/q=NAME returns json
-# TODO: do not expose autocomplete publicly without permission check
-
-#    path(r'^artist-autocomplete/', ArtistAutocomplete.as_view(),
-    #    name='artist-autocomplete'
-    #),

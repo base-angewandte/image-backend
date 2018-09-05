@@ -4,25 +4,21 @@
     <head>
         <title>artdb</title>
         <link type="text/css" rel="stylesheet" href="{% static 'css/base.css' %}">
+        {% block extra_scripts %}
+        {% endblock extra_scripts %}
         <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
         <script type="text/javascript" src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/artworks.js' %}"></script>
-        <!-- <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600" rel="stylesheet">-->
-
-        {% block extra_scripts %}
-        {% endblock extra_scripts %}
+        <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600" rel="stylesheet">
     </head>
     <body class="show-thumbnailbrowser">
         <div id="topbar">
-            <nav>
-                <ul>
-                    <li><a href="/artwork_new.html">upload</a></li>
-                </ul>
-            </nav>
         </div>
-        <div id="thumbnailbrowser">
-            {% block content %}
-            {% endblock content %}
+        <div id="thumbnailbrowser">               
+            {% block thumbnailbrowser %}
+            {% endblock thumbnailbrowser %}
         </div>
         <div id="detail-overlay">
                 {% block artwork %}

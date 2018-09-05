@@ -1,8 +1,21 @@
 {% extends 'base.html' %}
+
+{% block extra_scripts %}
+{{ form.media }}
+{% endblock extra_scripts %}
+
 {% load search_tags %}
 
-{% block content %}
-    {% if artworks %}
+{% block thumbnailbrowser %}
+
+<div id="searchbar">
+<form method="GET" action="">
+<input id="searchartworksfield" placeholder="Artworks" name="title" value="{{ request.GET.title }}" autocomplete="off" type="text"/>
+<input id="searchartworkssubmit" type="submit" value="Search"/>
+</form>
+</div>
+
+{% if artworks %}
     <h2>all {{title}}</h2>
     <div class="paginator">
         {{ artworks.has_previous }}
@@ -52,4 +65,38 @@
     {% else %}
     <p>no artworks there</p>
     {% endif %}
-{% endblock content %}
+
+
+<script>
+$(document).ready(function(){
+    $("#searchartworksfield").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+            url: "http://localhost:8000/artwork-autocomplete/",
+            dataType: "json",
+            data: {
+                q: request.term
+            },
+            success: function(data) {
+                response($.map(data.results, function (item) {
+                    return {
+                        label: item.text,
+                        value: item.id
+                    }
+                }));
+            }
+            });
+        },
+        select: function(event, ui) {
+            var item = ui.item;
+            if(item) {
+                $(this).val(item.value);
+                $(this.form).submit();
+            }
+        },
+        minLength: 3,
+        selectFirst: false
+    });
+});
+</script>
+{% endblock thumbnailbrowser %}

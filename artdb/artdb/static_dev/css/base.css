@@ -13,7 +13,7 @@
     --light-grey-3-color: #F4F4F4;  /* top-nav background*/
     --selected-field: #3686C2;
     --primary-button-color: #029290;
-    --topbar-height: 50px;
+    --topbar-height: 55px;
     --sidebar-width: 232px;
     --edit-overlay-formwidth: 448px;
 }
@@ -76,7 +76,7 @@ body.show-edit-overlay #sidebar {
     width: 100vw;
     background-color: var(--light-bg-color);
     border-right: solid var(--sidebar-width) var(--dark-grey-1-color);
-    padding: var(--topbar-height) 0 0 0;
+    padding: calc(var(--topbar-height) + 15px) 0 0 0;
 }
 
 
@@ -105,10 +105,9 @@ body.show-edit-overlay #sidebar {
     top: 0;
     width: 100%;
     height: var(--topbar-height);
-    background-color: var(--light-grey-3-color);
+    background-color: #F0F0F0;
     color: #000;
     padding: 0 18px 0 18px;
-    box-shadow: 0px 2px 2px 0px rgba(40,40,40,0.5);
 }
 
 #topbar nav {
@@ -558,4 +557,20 @@ label[for="id_imageOriginal"]:focus + label[for="id_imageOriginal"]:hover {
 /* pagination */
 .paginator .current-page {
     font-weight: 700;
+}
+
+
+/* searchbar */
+#searchbar {
+    width: 100%;
+    margin: 0 auto 0 auto;
+}
+
+#searchbar form {
+    width: 300px;
+    margin: 0 auto 0 auto;
+}
+
+#searchbar form input {
+    height: 32px;
 }
