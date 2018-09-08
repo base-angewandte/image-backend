@@ -58,7 +58,7 @@ class Artwork(models.Model):
         return self.title
 
 
-#@receiver(models.signals.post_save, sender=Artwork)
+@receiver(models.signals.post_save, sender=Artwork)
 def move_uploaded_image(sender, instance, created, **kwargs):
     """
     Move the uploaded image after an Artwork instance has been created.  
@@ -101,7 +101,8 @@ def delete_renditions_on_change(sender, update_fields, instance, **kwargs):
 class ArtworkCollection(models.Model):
     title = models.CharField(max_length=255)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    artworks = models.ManyToManyField(Artwork, through='ArtworkCollectionMembership')
+    artworks = models.ManyToManyField(Artwork, blank=True)
+    #artworks = models.ManyToManyField(Artwork, through='ArtworkCollectionMembership')
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
 
@@ -109,9 +110,9 @@ class ArtworkCollection(models.Model):
         return '{0} by {1}'.format(self.title, self.user.get_username())
 
 
-class ArtworkCollectionMembership(models.Model):
-    artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE)
+""" class ArtworkCollectionMembership(models.Model):
+    artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE, default=127)
     collection = models.ForeignKey(ArtworkCollection, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.artwork.title + " is part of " + self.collection.title
+        return self.artwork.title + " is part of " + self.collection.title  """

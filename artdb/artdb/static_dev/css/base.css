@@ -233,6 +233,7 @@ body.show-edit-overlay #sidebar {
     display: inline-block;
     width: 200px;
     height: 38px;
+    margin: 0px 0px 6px 0px;
     border: 0;
     background-color: var(--mid-grey-2-color);
     color: #fff;
@@ -564,13 +565,40 @@ label[for="id_imageOriginal"]:focus + label[for="id_imageOriginal"]:hover {
 #searchbar {
     width: 100%;
     margin: 0 auto 0 auto;
+    height: 34px;
+    background: red;
 }
 
 #searchbar form {
+    display: inline-block;
     width: 300px;
+    height: 34px;
     margin: 0 auto 0 auto;
 }
 
 #searchbar form input {
     height: 32px;
+}
+
+#search_artworks_field {
+    border: 1px solid black;
+    padding: 0px 28px 0px 4px;
+}
+
+#clear_search_artwork_field {
+    display: inline-block;
+    height: 32px;
+    line-height: 32px;
+    width: 18px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background-color: pink;
+    top: 0;
+    outline-offset: 0px;
+}
+#search_artworks_submit {
+    border: 0;
+    margin: 0;
+    padding: 0;
 }

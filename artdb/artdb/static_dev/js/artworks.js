@@ -11,9 +11,10 @@ $(document).ready(function() {
 
     // load artwork data (JSON) and show it in the inspector
     updateInspector = function(artworkId) {
-        $.getJSON('artwork/'+artworkId+'.json', function( data) {
+        $.getJSON('/artwork/'+artworkId+'.json', function( data) {
             var items = [];
-            items.push('<button name="edit" id="editartwork" class="inspector-button")>Edit</button>');
+            items.push('<button name="add" id="add_to_collection" class="inspector-button")>Merken</button>');
+            items.push('<button name="edit" id="edit_artwork" class="inspector-button")>Edit</button>');
             items.push('<dl class="artwork-details">');
             // TODO: do not use html here
             // for security reasons we construct it
@@ -31,9 +32,11 @@ $(document).ready(function() {
             });
             items.push('</dl>');
             $('#inspector').html(items.join(''));
-            $('#editartwork').on('click', function (e) {
+            $('#edit_artwork').on('click', function (e) {
                 showEditOverlay(artworkId);
-                // window.location.href = url;
+            });
+            $('#add_to_collection').on('click', function (e) {
+                showEditOverlay(artworkId);
             });
         });
     }
@@ -62,7 +65,7 @@ $(document).ready(function() {
     function showDetailOverlay(artworkId) {
         const body = $('body');
         const shownClass = 'shown';
-        const url = 'artwork/' + artworkId + '_detail_overlay.html';
+        const url = '/artwork/' + artworkId + '_detail_overlay.html';
         thumnailbrowserScrollPosition = $(window).scrollTop();
         body.addClass('show-detail-overlay');
         $('.image-big').removeClass(shownClass);
@@ -85,7 +88,8 @@ $(document).ready(function() {
     function showEditOverlay(artworkId) {
         const body = $('body');
         const shownClass = 'shown';
-        const url = 'artwork/edit/' + artworkId + '.html';
+        const url = '/artwork/edit/' + artworkId + '.html';
+        console.log(artworkId);
         bLastStateThumbnailbrowser = $('body').hasClass("show-thumbnailbrowser");
         body.addClass('show-edit-overlay');
         body.removeClass('show-detail-overlay');

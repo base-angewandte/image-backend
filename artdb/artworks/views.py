@@ -107,6 +107,7 @@ def artwork_delete(request, id):
         artwork.delete()
         return redirect('/artwork', id=artwork.id)
     else:
+        # TODO ???
         context = {}
         context['id'] = artwork.id
         return render(request, 'artwork/artwork_delete.html', context)
@@ -120,8 +121,21 @@ def collection(request, id=None):
     context['created_by_username'] = artworkCollection.user.get_username()
     context['created_by_fullname'] = artworkCollection.user.get_full_name()
     # TODO: figure out/use .order_by of the m2m manager
+    print(context)
     context['artworks'] = artworkCollection.artworks.all()
     return render(request, 'artwork/collection.html', context)
+
+def collection_remove_artwork(request, collection_id, artwork_id):
+    print(collection_id)
+    print(artwork_id)
+    print(request)
+    collection = get_object_or_404(ArtworkCollection, id=collection_id)
+    artwork = get_object_or_404(Artwork, id=artwork_id)
+    print(artwork)
+    collection.artworks.remove(artwork)
+    # TODO: redirect
+    return redirect('/collection/1', id=collection_id)
+
 
 
 class ArtistAutocomplete(autocomplete.Select2QuerySetView):
@@ -142,7 +156,7 @@ class ArtworkAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = Artwork.objects.all()
         if self.q:
-            qs = qs.filter(title__icontains=self.q)
+            qs = qs.filter(title__icontains=self.q).order_by('title')
             # order results by startswith match
             # see: https://stackoverflow.com/questions/11622501
             expression = Q(title__startswith=self.q)

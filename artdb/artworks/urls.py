@@ -10,6 +10,7 @@ urlpatterns = [
     path('artwork/edit/<int:id>.html', artwork_edit, name='artwork_edit'),
     path('artwork/delete/<int:id>.html', artwork_delete, name='artwork_delete'),
     path('collection/<int:id>', collection, name='artwork_collection'),
+    path('collection/<int:collection_id>/remove/<int:artwork_id>', collection_remove_artwork, name='artwork_collection'),
     re_path(
         r'^artist-autocomplete/$',
         ArtistAutocomplete.as_view(),

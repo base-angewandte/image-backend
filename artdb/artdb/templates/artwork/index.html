@@ -10,9 +10,7 @@
 
 <div id="searchbar">
 <form method="GET" action="">
-<input id="searchartworksfield" placeholder="Artworks" name="title" value="{{ request.GET.title }}" autocomplete="off" type="text"/>
-<input id="searchartworkssubmit" type="submit" value="Search"/>
-</form>
+<input id="search_artworks_field" placeholder="Artworks" name="title" value="{{ request.GET.title }}" autocomplete="off" type="search" role="title search"/><span id="clear_search_artwork_field">a</span><input id="search_artworks_submit" type="submit" value="Search"/></form>
 </div>
 
 {% if artworks %}
@@ -69,7 +67,7 @@
 
 <script>
 $(document).ready(function(){
-    $("#searchartworksfield").autocomplete({
+    $("#search_artworks_field").autocomplete({
         source: function(request, response) {
             $.ajax({
             url: "http://localhost:8000/artwork-autocomplete/",

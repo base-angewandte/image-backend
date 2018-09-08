@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block thumbnailbrowser %}
+    <h2>all {{title}}</h2>
+    {% if artworks %}
+        <ul>
+            {% for artwork in artworks %}
+                <li>{{artwork.title}}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>this collection is empty</p>
+    {% endif %}
+{% endblock thumbnailbrowser %}
