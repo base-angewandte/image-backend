@@ -39,7 +39,7 @@ def index(request):
         artworks = paginator.page(paginator_num_pages)
     context['title'] = 'artworks'
     context['artworks'] = artworks
-    return render(request, 'artwork/index.html', context)
+    return render(request, 'artwork/thumbnailbrowser.html', context)
 
 # return the artwork details in json format
 def details(request, id=None):
@@ -98,7 +98,7 @@ def artwork_edit(request, id):
         context['form'] = ArtworkForm(instance=artwork)
         context['id'] = artwork.id
         context['imageOriginal'] = artwork.imageOriginal
-        return render(request, 'artwork/artwork_edit.html', context)
+        return render(request, 'artwork/artwork_edit_overlay.html', context)
 
 
 def artwork_delete(request, id):
@@ -112,6 +112,18 @@ def artwork_delete(request, id):
         context['id'] = artwork.id
         return render(request, 'artwork/artwork_delete.html', context)
 
+def artwork_collect(request, id):
+    # if request.user.is_authenticated():
+        # Do something for authenticated users.
+        # collections = request.user.collections.get(user = userID).order_by('name')
+        # userID = request.user.id
+    #else:
+        # Do something for anonymous users.
+    context = { }
+    qs = ArtworkCollection.objects.all()
+    collections = qs.filter(user__id=1).order_by('title')
+    context['collections'] = collections
+    return render(request, 'artwork/artwork_collect_overlay.html', context)
 
 def collection(request, id=None):
     artworkCollection = get_object_or_404(ArtworkCollection, id=id)
@@ -135,8 +147,6 @@ def collection_remove_artwork(request, collection_id, artwork_id):
     collection.artworks.remove(artwork)
     # TODO: redirect
     return redirect('/collection/1', id=collection_id)
-
-
 
 class ArtistAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):

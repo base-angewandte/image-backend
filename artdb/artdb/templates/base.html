@@ -12,6 +12,8 @@
         <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
         <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600" rel="stylesheet">
+        <link type="text/css" rel="stylesheet" href="{% static 'css/autocomplete.css' %}">
+        {{ form.media }}
     </head>
     <body class="show-thumbnailbrowser">
         <div id="topbar">
@@ -20,15 +22,11 @@
             {% block thumbnailbrowser %}
             {% endblock thumbnailbrowser %}
         </div>
-        <div id="detail-overlay">
-                {% block artwork %}
-                {% endblock artwork %}
-            </div>
-        <div id="sidebar">
-            <aside id="inspector">
-            </aside>
+        <div id="detail-overlay" class="overlay">
         </div>
-        <div id="edit-overlay">
+        <div id="edit-overlay" class="overlay">
+        </div>
+        <div id="collect-overlay" class="overlay">
         </div>
     </body>
 </html>
