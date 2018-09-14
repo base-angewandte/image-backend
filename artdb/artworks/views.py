@@ -155,7 +155,10 @@ class ArtistAutocomplete(autocomplete.Select2QuerySetView):
         # return Artist.objects.none()
         qs = Artist.objects.all().order_by('name')
         if self.q:
+            print(self.q)
             qs = qs.filter(name__icontains=self.q)
+        else:
+            print("autocomplete problem")
         return qs
 
 class ArtworkAutocomplete(autocomplete.Select2QuerySetView):
@@ -173,6 +176,8 @@ class ArtworkAutocomplete(autocomplete.Select2QuerySetView):
             is_match = ExpressionWrapper(expression, output_field=BooleanField())
             qs = qs.annotate(myfield=is_match)
             qs = qs.order_by('-myfield')[:4]
+        else:
+            print("autocomplete problem")
         return qs
     def get_result_value(self, result):
         """Return the value of a result."""

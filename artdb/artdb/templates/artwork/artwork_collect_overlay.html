@@ -1,0 +1,22 @@
+<div class="content">
+    <div class="center">
+Artwork is in the following collections:
+
+{% if collections %}
+    <ul>
+        {% for collection in collections %}
+            <li>{{collection.title}}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>no collections</p>
+{% endif %}
+
+        <button name="close" class="button-close"  onClick="hideOverlay()"></button>
+    </div>
+</div>
+    
+<div class="sidebar-attached">
+    <aside class="inspector detail-inspector">
+    </aside>
+</div>

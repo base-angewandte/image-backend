@@ -6,14 +6,23 @@
         <link type="text/css" rel="stylesheet" href="{% static 'css/base.css' %}">
         {% block extra_scripts %}
         {% endblock extra_scripts %}
-        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
         <script type="text/javascript" src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/artworks.js' %}"></script>
         <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
         <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600" rel="stylesheet">
+
+        <!-- django-autocomplete-light css+js, manually inserted -->
+        <link type="text/css" rel="stylesheet" href="{% static 'admin/css/vendor/select2/select2.css' %}">
+        <link type="text/css" rel="stylesheet" href="{% static 'admin/css/autocomplete.css' %}">
+        <link type="text/css" rel="stylesheet" href="{% static 'autocomplete_light/select2.css' %}">
+        <script type="text/javascript" src="{% static 'admin/js/vendor/select2/select2.full.js' %}"></script>
+        <script type="text/javascript" src="{% static 'admin/js/autocomplete.js' %}"></script>
+        <script type="text/javascript" src="{% static 'autocomplete_light/forward.js' %"></script>
+        <script type="text/javascript" src="{% static 'autocomplete_light/select2.js' %"></script>
+        <!-- django-autocomplete-light adjustments -->
         <link type="text/css" rel="stylesheet" href="{% static 'css/autocomplete.css' %}">
-        {{ form.media }}
+
     </head>
     <body class="show-thumbnailbrowser">
         <div id="topbar">
