@@ -138,5 +138,6 @@ $(document).ready(function() {
     hideOverlay = function() {
         document.body.className = thumbnailClassName;
         $(window).scrollTop(thumnailbrowserScrollPosition);
-    };  
+    };
+
 });

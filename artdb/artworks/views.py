@@ -119,19 +119,33 @@ def artwork_collect(request, id):
         # userID = request.user.id
     #else:
         # Do something for anonymous users.
-    context = { }
-    qs = ArtworkCollection.objects.all()
-    collections = qs.filter(user__id=1).order_by('title')
-    context['collections'] = collections
-    return render(request, 'artwork/artwork_collect_overlay.html', context)
+    if request.method == 'GET':
+        artwork = get_object_or_404(Artwork, id=id)
+        context = { }
+        qs = ArtworkCollection.objects.all()
+        collections = qs.filter(user__id=1).order_by('title')
+        context['collections'] = collections
+        context['artwork'] = artwork
+        return render(request, 'artwork/artwork_collect_overlay.html', context)
+    if request.method == 'POST':
+        artwork = get_object_or_404(Artwork, id=request.POST['artwork-id'])
+        collection = get_object_or_404(ArtworkCollection, id=request.POST['collection-id'])
+        if (request.POST['action'] == 'add'):
+            collection.artworks.add(artwork)
+            return JsonResponse({'action': 'added'})
+        if (request.POST['action'] == 'remove'):
+            collection.artworks.remove(artwork)
+            return JsonResponse({'action': 'removed'})
+        return JsonResponse({'action': 'none'})
 
-def collection(request, id=None):
+def collection_list(request, id=None):
     artworkCollection = get_object_or_404(ArtworkCollection, id=id)
     context = {}
     context['title']  = artworkCollection.title
     context['created_by_id'] = artworkCollection.user.id
     context['created_by_username'] = artworkCollection.user.get_username()
     context['created_by_fullname'] = artworkCollection.user.get_full_name()
+    context['artworks'] = artworkCollection.artworks
     # TODO: figure out/use .order_by of the m2m manager
     print(context)
     context['artworks'] = artworkCollection.artworks.all()
