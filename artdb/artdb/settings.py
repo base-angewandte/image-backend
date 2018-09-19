@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import requests # for angewandte base settings (see below)
 from settings_secret import *
 
 
@@ -149,6 +150,7 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 # config of versatileimagefield
+# used to edit artworks
 VERSATILEIMAGEFIELD_SETTINGS = {
     # The amount of time, in seconds, that references to created images
     # should be stored in the cache. Defaults to `2592000` (30 days)
@@ -164,3 +166,10 @@ VERSATILEIMAGEFIELD_SETTINGS = {
     # here: https://optimus.io/support/progressive-jpeg/
     'progressive_jpeg': False
 }
+
+# angewandte base settings
+# used by the index view
+SITE_URL = 'https://***REMOVED***/'
+BASE_HEADER_JSON = '{}bs/base-header.json'.format(SITE_URL)
+BASE_HEADER = '{}{}'.format(SITE_URL, requests.get(BASE_HEADER_JSON).json()['latest'])
+print(BASE_HEADER)

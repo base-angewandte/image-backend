@@ -4,13 +4,15 @@
     <head>
         <title>artdb</title>
         <link type="text/css" rel="stylesheet" href="{% static 'css/base.css' %}">
+        <link type="text/css" rel="stylesheet" href="{% static 'css/fonts.css' %}">
         {% block extra_scripts %}
         {% endblock extra_scripts %}
         <script type="text/javascript" src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/artworks.js' %}"></script>
         <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
-        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600" rel="stylesheet">
+        <!-- <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600" rel="stylesheet">-->
+
 
         <!-- django-autocomplete-light css+js, manually inserted -->
         <link type="text/css" rel="stylesheet" href="{% static 'admin/css/vendor/select2/select2.css' %}">
@@ -28,9 +30,13 @@
         <!-- django-autocomplete-light adjustments -->
         <link type="text/css" rel="stylesheet" href="{% static 'css/autocomplete.css' %}">
 
+        <!-- angewandte base main navigation -->
+        <script type="text/javascript" src="{{ BASE_HEADER }}"></script>
+
     </head>
     <body class="show-thumbnailbrowser">
         <div id="topbar">
+                <base-header lang="{{ LANGUAGE_CODE }}" post-lang="true" post-csrf="{{ csrf_token }}"></base-header>
         </div>
         <div id="thumbnailbrowser">               
             {% block thumbnailbrowser %}
@@ -44,3 +50,11 @@
         </div>
     </body>
 </html>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    var b=document.getElementsByTagName('base-header')[0];
+    b.profile={% if user.is_authenticated %} {name:'{{ user.get_full_name }}', permissions: null}{% endif %};
+    b.urls={login:'/',logout:'/',postUrl:'/'};
+});
+</script>

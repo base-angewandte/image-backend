@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import Q, ExpressionWrapper, BooleanField
+from django.conf import settings
 from datetime import datetime
 from artworks.models import *
 from artworks.forms import *
@@ -29,7 +30,7 @@ def index(request):
         #  Q(title__icontains=query) |
         
         # = Artwork.objects.filter(Q(title_icontains=query, artists__id=str(query)).order_by('title'))
-    paginator = Paginator(queryset_list, 3)
+    paginator = Paginator(queryset_list, 20)
     page = request.GET.get('page')
     try:
         artworks = paginator.get_page(page)
@@ -37,6 +38,7 @@ def index(request):
         artworks = paginator.page(1)
     except EmptyPage:
         artworks = paginator.page(paginator_num_pages)
+    context['BASE_HEADER'] = settings.BASE_HEADER
     context['title'] = 'artworks'
     context['artworks'] = artworks
     return render(request, 'artwork/thumbnailbrowser.html', context)
@@ -142,6 +144,19 @@ def collection_list(request, id=None):
     artworkCollection = get_object_or_404(ArtworkCollection, id=id)
     context = {}
     context['title']  = artworkCollection.title
+    context['created_by_id'] = artworkCollection.user.id
+    context['created_by_username'] = artworkCollection.user.get_username()
+    context['created_by_fullname'] = artworkCollection.user.get_full_name()
+    context['artworks'] = artworkCollection.artworks
+    # TODO: figure out/use .order_by of the m2m manager
+    print(context)
+    context['artworks'] = artworkCollection.artworks.all()
+    return render(request, 'artwork/collection.html', context)
+
+def collections_list(request, id=None):
+    artworkCollection = get_object_or_404(ArtworkCollection, id=id)
+    context = {}
+    context['title'] = artworkCollection.title
     context['created_by_id'] = artworkCollection.user.id
     context['created_by_username'] = artworkCollection.user.get_username()
     context['created_by_fullname'] = artworkCollection.user.get_full_name()

@@ -12,9 +12,10 @@
     --light-grey-2-color: #CCC;
     --light-grey-3-color: #F4F4F4;  /* top-nav background*/
     --selected-field: #3686C2;
+    --base-color: #9C27B0;
     --primary-button-color: #029290;
     --remove-button-color: #029290;
-    --topbar-height: 55px;
+    --topbar-height: 87px;
     --sidebar-width: 232px;
     --edit-overlay-formwidth: 448px;
 }
@@ -36,7 +37,7 @@ body {
     display: none !important;
 }
 
-/* fonts  */
+/* basics  */
 body {
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 14px;
@@ -59,6 +60,7 @@ h2 {
     background-color: #F0F0F0;
     color: #000;
     padding: 0 18px 0 18px;
+    box-shadow: 0px 2px 2px 0px rgba(71,71,71,0.12);
 }
 
 #topbar-placeholder {
@@ -102,7 +104,7 @@ and a close button */
 .overlay .button-close {
     display: block;
     position: fixed;
-    top: 68px;
+    top: calc(var(--topbar-height) + 18px);
     right: calc(var(--sidebar-width) + 18px);
     background: url(close_button.svg) no-repeat top left;
     background-size: contain;
@@ -124,7 +126,7 @@ and a close button */
     top: 0;
     display: table-cell;
     width: var(--sidebar-width);
-    height: calc(100vh - var(--topbar-height));
+    height: 100vh;
     margin-left: calc(100% - var(--sidebar-width));
     background-color: var(--dark-grey-1-color);
     padding: var(--topbar-height) 16px 16px 16px;
@@ -162,7 +164,7 @@ and a close button */
     width: 100%;
     background-color: var(--light-bg-color);
     border-right: solid var(--sidebar-width) var(--dark-grey-1-color);
-    padding: calc(var(--topbar-height) + 15px) 0 0 0;
+    padding: var(--topbar-height) 0 0 0;
 }
 
 /* detail-overlay */
@@ -282,7 +284,7 @@ and a close button */
 .thumbnail-title {
     text-align: center;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 400;
     margin: 0 0 4px 0;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -292,50 +294,102 @@ and a close button */
 .thumbnail-artist {
     text-align: center;
     font-size: 12px;
+    font-weight: 200;
     color: var(--dark-grey-3-color);
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
 }
 
-/* pagination */
-.paginator .current-page {
-    font-weight: 700;
+/* thumbnailbrowser navbar */
+.thumbnail-navbar {
+    width: 100%;
+    background-color: #F6F6F6;
+    /*border-bottom: 1px solid #F0F0F0;*/
+    padding: 18px;
+}
+
+.thumbnail-area .navigation {
+    display: inline-block;
+    box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
+}
+
+.thumbnail-area .navigation li {
+    display: inline-block;
+    height: 48px;
+    min-width: 130px;
+    padding: 16px;
+    background-color:#fff;
+    font-weight: 400;
+    font-size: 14px;
+    text-align: center;
+    margin-right: 2px;
+}
+
+.thumbnail-area .navigation li.selected {
+    border-bottom: 2px solid var(--base-color);
+}
+
+.thumbnail-area .navigation li a {
+    text-decoration: none;
+    color: #000;
+}
+
+.thumbnail-area .navigation li a:visited {
+    color: #000;
+}
+
+.thumbnail-area .navigation li a:hover,
+.thumbnail-area .navigation li a:focus,
+.thumbnail-area .navigation li a:active
+{
+    color: var(--base-color);
 }
 
 /* searchbar */
-#searchbar {
-    /* width: 100%; */
+#search {
+    display: block;
+    float: right;
     margin: 0 auto 0 auto;
-    height: 34px;
-    background: red;
+    height: 48px;
+    background:#fff;
+    box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
 }
 
-#searchbar form {
+#search form {
     display: inline-block;
-    width: 300px;
+    width: 480px;
     height: 34px;
     margin: 0 auto 0 auto;
 }
 
-#searchbar form input {
-    height: 32px;
+#search form input {
+    height: 48px;
+    line-height: 48px;
+    font-size: 14pt;
+    font-weight: 200px;
+    background: url(icons-basiswien-01.516de83.svg) 0 no-repeat;
+    background-size: 20px;
 }
 
 #search_artworks_field {
-    border: 1px solid black;
-    padding: 0px 28px 0px 4px;
+    margin: 0 0 0 18px;
+    padding: 0px 18px 0px 36px;
+    border: 0;
 }
 
 #clear_search_artwork_field {
-    display: inline-block;
-    height: 32px;
-    line-height: 32px;
+    display: block;
+    float: right;
+    height: 48px;
     width: 18px;
-    margin: 0;
+    line-height: 48px;
+    margin: 0 16px 0 0;
     padding: 0;
     border: 0;
-    background-color: pink;
+    background: url(close_button.svg) 0 no-repeat;
+    background-size: 14px;
+    background-position: center;
     top: 0;
     outline-offset: 0px;
 }
@@ -343,6 +397,11 @@ and a close button */
     border: 0;
     margin: 0;
     padding: 0;
+}
+
+/* pagination */
+.paginator .current-page {
+    font-weight: 700;
 }
 
 /* collections */
@@ -409,4 +468,12 @@ and a close button */
 
 #collect-overlay td.remove button.addToCollection {
     display: none;
+}
+
+.navwrapper.fixed {
+    top: 16px !important;
+}
+
+.navwrapper {
+    position: fixed !important;
 }

@@ -8,17 +8,23 @@
 
 {% block thumbnailbrowser %}
 
-<div class="thumbnail-area">
-    {% if artworks %}
+<section class="thumbnail-area">
 
-    <h2>all {{title}}</h2>
+    <div class="thumbnail-navbar">
+        <nav class="navigation">
+            <ol>
+                <li class="selected"><a href="index.html">All Artworks</a></li><li><a href="collections.html">Collections</a></li>
+            </ol>
+        </nav>
 
-    <div id="searchbar">
-        <form method="GET" action="">
-            <input id="search_artworks_field" placeholder="Artworks" name="title" value="{{ request.GET.title }}" autocomplete="off" type="search" role="title search"/><span id="clear_search_artwork_field">a</span><input id="search_artworks_submit" type="submit" value="Search"/>
-        </form>
+        <div id="search">
+            <form method="GET" action="">
+                <input id="search_artworks_field" placeholder="Search Artworks" name="title" value="{{ request.GET.title }}" autocomplete="off" type="search" role="title search" autofocus/><span id="clear_search_artwork_field"></span><!--<input id="search_artworks_submit" type="submit" value="Search"/>-->
+            </form>
+        </div>
     </div>
 
+    {% if artworks %}
     <div class="paginator">
         {{ artworks.has_previous }}
         {{ artworks.number }}
@@ -68,13 +74,13 @@
     {% else %}
     <p>no artworks there</p>
     {% endif %}
-</div>
-test
-<div class="sidebar-detached">
+</section>
+
+<section class="sidebar-detached fixed">
     <aside class="inspector" id="thumbnailbrowser-inspector">
         test
     </aside>
-</div>
+</section>
 
 <script>
 $(document).ready(function(){

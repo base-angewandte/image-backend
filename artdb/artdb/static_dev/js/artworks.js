@@ -13,6 +13,19 @@ $(document).ready(function() {
     const collectionsClassName = 'show-collections-overlay';
     const collectClassName = 'show-collect-overlay';
 
+    // scroll listener
+    window.addEventListener('scroll', handleScroll);
+
+    function handleScroll() {
+        thumnailbrowserScrollPosition = $(window).scrollTop();
+        console.log(thumnailbrowserScrollPosition);
+        if (thumnailbrowserScrollPosition >= 16) {
+            $('.sidebar-detached').addClass('fixed');
+        } else {
+            $('.sidebar-detached').removeClass('fixed');      
+        }
+    }
+
     // load artwork data (JSON) and show it in the inspector
     updateInspector = function(elInspector, artworkId) {
         console.log("updating");
@@ -139,5 +152,4 @@ $(document).ready(function() {
         document.body.className = thumbnailClassName;
         $(window).scrollTop(thumnailbrowserScrollPosition);
     };
-
 });
