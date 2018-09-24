@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
-from django.core.paginator import Paginator
+from django.core.paginator import *
 from django.db.models import Q, ExpressionWrapper, BooleanField
 from django.conf import settings
 from datetime import datetime
@@ -16,7 +16,6 @@ def index(request):
     queryset_list = []
 
     #context['form'] = SearchArtworkTitleForm(request.POST)
-
     if not query:
         # per default, the artworks are shown that were modified most recently
         queryset_list = Artwork.objects.all().order_by('title').order_by('-updatedAt')
@@ -30,17 +29,26 @@ def index(request):
         #  Q(title__icontains=query) |
         
         # = Artwork.objects.filter(Q(title_icontains=query, artists__id=str(query)).order_by('title'))
-    paginator = Paginator(queryset_list, 20)
-    page = request.GET.get('page')
+
+    paginator = Paginator(queryset_list, 20) # show 20 artworks per page
+    pageNr = request.GET.get('page')
     try:
-        artworks = paginator.get_page(page)
+        artworks = paginator.get_page(pageNr)
     except PageNotInteger:
         artworks = paginator.page(1)
     except EmptyPage:
-        artworks = paginator.page(paginator_num_pages)
+        artworks = paginator.page(paginator.num_pages)
+
+    # see: https://stackoverflow.com/questions/30864011/display-only-some-of-the-page-numbers-by-django-pagination
+    #index = artworks.number + 1 # current page
+    #max_index = len(paginator.page_range) + 1 # last page
+    #start_index = index - 5 if index >= 5 else 1
+    #end_index = index + 5 if index <= max_index - 5 else max_index
+    # pagination_range = range(start_index, end_index)
     context['BASE_HEADER'] = settings.BASE_HEADER
     context['title'] = 'artworks'
     context['artworks'] = artworks
+    # context['pagination_range'] = pagination_range
     return render(request, 'artwork/thumbnailbrowser.html', context)
 
 # return the artwork details in json format
@@ -154,17 +162,10 @@ def collection_list(request, id=None):
     return render(request, 'artwork/collection.html', context)
 
 def collections_list(request, id=None):
-    artworkCollection = get_object_or_404(ArtworkCollection, id=id)
     context = {}
-    context['title'] = artworkCollection.title
-    context['created_by_id'] = artworkCollection.user.id
-    context['created_by_username'] = artworkCollection.user.get_username()
-    context['created_by_fullname'] = artworkCollection.user.get_full_name()
-    context['artworks'] = artworkCollection.artworks
-    # TODO: figure out/use .order_by of the m2m manager
-    print(context)
-    context['artworks'] = artworkCollection.artworks.all()
-    return render(request, 'artwork/collection.html', context)
+    context['BASE_HEADER'] = settings.BASE_HEADER
+    context['collections'] = ArtworkCollection.objects.all()
+    return render(request, 'artwork/collections_list.html', context)
 
 def collection_remove_artwork(request, collection_id, artwork_id):
     print(collection_id)

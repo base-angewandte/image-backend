@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block collectionslist %}
+<section class="thumbnail-area">
+
+    <div class="thumbnail-navbar">
+        <nav class="navigation">
+            <ol>
+                <li><a href="/">All Artworks</a></li><li class="selected"><a href="collections.html">Collections</a></li>
+            </ol>
+        </nav>
+    </div>
+
+    {% if collections %}
+        <ul>
+            {% for collection in collections %}
+                <li>{{collection.title}}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>there are no collections yet</p>
+    {% endif %}
+</section>
+{% endblock collectionslist %}

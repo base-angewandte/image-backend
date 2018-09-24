@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
+{% load proper_paginate %}
+{% load url_replace %}
 
 {% block extra_scripts %}
 {{ form.media }}
 {% endblock extra_scripts %}
-
-{% load search_tags %}
 
 {% block thumbnailbrowser %}
 
@@ -33,24 +33,38 @@
         {{ artworks.paginator.page_range }}
         {{ artworks.has_next }}
 
-        {% if artworks.has_previous %}
-            <a href="?{% url_replace request 'page' 'page=1' %}"><<</a>
-            <a href="?{% url_replace request 'page' artworks.previous_page_number %}"><</a>
-        {% endif %}
 
-        {% for num in artworks.paginator.page_range %}
-            {% if artworks.number == num %}
-                <span class="current-page">{{num}}</span>
-            {% elif num > artworks.number|add:'-3' and num < artworks.number|add:'3' %}
-                <a href="?{% url_replace request 'page' num %}">{{num}}</a>
+        {% if artworks.has_other_pages %}
+        <ul class="pagination">
+            {% if artworks.number == 1 %}
+                <li class="disabled"><span>⇤</span></li>
+            {% else %}
+                <li><a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a></li>
             {% endif %}
-        {% endfor %}
-
-        {% if artworks.has_next %}
-        <a href="?{% url_replace request 'page' artworks.next_page_number %}">></a>
-            <a href="?{% url_replace request 'page' artworks.paginator.num_pages %}">>></a>
+            {% if artworks.has_previous %}
+                <li><a class="page-link" href="?{% url_replace request 'page' artworks.previous_page_number %}">&laquo;</a></li>
+            {% else %}
+                <li class="disabled"><span>&laquo;</span></li>
+            {% endif %}
+            {% for page in artworks.paginator|proper_paginate:artworks.number %}
+                {% if artworks.number == page %}
+                    <li class="active"><span>{{ page }} <span class="sr-only">(current)</span></span></li>
+                {% else %}
+                    <li><a class="page-link" href="?{% url_replace request 'page' page %}">{{ page }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if artworks.has_next %}
+                <li><a href="?{% url_replace request 'page' artworks.next_page_number %}">&raquo;</a></li>
+            {% else %}
+                <li class="disabled"><span>&raquo;</span></li>
+            {% endif %}
+            {% if artworks.number == artworks.paginator.num_pages %}
+                <li class="disabled"><span>⇥</span></li>
+            {% else %}
+                <li><a href="?{% url_replace request 'page' artworks.paginator.num_pages %}">⇥</a></li>
+            {% endif %}
+        </ul>
         {% endif %}
-    </div>
 
     <div id="thumbnails">
         {% for artwork in artworks %}
@@ -82,36 +96,4 @@
     </aside>
 </section>
 
-<script>
-$(document).ready(function(){
-    $("#search_artworks_field").autocomplete({
-        source: function(request, response) {
-            $.ajax({
-            url: "http://localhost:8000/artwork-autocomplete/",
-            dataType: "json",
-            data: {
-                q: request.term
-            },
-            success: function(data) {
-                response($.map(data.results, function (item) {
-                    return {
-                        label: item.text,
-                        value: item.id
-                    }
-                }));
-            }
-            });
-        },
-        select: function(event, ui) {
-            var item = ui.item;
-            if(item) {
-                $(this).val(item.value);
-                $(this.form).submit();
-            }
-        },
-        minLength: 3,
-        selectFirst: false
-    });
-});
-</script>
 {% endblock thumbnailbrowser %}

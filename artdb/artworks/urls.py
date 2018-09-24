@@ -11,6 +11,7 @@ urlpatterns = [
     path('artwork/<int:id>/delete_overlay.html', artwork_delete, name='artwork_delete'),
     path('artwork/<int:id>/collect_overlay.html', artwork_collect, name='artwork_collect'),
     path('collection/<int:id>', collection_list, name='collection'),
+    path('collections.html', collections_list, name='collections_list'),
     re_path(
         r'^artist-autocomplete/$',
         ArtistAutocomplete.as_view(),

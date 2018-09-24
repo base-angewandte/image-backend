@@ -38,7 +38,9 @@
         <div id="topbar">
                 <base-header lang="{{ LANGUAGE_CODE }}" post-lang="true" post-csrf="{{ csrf_token }}"></base-header>
         </div>
-        <div id="thumbnailbrowser">               
+        <div id="thumbnailbrowser">
+            {% block collectionslist %}
+            {% endblock collectionslist %}       
             {% block thumbnailbrowser %}
             {% endblock thumbnailbrowser %}
         </div>
@@ -54,7 +56,40 @@
 <script type="text/javascript">
 $(document).ready(function(){
     var b=document.getElementsByTagName('base-header')[0];
-    b.profile={% if user.is_authenticated %} {name:'{{ user.get_full_name }}', permissions: null}{% endif %};
+    //  b.profile={% if user.is_authenticated %} {name:'{{ user.get_full_name }}', permissions: null}{% endif %};
     b.urls={login:'/',logout:'/',postUrl:'/'};
+});
+</script>
+
+<script>
+$(document).ready(function(){
+    $("#search_artworks_field").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+            url: "http://localhost:8000/artwork-autocomplete/",
+            dataType: "json",
+            data: {
+                q: request.term
+            },
+            success: function(data) {
+                response($.map(data.results, function (item) {
+                    return {
+                        label: item.text,
+                        value: item.id
+                    }
+                }));
+            }
+            });
+        },
+        select: function(event, ui) {
+            var item = ui.item;
+            if(item) {
+                $(this).val(item.value);
+                $(this.form).submit();
+            }
+        },
+        minLength: 3,
+        selectFirst: false
+    });
 });
 </script>
