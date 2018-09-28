@@ -1,14 +1,44 @@
 {% extends 'base.html' %}
 
-{% block thumbnailbrowser %}
-    <h2>all {{title}}</h2>
-    {% if artworks %}
-        <ul>
-            {% for artwork in artworks %}
-                <li>{{artwork.title}}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>this collection is empty</p>
-    {% endif %}
-{% endblock thumbnailbrowser %}
+{% block collectionslist %}
+<section class="thumbnail-area">
+
+    <div class="thumbnail-navbar">
+        <nav class="navigation">
+            <ol>
+                <li><a href="{{url}}/">All Artworks</a></li><li class="selected"><a href="{{url}}/collections.html">Collections</a></li>
+            </ol>
+        </nav>
+        {% if collections %}
+        <div id="collection-nav">
+            <form method="GET" action="">
+                <select name="collection-selector" id="collection-selector">
+                    <option value="">All collections</option>
+                    {% for collection in collections %}
+                    <option value="{{collection.id}}" {% if collection.id == id %} selected {% endif %}>{{collection.title}}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    {% include "artwork/artwork_thumbnails.html" %}
+    
+</section>
+
+<script type='text/javascript'>
+    $(document).ready(function() {
+        $( "#collection-selector" ).selectmenu({
+            change: function(event, ui) {
+                let id = ui.item.value;
+                if (id) {
+                    window.location = `{{url}}/collection/${id}`;
+                } else {
+                    window.location = '{{url}}/collections.html';
+                }
+            }   
+        });
+    });
+</script>
+{% endblock collectionslist %}

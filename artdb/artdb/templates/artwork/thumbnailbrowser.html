@@ -1,99 +1,28 @@
 {% extends 'base.html' %}
-{% load proper_paginate %}
-{% load url_replace %}
 
 {% block extra_scripts %}
 {{ form.media }}
 {% endblock extra_scripts %}
 
 {% block thumbnailbrowser %}
-
 <section class="thumbnail-area">
 
     <div class="thumbnail-navbar">
         <nav class="navigation">
             <ol>
-                <li class="selected"><a href="index.html">All Artworks</a></li><li><a href="collections.html">Collections</a></li>
+                <li class="selected"><a href="{{url}}/">All Artworks</a></li><li><a href="{{url}}/collections.html">Collections</a></li>
             </ol>
         </nav>
-
         <div id="search">
             <form method="GET" action="">
-                <input id="search_artworks_field" placeholder="Search Artworks" name="title" value="{{ request.GET.title }}" autocomplete="off" type="search" role="title search" autofocus/><span id="clear_search_artwork_field"></span><!--<input id="search_artworks_submit" type="submit" value="Search"/>-->
+                <input id="search_artworks_field" placeholder="Search Artworks" name="title" value="{{ request.GET.title }}" autocomplete="off" type="search" role="title search" autofocus/><span id="clear_search_artwork_field"></span>
             </form>
         </div>
     </div>
 
-    {% if artworks %}
-    <div class="paginator">
-        {{ artworks.has_previous }}
-        {{ artworks.number }}
-        {{ artworks.paginator.count }}
-        {{ artworks.paginator.num_pages }}
-        {{ artworks.paginator.page_range }}
-        {{ artworks.has_next }}
+    {% include "artwork/artwork_pagination.html" %}
 
+    {% include "artwork/artwork_thumbnails.html" %}
 
-        {% if artworks.has_other_pages %}
-        <ul class="pagination">
-            {% if artworks.number == 1 %}
-                <li class="disabled"><span>⇤</span></li>
-            {% else %}
-                <li><a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a></li>
-            {% endif %}
-            {% if artworks.has_previous %}
-                <li><a class="page-link" href="?{% url_replace request 'page' artworks.previous_page_number %}">&laquo;</a></li>
-            {% else %}
-                <li class="disabled"><span>&laquo;</span></li>
-            {% endif %}
-            {% for page in artworks.paginator|proper_paginate:artworks.number %}
-                {% if artworks.number == page %}
-                    <li class="active"><span>{{ page }} <span class="sr-only">(current)</span></span></li>
-                {% else %}
-                    <li><a class="page-link" href="?{% url_replace request 'page' page %}">{{ page }}</a></li>
-                {% endif %}
-            {% endfor %}
-            {% if artworks.has_next %}
-                <li><a href="?{% url_replace request 'page' artworks.next_page_number %}">&raquo;</a></li>
-            {% else %}
-                <li class="disabled"><span>&raquo;</span></li>
-            {% endif %}
-            {% if artworks.number == artworks.paginator.num_pages %}
-                <li class="disabled"><span>⇥</span></li>
-            {% else %}
-                <li><a href="?{% url_replace request 'page' artworks.paginator.num_pages %}">⇥</a></li>
-            {% endif %}
-        </ul>
-        {% endif %}
-
-    <div id="thumbnails">
-        {% for artwork in artworks %}
-        <div data-artworkid="{{artwork.id}}" class="thumbnail">
-            <div class="vertically-center">
-                {% if not artwork.imageOriginal %}
-                    <div class="picture-thumbnail picture-thumbnail-missing"></div>
-                {% else %}
-                    <img class="picture-thumbnail" src="{{artwork.imageOriginal.thumbnail.180x180}}"/>
-                {% endif %}
-            </div>
-            <div class="thumbnail-title">{{artwork.title}}</div>
-            <div class="thumbnail-artist">
-                {% for artist in artwork.artists.all %}
-                    {{ artist.name }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </div>
-        </div>        
-    {% endfor %}
-    </div>
-    {% else %}
-    <p>no artworks there</p>
-    {% endif %}
 </section>
-
-<section class="sidebar-detached fixed">
-    <aside class="inspector" id="thumbnailbrowser-inspector">
-        test
-    </aside>
-</section>
-
 {% endblock thumbnailbrowser %}

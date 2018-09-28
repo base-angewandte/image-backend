@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from artworks.models import *
 
 
+# TODO: currently not used. delete?
 def details(request, id=None):
     context = {}
     context['title'] = 'User Details'

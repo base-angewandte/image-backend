@@ -1,0 +1,44 @@
+{% load proper_paginate %}
+{% load url_replace %}
+
+    {% if artworks %}
+    <div class="paginator">
+        <!--{{ artworks.has_previous }}
+        {{ artworks.number }}
+        {{ artworks.paginator.count }}
+        {{ artworks.paginator.num_pages }}
+        {{ artworks.paginator.page_range }}
+        {{ artworks.has_next }}-->
+
+        {% if artworks.has_other_pages %}
+        <ul class="pagination">
+            {% if artworks.number == 1 %}
+                <li class="disabled"><span>⇤</span></li>
+            {% else %}
+                <li><a class="page-link" href="?{% url_replace request 'page' 1 %}">⇤</a></li>
+            {% endif %}
+            {% if artworks.has_previous %}
+                <li><a class="page-link" href="?{% url_replace request 'page' artworks.previous_page_number %}">&laquo;</a></li>
+            {% else %}
+                <li class="disabled"><span>&laquo;</span></li>
+            {% endif %}
+            {% for page in artworks.paginator|proper_paginate:artworks.number %}
+                {% if artworks.number == page %}
+                    <li class="active"><span>{{ page }} <span class="sr-only">(current)</span></span></li>
+                {% else %}
+                    <li><a class="page-link" href="?{% url_replace request 'page' page %}">{{ page }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if artworks.has_next %}
+                <li><a href="?{% url_replace request 'page' artworks.next_page_number %}">&raquo;</a></li>
+            {% else %}
+                <li class="disabled"><span>&raquo;</span></li>
+            {% endif %}
+            {% if artworks.number == artworks.paginator.num_pages %}
+                <li class="disabled"><span>⇥</span></li>
+            {% else %}
+                <li><a href="?{% url_replace request 'page' artworks.paginator.num_pages %}">⇥</a></li>
+            {% endif %}
+        </ul>
+        {% endif %}
+    {% endif %}

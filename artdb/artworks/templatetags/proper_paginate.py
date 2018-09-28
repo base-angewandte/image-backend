@@ -2,12 +2,15 @@ from django import template
 
 register = template.Library()
 
-# this filter is used together with url_replace
-# to render a proper pagination with consistent ranges
-# see: https://medium.com/@sumitlni/paginate-properly-please-93e7ca776432
 
 @register.filter(name='proper_paginate')
 def proper_paginate(paginator, current_page, neighbors=5):
+    """
+    This filter is used together with url_replace
+    to render a proper pagination with consistent ranges
+    see: templates/artwork/artwork_pagination.html
+    see: https://medium.com/@sumitlni/paginate-properly-please-93e7ca776432
+    """
     if paginator.num_pages > 2*neighbors:
         start_index = max(1, current_page-neighbors)
         end_index = min(paginator.num_pages, current_page + neighbors)

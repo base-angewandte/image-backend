@@ -1,5 +1,5 @@
 from django import forms
-from artworks.models import Artwork, Artist
+from artworks.models import Artwork
 from dal import autocomplete
 
 class ArtworkForm(forms.ModelForm):
@@ -11,7 +11,7 @@ class ArtworkForm(forms.ModelForm):
 
     class Meta:
         model = Artwork
-        exclude = ['id','createdAt','updatedAt']
+        exclude = ['id', 'createdAt', 'updatedAt']
         widgets = {
             #'artists': autocomplete.ModelSelect2
             'artists': autocomplete.ModelSelect2Multiple

@@ -29,7 +29,7 @@
 body {
     overflow-y: scroll;
     overflow-x: hidden;
-    background-color: var(--dark-grey-1-color);
+    background-color: var(--light-bg-color);
     min-width: 1280px;
 }
 
@@ -309,6 +309,10 @@ and a close button */
     padding: 18px;
 }
 
+.thumbnail-navbar select {
+
+}
+
 .thumbnail-area .navigation {
     display: inline-block;
     box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
@@ -316,14 +320,12 @@ and a close button */
 
 .thumbnail-area .navigation li {
     display: inline-block;
-    height: 48px;
-    min-width: 130px;
-    padding: 16px;
     background-color:#fff;
     font-weight: 400;
     font-size: 14px;
     text-align: center;
     margin-right: 2px;
+    height: 48px;
 }
 
 .thumbnail-area .navigation li.selected {
@@ -331,6 +333,12 @@ and a close button */
 }
 
 .thumbnail-area .navigation li a {
+    display: table-cell;
+    height: 46px;
+    min-width: 98px;
+    padding: 16px;
+    vertical-align: middle;
+    text-align: center;
     text-decoration: none;
     color: #000;
 }
@@ -346,8 +354,9 @@ and a close button */
     color: var(--base-color);
 }
 
-/* searchbar */
-#search {
+/* searchbar, collection selection */
+#search,
+#collection-nav {
     display: block;
     float: right;
     margin: 0 auto 0 auto;
@@ -356,10 +365,11 @@ and a close button */
     box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
 }
 
-#search form {
+#search form,
+#collection-nav form {
     display: inline-block;
     width: 480px;
-    height: 34px;
+    height: 48px;
     margin: 0 auto 0 auto;
 }
 
@@ -376,6 +386,28 @@ and a close button */
     padding: 0px 0px 0px 28px;
     width: 426px;
     border: 0;
+}
+
+#collection-selector {
+    display: none;
+}
+
+#collection-selector-button {
+    width: 480px;
+    height: 48px;
+    border: 0;
+}
+
+#collection-selector-button:active,
+#collection-selector-button:focus {
+    outline:none;
+}
+
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus {
+    border: 1px solid #cccccc;
+    background: #ededed;
+    font-weight: normal;
+    color: #2b2b2b;
 }
 
 #clear_search_artwork_field {
@@ -410,26 +442,33 @@ and a close button */
 
 
 /* collections */
-#collect-overlay table {
-    width: 440px;
-    padding: 0;
-    margin: 0 auto;
-    background-color: pink;
+
+table.collections-list {
+    width: 480px;
+    margin: 0 auto 0 0;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    margin-top: -8px;
 }
 
-#collect-overlay tr {
-    height: 32px;
+table.collections-list tr {
+    box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
 }
 
-#collect-overlay td {
+table.collections-list td {
+    background-color: #fff;
+    text-align: left;
+    height: 50px;
+    padding: 16px;
     vertical-align: middle;
+    font-size: 14px;
 }
 
-#collect-overlay td.collectButtons {
+table.collections-list td:last-child {
     text-align: right;
 }
 
-#collect-overlay td.collectButtons button {
+table.collections-list td.collectButtons button {
     display: inline-block;
     width: 90px;
     height: 28px;
@@ -442,15 +481,15 @@ and a close button */
     font-size: 14px;
 }
 
-#collect-overlay td.collectButtons button.addToCollection {
+table.collections-list button.addToCollection {
     background-color: var(--primary-button-color);
 }
 
-#collect-overlay td.collectButtons button.removeFromCollection {
+table.collections-list button.removeFromCollection {
     background-color: var(--remove-button-color);
 }
 
-#collect-overlay button.addCollection {
+table.collections-list button.addCollection {
     display: inline-block;
     width: 440px;
     height: 28px;
@@ -463,15 +502,15 @@ and a close button */
     font-size: 14px;
 }
 
-#collect-overlay td button.removeFromCollection {
+table.collections-list td button.removeFromCollection {
     display: none;
 }
 
-#collect-overlay td.remove button.removeFromCollection {
+table.collections-list td.remove button.removeFromCollection {
     display: inline-block;
 }
 
-#collect-overlay td.remove button.addToCollection {
+table.collections-list td.remove button.addToCollection {
     display: none;
 }
 
@@ -482,3 +521,21 @@ and a close button */
 .navwrapper {
     position: fixed !important;
 }
+
+.thumbnail-area .list {
+    padding: 18px;
+}
+
+.thumbnail-area .list li {
+    display: block;
+    height: 48px;
+    min-width: 130px;
+    padding: 16px;
+    background-color:#fff;
+    font-weight: 400;
+    font-size: 14px;
+    text-align: center;
+    margin-right: 2px;
+}
+
+

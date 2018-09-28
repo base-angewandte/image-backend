@@ -7,26 +7,11 @@
         <link type="text/css" rel="stylesheet" href="{% static 'css/fonts.css' %}">
         {% block extra_scripts %}
         {% endblock extra_scripts %}
-        <script type="text/javascript" src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+        <script type="text/javascript" src="{% static '3rd-party/jquery-3.3.1.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/artworks.js' %}"></script>
-        <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
-        <!-- <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600" rel="stylesheet">-->
+        <script src="{% static '3rd-party/jquery-ui-1.12.1.custom/jquery-ui.js' %}"></script>
+        <link rel="stylesheet" href="{% static '3rd-party/jquery-ui-1.12.1.custom/jquery-ui.css' %}">  
 
-
-        <!-- django-autocomplete-light css+js, manually inserted -->
-        <link type="text/css" rel="stylesheet" href="{% static 'admin/css/vendor/select2/select2.css' %}">
-        <link type="text/css" rel="stylesheet" href="{% static 'admin/css/autocomplete.css' %}">
-        <link type="text/css" rel="stylesheet" href="{% static 'autocomplete_light/select2.css' %}">
-        <script type="text/javascript" src="{% static 'admin/js/vendor/select2/select2.full.js' %}"></script>
-        <script type="text/javascript" src="{% static 'admin/admin/js/jquery.init.js' %}"></script>
-        <script type="text/javascript" src="{% static 'autocomplete_light/jquery.init.js' %}"></script>
-
-        <script type="text/javascript" src="{% static 'admin/js/vendor/select2/autocomplete.init.js' %}"></script>
-        <script type="text/javascript" src="{% static 'admin/js/autocomplete.js' %}"></script>
-        <script type="text/javascript" src="{% static 'autocomplete_light/forward.js' %}"></script>
-        <script type="text/javascript" src="{% static 'autocomplete_light/select2.js' %}"></script>
-        
         <!-- django-autocomplete-light adjustments -->
         <link type="text/css" rel="stylesheet" href="{% static 'css/autocomplete.css' %}">
 
@@ -43,6 +28,10 @@
             {% endblock collectionslist %}       
             {% block thumbnailbrowser %}
             {% endblock thumbnailbrowser %}
+            <section class="sidebar-detached fixed">
+                <aside class="inspector" id="thumbnailbrowser-inspector">
+                </aside>
+            </section>
         </div>
         <div id="detail-overlay" class="overlay">
         </div>
@@ -55,14 +44,11 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
+    // loading Angewandte base header with mock data
     var b=document.getElementsByTagName('base-header')[0];
     //  b.profile={% if user.is_authenticated %} {name:'{{ user.get_full_name }}', permissions: null}{% endif %};
     b.urls={login:'/',logout:'/',postUrl:'/'};
-});
-</script>
 
-<script>
-$(document).ready(function(){
     $("#search_artworks_field").autocomplete({
         source: function(request, response) {
             $.ajax({

@@ -167,8 +167,8 @@ VERSATILEIMAGEFIELD_SETTINGS = {
     'progressive_jpeg': False
 }
 
-# angewandte base settings
-# used by the index view
+# angewandte base top nav bar settings
+# used by various views (e.g. index)
 SITE_URL = 'https://***REMOVED***/'
 BASE_HEADER_JSON = '{}bs/base-header.json'.format(SITE_URL)
 BASE_HEADER = '{}{}'.format(SITE_URL, requests.get(BASE_HEADER_JSON).json()['latest'])

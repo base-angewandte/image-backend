@@ -25,7 +25,9 @@
     text-transform: uppercase;
 }
 
-.sidebar-attached .metadataarea input, select, textarea {
+.sidebar-attached .metadataarea input,
+.sidebar-attached .metadataarea select,
+.sidebar-attached .metadataarea textarea {
     height: 32px;
     width: 416px;
     padding: 0px 7px 0px 7px;
@@ -202,16 +204,3 @@
     max-height: 590px;
     max-width: 590px;
 }
-
-
-/* .image-big {
-    display: none;
-     margin: auto;
-}
-
-.image-big.shown {
-    display: block;
-    height: 100%;
-    padding-top: var(--topbar-height);
-    background-color: var(--light-grey-3-color);
-}*/

@@ -3,18 +3,20 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete="models.CASCADE")
 
     def __str__(self):
-        # TODO: CORRECT
-        # return self.get_username()
+        # TODO: only a stub
         return 'profile'
 
-# automatically create a Profile when a User is created
-# see Hardik #9
+
 @receiver(post_save, sender=User)
 def user_is_created(sender, instance, created, **kwargs):
+    """
+    Automatically create a Profile when a User is created.
+    """
     if created:
         Profile.objects.create(user=instance)
     else:
