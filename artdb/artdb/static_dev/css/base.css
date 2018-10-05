@@ -538,4 +538,93 @@ table.collections-list td.remove button.addToCollection {
     margin-right: 2px;
 }
 
+.pagination {
+    display: inline-block;
+    margin: 36px 18px 12px 18px;
+    box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
+}
 
+.pagination li {
+    margin: 0;
+    background-color: #fff;
+}
+
+.pagination li:first-child {
+    margin-right: 2px;
+}
+
+.pagination li:last-child {
+    margin-left: 2px;
+}
+
+.pagination li.disabled {
+    display: inline-block;
+    vertical-align: top;
+    margin: 0 auto;
+    color: var(--light-grey-2-color);
+    height: 32px;
+    min-width: 32px;
+    text-align: center;
+    line-height: 30px;
+}
+
+.pagination li.disabled.previous {
+    background: url(arrow_left_disabled.svg) no-repeat center center;
+}
+
+.pagination li.disabled.next {
+    background: url(arrow_right_disabled.svg) no-repeat center center;
+}
+
+.pagination li a {
+    display: inline-block;
+    margin: 0 auto;
+    background-color:#fff;
+    color: #000;
+    height: 32px;
+    min-width: 32px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 30px;
+    padding: 0 6px 0 6px;
+    text-decoration: none;
+}
+
+.pagination li a.previous {
+    background: url(arrow_left.svg) no-repeat center center;
+}
+
+.pagination li a.next {
+    background: url(arrow_right.svg) no-repeat center center;
+}
+
+.pagination li a.next:hover,
+.pagination li a.next:focus,
+.pagination li a.next:active
+{
+    background: url(arrow_right_hover.svg) no-repeat center center;
+}
+
+.pagination li a.previous:hover,
+.pagination li a.previous:focus,
+.pagination li a.previous:active
+{
+    background: url(arrow_left_hover.svg) no-repeat center center;
+}
+
+.pagination li a:visited {
+    color: #000;
+}
+
+.pagination li a:hover,
+.pagination li a:focus,
+.pagination li a:active
+{
+    color: var(--base-color);
+}
+
+.pagination li.current-page a {
+    background-color: var(--base-color);
+    color: #fff;
+    border-color: var(--base-color);
+}
