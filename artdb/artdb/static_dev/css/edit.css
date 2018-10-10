@@ -29,7 +29,7 @@
 .sidebar-attached .metadataarea select,
 .sidebar-attached .metadataarea textarea {
     height: 32px;
-    width: 416px;
+    width: 100%;
     padding: 0px 7px 0px 7px;
     border-radius: 3px;
     border: 1px solid #373737;
@@ -170,6 +170,20 @@
     background: url(close_button_white.svg) no-repeat bottom 5px left;
 }
 
+.sidebar-attached .metadataarea div.input-medium {
+    display: inline-block;
+    width: 204px;
+    margin-bottom: 0;
+}
+
+.sidebar-attached .metadataarea div.input-small {
+    display: inline-block;
+    width: 98px;
+    margin-left: 8px;
+    margin-bottom: 0;
+}
+
+
 #edit-overlay input[type=file] {
     width: 0.1px;
 	height: 0.1px;
@@ -204,3 +218,4 @@
     max-height: 590px;
     max-width: 590px;
 }
+

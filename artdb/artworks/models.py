@@ -43,6 +43,8 @@ class Artwork(models.Model):
     title = models.CharField(max_length=255, blank=True)
     artists = models.ManyToManyField(Artist, blank=True)
     date = models.CharField(max_length=255, blank=True)
+    dateYearFrom = models.IntegerField(null=True, blank=True)
+    dateYearTo = models.IntegerField(null=True, blank=True)
     dateFrom = models.DateField(null=True, blank=True)
     dateTo = models.DateField(null=True, blank=True)
     material = models.CharField(max_length=255, blank=True)

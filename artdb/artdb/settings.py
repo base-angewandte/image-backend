@@ -172,4 +172,3 @@ VERSATILEIMAGEFIELD_SETTINGS = {
 SITE_URL = 'https://***REMOVED***/'
 BASE_HEADER_JSON = '{}bs/base-header.json'.format(SITE_URL)
 BASE_HEADER = '{}{}'.format(SITE_URL, requests.get(BASE_HEADER_JSON).json()['latest'])
-print(BASE_HEADER)

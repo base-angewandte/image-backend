@@ -13,7 +13,7 @@ class ArtworkForm(forms.ModelForm):
         model = Artwork
         exclude = ['id', 'createdAt', 'updatedAt']
         widgets = {
-            #'artists': autocomplete.ModelSelect2
-            'artists': autocomplete.ModelSelect2Multiple
-            (url='artist-autocomplete')
+            'artists': autocomplete.ModelSelect2Multiple(url='artist-autocomplete'),
+            'dateFrom': forms.DateInput(attrs={'placeholder': 'tt-mm-jjjj'}),
+            'dateTo': forms.DateInput(attrs={'placeholder': 'tt-mm-jjjj'})
         }
