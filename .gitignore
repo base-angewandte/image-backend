@@ -145,7 +145,11 @@ dmypy.json
 ### virtualenv **
 workenv
 
-secret_settings.py
 media
 fixtures
 migration
+
+dockerdata/
+docker-compose.override.yml
+djangoenv
+secret_key.py

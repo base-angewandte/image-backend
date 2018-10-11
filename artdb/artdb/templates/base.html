@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static %}
 
 <html>
@@ -14,14 +15,11 @@
 
         <!-- django-autocomplete-light and edit view adjustments -->
         <link type="text/css" rel="stylesheet" href="{% static 'css/edit.css' %}">
-
-        <!-- angewandte base main navigation -->
-        <!-- <script type="text/javascript" src="{{ BASE_HEADER }}"></script>-->
-
     </head>
     <body class="show-thumbnailbrowser">
+        {% get_current_language as LANGUAGE_CODE %}
         <div id="topbar">
-                <base-header lang="{{ LANGUAGE_CODE }}" post-lang="true" post-csrf="{{ csrf_token }}"></base-header>
+            <base-header lang="{{ LANGUAGE_CODE }}" post-lang="true" post-csrf="{{ csrf_token }}"></base-header>
         </div>
         <div id="thumbnailbrowser">
             {% block collectionslist %}
@@ -39,16 +37,13 @@
         </div>
         <div id="collect-overlay" class="overlay">
         </div>
+
+        <script type="text/javascript" src="{{ BASE_HEADER }}"></script>
     </body>
 </html>
 
 <script type="text/javascript">
 $(document).ready(function(){
-    // loading Angewandte base header with mock data
-    var b=document.getElementsByTagName('base-header')[0];
-    //  b.profile={% if user.is_authenticated %} {name:'{{ user.get_full_name }}', permissions: null}{% endif %};
-    b.urls={login:'/',logout:'/',postUrl:'/'};
-
     $("#search_artworks_field").autocomplete({
         source: function(request, response) {
             $.ajax({

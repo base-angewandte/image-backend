@@ -8,35 +8,67 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
+
+Before deployment please see
+https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 """
 
 import os
-import requests # for angewandte base settings (see below)
-from settings_secret import *
+import sys
+from email.utils import getaddresses
+from urllib.parse import urlparse
+
+import environ
+import requests
+from django.utils.translation import ugettext_lazy as _
+
+env = environ.Env()
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+PROJECT_NAME = '.'.join(__name__.split('.')[:-1])
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
+try:
+    from .secret_key import SECRET_KEY
+except ImportError:
+    from django.core.management.utils import get_random_secret_key
+    f = open(os.path.join(BASE_DIR, PROJECT_NAME, 'secret_key.py'), 'w+')
+    SECRET_KEY = get_random_secret_key()
+    f.write("SECRET_KEY = '%s'\n" % SECRET_KEY)
+    f.close()
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = ''
-# see secret_settings
+DEBUG = env.bool('DEBUG', default=False)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Detect if executed under test
+TESTING = any(test in sys.argv for test in (
+    'test', 'csslint', 'jenkins', 'jslint',
+    'jtest', 'lettuce', 'pep8', 'pyflakes',
+    'pylint', 'sloccount',
+))
 
-ALLOWED_HOSTS = []
+DOCKER = env.bool('DOCKER', default=True)
 
+SITE_URL = env.str('SITE_URL')
+
+FORCE_SCRIPT_NAME = env.str('FORCE_SCRIPT_NAME', default='/image')
+
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[urlparse(SITE_URL).hostname])
+
+BEHIND_PROXY = env.bool('BEHIND_PROXY', default=True)
+
+ADMINS = getaddresses([env('DJANGO_ADMINS', default='Philipp Mayer <philipp.mayer@uni-ak.ac.at>')])
+
+MANAGERS = ADMINS
 
 # Application definition
 
 INSTALLED_APPS = [
+    # need to be before django.contrib.admin and grapelli
     'dal',
     'dal_select2',
+
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,29 +77,71 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Third-party apps
     'debug_toolbar',
-
-    'artworkusers',
-    'artworks',
-    
     'rest_framework',
     'versatileimagefield',
     'django_cleanup',
+
+    # Project apps
+    'general',
+    'artworkusers',
+    'artworks',
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+""" Email settings """
+EMAIL_SUBJECT_PREFIX = '{} '.format(env.str('EMAIL_SUBJECT_PREFIX', default='[Image]').strip())
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = os.path.join(BASE_DIR, '..', 'tmp', 'emails')
+
+    if not os.path.exists(EMAIL_FILE_PATH):
+        os.makedirs(EMAIL_FILE_PATH)
+
+""" Https settings """
+if SITE_URL.startswith('https'):
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+
+X_FRAME_OPTIONS = 'DENY'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
-ROOT_URLCONF = 'artdb.urls'
+if DEBUG:
+    # insert before SessionMiddleware
+    MIDDLEWARE.insert(
+        MIDDLEWARE.index('django.contrib.sessions.middleware.SessionMiddleware'),
+        'debug_toolbar.middleware.DebugToolbarMiddleware'
+    )
+
+    # for django debug toolbar
+    INTERNAL_IPS = ('127.0.0.1')
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': lambda r: False,  # disables it
+    }
+
+if BEHIND_PROXY:
+    MIDDLEWARE += ['general.middleware.SetRemoteAddrFromForwardedFor', ]
+    USE_X_FORWARDED_HOST = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+
+ROOT_URLCONF = '{}.urls'.format(PROJECT_NAME)
 
 TEMPLATES = [
     {
@@ -83,11 +157,13 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'debug': DEBUG,
+            'string_if_invalid': "[invalid variable '%s'!]" if DEBUG else "",
         },
     },
 ]
 
-WSGI_APPLICATION = 'artdb.wsgi.application'
+WSGI_APPLICATION = '{}.wsgi.application'.format(PROJECT_NAME)
 
 
 # Database
@@ -95,8 +171,12 @@ WSGI_APPLICATION = 'artdb.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('POSTGRES_DB', 'django_{}'.format(PROJECT_NAME)),
+        'USER': os.environ.get('POSTGRES_USER', 'django_{}'.format(PROJECT_NAME)),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password_{}'.format(PROJECT_NAME)),
+        'HOST': '{}-postgres'.format(PROJECT_NAME) if DOCKER else 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -123,31 +203,30 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'de-at'
+TIME_ZONE = 'Europe/Vienna'
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
+LANGUAGES = (
+    ('de', _('German')),
+    ('en', _('English')),
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = 'media/'
+STATICFILES_DIRS = (
+    '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'static')), os.sep),
+    os.path.join(BASE_DIR, 'artdb/static_dev'),
+)
+STATIC_URL = '{}/static/'.format(FORCE_SCRIPT_NAME if FORCE_SCRIPT_NAME else '')
+STATIC_ROOT = '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'assets', 'static')), os.sep)
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'artdb/static_dev'),)
+MEDIA_URL = '{}/media/'.format(FORCE_SCRIPT_NAME if FORCE_SCRIPT_NAME else '')
+MEDIA_ROOT = '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'assets', 'media')), os.sep)
 
-# for django debug toolbar
-INTERNAL_IPS = ('127.0.0.1')
-DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_TOOLBAR_CALLBACK': lambda r: False,  # disables it
-}
 
 # config of versatileimagefield
 # used to edit artworks
@@ -167,8 +246,88 @@ VERSATILEIMAGEFIELD_SETTINGS = {
     'progressive_jpeg': False
 }
 
-# angewandte base top nav bar settings
-# used by various views (e.g. index)
-SITE_URL = 'https://***REMOVED***/'
-BASE_HEADER_JSON = '{}bs/base-header.json'.format(SITE_URL)
-BASE_HEADER = '{}{}'.format(SITE_URL, requests.get(BASE_HEADER_JSON).json()['latest'])
+""" Logging """
+LOG_DIR = os.path.join(BASE_DIR, '..', 'logs')
+
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'application.log'),
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 100,
+            'formatter': 'verbose',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'stream_to_console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler'
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console', 'file', 'mail_admins'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'django': {
+            'handlers': ['console', 'file', 'mail_admins'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'django.request': {
+            'handlers': ['console', 'file', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    }
+}
+
+""" Cache settings """
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://{}:6379/0'.format('{}-redis'.format(PROJECT_NAME) if DOCKER else 'localhost'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+""" Session settings """
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+SESSION_COOKIE_NAME = 'sessionid_{}'.format(PROJECT_NAME)
+
+CSRF_COOKIE_NAME = 'csrftoken_{}'.format(PROJECT_NAME)
+
+# base Header
+BASE_HEADER_SITE_URL = env.str('BASE_HEADER_SITE_URL', SITE_URL)
+BASE_HEADER_JSON = '{}bs/base-header.json'.format(BASE_HEADER_SITE_URL)
+BASE_HEADER = '{}{}'.format(BASE_HEADER_SITE_URL, requests.get(BASE_HEADER_JSON).json()['latest'])

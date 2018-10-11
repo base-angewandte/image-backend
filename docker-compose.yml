@@ -1,0 +1,47 @@
+version: '2'
+services:
+
+  artdb-redis:
+    image: redis:4.0.11-alpine
+    container_name: artdb-redis
+    volumes:
+      - ./dockerdata/redis/data:/data
+    networks:
+      - artdbnet
+    restart: always
+    command: redis-server --appendonly yes
+
+  artdb-postgres:
+    image: postgres:10.5-alpine
+    container_name: artdb-postgres
+    environment:
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_DB=$DB_NAME
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./dockerdata/postgres/pgdata:/var/lib/postgresql/data/pgdata
+    networks:
+      - artdbnet
+    restart: always
+
+  artdb-django:
+    build: ./artdb
+    container_name: artdb-django
+    environment:
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_DB=$DB_NAME
+    env_file:
+      - djangoenv
+    expose:
+      - 8200
+    volumes:
+      - ./artdb:/django
+      - ./logs:/logs
+    networks:
+      - artdbnet
+    restart: always
+
+networks:
+  artdbnet:
