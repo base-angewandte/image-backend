@@ -5,27 +5,47 @@ if (!$) {
 $(document).ready(function() {
     $('#id_date').keyup(function() {
         function updateInputFields(yearFrom, yearTo) {
-            if (bCirca) {
-                yearFrom -= 5;
-                yearTo = parseInt(yearTo) + 5;
+            yearFrom = parseInt(yearFrom);
+            yearTo = parseInt(yearTo);
+            switch (preposition) {
+                case 'ca.':
+                case 'um':
+                    yearFrom -= 5;
+                    yearTo += 5;
+                    break;
+                case 'vor':
+                    yearFrom -= 5;
+                    break;
+                case 'nach':
+                    yearTo += 5;
+                    break;
             }
             $('#id_dateYearFrom').val(yearFrom);
             $('#id_dateYearTo').val(yearTo);
         }
-        var regexp, matchedParts;
-        var bCirca = false;
+        var regexp, matchedParts, preposition;
+        // var bCirca = false;
         var userinput = $('#id_date').val().replace(/ /g,''); // remove spaces
         
         // detect circa
-        if (userinput.startsWith('ca.')) {
+        /*if (userinput.startsWith('ca.')) {
             userinput = userinput.substring(3);
             bCirca = true;
         } else if (userinput.startsWith('um')) {
             userinput = userinput.substring(2);
             bCirca = true;
-        }
+        }*/
         // TODO: "vor", "nach", "Ende", "Anfang"
-        console.log(userinput);
+
+        // detect prepositions
+        regexp = /^(ca\.|um|vor|nach|Ende|Anfang)(.*)/;
+        matchedParts = userinput.match(regexp);
+        console.log('preposition');
+        console.log(matchedParts);
+        if (matchedParts.length > 1) {
+            preposition = matchedParts[1];
+            userinput = matchedParts[2];
+        }
 
         // detect year range: e.g. "1921-1923","-20000-0", "1943/1972" 
         regexp = /^([-]?\d{1,5})[-/]([-]?\d{1,5})$/;
@@ -48,14 +68,22 @@ $(document).ready(function() {
             return;
         }
 
-        // century and century range: "14.Jh.", "13.Jh.-14.Jh."
+        // century and century range: "14.Jh.", "13.Jh.-14.Jh.", "Ende 14.Jh."
         regexp = /^(\d{1,2})\.Jh\.(-(\d{1,2})\.Jh\.)?$/;
         matchedParts = userinput.match(regexp);
         if (matchedParts) {
-            var from = ((matchedParts[1]-1)*100)+1;
-            var to = from+99;
-            if (matchedParts[3]) {
+            var from, to;
+            if (preposition === 'Anfang') {
+                from = ((matchedParts[1]-1)*100)+1;
+                to = from + 15;
+            } else if (preposition === 'Ende') {
+                to = ((matchedParts[1]-1)*100)+100;
+                from = to - 15;
+            } else if (matchedParts[3]) {
                 to = (matchedParts[3]*100);
+            } else {
+                from = ((matchedParts[1]-1)*100)+1;
+                to = from + 99;
             }
             updateInputFields(from, to);
             return;
