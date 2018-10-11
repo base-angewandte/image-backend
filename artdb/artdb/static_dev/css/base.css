@@ -227,6 +227,14 @@ and a close button */
     max-width: 200px; 
 }
 
+.inspector dt.key-titleEnglish {
+    display: none;
+}
+
+.inspector dt.key-titleEnglish + dd {
+    margin-top: -24px;
+}
+
 .inspector-button {
     display: inline-block;
     width: 200px;
