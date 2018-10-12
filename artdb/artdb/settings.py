@@ -219,7 +219,7 @@ LANGUAGES = (
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATICFILES_DIRS = (
-    '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'static')), os.sep),
+    # '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'static')), os.sep),
     os.path.join(BASE_DIR, 'artdb/static_dev'),
 )
 STATIC_URL = '{}/static/'.format(FORCE_SCRIPT_NAME if FORCE_SCRIPT_NAME else '')
