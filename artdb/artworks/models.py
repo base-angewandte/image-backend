@@ -41,12 +41,11 @@ class Artwork(models.Model):
     # image (renditions) on demand
     imageOriginal = VersatileImageField(max_length = 127, null=False, blank=True, upload_to=get_path_to_original_file)
     title = models.CharField(max_length=255, blank=True)
+    titleEnglish = models.CharField(max_length=255, blank=True)
     artists = models.ManyToManyField(Artist, blank=True)
     date = models.CharField(max_length=255, blank=True, help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende 14. Jh., 5.3.1799, um 1700')
     dateYearFrom = models.IntegerField(null=True, blank=True)
     dateYearTo = models.IntegerField(null=True, blank=True)
-    dateFrom = models.DateField(null=True, blank=True)
-    dateTo = models.DateField(null=True, blank=True)
     material = models.CharField(max_length=255, blank=True)
     dimensions = models.CharField(max_length=255, blank=True)
     locationOfCreation = models.CharField(max_length=255, blank= True, null=True)

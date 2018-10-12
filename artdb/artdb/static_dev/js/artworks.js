@@ -26,7 +26,7 @@ $(document).ready(function() {
                     val = artists;
                 }
                 if ((val !== "") && (val !== null)) {
-                    items.push('<dt>' + key + '</dt> <dd>' + val + '</dd>');
+                    items.push(`<dt class="key-${key}">${key}</dt><dd>${val}</dd>`);
                 }
             });
             items.push('</dl>');

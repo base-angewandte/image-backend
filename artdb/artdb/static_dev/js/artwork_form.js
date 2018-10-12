@@ -6,7 +6,11 @@ $(document).ready(function() {
     $('#id_date').keyup(function() {
         function updateInputFields(yearFrom, yearTo) {
             yearFrom = parseInt(yearFrom);
-            yearTo = parseInt(yearTo);
+            if (yearTo) {
+                yearTo = parseInt(yearTo);
+            } else {
+                yearTo = yearFrom;
+            }
             switch (preposition) {
                 case 'ca.':
                 case 'um':
@@ -24,27 +28,16 @@ $(document).ready(function() {
             $('#id_dateYearTo').val(yearTo);
         }
         var regexp, matchedParts, preposition;
-        // var bCirca = false;
         var userinput = $('#id_date').val().replace(/ /g,''); // remove spaces
         
-        // detect circa
-        /*if (userinput.startsWith('ca.')) {
-            userinput = userinput.substring(3);
-            bCirca = true;
-        } else if (userinput.startsWith('um')) {
-            userinput = userinput.substring(2);
-            bCirca = true;
-        }*/
-        // TODO: "vor", "nach", "Ende", "Anfang"
-
         // detect prepositions
         regexp = /^(ca\.|um|vor|nach|Ende|Anfang)(.*)/;
         matchedParts = userinput.match(regexp);
-        console.log('preposition');
-        console.log(matchedParts);
-        if (matchedParts.length > 1) {
-            preposition = matchedParts[1];
-            userinput = matchedParts[2];
+        if (matchedParts) {
+            if (matchedParts.length > 1) {
+                preposition = matchedParts[1];
+                userinput = matchedParts[2];
+            }
         }
 
         // detect year range: e.g. "1921-1923","-20000-0", "1943/1972" 

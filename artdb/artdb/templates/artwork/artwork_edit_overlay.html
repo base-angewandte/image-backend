@@ -28,6 +28,11 @@
             {{ form.title }}
         </div>
         <div>
+            {{ form.titleEnglish.errors }}
+            {{ form.titleEnglish.label_tag }}
+            {{ form.titleEnglish }}
+        </div>
+        <div>
             {{ form.artists.errors }}
             {{ form.artists.label_tag }}
             {{ form.artists }}
