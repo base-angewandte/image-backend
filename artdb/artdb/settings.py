@@ -20,6 +20,7 @@ from urllib.parse import urlparse
 
 import environ
 import requests
+from django.urls import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 
 env = environ.Env()
@@ -83,6 +84,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'versatileimagefield',
     'django_cleanup',
+    'django_cas_ng',
 
     # Project apps
     'general',
@@ -92,7 +94,25 @@ INSTALLED_APPS = [
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
+    'django_cas_ng.backends.CASBackend',
 ]
+
+LOGIN_URL = reverse_lazy('cas_ng_login')
+LOGOUT_URL = reverse_lazy('cas_ng_logout')
+
+CAS_SERVER_URL = env.str('CAS_SERVER', default='{}cas/'.format(SITE_URL))
+CAS_LOGIN_MSG = None
+CAS_LOGGED_MSG = None
+CAS_RENEW = False
+CAS_LOGOUT_COMPLETELY = True
+CAS_RETRY_LOGIN = True
+CAS_VERSION = '3'
+CAS_APPLY_ATTRIBUTES_TO_USER = True
+CAS_RENAME_ATTRIBUTES = {
+    'firstName': 'first_name',
+    'lastName': 'last_name',
+    'email0': 'email',
+}
 
 """ Email settings """
 EMAIL_SUBJECT_PREFIX = '{} '.format(env.str('EMAIL_SUBJECT_PREFIX', default='[Image]').strip())

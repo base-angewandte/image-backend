@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import django_cas_ng.views
 from django.contrib import admin
 from django.urls import path, include
 
@@ -23,6 +24,12 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('artworks.urls')),
+
+    path(r'accounts/login/', django_cas_ng.views.login, name='cas_ng_login'),
+    path(r'accounts/logout/', django_cas_ng.views.logout, name='cas_ng_logout'),
+    path(r'accounts/callback/', django_cas_ng.views.callback, name='cas_ng_proxy_callback'),
+
+    path('i18n/', include('django.conf.urls.i18n')),
 ]
 
 # adding this, so MEDIA dir can be served during development

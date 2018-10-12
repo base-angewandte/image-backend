@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load static %}
+{% load string_extras %}
 
 <html>
     <head>
@@ -39,6 +40,11 @@
         </div>
 
         <script type="text/javascript" src="{{ BASE_HEADER }}"></script>
+        <script type="text/javascript">
+          var b=document.getElementsByTagName("base-header")[0];
+          b.profile={% if user.is_authenticated %}{name:"{{ user.get_full_name }}",permissions:{{ request.session.attributes.permissions|csv_to_json }}}{% else %}null{% endif %};
+          b.urls={login:"{% url 'cas_ng_login' %}",logout:"{% url 'cas_ng_logout' %}",postUrl:"{% url 'set_language' %}"};
+        </script>
     </body>
 </html>
 

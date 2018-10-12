@@ -10,6 +10,7 @@ chardet==3.0.4            # via requests
 click==7.0                # via pip-tools
 django-appconf==1.0.2
 django-autocomplete-light==3.3.2
+django-cas-ng==3.5.10
 django-cleanup==2.1.0
 django-debug-toolbar==1.10.1
 django-environ==0.4.5
@@ -23,6 +24,7 @@ gunicorn==19.9.0
 idna==2.7                 # via requests
 isort==4.3.4
 lazy-object-proxy==1.3.1
+lxml==4.2.5               # via python-cas
 mccabe==0.6.1
 pilkit==2.0
 pillow==5.1.0
@@ -30,6 +32,7 @@ pip-tools==3.1.0
 psutil==5.4.7             # via rainbow-saddle
 psycopg2-binary==2.7.5
 pylint==2.0.0
+python-cas==1.4.0         # via django-cas-ng
 pytz==2018.4
 rainbow-saddle==0.4.0
 redis==2.10.6             # via django-redis
