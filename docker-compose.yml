@@ -32,8 +32,6 @@ services:
       - POSTGRES_PASSWORD=$DB_PASSWORD
       - POSTGRES_USER=$DB_USER
       - POSTGRES_DB=$DB_NAME
-    env_file:
-      - djangoenv
     expose:
       - 8200
     volumes:

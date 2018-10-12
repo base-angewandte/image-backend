@@ -19,9 +19,9 @@
     cp env-skel .env
     vi .env
     
-    # djangoenv
-    cp djangoenv-skel djangoenv
-    vi djangoenv
+    # django env
+    cp ./artdb/artb/env-skel ./artdb/artdb/.env
+    vi ./artdb/artdb/.env
     ```
 
 * Install latest python 3 and create virtualenv e.g. via `pyenv` and `pyenv-virtualenv`
@@ -45,13 +45,13 @@
 
     ```bash
     cd artdb
-    sh -ac '. ../.env; . ../djangoenv; python manage.py migrate'
+    python manage.py migrate
     ```
 
 * Start development server:
 
     ```bash
-    sh -ac '. ../.env; . ../djangoenv; python manage.py runserver 8300'
+    python manage.py runserver 8300
     ```
 
 
@@ -90,9 +90,9 @@
     cp env-skel .env
     vi .env
     
-    # djangoenv
-    cp djangoenv-skel djangoenv
-    vi djangoenv
+    # django env
+    cp ./artdb/artb/env-skel ./artdb/artdb/.env
+    vi ./artdb/artdb/.env
     ```
 
 * Use `Makefile` to initialize and run project:

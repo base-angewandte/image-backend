@@ -23,6 +23,7 @@ import requests
 from django.utils.translation import ugettext_lazy as _
 
 env = environ.Env()
+env.read_env()
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)

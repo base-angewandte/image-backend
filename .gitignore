@@ -151,5 +151,4 @@ migration
 
 dockerdata/
 docker-compose.override.yml
-djangoenv
 secret_key.py
