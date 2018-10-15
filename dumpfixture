@@ -1,1 +1,0 @@
-python3 artdb/manage.py dumpdata --format=json --natural-primary --exclude=contenttypes --exclude=auth.Permission --exclude=admin.logentry --exclude=sessions.session --indent 4 > artdb/fixtures/initial_data.json
