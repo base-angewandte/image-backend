@@ -80,11 +80,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third-party apps
-    'debug_toolbar',
+    #'debug_toolbar',
     'rest_framework',
     'versatileimagefield',
     'django_cleanup',
     'django_cas_ng',
+    'mptt',
 
     # Project apps
     'general',
@@ -129,6 +130,7 @@ if SITE_URL.startswith('https'):
     SESSION_COOKIE_SECURE = True
     SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000
+
 
 X_FRAME_OPTIONS = 'DENY'
 
@@ -189,6 +191,7 @@ WSGI_APPLICATION = '{}.wsgi.application'.format(PROJECT_NAME)
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
+
 
 DATABASES = {
     'default': {

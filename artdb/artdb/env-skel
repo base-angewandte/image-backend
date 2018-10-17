@@ -1,7 +1,7 @@
 # DEBUG=False
 # DOCKER=True
 SITE_URL=https://base.uni-ak.ac.at/
-# FORCE_SCRIPT_NAME=/image
+FORCE_SCRIPT_NAME=None
 # ALLOWED_HOSTS=
 # BEHIND_PROXY=True
 # DJANGO_ADMINS=Philipp Mayer <philipp.mayer@uni-ak.ac.at>

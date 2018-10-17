@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.conf import settings
 from versatileimagefield.fields import VersatileImageField
-
+from mptt.models import MPTTModel, TreeForeignKey
 
 class Artist(models.Model):
     """
@@ -43,10 +43,10 @@ class Artwork(models.Model):
     title = models.CharField(max_length=255, blank=True)
     titleEnglish = models.CharField(max_length=255, blank=True)
     artists = models.ManyToManyField(Artist, blank=True)
-    date = models.CharField(max_length=255, blank=True, help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende 14. Jh., 5.3.1799, um 1700')
+    date = models.CharField(max_length=319, blank=True, help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende 14. Jh., 5.3.1799, um 1700')
     dateYearFrom = models.IntegerField(null=True, blank=True)
     dateYearTo = models.IntegerField(null=True, blank=True)
-    material = models.CharField(max_length=255, blank=True)
+    material = models.TextField(null=True, blank=True)
     dimensions = models.CharField(max_length=255, blank=True)
     locationOfCreation = models.CharField(max_length=255, blank= True, null=True)
     credits = models.TextField(blank=True)
@@ -58,7 +58,7 @@ class Artwork(models.Model):
         return self.title
 
 
-@receiver(models.signals.post_save, sender=Artwork)
+# @receiver(models.signals.post_save, sender=Artwork)
 def move_uploaded_image(sender, instance, created, **kwargs):
     """
     Move the uploaded image after an Artwork instance has been created.  
@@ -112,3 +112,17 @@ class ArtworkCollection(models.Model):
         
     def size(self):
         return self.artworks.count()
+
+
+class Keyword(MPTTModel):
+    """
+    Keywords are nodes in a fixed hierarchical taxonomy.
+    """
+    name = models.CharField(max_length=255, unique=True)
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+
+    def __str__(self):
+        return 'Keyword: {0}'.format(self.name)
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
