@@ -11,7 +11,7 @@ from artworks.forms import *
 from artworks.serializers import ArtworkSerializer
 
 
-def index(request):
+def artworks_list(request):
     """
     Render the thumbnailbrowser.
     """

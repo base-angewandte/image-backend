@@ -3,7 +3,7 @@ from artworks.views import *
 
 
 urlpatterns = [
-    path('', index, name='artworks_list'),
+    path('', artworks_list, name='artworks_list'),
     path('artwork/<int:id>.json', details, name='artwork_details'),
     path('artwork/<int:id>/detail_overlay.html', artwork_detail_overlay, name='artwork_detail_overlay'), 
     path('artwork/<int:id>/edit_overlay.html', artwork_edit, name='artwork_edit'),

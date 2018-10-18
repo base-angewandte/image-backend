@@ -6,7 +6,7 @@
     <div class="thumbnail-navbar">
         <nav class="navigation">
             <ol>
-                <li><a href="{{url}}/">All Artworks</a></li><li class="selected"><a href="{{url}}/collections.html">Collections</a></li>
+                <li><a href="{% url 'artworks_list' %}">All Artworks</a></li><li class="selected"><a href="{% url 'collections_list' %}">Collections</a></li>
             </ol>
         </nav>
         {% if collections %}
