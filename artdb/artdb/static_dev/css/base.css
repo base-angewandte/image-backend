@@ -26,6 +26,13 @@
     box-sizing: border-box;
 }
 
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
+
 body {
     overflow-y: scroll;
     overflow-x: hidden;
@@ -383,10 +390,11 @@ and a close button */
 
 #search form input {
     height: 48px;
-    line-height: 48px;
+    vertical-align: middle;
     font-size: 14pt;
     background: url(icons-basiswien-01.516de83.svg) 0 no-repeat;
     background-size: 20px;
+    -webkit-appearance: none;
 }
 
 #search_artworks_field {

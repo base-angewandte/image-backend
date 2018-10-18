@@ -1,12 +1,6 @@
 {% extends 'base.html' %}
-
-{% block extra_scripts %}
-{{ form.media }}
-{% endblock extra_scripts %}
-
 {% block thumbnailbrowser %}
 <section class="thumbnail-area">
-
     <div class="thumbnail-navbar">
         <nav class="navigation">
             <ol>
@@ -15,7 +9,7 @@
         </nav>
         <div id="search">
             <form method="GET" action="">
-                <input id="search_artworks_field" placeholder="Search Artworks" name="title" value="{{ searchterm }}" autocomplete="off" type="search" role="title search" autofocus/><span id="clear_search_artwork_field"></span>
+                <input id="search_artworks_field" placeholder="Search Artworks" name="title" value="{{ searchterm }}" autocomplete="off" role="title search" autofocus/><span id="clear_search_artwork_field"></span>
             </form>
         </div>
     </div>

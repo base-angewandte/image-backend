@@ -48,7 +48,8 @@
     padding: 0 7px 0 7px;
 }
 
-.sidebar-attached .metadataarea input:focus, textarea:focus {
+.sidebar-attached .metadataarea input:focus,
+.sidebar-attached .metadataarea textarea:focus {
     border: 1px solid var(--selected-field);
 }
 
