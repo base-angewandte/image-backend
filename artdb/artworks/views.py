@@ -39,6 +39,7 @@ def index(request):
     context['BASE_HEADER'] = settings.BASE_HEADER
     context['title'] = 'artworks'
     context['artworks'] = artworks
+    context['searchterm'] = request.GET.get('title', default='')    
     return render(request, 'artwork/thumbnailbrowser.html', context)
 
 
