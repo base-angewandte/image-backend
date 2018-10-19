@@ -33,6 +33,20 @@ def get_path_to_original_file(instance, filename):
     return filename
 
 
+class Keyword(MPTTModel):
+    """
+    Keywords are nodes in a fixed hierarchical taxonomy.
+    """
+    name = models.CharField(max_length=255, unique=True)
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+
+    def __str__(self):
+        return 'Keyword: {0}'.format(self.name)
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
+ 
+
 class Artwork(models.Model):
     """
     Each Artwork has an metadata and image and various versions (renditions) of that image.
@@ -50,9 +64,9 @@ class Artwork(models.Model):
     dimensions = models.CharField(max_length=255, blank=True)
     locationOfCreation = models.CharField(max_length=255, blank= True, null=True)
     credits = models.TextField(blank=True)
-    # TODO: tags
     createdAt = models.DateTimeField(auto_now_add = True)
     updatedAt = models.DateTimeField(auto_now = True, null=True)
+    keywords = models.ManyToManyField(Keyword, blank=True)
 
     def __str__(self):
         return self.title
@@ -112,17 +126,3 @@ class ArtworkCollection(models.Model):
         
     def size(self):
         return self.artworks.count()
-
-
-class Keyword(MPTTModel):
-    """
-    Keywords are nodes in a fixed hierarchical taxonomy.
-    """
-    name = models.CharField(max_length=255, unique=True)
-    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
-
-    def __str__(self):
-        return 'Keyword: {0}'.format(self.name)
-
-    class MPTTMeta:
-        order_insertion_by = ['name']

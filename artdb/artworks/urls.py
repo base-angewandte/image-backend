@@ -20,4 +20,9 @@ urlpatterns = [
         ArtworkAutocomplete.as_view(),
         name='artwork-autocomplete',
     ),
+        re_path(
+        r'^keyword-autocomplete/$',
+        KeywordAutocomplete.as_view(),
+        name='keyword-autocomplete',
+    ),
 ]

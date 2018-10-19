@@ -9,8 +9,7 @@ $(document).ready(function() {
 
     // load artwork data (JSON) and show it in the inspector/sidebar
     updateInspector = function(elInspector, artworkId) {
-        console.log(elInspector);
-        $.getJSON('/artwork/'+artworkId+'.json', function( data) {
+        $.getJSON('/artwork/'+artworkId+'.json', function(data) {
             var items = [];
             const collectButton = `<button name="add" class="collect inspector-button" onClick="showCollectOverlay(${artworkId})">Merken</button>`;
             items.push(collectButton);

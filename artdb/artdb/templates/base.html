@@ -20,7 +20,7 @@
     <body class="show-thumbnailbrowser">
         {% get_current_language as LANGUAGE_CODE %}
         <div id="topbar">
-            <base-header lang="{{ LANGUAGE_CODE }}" post-lang="true" post-csrf="{{ csrf_token }}"></base-header>
+            <!-- <base-header lang="{{ LANGUAGE_CODE }}" post-lang="true" post-csrf="{{ csrf_token }}"></base-header>-->
         </div>
         <div id="thumbnailbrowser">
             {% block collectionslist %}

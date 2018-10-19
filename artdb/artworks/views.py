@@ -180,3 +180,15 @@ class ArtworkAutocomplete(autocomplete.Select2QuerySetView):
     def get_result_value(self, result):
         """Return the value of a result."""
         return result.title
+
+
+class KeywordAutocomplete(autocomplete.Select2QuerySetView):
+    """
+    Return dal suggestions for the artwork's keywords input field.
+    """
+    def get_queryset(self):
+        qs = Keyword.objects.all().order_by('name')
+        if self.q:
+            return qs.filter(name__icontains=self.q)
+        else:
+            return Keyword.objects.none()

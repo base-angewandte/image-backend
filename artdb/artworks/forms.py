@@ -14,6 +14,12 @@ class ArtworkForm(forms.ModelForm):
         exclude = ['id', 'createdAt', 'updatedAt']
         widgets = {
             'artists': autocomplete.ModelSelect2Multiple(url='artist-autocomplete'),
-            'dateFrom': forms.DateInput(attrs={'placeholder': 'tt-mm-jjjj'}),
-            'dateTo': forms.DateInput(attrs={'placeholder': 'tt-mm-jjjj'})
+            'keywords': autocomplete.ModelSelect2Multiple(url='keyword-autocomplete'),
         }
+
+    def __init__(self, *args, **kwargs):
+        # remove hard-coded help_text for ManyToManyFields that use a SelectMultiple widget
+        # see 10 year old ticket: https://code.djangoproject.com/ticket/9321
+        super(ArtworkForm, self).__init__(*args, **kwargs)
+        self.fields['artists'].help_text = ''
+        self.fields['keywords'].help_text = ''
