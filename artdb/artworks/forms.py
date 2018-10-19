@@ -1,6 +1,10 @@
 from django import forms
-from artworks.models import Artwork
+from artworks.models import Artwork, Keyword
 from dal import autocomplete
+
+# https://gist.github.com/tdsymonds/abdcb395f172a016ed785f59043749e3
+from django.contrib.admin.widgets import FilteredSelectMultiple
+from .mptt_m2m_admin import MPTTMultipleChoiceField
 
 class ArtworkForm(forms.ModelForm):
     # TODO: localization
@@ -8,6 +12,12 @@ class ArtworkForm(forms.ModelForm):
   
     imageOriginal = forms.ImageField(label_suffix='', label='Upload', widget=forms.FileInput, required=False)
     imageOriginal.widget.attrs.update({'class': 'imageselector'})
+
+    keywords = MPTTMultipleChoiceField(
+        Keyword.objects.all(), 
+        widget=FilteredSelectMultiple('Keywords', False),
+        required=False
+    )
 
     class Meta:
         model = Artwork

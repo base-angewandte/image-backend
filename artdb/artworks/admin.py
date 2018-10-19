@@ -13,3 +13,7 @@ admin.site.register(ArtworkCollection)
 admin.site.register(Artist)
 admin.site.register(Artwork, ArtworkAdmin)
 admin.site.register(Keyword, MPTTModelAdmin) 
+
+# @admin.register(Article)
+# class ArticleAdmin(TranslatableAdmin):
+# form = ArticleForm
