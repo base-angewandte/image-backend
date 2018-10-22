@@ -70,6 +70,11 @@
             {{ form.locationOfCreation }}
         </div>
         <div>
+            {{ form.keywords.errors }}
+            {{ form.keywords.label_tag }}
+            {{ form.keywords }}
+        </div>
+        <div>
             {{ form.credits.errors }}
             {{ form.credits.label_tag }}
             {{ form.credits }}
@@ -81,7 +86,6 @@
 
 <script type='text/javascript'>
 $(document).ready(function() {
-
     var reader = new FileReader();
     reader.onload = function (e) {
         $('.image-big').attr('src', e.target.result);
@@ -89,7 +93,6 @@ $(document).ready(function() {
    
     function readURL(input) {
         if (input.files && input.files[0]) {
-            console.log(input.files[0]);
             reader.readAsDataURL(input.files[0]);
         }
     }

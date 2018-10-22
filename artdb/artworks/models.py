@@ -41,7 +41,7 @@ class Keyword(MPTTModel):
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
 
     def __str__(self):
-        return 'Keyword: {0}'.format(self.name)
+        return self.name
 
     class MPTTMeta:
         order_insertion_by = ['name']

@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib import admin
 from artworks.models import Artwork, Keyword
 from dal import autocomplete
 
@@ -12,12 +13,6 @@ class ArtworkForm(forms.ModelForm):
   
     imageOriginal = forms.ImageField(label_suffix='', label='Upload', widget=forms.FileInput, required=False)
     imageOriginal.widget.attrs.update({'class': 'imageselector'})
-
-    keywords = MPTTMultipleChoiceField(
-        Keyword.objects.all(), 
-        widget=FilteredSelectMultiple('Keywords', False),
-        required=False
-    )
 
     class Meta:
         model = Artwork
@@ -33,3 +28,16 @@ class ArtworkForm(forms.ModelForm):
         super(ArtworkForm, self).__init__(*args, **kwargs)
         self.fields['artists'].help_text = ''
         self.fields['keywords'].help_text = ''
+
+
+class ArtworkAdminForm(forms.ModelForm):
+
+    keywords = MPTTMultipleChoiceField(
+        Keyword.objects.all(), 
+        widget=FilteredSelectMultiple('Keywords', False),
+        required=False
+    )
+
+    class Meta:
+        model = Artwork
+        fields = '__all__'
