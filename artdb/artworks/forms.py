@@ -31,7 +31,6 @@ class ArtworkForm(forms.ModelForm):
 
 
 class ArtworkAdminForm(forms.ModelForm):
-
     keywords = MPTTMultipleChoiceField(
         Keyword.objects.all(), 
         widget=FilteredSelectMultiple('Keywords', False),

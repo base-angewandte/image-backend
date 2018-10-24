@@ -24,6 +24,13 @@ $(document).ready(function() {
                     }
                     val = artists;
                 }
+                if (key === "keywords") {
+                    var keywords = "";
+                    for (var i = 0; i < val.length; i++) { 
+                        keywords = keywords + val[i].name;
+                    }
+                    val = keywords;
+                }
                 if ((val !== "") && (val !== null)) {
                     items.push(`<dt class="key-${key}">${key}</dt><dd>${val}</dd>`);
                 }

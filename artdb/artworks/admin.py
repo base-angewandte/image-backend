@@ -12,12 +12,6 @@ class ArtworkAdmin(admin.ModelAdmin):
     form = ArtworkAdminForm
     readonly_fields = ('createdAt','updatedAt')
 
-    """keywords = MPTTMultipleChoiceField(
-        Keyword.objects.all(), 
-        widget=FilteredSelectMultiple('Keywords', False),
-        required=False
-    )"""
-
     class Media:
         js = ['js/artwork_form.js']
 
