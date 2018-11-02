@@ -145,6 +145,7 @@
     background-size: 10px;
 }
 
+/* compare .tag in base.css */
 .sidebar-attached .select2-container--default .select2-selection--multiple .select2-selection__choice {
     margin: 4px 8px 4px 0px;
     background-color: #31576C;

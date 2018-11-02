@@ -1,11 +1,11 @@
 from django import forms
 from django.contrib import admin
-from artworks.models import Artwork, Keyword
+from django.forms import ModelMultipleChoiceField
+from django.utils.encoding import smart_text
 from dal import autocomplete
-
+from artworks.models import Artwork, Keyword
 # https://gist.github.com/tdsymonds/abdcb395f172a016ed785f59043749e3
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from .mptt_m2m_admin import MPTTMultipleChoiceField
 
 class ArtworkForm(forms.ModelForm):
     # TODO: localization
@@ -28,6 +28,13 @@ class ArtworkForm(forms.ModelForm):
         super(ArtworkForm, self).__init__(*args, **kwargs)
         self.fields['artists'].help_text = ''
         self.fields['keywords'].help_text = ''
+
+
+class MPTTMultipleChoiceField(ModelMultipleChoiceField):
+    # https://gist.github.com/tdsymonds/abdcb395f172a016ed785f59043749e3
+    def label_from_instance(self, obj):
+        level = getattr(obj, getattr(self.queryset.model._meta, 'level_attr', 'level'), 0)
+        return u'%s %s' % ('-'*level, smart_text(obj))
 
 
 class ArtworkAdminForm(forms.ModelForm):

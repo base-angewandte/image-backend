@@ -3,9 +3,8 @@ from mptt.admin import MPTTModelAdmin
 from artworks.models import *
 from artworks.forms import ArtworkForm, ArtworkAdminForm
 
-# https://gist.github.com/tdsymonds/abdcb395f172a016ed785f59043749e3
+
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from .mptt_m2m_admin import MPTTMultipleChoiceField
 from dal import autocomplete
 
 class ArtworkAdmin(admin.ModelAdmin):

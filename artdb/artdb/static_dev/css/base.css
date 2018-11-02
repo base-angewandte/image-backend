@@ -214,10 +214,19 @@ and a close button */
 
 /* elements inside a sidebar */
 .inspector {
-    padding-top: 16px;
+    padding-top: 18px;
 }
 
-.inspector dt {
+.inspector-button + div {
+    margin-top: 28px;
+}
+
+.inspector div {
+    margin-top: 28px;
+}
+
+.inspector .key {
+    display: inilne-block;
     color: var(--light-grey-1-color);
     font-size: 12px;
     line-height: 14px;
@@ -225,21 +234,38 @@ and a close button */
     margin-bottom: 4px;
 }
 
-.inspector dd {
+.inspector .value {
     color: #fff;
     font-size: 14px;
     line-height: 16px;
-    margin: 0 0 24px 0;
     overflow-wrap: break;
-    max-width: 200px; 
+    max-width: 200px;
+    margin-top: 0;
 }
 
-.inspector dt.key-titleEnglish {
+.inspector .key-titleEnglish {
     display: none;
 }
 
-.inspector dt.key-titleEnglish + dd {
-    margin-top: -24px;
+.inspector .val-titleEnglish {
+    display: block;
+    margin-top: -16px;
+}
+
+.inspector .value.tag {
+    display: inline-block;
+    padding: 0 8px 0 8px;
+    margin-right: 8px;
+    margin-bottom: 2px;
+    background-color: #31576C;
+    border-color: #35627A;
+    border-radius: 20px;
+    height: 14px;
+    line-height: 14px;
+    font-size: 14px;
+    color: #fff;
+    font-weight: 400;
+    overflow-wrap: normal;
 }
 
 .inspector-button {

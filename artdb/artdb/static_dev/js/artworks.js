@@ -9,35 +9,67 @@ $(document).ready(function() {
 
     // load artwork data (JSON) and show it in the inspector/sidebar
     updateInspector = function(elInspector, artworkId) {
+
+        // helper function
+        // creates elements with optional css classes, text and eventListeners
+        function createEl(tagName, cssClassName, text, func) {
+            var el = document.createElement(tagName);
+            if (cssClassName) el.classList.add(cssClassName);
+            if (text) el.appendChild(document.createTextNode(text));
+            if (func) el.addEventListener('click', func);
+            return el;
+        }
+
         $.getJSON('/artwork/'+artworkId+'.json', function(data) {
-            var items = [];
-            const collectButton = `<button name="add" class="collect inspector-button" onClick="showCollectOverlay(${artworkId})">Merken</button>`;
-            items.push(collectButton);
-            const editButton = `<button name="edit" class="edit_artwork inspector-button" onClick="showEditOverlay(${artworkId})">Edit</button>`;
-            items.push(editButton);
-            items.push('<dl class="artwork-details">');
+            var elDetails = document.createElement('div');
+            
+            var func = function() { showCollectOverlay(artworkId); }
+            elDetails.appendChild(createEl('button', 'inspector-button', 'Merken', func));
+            
+            func = function() { showEditOverlay(artworkId); }
+            elDetails.appendChild(createEl('button', 'inspector-button', 'Edit', func));
+            
             $.each( data, function( key, val ) {
-                if (key === "artists") {
-                    var artists = "";
-                    for (var i = 0; i < val.length; i++) { 
-                        artists = artists + val[i].name;
-                    }
-                    val = artists;
+                if (!val) return;
+                var elKey, elVal;
+                var elEntry = document.createElement('div');
+                switch (key) {
+                    case 'artists':
+                        elKey = createEl('div', 'key', 'Artist');
+                        elEntry.appendChild(elKey);
+                        for (var i = 0; i < val.length; i++) {
+                            elVal = createEl('div', 'value', val[i].name, searchForArtist);
+                            elVal.classList.add('tag');
+                            elVal.dataset.artist = val[i].name;
+                            elEntry.appendChild(elVal);
+                        }
+                        break;
+                    case 'keywords':
+                        elKey = createEl('div', 'key', 'Keywords');
+                        elEntry.appendChild(elKey);
+                        for (var i = 0; i < val.length; i++) {
+                            elVal = createEl('div', 'value', val[i].name, searchForKeyword);
+                            elVal.classList.add('tag');
+                            elVal.dataset.keyword = val[i].name;
+                            elEntry.appendChild(elVal);
+                        }
+                        break;
+                    default:
+                        if ((val !== '') && (val !== null)) {
+                            elKey = createEl('div', 'key', key);
+                            elEntry.appendChild(elKey);
+                            elVal = createEl('div', 'value', val);
+                            if (key === 'titleEnglish') {
+                                elKey.classList.add('key-titleEnglish');
+                                elVal.classList.add('val-titleEnglish');
+                            }
+                            elEntry.appendChild(elVal);
+                        }
                 }
-                if (key === "keywords") {
-                    var keywords = "";
-                    for (var i = 0; i < val.length; i++) { 
-                        keywords = keywords + val[i].name;
-                    }
-                    val = keywords;
-                }
-                if ((val !== "") && (val !== null)) {
-                    items.push(`<dt class="key-${key}">${key}</dt><dd>${val}</dd>`);
-                }
+                elDetails.appendChild(elEntry);
             });
-            items.push('</dl>');
-            elInspector.html(items.join(''));
-           });
+            elInspector.replaceChild(elDetails, elInspector.getElementsByTagName('div')[0]);
+        });
     }
 
 
@@ -57,7 +89,7 @@ $(document).ready(function() {
             }
             selectedThumbnail = clickedThumbnail;
             $(selectedThumbnail).addClass(selectClass);
-            elInspector = $('#thumbnailbrowser-inspector');
+            elInspector = document.getElementById('thumbnailbrowser-inspector');
             updateInspector(elInspector, selectedThumbnail.dataset.artworkid);
         }
     });
@@ -76,7 +108,7 @@ $(document).ready(function() {
         thumnailbrowserScrollPosition = $(window).scrollTop();
         showOverlay(detailClassName);
         $('#detail-overlay').load(url, function() {
-            elInspector = $('.detail-inspector').first();
+            elInspector = document.getElementById('overlay-inspector');
             updateInspector(elInspector, artworkId);            
             $('.image-big').addClass(shownClass);
         });
@@ -99,7 +131,7 @@ $(document).ready(function() {
         // TODO: check if detail overlay open; if not remember scrollPosition
         showOverlay(collectClassName);
         $('#collect-overlay').load(url, function() {
-            elInspector = $('.detail-inspector').first();
+            elInspector = document.getElementById('overlay-inspector');
             updateInspector(elInspector, artworkId);
         });
     }   
@@ -130,4 +162,15 @@ $(document).ready(function() {
     hideCollectOverlay = function() {
         closeOverlay();
     };
+
+
+    function searchForKeyword(e) {
+        console.log('search for keyword');
+        console.log(e.currentTarget.dataset.keyword);
+    }
+
+    function searchForArtist(e) {
+        console.log('search for artist');
+        console.log(e.currentTarget.dataset.artist);
+    }
 });
