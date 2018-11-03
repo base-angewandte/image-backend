@@ -9,7 +9,10 @@
         </nav>
         <div id="search">
             <form method="GET" action="">
-                <input id="search_artworks_field" placeholder="Search Artworks" name="title" value="{{ searchterm }}" autocomplete="off" role="title search" autofocus/><span id="clear_search_artwork_field"></span>
+                <input id="search_artworks_field" placeholder="Search Artworks" name="title" value="{{ query_title|default:'' }}" autocomplete="off" role="title search" autofocus/><span id="clear_search_artwork_field"></span>
+                <input id="bla" placeholder="Artist" name="artists" value="{{ query_artists|default:''}}" autocomplete="off" role="artists search"/>
+                <input id="bla" placeholder="Keywords" name="keywords" value="{{ query_keywords|default:''}}" autocomplete="off" role="keywords search"/>
+                <input type="submit"/>
             </form>
         </div>
     </div>

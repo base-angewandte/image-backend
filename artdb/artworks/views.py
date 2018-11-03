@@ -15,21 +15,24 @@ def artworks_list(request):
     """
     Render the thumbnailbrowser.
     """
-    query = request.GET.get('title')
+    queryArtworkTitle = request.GET.get('title')
+    queryArtistsName = request.GET.get('artists')
+    queryKeywordsName = request.GET.get('keywords')
+    qObjects = Q()
     context = {}
-    queryset_list = []
-    if not query:
-        print("no query")
-        queryset_list = Artwork.objects.all().order_by('title')
-        #.order_by('-updatedAt')
-    else:
-        queryset_list = Artwork.objects.all()
-        queryset_list = queryset_list.filter(
-            Q(title__icontains=query) 
-        ).distinct()    
-        # = Artwork.objects.filter(Q(title_icontains=query, artists__id=str(query)).order_by('title'))
 
-    paginator = Paginator(queryset_list, 40) # show 40 artworks per page
+    if queryArtworkTitle:
+        qObjects.add(Q(title__icontains=queryArtworkTitle), Q.AND)
+    if queryArtistsName:
+        artists = Artist.objects.filter(name__icontains=queryArtistsName)
+        qObjects.add(Q(artists__in=artists), Q.AND)
+    if queryKeywordsName:
+        keywords = Keywords.objects.filter(name__icontains=queryKeywordsName)
+        qObjects.add(Q(keywords__in=keywords), Q.AND)
+
+    querysetList = Artwork.objects.filter(qObjects).distinct().order_by('title')
+
+    paginator = Paginator(querysetList, 40) # show 40 artworks per page
     pageNr = request.GET.get('page')
     try:
         artworks = paginator.get_page(pageNr)
@@ -41,7 +44,9 @@ def artworks_list(request):
     context['BASE_HEADER'] = settings.BASE_HEADER
     context['title'] = 'artworks'
     context['artworks'] = artworks
-    context['searchterm'] = request.GET.get('title', default='')    
+    context['query_title'] = queryArtworkTitle
+    context['query_artists'] = queryArtistsName
+    context['query_keywords'] = queryKeywordsName
     return render(request, 'artwork/thumbnailbrowser.html', context)
 
 

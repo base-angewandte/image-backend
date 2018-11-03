@@ -171,6 +171,9 @@ $(document).ready(function() {
 
     function searchForArtist(e) {
         console.log('search for artist');
-        console.log(e.currentTarget.dataset.artist);
+        const artists = e.currentTarget.dataset.artist.replace(/\s/g, "+");
+        const url = `?artists=${artists}`;
+        console.log(url);
+        window.location.href = url;
     }
 });
