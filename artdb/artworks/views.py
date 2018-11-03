@@ -19,7 +19,9 @@ def artworks_list(request):
     context = {}
     queryset_list = []
     if not query:
-        queryset_list = Artwork.objects.all().order_by('title').order_by('-updatedAt')
+        print("no query")
+        queryset_list = Artwork.objects.all().order_by('title')
+        #.order_by('-updatedAt')
     else:
         queryset_list = Artwork.objects.all()
         queryset_list = queryset_list.filter(

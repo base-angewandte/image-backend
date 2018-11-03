@@ -352,6 +352,7 @@ SESSION_COOKIE_NAME = 'sessionid_{}'.format(PROJECT_NAME)
 CSRF_COOKIE_NAME = 'csrftoken_{}'.format(PROJECT_NAME)
 
 # base Header
-BASE_HEADER_SITE_URL = env.str('BASE_HEADER_SITE_URL', SITE_URL)
-BASE_HEADER_JSON = '{}bs/base-header.json'.format(BASE_HEADER_SITE_URL)
-BASE_HEADER = '{}{}'.format(BASE_HEADER_SITE_URL, requests.get(BASE_HEADER_JSON).json()['latest'])
+BASE_HEADER = ''
+# BASE_HEADER_SITE_URL = env.str('BASE_HEADER_SITE_URL', SITE_URL)
+# BASE_HEADER_JSON = '{}bs/base-header.json'.format(BASE_HEADER_SITE_URL)
+# BASE_HEADER = '{}{}'.format(BASE_HEADER_SITE_URL, requests.get(BASE_HEADER_JSON).json()['latest'])

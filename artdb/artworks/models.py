@@ -12,6 +12,8 @@ class Artist(models.Model):
     """
     name = models.CharField(max_length=255, null=False)
     synonyms = models.CharField(max_length=255, null=False, blank=True)
+    createdAt = models.DateTimeField(auto_now_add = True)
+    updatedAt = models.DateTimeField(auto_now = True, null=True)
 
     class Meta:
         ordering = ['name']
@@ -118,8 +120,8 @@ class ArtworkCollection(models.Model):
     title = models.CharField(max_length=255)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     artworks = models.ManyToManyField(Artwork, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    createdAt = models.DateTimeField(auto_now_add=True)
+    updatedAt = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{0} by {1}'.format(self.title, self.user.get_username())
