@@ -1,4 +1,106 @@
 {% extends 'base.html' %}
+
+{% block extra_scripts %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#search-basic-artworks-field").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+            url: "http://localhost:8000/artwork-autocomplete/",
+            dataType: "json",
+            data: {
+                q: request.term
+            },
+            success: function(data) {
+                response($.map(data.results, function (item) {
+                    return {
+                        label: item.text,
+                        value: item.id
+                    }
+                }));
+            }
+            });
+        },
+        select: function(event, ui) {
+            var item = ui.item;
+            if(item) {
+                $(this).val(item.value);
+                $(this.form).submit();
+            }
+        },
+        minLength: 3,
+        selectFirst: false
+    });
+
+    $("#search-expert-artworks-field").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+            url: "http://localhost:8000/artwork-autocomplete/",
+            dataType: "json",
+            data: {
+                q: request.term
+            },
+            success: function(data) {
+                response($.map(data.results, function (item) {
+                    return {
+                        label: item.text,
+                        value: item.id
+                    }
+                }));
+            }
+            });
+        },
+        minLength: 3,
+        selectFirst: false
+    });
+
+    $("#search-expert-artist-field").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+            url: "http://localhost:8000/artist-autocomplete/",
+            dataType: "json",
+            data: {
+                q: request.term
+            },
+            success: function(data) {
+                response($.map(data.results, function (item) {
+                    return {
+                        label: item.text,
+                        value: item.label
+                    }
+                }));
+            }
+            });
+        },
+        minLength: 3,
+        selectFirst: false
+    });
+
+    $("#search-expert-keywords-field").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+            url: "http://localhost:8000/keyword-autocomplete/",
+            dataType: "json",
+            data: {
+                q: request.term
+            },
+            success: function(data) {
+                response($.map(data.results, function (item) {
+                    return {
+                        label: item.text,
+                        value: item.label
+                    }
+                }));
+            }
+            });
+        },
+        minLength: 3,
+        selectFirst: false
+    });
+});
+</script>
+{% endblock extra_scripts %} 
+
 {% block thumbnailbrowser %}
 <section class="thumbnail-area">
     <div class="thumbnail-navbar">
@@ -7,14 +109,40 @@
                 <li class="selected"><a href="{% url 'artworks_list' %}">All Artworks</a></li><li><a href="{% url 'collections_list' %}">Collections</a></li>
             </ol>
         </nav>
-        <div id="search">
-            <form method="GET" action="">
-                <input id="search_artworks_field" placeholder="Search Artworks" name="title" value="{{ query_title|default:'' }}" autocomplete="off" role="title search" autofocus/><span id="clear_search_artwork_field"></span>
-                <input id="bla" placeholder="Artist" name="artists" value="{{ query_artists|default:''}}" autocomplete="off" role="artists search"/>
-                <input id="bla" placeholder="Keywords" name="keywords" value="{{ query_keywords|default:''}}" autocomplete="off" role="keywords search"/>
-                <input type="submit"/>
+        <div class="search-topbar">
+            <form method="GET" action="" id="search-basic" class="hidden">
+                <input id="search-basic-artworks-field" placeholder="Search Artworks" name="title" value="{{ query_title|default:'' }}" autocomplete="off" role="title search" autofocus/><span id="js-clear-search-artwork-field"></span>
             </form>
+            <div class="switch-labeled">
+                <label class="switch">
+                    <input id="js-search-switch" type="checkbox">
+                    <span class="slider round"></span>
+                    <div class="text-label-small">Expert</div>
+                </label>
+            </div>
         </div>
+        {% spaceless %}
+        <form method="GET" action="" id="search-expert">
+            <div class="col-1">
+                <label>Title</label><input id="search-expert-artworks-field" placeholder="" name="title" value="{{ query_title|default:'' }}" autocomplete="off" role="title search" autofocus/>
+                <label>Artist</label><input id="search-expert-artist-field" placeholder="" name="artist" value="{{ query_artist|default:''}}" autocomplete="off" role="artist search"/>
+            </div>
+            <div class="col-2">
+                <div class="extra-margin">
+                    <label>Date From</label><input class="search-small-input" placeholder="YYYY" name="date_from" value="{{ query_date_from|default:''}}" autocomplete="off" role="date_from search"/>
+                </div>
+                <div>
+                    <label>Date To</label><input class="search-small-input" placeholder="YYYY" name="date_to" value="{{ query_date_to|default:''}}" autocomplete="off" role="date_to search"/>
+                </div>
+                <label>Location</label><input placeholder="" name="location" value="{{ query_location|default:''}}" autocomplete="off" role="location search"/>
+            </div>
+            <div class="col-3">
+                <label>Keywords</label>
+                <input id="search-expert-keywords-field" placeholder="" name="keyword" value="{{ query_keyword|default:''}}" autocomplete="off" role="keyword search"/>
+                <input class="search-expert-submit" type="submit" value="Search"/>
+            </div>
+        </form>
+        {% endspaceless %}
     </div>
 
     {% include "artwork/artwork_pagination.html" %}

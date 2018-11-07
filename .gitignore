@@ -156,3 +156,4 @@ docker-compose.override.yml
 secret_key.py
 startdev
 dumpfixture
+/logs

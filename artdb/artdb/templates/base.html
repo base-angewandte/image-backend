@@ -7,15 +7,15 @@
         <title>artdb</title>
         <link type="text/css" rel="stylesheet" href="{% static 'css/base.css' %}">
         <link type="text/css" rel="stylesheet" href="{% static 'css/fonts.css' %}">
-        {% block extra_scripts %}
-        {% endblock extra_scripts %}
+
         <script type="text/javascript" src="{% static '3rd-party/jquery-3.3.1.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/artworks.js' %}"></script>
         <script src="{% static '3rd-party/jquery-ui-1.12.1.custom/jquery-ui.js' %}"></script>
         <link rel="stylesheet" href="{% static '3rd-party/jquery-ui-1.12.1.custom/jquery-ui.css' %}">  
-
         <!-- django-autocomplete-light and edit view adjustments -->
         <link type="text/css" rel="stylesheet" href="{% static 'css/edit.css' %}">
+        {% block extra_scripts %}
+        {% endblock extra_scripts %}
     </head>
     <body class="show-thumbnailbrowser">
         {% get_current_language as LANGUAGE_CODE %}
@@ -47,37 +47,4 @@
           b.urls={login:"{% url 'cas_ng_login' %}",logout:"{% url 'cas_ng_logout' %}",postUrl:"{% url 'set_language' %}"};
         </script>-->
     </body>
-</html>
-
-<script type="text/javascript">
-$(document).ready(function(){
-    $("#search_artworks_field").autocomplete({
-        source: function(request, response) {
-            $.ajax({
-            url: "http://localhost:8000/artwork-autocomplete/",
-            dataType: "json",
-            data: {
-                q: request.term
-            },
-            success: function(data) {
-                response($.map(data.results, function (item) {
-                    return {
-                        label: item.text,
-                        value: item.id
-                    }
-                }));
-            }
-            });
-        },
-        select: function(event, ui) {
-            var item = ui.item;
-            if(item) {
-                $(this).val(item.value);
-                $(this.form).submit();
-            }
-        },
-        minLength: 3,
-        selectFirst: false
-    });
-});
-</script>
+</html>s

@@ -16,18 +16,27 @@ def artworks_list(request):
     Render the thumbnailbrowser.
     """
     queryArtworkTitle = request.GET.get('title')
-    queryArtistsName = request.GET.get('artists')
-    queryKeywordsName = request.GET.get('keywords')
+    queryArtistName = request.GET.get('artist')
+    queryKeyword = request.GET.get('keyword')
+    queryDateFrom = request.GET.get('date_from')
+    queryDateTo = request.GET.get('date_to')
+    queryLocation = request.GET.get('location')
     qObjects = Q()
     context = {}
 
     if queryArtworkTitle:
         qObjects.add(Q(title__icontains=queryArtworkTitle), Q.AND)
-    if queryArtistsName:
-        artists = Artist.objects.filter(name__icontains=queryArtistsName)
+    if queryLocation:
+        qObjects.add(Q(locationOfCreation__icontains=queryLocation), Q.AND)
+    if queryDateFrom:
+        qObjects.add(Q(dateYearFrom__gte=int(queryDateFrom)), Q.AND)
+    if queryDateTo:
+        qObjects.add(Q(dateYearTo__lte=int(queryDateTo)), Q.AND)
+    if queryArtistName:
+        artists = Artist.objects.filter(name__icontains=queryArtistName)
         qObjects.add(Q(artists__in=artists), Q.AND)
-    if queryKeywordsName:
-        keywords = Keywords.objects.filter(name__icontains=queryKeywordsName)
+    if queryKeyword:
+        keywords = Keyword.objects.filter(name__icontains=queryKeyword)
         qObjects.add(Q(keywords__in=keywords), Q.AND)
 
     querysetList = Artwork.objects.filter(qObjects).distinct().order_by('title')
@@ -45,8 +54,11 @@ def artworks_list(request):
     context['title'] = 'artworks'
     context['artworks'] = artworks
     context['query_title'] = queryArtworkTitle
-    context['query_artists'] = queryArtistsName
-    context['query_keywords'] = queryKeywordsName
+    context['query_artist'] = queryArtistName
+    context['query_keyword'] = queryKeyword
+    context['query_date_from'] = queryDateFrom
+    context['query_date_to'] = queryDateTo
+    context['query_location'] = queryLocation
     return render(request, 'artwork/thumbnailbrowser.html', context)
 
 

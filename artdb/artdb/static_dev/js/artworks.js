@@ -29,6 +29,7 @@ $(document).ready(function() {
             func = function() { showEditOverlay(artworkId); }
             elDetails.appendChild(createEl('button', 'inspector-button', 'Edit', func));
             
+            // build all the elements and append them to the DOM 
             $.each( data, function( key, val ) {
                 if (!val) return;
                 var elKey, elVal;
@@ -176,4 +177,28 @@ $(document).ready(function() {
         console.log(url);
         window.location.href = url;
     }
+
+    // do not submit empty form fields
+    $("#search-expert").submit(function() {
+        $(this).find(":input").filter(function() { return !this.value; }).attr("disabled", "disabled");
+        return true;
+    });
+    $("form" ).find(":input").prop("disabled", false);
+
+    // search basic/expert switch
+    $("#js-search-switch").click(function(e) {
+        if ($(this).prop('checked')) {
+            $('#search-basic').addClass('fadeout');
+            $('#search-basic').one('transitionend', function() {
+                $(this).addClass('hidden');
+            });
+            $('#search-expert').removeClass('hidden fadeout');
+        } else {
+            $('#search-expert').addClass('fadeout');
+            $('#search-expert').one('transitionend', function() {
+                $('#search-expert').addClass('hidden');
+            });
+            $('#search-basic').removeClass('hidden fadeout');
+        }
+    }); 
 });
