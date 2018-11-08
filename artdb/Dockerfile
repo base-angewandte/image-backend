@@ -5,9 +5,6 @@ ENV PYTHONUNBUFFERED 1
 RUN mkdir /logs
 VOLUME /logs
 
-RUN mkdir -p /django/assets
-VOLUME /django/assets
-
 WORKDIR /django
 
 RUN pip install --upgrade pip==18.0
