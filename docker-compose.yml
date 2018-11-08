@@ -33,7 +33,7 @@ services:
       - POSTGRES_USER=$DB_USER
       - POSTGRES_DB=$DB_NAME
     expose:
-      - 8200
+      - 8300
     volumes:
       - ./artdb:/django
       - ./logs:/logs
