@@ -80,7 +80,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third-party apps
-    #'debug_toolbar',
+    'debug_toolbar',
     'rest_framework',
     'versatileimagefield',
     'django_cleanup',
@@ -244,8 +244,11 @@ LANGUAGES = (
 
 STATICFILES_DIRS = (
     # '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'static')), os.sep),
-    os.path.join(BASE_DIR, 'artdb/static_dev'),
+    os.path.join(BASE_DIR, 'artdb', 'static_dev'),
 )
+print(STATICFILES_DIRS)
+print("test")
+
 STATIC_URL = '{}/static/'.format(FORCE_SCRIPT_NAME if FORCE_SCRIPT_NAME else '')
 STATIC_ROOT = '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'assets', 'static')), os.sep)
 
