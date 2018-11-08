@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     'django_cleanup',
     'django_cas_ng',
     'mptt',
+    'massadmin',
 
     # Project apps
     'general',

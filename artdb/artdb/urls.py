@@ -24,6 +24,7 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('artworks.urls')),
+    path('admin/', include("massadmin.urls")),
 
     path(r'accounts/login/', django_cas_ng.views.login, name='cas_ng_login'),
     path(r'accounts/logout/', django_cas_ng.views.logout, name='cas_ng_logout'),
