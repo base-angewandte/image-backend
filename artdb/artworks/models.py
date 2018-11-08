@@ -47,7 +47,22 @@ class Keyword(MPTTModel):
 
     class MPTTMeta:
         order_insertion_by = ['name']
- 
+
+
+class Location(MPTTModel):
+    """
+    Locations are nodes in a fixed hierarchical taxonomy.
+    """
+    name = models.CharField(max_length=255)
+    synonyms = models.CharField(max_length=255, blank=True)
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+
+    def __str__(self):
+        return self.name
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
+
 
 class Artwork(models.Model):
     """
@@ -64,11 +79,11 @@ class Artwork(models.Model):
     dateYearTo = models.IntegerField(null=True, blank=True)
     material = models.TextField(null=True, blank=True)
     dimensions = models.CharField(max_length=255, blank=True)
-    locationOfCreation = models.CharField(max_length=255, blank= True, null=True)
     credits = models.TextField(blank=True)
     createdAt = models.DateTimeField(auto_now_add = True)
     updatedAt = models.DateTimeField(auto_now = True, null=True)
     keywords = models.ManyToManyField(Keyword, blank=True)
+    locationOfCreation = models.ManyToManyField(Location, blank=True)
 
     def __str__(self):
         return self.title
