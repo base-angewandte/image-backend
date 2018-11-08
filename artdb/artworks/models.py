@@ -83,7 +83,7 @@ class Artwork(models.Model):
     createdAt = models.DateTimeField(auto_now_add = True)
     updatedAt = models.DateTimeField(auto_now = True, null=True)
     keywords = models.ManyToManyField(Keyword, blank=True)
-    locationOfCreation = models.ManyToManyField(Location, blank=True)
+    locationOfCreation = TreeForeignKey(Location, blank=True, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.title
