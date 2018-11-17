@@ -1,35 +1,38 @@
 <div class="content">
     <div class="center">
+        {% spaceless %}
+        <h2 class="centered">Add artwork to your collections</h2>
         <table class="collections-list">
-            <th colspan=2>
-                Add or remove {{artwork.title}} to your collections:
-            </th>
+            <form method="POST" action="" id="addCollectionForm">
+                    <input type="hidden" name="artworkid" value="{{artwork.id}}">
+            <tr class="addCollection">
+                <td><input placeholder="New collection title" name="title" autocomplete="off" role="new collection" autofocus/></td>
+                <td class="collectButton"><input type="submit" class="addCollection addCollectionButton" value="add"/></td>
+            </tr>
+            </form>
             {% if collections %}
-                {% for collection in collections %}
-                <tr>
-                    <td>{{collection.title}}</td>
-                    <td class="collectButtons {% if artwork in collection.artworks.all %}remove{% endif %}">
-                        <button class="removeFromCollection" data-collectionid="{{collection.id}}" data-artworkid="{{artwork.id}}">remove</button>
-                        <button class="addToCollection" data-collectionid="{{collection.id}}" data-artworkid="{{artwork.id}}">add</button>
-                    </td>
-                </tr>
-                {% endfor %}
+            {% for collection in collections %}
+            <tr>
+                <td>{{collection.title}}</td>
+                <td class="collectButton{% if artwork in collection.artworks.all %} remove{% endif %}">
+                    <button class="removeFromCollection" data-collectionid="{{collection.id}}" data-artworkid="{{artwork.id}}">remove</button>
+                    <button class="addToCollection" data-collectionid="{{collection.id}}" data-artworkid="{{artwork.id}}">add</button>
+                </td>
+            </tr>
+            {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan=2>You don not have any collections yet.</td>
+                    <td colspan=2>You do not have any collections yet.</td>
                 </tr>
             {% endif %}
-            <tr>
-                <td colspan=2><button class="addCollection">Add new collection</button></td>
-            </tr>
         </table>
-
+        {% endspaceless %}
         <button name="close" class="button-close"  onClick="hideCollectOverlay()"></button>
     </div>
 </div>
     
 <div class="sidebar-attached">
-    <aside class="inspector detail-inspector">
+    <aside class="inspector" id="collect-overlay-inspector">
         <div></div>
     </aside>
 </div>
@@ -50,7 +53,6 @@ $(document).ready(function() {
                 'action': 'remove'
             },
             success: function(message) {
-                console.log("remove artwork from collection");
                 e.currentTarget.parentElement.classList.toggle('remove');
             },
             error: function(error) {
@@ -72,8 +74,29 @@ $(document).ready(function() {
                 'action': 'add'
             },
             success: function(message) {
-                console.log("added artwork to collection");
                 e.currentTarget.parentElement.classList.toggle('remove');
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        })
+    });
+    $("#addCollectionForm").on('submit', function (e) {
+        e.preventDefault();
+        data = $(this).serializeArray();
+        var url = '/artwork/' + data[0]['value'] + '/collect_overlay.html';
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'artwork-id': data[0]['value'],
+                'collection-title': data[1]['value'],
+                'action': 'addCollection'
+            },
+            success: function(message) {
+                $('#collect-overlay').load(url, function() {
+                });
             },
             error: function(error) {
                 console.log(error);

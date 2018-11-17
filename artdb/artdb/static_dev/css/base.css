@@ -11,10 +11,11 @@
     --light-grey-1-color: #B6B6B6;  /* sidebar key values */
     --light-grey-2-color: #CCC;
     --light-grey-3-color: #F4F4F4;  /* top-nav background*/
+    --light-grey-4-color: #F6F6F6; /* expert search background */
     --selected-field: #3686C2;
     --base-color: #9C27B0;
     --primary-button-color: #029290;
-    --remove-button-color: #029290;
+    --remove-button-color: #f54a26;
     --topbar-height: 87px;
     --sidebar-width: 232px;
     --edit-overlay-formwidth: 448px;
@@ -31,6 +32,15 @@ select:focus,
 textarea:focus,
 button:focus {
     outline: none;
+}
+
+input {
+    height: 32px;
+    padding: 0px 7px 0px 7px;
+    box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
+    border: 0;
+    font-size: 14px;
+    font-family: 'Source Sans Pro', sans-serif;
 }
 
 body {
@@ -53,6 +63,15 @@ body {
 h2 {
     width: 100%;    
     display: block;
+}
+
+h2.centered {
+    display: block;
+    margin: 36px auto 18px auto;
+    width: 800px;
+    font-size: 24px;
+    font-weight: 400;
+    text-align: center;
 }
 
 /* fixed top navigation */
@@ -345,7 +364,7 @@ and a close button */
 /* thumbnailbrowser navbar */
 .thumbnail-navbar {
     width: 100%;
-    background-color: #F6F6F6;
+    background-color: var(--light-grey-4-color);
     /*border-bottom: 1px solid #F0F0F0;*/
     padding: 18px;
 }
@@ -635,62 +654,58 @@ and a close button */
 /* collections */
 
 table.collections-list {
-    width: 480px;
-    margin: 0 auto 0 0;
+    width: 320px;
+    margin: 0 auto 0 auto;
     border-collapse: separate;
-    border-spacing: 0 8px;
-    margin-top: -8px;
+    border-spacing: 0 1px;
+    table-layout:fixed;
 }
 
-table.collections-list tr {
-    box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
+table.collections-list tr.addCollection {
+    background-color: var(--light-grey-4-color);
 }
+
 
 table.collections-list td {
-    background-color: #fff;
     text-align: left;
-    height: 50px;
-    padding: 16px;
+    padding: 8px;
     vertical-align: middle;
     font-size: 14px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 table.collections-list td:last-child {
     text-align: right;
 }
 
-table.collections-list td.collectButtons button {
+table.collections-list td.collectButton {
+    width: 106px;
+}
+
+table.collections-list .addCollectionButton,
+table.collections-list button {
     display: inline-block;
     width: 90px;
     height: 28px;
     margin: 0;
     border: 0;
-    background-color: var(--mid-grey-2-color);
-    color: #fff;
+    color: var(--mid-grey-2-color);
+    border: 1px solid var(--mid-grey-2-color);
     text-transform: uppercase;
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 14px;
 }
 
 table.collections-list button.addToCollection {
-    background-color: var(--primary-button-color);
+    color: var(--primary-button-color);
+    border: 1px solid var(--primary-button-color);
 }
 
 table.collections-list button.removeFromCollection {
-    background-color: var(--remove-button-color);
-}
-
-table.collections-list button.addCollection {
-    display: inline-block;
-    width: 440px;
-    height: 28px;
-    margin: 0px 0px 6px 0px;
-    border: 0;
-    background-color: var(--mid-grey-2-color);
-    color: #fff;
-    text-transform: uppercase;
-    font-family: 'Source Sans Pro', sans-serif;
-    font-size: 14px;
+    border: 1px solid var(--remove-button-color);
+    color: var(--remove-button-color);
 }
 
 table.collections-list td button.removeFromCollection {

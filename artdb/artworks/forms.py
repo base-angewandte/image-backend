@@ -47,3 +47,4 @@ class ArtworkAdminForm(forms.ModelForm):
     class Meta:
         model = Artwork
         fields = '__all__'
+

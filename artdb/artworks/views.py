@@ -4,12 +4,13 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, ExpressionWrapper, BooleanField
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from dal import autocomplete
 from rest_framework.response import Response
 from artworks.models import *
 from artworks.forms import *
 from artworks.serializers import ArtworkSerializer
-
 
 def artworks_list(request):
     """
@@ -102,7 +103,7 @@ def artwork_edit(request, id):
             return redirect('/', id=artwork.id)
     return render(request, 'artwork/artwork_edit_overlay.html', context)
 
-
+@login_required
 def artwork_collect(request, id):
     """
     Add or remove an artwork to a collection.
@@ -116,21 +117,31 @@ def artwork_collect(request, id):
         # Do something for anonymous users.
     if request.method == 'GET':
         artwork = get_object_or_404(Artwork, id=id)
-        context = { }
+        context = {}
         qs = ArtworkCollection.objects.all()
-        collections = qs.filter(user__id=1).order_by('title')
+        collections = qs.filter(user=request.user).order_by('-createdAt')
         context['collections'] = collections
         context['artwork'] = artwork
         return render(request, 'artwork/artwork_collect_overlay.html', context)
     if request.method == 'POST':
         artwork = get_object_or_404(Artwork, id=request.POST['artwork-id'])
-        col = get_object_or_404(ArtworkCollection, id=request.POST['collection-id'])
         if (request.POST['action'] == 'add'):
+            col = get_object_or_404(ArtworkCollection, id=request.POST['collection-id'])
             col.artworks.add(artwork)
             return JsonResponse({'action': 'added'})
         if (request.POST['action'] == 'remove'):
+            col = get_object_or_404(ArtworkCollection, id=request.POST['collection-id'])
             col.artworks.remove(artwork)
             return JsonResponse({'action': 'removed'})
+        if (request.POST['action'] == 'addCollection'):
+            colTitle = request.POST['collection-title']
+            if (colTitle):
+                u = User.objects.get(id=request.user.id)
+                col = ArtworkCollection.objects.create(title=colTitle, user=u)
+                col.artworks.add(artwork)
+                return JsonResponse({'action': 'reload'})
+            else:
+                return JsonResponse({'error': 'title missing'},  status=500)
         return JsonResponse({'action': 'none'})
 
 

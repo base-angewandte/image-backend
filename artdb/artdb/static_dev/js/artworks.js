@@ -1,6 +1,6 @@
 $(document).ready(function() {
     var selectedThumbnail = null;
-    var thumnailbrowserScrollPosition = $(window).scrollTop();
+    var thumbnailbrowserScrollPosition = $(window).scrollTop();
     const thumbnailClassName = 'show-thumbnailbrowser';
     const editClassName = 'show-edit-overlay';
     const detailClassName = 'show-detail-overlay';
@@ -8,8 +8,7 @@ $(document).ready(function() {
 
 
     // load artwork data (JSON) and show it in the inspector/sidebar
-    updateInspector = function(elInspector, artworkId) {
-
+    updateInspector = function(elInspector, artworkID) {
         // helper function
         // creates elements with optional css classes, text and eventListeners
         function createEl(tagName, cssClassName, text, func) {
@@ -20,13 +19,13 @@ $(document).ready(function() {
             return el;
         }
 
-        $.getJSON('/artwork/'+artworkId+'.json', function(data) {
+        $.getJSON('/artwork/'+artworkID+'.json', function(data) {
             var elDetails = document.createElement('div');
             
-            var func = function() { showCollectOverlay(artworkId); }
+            var func = function() { showCollectOverlay(artworkID); }
             elDetails.appendChild(createEl('button', 'inspector-button', 'Merken', func));
             
-            func = function() { showEditOverlay(artworkId); }
+            func = function() { showEditOverlay(artworkID); }
             elDetails.appendChild(createEl('button', 'inspector-button', 'Edit', func));
             
             // build all the elements and append them to the DOM 
@@ -68,7 +67,7 @@ $(document).ready(function() {
                         }
                 }
                 elDetails.appendChild(elEntry);
-            });
+            }); 
             elInspector.replaceChild(elDetails, elInspector.getElementsByTagName('div')[0]);
         });
     }
@@ -98,50 +97,50 @@ $(document).ready(function() {
 
     // switch to a specific view
     function showOverlay(classNameToAdd) {
+        // remember the scroll position
+        if ($('body').hasClass(thumbnailClassName)) {
+            thumbnailbrowserScrollPosition = $(window).scrollTop();
+            window.scrollTo(0, 0);
+        }
         document.body.className = classNameToAdd;
     }
 
 
     // open the detail overlay
-    function showDetailOverlay(artworkId) {
-        const shownClass = 'shown';
-        const url = '/artwork/' + artworkId + '/detail_overlay.html';
-        thumnailbrowserScrollPosition = $(window).scrollTop();
+    function showDetailOverlay(artworkID) {
+        const url = '/artwork/' + artworkID + '/detail_overlay.html';
         showOverlay(detailClassName);
         $('#detail-overlay').load(url, function() {
-            elInspector = document.getElementById('overlay-inspector');
-            updateInspector(elInspector, artworkId);            
-            $('.image-big').addClass(shownClass);
+            elInspector = document.getElementById('detail-overlay-inspector');
+            updateInspector(elInspector, artworkID);       
+            $('.image-big').addClass('shown');
+        });
+    }
+
+    // open the collect artwork overlay 
+    showCollectOverlay = function(artworkID) {
+        const url = '/artwork/' + artworkID + '/collect_overlay.html';
+        showOverlay(collectClassName);
+        $('#collect-overlay').load(url, function() {
+            console.log("loaded");
+            elInspector = document.getElementById('collect-overlay-inspector');
+            updateInspector(elInspector, artworkID);
         });
     }
 
     // open the detail edit overlay 
-    showEditOverlay = function(artworkId) {
-        const url = '/artwork/' + artworkId + '/edit_overlay.html';
-        // TODO: check if detail overlay open; if not remember scrollPosition
+    showEditOverlay = function(artworkID) {
+        const url = '/artwork/' + artworkID + '/edit_overlay.html';
         showOverlay(editClassName);
         $('#edit-overlay').load(url, function() {
             $('.image-big').addClass('shown');
         });
     }
 
-    // open the collect artwork overlay 
-    showCollectOverlay = function(artworkId) {
-        const userID = 1; // TODO: get userID!
-        const url = '/artwork/' + artworkId + '/collect_overlay.html';
-        // TODO: check if detail overlay open; if not remember scrollPosition
-        showOverlay(collectClassName);
-        $('#collect-overlay').load(url, function() {
-            elInspector = document.getElementById('overlay-inspector');
-            updateInspector(elInspector, artworkId);
-        });
-    }   
-
-
     // close the overlay
     function closeOverlay() {
         document.body.className = thumbnailClassName;
-        $(window).scrollTop(thumnailbrowserScrollPosition);
+        $(window).scrollTop(thumbnailbrowserScrollPosition);
     }
 
 
