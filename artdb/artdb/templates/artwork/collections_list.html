@@ -24,12 +24,13 @@
     </div>
 
     <div class="list">
+    <h2 class="centered">Your collections</h2>
     {% if collections %}
         <table id="js-collections-list" class="collections-list">
             {% for collection in collections %}
-                <tr data-collectionid="{{collection.id}}"><td>{{collection.title}}</td>
-                    <td>{{collection.size}}</td>
-                    <td>by {{collection.user.username}}</td></tr>
+                <tr class="collection" data-collectionid="{{collection.id}}"><td>{{collection.title}}</td>
+                <td>{{collection.size}}</td>
+                </tr>
             {% endfor %}
         </table>
     {% else %}
@@ -44,17 +45,16 @@
             change: function(event, ui) {
                 let id = ui.item.value;
                 if (id) {
-                    window.location = `{{url}}/collection/${id}`;
+                    window.location = `{% url 'collections_list' %}/${id}.html`;
                 } else {
-                    window.location = '{{url}}/collections.html';
+                    window.location = '{% url 'collections_list' %}';
                 }
             }   
         });
         $("#js-collections-list tr").on('click', function (e) {
             var clickedCollection = e.currentTarget.dataset.collectionid;
-            console.log(clickedCollection);
             if (clickedCollection) {
-                window.location = `{{url}}/collection/${clickedCollection}`;
+                window.location = `/collection/${clickedCollection}.html`;
             }
         });
     });

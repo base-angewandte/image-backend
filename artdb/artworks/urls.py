@@ -8,7 +8,7 @@ urlpatterns = [
     path('artwork/<int:id>/detail_overlay.html', artwork_detail_overlay, name='artwork_detail_overlay'), 
     path('artwork/<int:id>/edit_overlay.html', artwork_edit, name='artwork_edit'),
     path('artwork/<int:id>/collect_overlay.html', artwork_collect, name='artwork_collect'),
-    path('collection/<int:id>', collection, name='collection'),
+    path('collection/<int:id>.html', collection, name='collection'),
     path('collections.html', collections_list, name='collections_list'),
     re_path(
         r'^artist-autocomplete/$',

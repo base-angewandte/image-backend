@@ -418,6 +418,7 @@ and a close button */
 #search-basic,
 #collection-nav {
     display: block;
+    float: right;
     margin: 0 auto 0 auto;
     height: 48px;
 }
@@ -627,6 +628,10 @@ and a close button */
     width: 480px;
     height: 48px;
     border: 0;
+    padding: 16px;
+    line-height: 16px;
+    font-size: 16px;
+    box-shadow: 0 0 3px 0 rgba(0,0,0,.05)
 }
 
 #collection-selector-button:active,
@@ -659,6 +664,7 @@ table.collections-list {
     border-collapse: separate;
     border-spacing: 0 1px;
     table-layout:fixed;
+    border-spacing: 0px 8px;
 }
 
 table.collections-list tr.addCollection {
@@ -674,10 +680,12 @@ table.collections-list td {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    width: calc(100%-32px);
 }
 
 table.collections-list td:last-child {
     text-align: right;
+    width: 32px;
 }
 
 table.collections-list td.collectButton {
@@ -696,16 +704,19 @@ table.collections-list button {
     text-transform: uppercase;
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 14px;
+    background-color: var(--light-grey-4-color);
 }
 
 table.collections-list button.addToCollection {
     color: var(--primary-button-color);
     border: 1px solid var(--primary-button-color);
+    background-color: var(--light-bg-color);
 }
 
 table.collections-list button.removeFromCollection {
     border: 1px solid var(--remove-button-color);
     color: var(--remove-button-color);
+    background-color: var(--light-bg-color);
 }
 
 table.collections-list td button.removeFromCollection {
@@ -718,6 +729,17 @@ table.collections-list td.remove button.removeFromCollection {
 
 table.collections-list td.remove button.addToCollection {
     display: none;
+}
+
+table.collections-list tr td {
+    box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
+    background-color: #fff;
+}
+
+table.collections-list tr:hover td,
+table.collections-list tr:focus td,
+table.collections-list tr:active td {
+    color: var(--base-color);
 }
 
 .navwrapper.fixed {

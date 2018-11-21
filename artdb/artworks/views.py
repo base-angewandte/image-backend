@@ -103,6 +103,7 @@ def artwork_edit(request, id):
             return redirect('/', id=artwork.id)
     return render(request, 'artwork/artwork_edit_overlay.html', context)
 
+
 @login_required
 def artwork_collect(request, id):
     """
@@ -166,10 +167,9 @@ def collections_list(request, id=None):
     """
     Render a list of all collections.
     """
-    # TODO: only list the collections of the user
     context = {}
     context['BASE_HEADER'] = settings.BASE_HEADER
-    context['collections'] = ArtworkCollection.objects.all()
+    context['collections'] = ArtworkCollection.objects.filter(user=request.user)
     return render(request, 'artwork/collections_list.html', context)
 
 
