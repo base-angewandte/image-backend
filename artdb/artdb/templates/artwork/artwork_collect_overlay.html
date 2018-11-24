@@ -2,14 +2,13 @@
     <div class="center">
         {% spaceless %}
         <h2 class="centered">Add artwork to your collections</h2>
-        <table class="collections-list">
-            <form method="POST" action="" id="addCollectionForm">
-                    <input type="hidden" name="artworkid" value="{{artwork.id}}">
+        <form method="POST" action="" id="addCollectionForm">
+            <input type="hidden" name="artworkid" value="{{artwork.id}}">
+            <table class="collections-list">
             <tr class="addCollection">
                 <td><input placeholder="New collection title" name="title" autocomplete="off" role="new collection" autofocus/></td>
                 <td class="collectButton"><input type="submit" class="addCollection addCollectionButton" value="add"/></td>
             </tr>
-            </form>
             {% if collections %}
             {% for collection in collections %}
             <tr>
@@ -26,8 +25,9 @@
                 </tr>
             {% endif %}
         </table>
-        {% endspaceless %}
-        <button name="close" class="button-close"  onClick="hideCollectOverlay()"></button>
+    </form>
+    {% endspaceless %}
+    <button name="close" class="button-close"  onClick="hideCollectOverlay()"></button>
     </div>
 </div>
     
@@ -74,6 +74,7 @@ $(document).ready(function() {
                 'action': 'add'
             },
             success: function(message) {
+                console.log(message);
                 e.currentTarget.parentElement.classList.toggle('remove');
             },
             error: function(error) {
@@ -85,6 +86,7 @@ $(document).ready(function() {
         e.preventDefault();
         data = $(this).serializeArray();
         var url = '/artwork/' + data[0]['value'] + '/collect_overlay.html';
+        console.log("adding");
         $.ajax({
             type: 'POST',
             url: url,
@@ -95,6 +97,7 @@ $(document).ready(function() {
                 'action': 'addCollection'
             },
             success: function(message) {
+                console.log(message);
                 $('#collect-overlay').load(url, function() {
                 });
             },

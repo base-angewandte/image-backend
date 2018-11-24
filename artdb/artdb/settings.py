@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     'django_cas_ng',
     'mptt',
     'massadmin',
+    'ordered_model',
 
     # Project apps
     'general',

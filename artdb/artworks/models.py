@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from django.conf import settings
 from versatileimagefield.fields import VersatileImageField
 from mptt.models import MPTTModel, TreeForeignKey
+from ordered_model.models import OrderedModel
 
 class Artist(models.Model):
     """
@@ -134,12 +135,23 @@ class ArtworkCollection(models.Model):
     """
     title = models.CharField(max_length=255)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    artworks = models.ManyToManyField(Artwork, blank=True)
+    artworks = models.ManyToManyField(Artwork, through='ArtworkCollectionMembership')
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
+
+    # TODO: add membership through model to make orderable
+    # https://stackoverflow.com/questions/18212268/django-sorting-object-based-on-user-defined-order-in-template
 
     def __str__(self):
         return '{0} by {1}'.format(self.title, self.user.get_username())
         
     def size(self):
         return self.artworks.count()
+
+class ArtworkCollectionMembership(OrderedModel):
+    collection = models.ForeignKey(ArtworkCollection, on_delete=models.CASCADE)
+    artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE)
+    order_with_respect_to = 'collection'
+
+    class Meta:
+        ordering = ('collection', 'order')

@@ -128,18 +128,21 @@ def artwork_collect(request, id):
         artwork = get_object_or_404(Artwork, id=request.POST['artwork-id'])
         if (request.POST['action'] == 'add'):
             col = get_object_or_404(ArtworkCollection, id=request.POST['collection-id'])
-            col.artworks.add(artwork)
+            # col.artworks.add(artwork)
+            ArtworkCollectionMembership.objects.create(collection=col, artwork=artwork)
             return JsonResponse({'action': 'added'})
         if (request.POST['action'] == 'remove'):
             col = get_object_or_404(ArtworkCollection, id=request.POST['collection-id'])
-            col.artworks.remove(artwork)
+            # col.artworks.remove(artwork)
+            ArtworkCollectionMembership.objects.filter(collection=col, artwork=artwork).delete()
             return JsonResponse({'action': 'removed'})
         if (request.POST['action'] == 'addCollection'):
             colTitle = request.POST['collection-title']
             if (colTitle):
                 u = User.objects.get(id=request.user.id)
                 col = ArtworkCollection.objects.create(title=colTitle, user=u)
-                col.artworks.add(artwork)
+                # col.artworks.add(artwork)
+                ArtworkCollectionMembership.objects.create(collection=col, artwork=artwork)
                 return JsonResponse({'action': 'reload'})
             else:
                 return JsonResponse({'error': 'title missing'},  status=500)
