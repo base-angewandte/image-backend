@@ -313,6 +313,7 @@ and a close button */
 
 .thumbnail {
     display: flex;
+    position: relative;
     flex-direction: column;
     justify-content: center;
     margin: 3px;
@@ -359,6 +360,34 @@ and a close button */
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+
+.thumbnail.orderable:hover .moveleft {
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    background-color: blue;
+    left: 10px;
+    bottom: 114px;
+    z-index: 4;
+}
+
+.thumbnail.orderable:hover:first-child .moveleft {
+    display: none;
+}
+
+.thumbnail.orderable:hover:last-child .moveright {
+    display: none;
+}
+
+.thumbnail.orderable:hover .moveright {
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    background-color: red;
+    right: 10px;
+    bottom: 114px;
+    z-index: 4;
 }
 
 /* thumbnailbrowser navbar */

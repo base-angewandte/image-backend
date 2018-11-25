@@ -5,10 +5,13 @@ from artworks.forms import ArtworkForm, ArtworkAdminForm
 from ordered_model.admin import OrderedTabularInline, OrderedInlineModelAdminMixin
 
 
-class ArtworkCollectionMembershipInline(admin.TabularInline):
+class ArtworkCollectionMembershipInline(OrderedTabularInline):
     model = ArtworkCollectionMembership
     autocomplete_fields = ['artwork']
     extra = 0
+    fields = ('artwork', 'order', 'move_up_down_links',)
+    readonly_fields = ('order', 'move_up_down_links',)
+    ordering = ('order',)
 
 
 class ArtworkAdmin(admin.ModelAdmin):
@@ -23,7 +26,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         js = ['js/artwork_form.js']
 
 
-class ArtworkCollectionAdmin(admin.ModelAdmin):
+class ArtworkCollectionAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
     readonly_fields = ('createdAt','updatedAt')
     list_display = ('title', 'createdAt', 'updatedAt')
     ordering = ('-createdAt',)

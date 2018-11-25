@@ -145,7 +145,7 @@ def artwork_collect(request, id):
                 ArtworkCollectionMembership.objects.create(collection=col, artwork=artwork)
                 return JsonResponse({'action': 'reload'})
             else:
-                return JsonResponse({'error': 'title missing'},  status=500)
+                return JsonResponse({'error': 'collection title missing'}, status=500)
         return JsonResponse({'action': 'none'})
 
 
@@ -153,17 +153,29 @@ def collection(request, id=None):
     """
     Render all artwork thumbnails of a single collection.
     """
-    col = get_object_or_404(ArtworkCollection, id=id)
-    context = {}
-    context['BASE_HEADER'] = settings.BASE_HEADER
-    context['title']  = col.title
-    context['id']  = col.id
-    context['created_by_id'] = col.user.id
-    context['created_by_username'] = col.user.get_username()
-    context['created_by_fullname'] = col.user.get_full_name()
-    context['artworks'] = col.artworks.all()
-    context['collections'] = ArtworkCollection.objects.all()
-    return render(request, 'artwork/collection.html', context)
+    if request.method == 'GET':
+        col = get_object_or_404(ArtworkCollection, id=id)
+        context = {}
+        context['BASE_HEADER'] = settings.BASE_HEADER
+        context['title']  = col.title
+        context['id']  = col.id
+        context['created_by_id'] = col.user.id
+        context['created_by_username'] = col.user.get_username()
+        context['created_by_fullname'] = col.user.get_full_name()
+        context['memberships'] = col.artworkcollectionmembership_set.all()
+        context['collections'] = ArtworkCollection.objects.all()
+        return render(request, 'artwork/collection.html', context)
+    if request.method == 'POST':
+        membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'])
+        if not membership:
+            return JsonResponse({'error': 'membership does not exist'})
+        if (request.POST['action'] == 'left'):
+            membership.up()
+            return JsonResponse({'action': 'reload'})
+        if (request.POST['action'] == 'right'):
+            membership.down()
+            return JsonResponse({'action': 'swap'})
+        return JsonResponse({'action': 'none'})
 
 
 def collections_list(request, id=None):

@@ -45,7 +45,7 @@
             change: function(event, ui) {
                 let id = ui.item.value;
                 if (id) {
-                    window.location = `{% url 'collections_list' %}/${id}.html`;
+                    window.location = `/collection/${id}.html`;
                 } else {
                     window.location = '{% url 'collections_list' %}';
                 }

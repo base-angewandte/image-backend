@@ -1,0 +1,25 @@
+    {% if memberships %}
+    <div id="thumbnails">
+        {% for membership in memberships %}
+        <div data-artworkid="{{membership.artwork.id}}" data-membershipid="{{membership.id}}" class="thumbnail orderable">
+            <div class="vertically-center">
+                {% if not membership.artwork.imageOriginal %}
+                    <div class="picture-thumbnail picture-thumbnail-missing"></div>
+                {% else %}
+                    <img class="picture-thumbnail" src="{{membership.artwork.imageOriginal.thumbnail.180x180}}"/>
+                {% endif %}
+            </div>
+            <div class="thumbnail-title">{{membership.artwork.title}}</div>
+            <div class="thumbnail-artist">
+                {% for artist in membership.artwork.artists.all %}
+                    {{ artist.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </div>
+            <div class="moveleft"></div>             
+            <div class="moveright"></div>
+        </div>        
+    {% endfor %}
+    </div>
+    {% else %}
+    <p>no artworks there!</p>
+    {% endif %}

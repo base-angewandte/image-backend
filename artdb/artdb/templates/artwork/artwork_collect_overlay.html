@@ -40,8 +40,8 @@
 <script>
 $(document).ready(function() {
     $(".removeFromCollection").on('click', function (e) {
-        artworkID = e.currentTarget.dataset['artworkid'];
-        collectionID = e.currentTarget.dataset['collectionid'];
+        var artworkID = e.currentTarget.dataset['artworkid'];
+        var collectionID = e.currentTarget.dataset['collectionid'];
         var url = '/artwork/' + artworkID + '/collect_overlay.html';
         $.ajax({
             type: 'POST',
@@ -61,8 +61,8 @@ $(document).ready(function() {
         })
     });
     $(".addToCollection").on('click', function (e) {
-        artworkID = e.currentTarget.dataset['artworkid'];
-        collectionID = e.currentTarget.dataset['collectionid'];
+        var artworkID = e.currentTarget.dataset['artworkid'];
+        var collectionID = e.currentTarget.dataset['collectionid'];
         var url = '/artwork/' + artworkID + '/collect_overlay.html';
         $.ajax({
             type: 'POST',
@@ -74,7 +74,6 @@ $(document).ready(function() {
                 'action': 'add'
             },
             success: function(message) {
-                console.log(message);
                 e.currentTarget.parentElement.classList.toggle('remove');
             },
             error: function(error) {
@@ -84,9 +83,8 @@ $(document).ready(function() {
     });
     $("#addCollectionForm").on('submit', function (e) {
         e.preventDefault();
-        data = $(this).serializeArray();
+        var data = $(this).serializeArray();
         var url = '/artwork/' + data[0]['value'] + '/collect_overlay.html';
-        console.log("adding");
         $.ajax({
             type: 'POST',
             url: url,
@@ -97,7 +95,6 @@ $(document).ready(function() {
                 'action': 'addCollection'
             },
             success: function(message) {
-                console.log(message);
                 $('#collect-overlay').load(url, function() {
                 });
             },

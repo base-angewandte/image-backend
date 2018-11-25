@@ -6,7 +6,7 @@
     <div class="thumbnail-navbar">
         <nav class="navigation">
             <ol>
-                <li><a href="{% url 'artworks_list' %}">All Artworks</a></li><li class="selected"><a href="{% url 'collections_list' %}">Collections</a></li>
+                <li><a href="{% url 'artworks_list' %}">All Artworks{{id}}</a></li><li class="selected"><a href="{% url 'collections_list' %}">Collections</a></li>
             </ol>
         </nav>
         {% if collections %}
@@ -23,23 +23,74 @@
         {% endif %}
     </div>
 
-    {% include "artwork/artwork_thumbnails.html" %}
+    {% include "artwork/artwork_thumbnails_orderable.html" %}
     
 </section>
 
 <script type='text/javascript'>
-    $(document).ready(function() {
-        console.log("test");
-        $( "#collection-selector" ).selectmenu({
-            change: function(event, ui) {
-                let id = ui.item.value;
-                if (id) {
-                    window.location = `{% url 'collections_list' %}/${id}.html`;
-                } else {
-                    window.location = '{% url 'collections_list' %}';
-                }
-            }   
-        });
+$(document).ready(function() {
+    function swapPositions(a, b) {
+            var copy = b.cloneNode(true);
+            a.parentNode.insertBefore(copy, a);
+            b.parentNode.insertBefore(a, b);
+            b.parentNode.replaceChild(b, copy);
+    }
+    var collectionID = {{id}};
+
+    $( "#collection-selector" ).selectmenu({
+        change: function(event, ui) {
+            let id = ui.item.value;
+            if (id) {
+                window.location = `/collection/${id}.html`;
+            } else {
+                window.location = '{% url 'collections_list' %}';
+            }
+        }   
     });
+
+    $('.moveleft').on('click', function (e) {
+        e.stopPropagation();
+        var thumbnail = e.currentTarget.parentElement;
+        var membershipID = thumbnail.dataset['membershipid'];
+        var url = `/collection/${collectionID}.html`;
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'membership-id': membershipID,
+                'action': 'left'
+            },
+            success: function(message) {
+                swapPositions(thumbnail, thumbnail.previousElementSibling);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        })
+    });
+
+    $('.moveright').on('click', function (e) {
+        e.stopPropagation();
+        var thumbnail = e.currentTarget.parentElement;
+        var membershipID = thumbnail.dataset['membershipid'];
+        var url = `/collection/${collectionID}.html`;
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'membership-id': membershipID,
+                'action': 'right'
+            },
+            success: function(message) {
+                swapPositions(thumbnail, thumbnail.nextElementSibling);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        })
+    }); 
+});
 </script>
 {% endblock collectionslist %}
