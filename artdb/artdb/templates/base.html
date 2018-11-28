@@ -19,8 +19,8 @@
     </head>
     <body class="show-thumbnailbrowser">
         {% get_current_language as LANGUAGE_CODE %}
-        <div id="topbar">
-            <!-- <base-header lang="{{ LANGUAGE_CODE }}" post-lang="true" post-csrf="{{ csrf_token }}"></base-header>-->
+        <div class="wrapper">
+            <base-header active="image" lang="{{ LANGUAGE_CODE }}" post-lang="true" post-csrf="{{ csrf_token }}"></base-header>
         </div>
         <div id="thumbnailbrowser">
             {% block collectionslist %}
@@ -40,11 +40,17 @@
         <div id="collect-overlay" class="overlay">
         </div>
 
-        <!--<script type="text/javascript" src="{{ BASE_HEADER }}"></script>
+
+        <div class="wrapper wrapper-footer">
+          <base-footer lang="{{ LANGUAGE_CODE }}" logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" post-lang="true" post-csrf="{{ csrf_token }}"></base-footer>
+        </div>
+
+        <script type="text/javascript" src="{{ BASE_HEADER }}"></script>
           <script type="text/javascript">
-          var b=document.getElementsByTagName("base-header")[0];
-          b.profile={% if user.is_authenticated %}{name:"{{ user.get_full_name }}",permissions:{{ request.session.attributes.permissions|csv_to_json }}}{% else %}null{% endif %};
-          b.urls={login:"{% url 'cas_ng_login' %}",logout:"{% url 'cas_ng_logout' %}",postUrl:"{% url 'set_language' %}"};
-        </script>-->
+          var bh=document.getElementsByTagName("base-header")[0];
+          bh.profile={% if user.is_authenticated %}{name:"{{ user.get_full_name }}",permissions:{{ request.session.attributes.permissions|csv_to_json }}}{% else %}null{% endif %};
+          var bf=document.getElementsByTagName('base-footer')[0];
+          bh.urls=bf.urls={login:"{% url 'cas_ng_login' %}",logout:"{% url 'cas_ng_logout' %}",postUrl:"{% url 'set_language' %}"};
+        </script>
     </body>
 </html>

@@ -1,5 +1,5 @@
 :root {
-    --light-bg-color: #FBFBFB;
+    --light-bg-color: #F0F0F0;
     --dark-grey-0-color: #212121;
     --dark-grey-1-color: #2F2F2F;
     --dark-grey-3-color: #636363;
@@ -17,6 +17,8 @@
     --primary-button-color: #029290;
     --remove-button-color: #f54a26;
     --topbar-height: 87px;
+    --footer-height: 50px;
+    --footer-height-lg: 110px;
     --sidebar-width: 232px;
     --edit-overlay-formwidth: 448px;
 }
@@ -47,7 +49,6 @@ body {
     overflow-y: scroll;
     overflow-x: hidden;
     background-color: var(--light-bg-color);
-    min-width: 1280px;
 }
 
 .hidden {
@@ -74,25 +75,10 @@ h2.centered {
     text-align: center;
 }
 
-/* fixed top navigation */
-/* space reserved for angewandte base navigation */
-#topbar {
-    display: block;
-    position: fixed;
-    z-index: 3;
-    top: 0;
-    width: 100%;
-    height: var(--topbar-height);
-    background-color: #F0F0F0;
-    color: #000;
-    padding: 0 18px 0 18px;
-    box-shadow: 0px 2px 2px 0px rgba(71,71,71,0.12);
-}
+/* base header/footer wrapper */
+.wrapper{background-color:var(--light-bg-color);box-sizing:border-box;display:block;margin:0 auto;max-width:1400px;min-width:305px;padding:79px 8px 8px;position:relative;}@media only screen and (min-width:640px){.wrapper{padding:71px 16px 16px;}}
+.wrapper-footer{padding:0 16px;}
 
-#topbar-placeholder {
-    width: 100%;
-    height: var(--topbar-height);
-}
 
 /* the classes of body are used to represent different states:
 thumbnails = normal thumbnail browsing
@@ -149,16 +135,22 @@ and a close button */
 
 .sidebar-detached {
     position: fixed;
-    top: 0;
+    top: var(--topbar-height);
     display: table-cell;
     width: var(--sidebar-width);
-    height: 100vh;
+    height: calc(100% - var(--topbar-height) - var(--footer-height));
     margin-left: calc(100% - var(--sidebar-width));
     background-color: var(--dark-grey-1-color);
-    padding: var(--topbar-height) 16px 16px 16px;
+    padding: 16px;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
     z-index: 1;
+}
+
+@media screen and (max-width: 1083px) {
+    .sidebar-detached {
+        height: calc(100% - var(--topbar-height) - var(--footer-height-lg));
+    }
 }
 
 .sidebar-attached {
@@ -189,8 +181,7 @@ and a close button */
     height: 100vh;
     width: 100%;
     background-color: var(--light-bg-color);
-    border-right: solid var(--sidebar-width) var(--dark-grey-1-color);
-    padding: var(--topbar-height) 0 0 0;
+    padding: 0 var(--sidebar-width) 0 0;
 }
 
 /* detail-overlay */
@@ -769,14 +760,6 @@ table.collections-list tr:hover td,
 table.collections-list tr:focus td,
 table.collections-list tr:active td {
     color: var(--base-color);
-}
-
-.navwrapper.fixed {
-    top: 16px !important;
-}
-
-.navwrapper {
-    position: fixed !important;
 }
 
 .thumbnail-area .list {
