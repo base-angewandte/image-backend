@@ -868,3 +868,18 @@ table.collections-list tr:active td {
     color: #fff;
     border-color: var(--base-color);
 }
+
+.not-supported {
+    display: none;
+}
+
+@media only screen and (max-width:599px) {
+    #thumbnailbrowser {
+        display: none !important;
+    }
+    .not-supported {
+        display: block;
+        padding: 16px;
+        min-height: 50%;
+    }
+}

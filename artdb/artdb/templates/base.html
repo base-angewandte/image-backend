@@ -40,6 +40,9 @@
         <div id="collect-overlay" class="overlay">
         </div>
 
+        <div class="not-supported">
+          {{ _('This resolution is not supported.') }}
+        </div>
 
         <div class="wrapper wrapper-footer">
           <base-footer lang="{{ LANGUAGE_CODE }}" logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" post-lang="true" post-csrf="{{ csrf_token }}"></base-footer>
