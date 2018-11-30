@@ -36,7 +36,8 @@ services:
       - 8300
     volumes:
       - ./artdb:/django
-      - ./artdb/assets:/django/assets
+      - ./artdb/assets/static:/django/assets/static
+      - $MEDIA_DIR:/django/assets/media
       - ./logs:/logs
     networks:
       - artdbnet
