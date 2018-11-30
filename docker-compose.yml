@@ -20,7 +20,7 @@ services:
       - POSTGRES_DB=$DB_NAME
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - ./dockerdata/postgres/pgdata:/var/lib/postgresql/data/pgdata
+      - ./dockerdata/postgres/10/data:/var/lib/postgresql/data/pgdata
     networks:
       - artdbnet
     restart: always
