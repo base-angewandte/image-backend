@@ -148,6 +148,7 @@ class ArtworkCollection(models.Model):
     def size(self):
         return self.artworks.count()
 
+
 class ArtworkCollectionMembership(OrderedModel):
     collection = models.ForeignKey(ArtworkCollection, on_delete=models.CASCADE)
     artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE)

@@ -25,17 +25,38 @@
 
     <div class="list">
     <h2 class="centered">Your collections</h2>
-    {% if collections %}
+    {% if my_collections %}
         <table id="js-collections-list" class="collections-list">
-            {% for collection in collections %}
+            {% for collection in my_collections %}
                 <tr class="collection" data-collectionid="{{collection.id}}"><td>{{collection.title}}</td>
                 <td>{{collection.size}}</td>
                 </tr>
             {% endfor %}
         </table>
     {% else %}
-        <p>there are no collections yet</p>
+        <p>You don't have any collections yet.</p>
     {% endif %}
+    </div>
+    https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#regroup
+    <div class="list">
+        <h2 class="centered">More collections</h2>
+        {% if editors_collections %}
+        yup
+        {% regroup editors_collections|dictsort:"user" by user as user_list %}
+        <table id="js-collections-list" class="collections-list">
+                {% for user in user_list %}
+                    <tr><td colspan=3>{{ user.grouper }}test</td></tr>
+                    {% for collection in user.list %}
+                        <tr class="collection" data-collectionid="{{collection.id}}"><td>{{collection.title}}</td>
+                        <td>{{collection.user.get_username}}</td>
+                        <td>{{collection.size}}</td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>You don't have any collections yet.</p>
+        {% endif %}
     </div>
 </section>
 
