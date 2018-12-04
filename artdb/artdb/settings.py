@@ -80,7 +80,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third-party apps
-    'debug_toolbar',
     'rest_framework',
     'versatileimagefield',
     'django_cleanup',
@@ -148,6 +147,7 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
+    INSTALLED_APPS += ['debug_toolbar']
     # insert before SessionMiddleware
     MIDDLEWARE.insert(
         MIDDLEWARE.index('django.contrib.sessions.middleware.SessionMiddleware'),
