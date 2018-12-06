@@ -84,6 +84,7 @@ $(document).ready(function() {
     $("#addCollectionForm").on('submit', function (e) {
         e.preventDefault();
         var data = $(this).serializeArray();
+        console.log(data);
         var url = '/artwork/' + data[0]['value'] + '/collect_overlay.html';
         $.ajax({
             type: 'POST',

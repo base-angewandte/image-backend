@@ -447,7 +447,6 @@ and a close button */
 #search-basic,
 #collection-nav {
     display: block;
-    float: right;
     margin: 0 auto 0 auto;
     height: 48px;
 }
@@ -469,17 +468,34 @@ and a close button */
 #search-basic {
     display: inline-block;
     width: 480px;
+    max-height: 48px;
     background:#fff;
     box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
     margin-right: 18px;
-    transition-duration: 0.5s;
-    transition-timing-function: linear;
     opacity: 1;
+    transition-duration: 0.2s;
 }
+
+#search-expert-fold {
+    max-height: 0px;
+    display: block;
+    transition-delay: 0.2s;
+    transition-duration: 0.3s;
+    transition-timing-function: linear;
+}
+
+#search-expert-fold.unfolded {
+    max-height: 145px;
+    transition-timing-function: linear;
+}
+
+
 #search-expert.fadeout,
 #search-basic.fadeout {
     opacity: 0;
+    transition-duration: 0.2s;
 }
+
 
 #search-basic input {
     height: 48px;
@@ -582,7 +598,7 @@ and a close button */
     display: block;
     float: right;
     height: 48px;
-    padding: 3px 0 3px 0;
+    padding: 0;
 }
 
 .switch {
@@ -700,6 +716,15 @@ table.collections-list tr.addCollection {
     background-color: var(--light-grey-4-color);
 }
 
+table.collections-list th {
+    text-align: left;
+    padding: 8px;
+    vertical-align: middle;
+    font-size: 14px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 
 table.collections-list td {
     text-align: left;

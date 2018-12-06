@@ -33,8 +33,10 @@ $(document).ready(function() {
                 if (!val) return;
                 var elKey, elVal;
                 var elEntry = document.createElement('div');
+                console.log(key);
                 switch (key) {
                     case 'artists':
+                        if (val.length === 0) break;
                         elKey = createEl('div', 'key', 'Artist');
                         elEntry.appendChild(elKey);
                         for (var i = 0; i < val.length; i++) {
@@ -45,6 +47,7 @@ $(document).ready(function() {
                         }
                         break;
                     case 'keywords':
+                        if (val.length === 0) break;
                         elKey = createEl('div', 'key', 'Keywords');
                         elEntry.appendChild(elKey);
                         for (var i = 0; i < val.length; i++) {
@@ -53,6 +56,15 @@ $(document).ready(function() {
                             elVal.dataset.keyword = val[i].name;
                             elEntry.appendChild(elVal);
                         }
+                        break;
+                    case 'locationOfCreation':
+                        if (val.length === 0) break;
+                        elKey = createEl('div', 'key', 'LocationOfCreation');
+                        elEntry.appendChild(elKey);
+                        elVal = createEl('div', 'value', val.name, searchForLocation);
+                        elVal.classList.add('tag');
+                        elVal.dataset.keyword = val.name;
+                        elEntry.appendChild(elVal);
                         break;
                     default:
                         if ((val !== '') && (val !== null)) {
@@ -165,12 +177,14 @@ $(document).ready(function() {
 
 
     function searchForKeyword(e) {
-        console.log('search for keyword');
+        console.log(e.currentTarget.dataset.keyword);
+    }
+
+    function searchForLocation(e) {
         console.log(e.currentTarget.dataset.keyword);
     }
 
     function searchForArtist(e) {
-        console.log('search for artist');
         const artists = e.currentTarget.dataset.artist.replace(/\s/g, "+");
         const url = `?artists=${artists}`;
         console.log(url);
@@ -189,15 +203,22 @@ $(document).ready(function() {
         if ($(this).prop('checked')) {
             $('#search-basic').addClass('fadeout');
             $('#search-basic').one('transitionend', function() {
-                $(this).addClass('hidden');
+                $('#search-basic').addClass('hidden');
             });
-            $('#search-expert').removeClass('hidden fadeout');
+            $('#search-expert').removeClass('hidden');
+            $('#search-expert-fold').addClass('unfolded');
+            $('#search-expert-fold').one('transitionend', function() {
+                $('#search-expert').removeClass('hidden');
+                $('#search-expert').removeClass('fadeout');
+            });
         } else {
             $('#search-expert').addClass('fadeout');
-            $('#search-expert').one('transitionend', function() {
+            $('#search-expert-fold').removeClass('unfolded');
+            $('#search-expert-fold').one('transitionend', function() {
                 $('#search-expert').addClass('hidden');
+                $('#search-basic').removeClass('hidden');
+                $('#search-basic').removeClass('fadeout'); 
             });
-            $('#search-basic').removeClass('hidden fadeout');
         }
     }); 
 });

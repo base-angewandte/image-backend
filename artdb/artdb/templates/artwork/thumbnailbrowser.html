@@ -110,8 +110,8 @@ $(document).ready(function() {
             </ol>
         </nav>
         <div class="search-topbar">
-            <form method="GET" action="" id="search-basic" class="hidden">
-                <input id="search-basic-artworks-field" placeholder="Search Artworks" name="title" value="{{ query_title|default:'' }}" autocomplete="off" role="title search" autofocus/><span id="js-clear-search-artwork-field"></span>
+            <form method="GET" action="" id="search-basic">
+                <input id="search-basic-artworks-field" placeholder="Search Artworks" name="search" value="{{ query_all|default:'' }}" autocomplete="off" role="title search" autofocus/><span id="js-clear-search-artwork-field"></span>
             </form>
             <div class="switch-labeled">
                 <label class="switch">
@@ -122,26 +122,28 @@ $(document).ready(function() {
             </div>
         </div>
         {% spaceless %}
-        <form method="GET" action="" id="search-expert">
-            <div class="col-1">
-                <label>Title</label><input id="search-expert-artworks-field" placeholder="" name="title" value="{{ query_title|default:'' }}" autocomplete="off" role="title search" autofocus/>
-                <label>Artist</label><input id="search-expert-artist-field" placeholder="" name="artist" value="{{ query_artist|default:''}}" autocomplete="off" role="artist search"/>
-            </div>
-            <div class="col-2">
-                <div class="extra-margin">
-                    <label>Date From</label><input class="search-small-input" placeholder="YYYY" name="date_from" value="{{ query_date_from|default:''}}" autocomplete="off" role="date_from search"/>
+        <div id="search-expert-fold">
+            <form method="GET" action="" id="search-expert" class="hidden fadeout">
+                <div class="col-1">
+                    <label>Title</label><input id="search-expert-artworks-field" placeholder="" name="title" value="{{ query_title|default:'' }}" autocomplete="off" role="title search" autofocus/>
+                    <label>Artist</label><input id="search-expert-artist-field" placeholder="" name="artist" value="{{ query_artist|default:''}}" autocomplete="off" role="artist search"/>
                 </div>
-                <div>
-                    <label>Date To</label><input class="search-small-input" placeholder="YYYY" name="date_to" value="{{ query_date_to|default:''}}" autocomplete="off" role="date_to search"/>
+                <div class="col-2">
+                    <div class="extra-margin">
+                        <label>Date From</label><input class="search-small-input" placeholder="YYYY" name="date_from" value="{{ query_date_from|default:''}}" autocomplete="off" role="date_from search"/>
+                    </div>
+                    <div>
+                        <label>Date To</label><input class="search-small-input" placeholder="YYYY" name="date_to" value="{{ query_date_to|default:''}}" autocomplete="off" role="date_to search"/>
+                    </div>
+                    <label>Location</label><input placeholder="" name="location" value="{{ query_location|default:''}}" autocomplete="off" role="location search"/>
                 </div>
-                <label>Location</label><input placeholder="" name="location" value="{{ query_location|default:''}}" autocomplete="off" role="location search"/>
-            </div>
-            <div class="col-3">
-                <label>Keywords</label>
-                <input id="search-expert-keywords-field" placeholder="" name="keyword" value="{{ query_keyword|default:''}}" autocomplete="off" role="keyword search"/>
-                <input class="search-expert-submit" type="submit" value="Search"/>
-            </div>
-        </form>
+                <div class="col-3">
+                    <label>Keywords</label>
+                    <input id="search-expert-keywords-field" placeholder="" name="keyword" value="{{ query_keyword|default:''}}" autocomplete="off" role="keyword search"/>
+                    <input class="search-expert-submit" type="submit" value="Search"/>
+                </div>
+            </form>
+        </div>
         {% endspaceless %}
     </div>
 
