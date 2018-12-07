@@ -28,6 +28,7 @@ def artworks_list(request):
     queryLocation = request.GET.get('location')
     qObjects = Q()
     context = {}
+    expertSearch = False
 
     if queryAll:
         terms = [term.strip() for term in queryAll.split()]
@@ -39,6 +40,7 @@ def artworks_list(request):
             keywords = Keyword.objects.filter(name__icontains=term)
             qObjects.add(Q(keywords__in=keywords), Q.OR)
     else:
+        expertSearch = True
         if queryArtworkTitle:
             qObjects.add(Q(title__icontains=queryArtworkTitle), Q.AND)
         if queryLocation:
@@ -74,6 +76,7 @@ def artworks_list(request):
     context['query_date_from'] = queryDateFrom
     context['query_date_to'] = queryDateTo
     context['query_location'] = queryLocation
+    context['expert_search'] = expertSearch
     return render(request, 'artwork/thumbnailbrowser.html', context)
 
 

@@ -451,6 +451,10 @@ and a close button */
     height: 48px;
 }
 
+#collection-nav {
+    float: right;
+}
+
 #search-basic form,
 #collection-nav form {
     display: inline-block;
@@ -473,27 +477,30 @@ and a close button */
     box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
     margin-right: 18px;
     opacity: 1;
-    transition-duration: 0.2s;
+    transition-duration: 0.1s;
+    transition-delay: 0.3s;
 }
 
 #search-expert-fold {
     max-height: 0px;
     display: block;
-    transition-delay: 0.2s;
+    transition-delay: 0.1s;
     transition-duration: 0.3s;
-    transition-timing-function: linear;
+    transition-timing-function: ease-in;
 }
 
 #search-expert-fold.unfolded {
     max-height: 145px;
-    transition-timing-function: linear;
+    transition-timing-function: ease-in;
+    transition-duration: 0.3s;
+    transition-delay: 0.1s;
 }
 
 
 #search-expert.fadeout,
 #search-basic.fadeout {
     opacity: 0;
-    transition-duration: 0.2s;
+    transition-duration: 0.1s;
 }
 
 

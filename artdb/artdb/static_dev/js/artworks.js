@@ -63,7 +63,7 @@ $(document).ready(function() {
                         elEntry.appendChild(elKey);
                         elVal = createEl('div', 'value', val.name, searchForLocation);
                         elVal.classList.add('tag');
-                        elVal.dataset.keyword = val.name;
+                        elVal.dataset.location = val.name;
                         elEntry.appendChild(elVal);
                         break;
                     default:
@@ -177,17 +177,20 @@ $(document).ready(function() {
 
 
     function searchForKeyword(e) {
-        console.log(e.currentTarget.dataset.keyword);
+        const keyword = e.currentTarget.dataset.keyword.replace(/\s/g, "+");
+        const url = `?keyword=${keyword}`;
+        window.location.href = url;
     }
 
     function searchForLocation(e) {
-        console.log(e.currentTarget.dataset.keyword);
+        const location = e.currentTarget.dataset.location.replace(/\s/g, "+");
+        const url = `?location=${location}`;
+        window.location.href = url;
     }
 
     function searchForArtist(e) {
-        const artists = e.currentTarget.dataset.artist.replace(/\s/g, "+");
-        const url = `?artists=${artists}`;
-        console.log(url);
+        const artist = e.currentTarget.dataset.artist.replace(/\s/g, "+");
+        const url = `?artist=${artist}`;
         window.location.href = url;
     }
 
@@ -201,22 +204,23 @@ $(document).ready(function() {
     // search basic/expert switch
     $("#js-search-switch").click(function(e) {
         if ($(this).prop('checked')) {
-            $('#search-basic').addClass('fadeout');
-            $('#search-basic').one('transitionend', function() {
+            // switching to expert search
+            $('#search-basic').addClass('fadeout')
+            .one('transitionend', function() {
                 $('#search-basic').addClass('hidden');
             });
             $('#search-expert').removeClass('hidden');
-            $('#search-expert-fold').addClass('unfolded');
-            $('#search-expert-fold').one('transitionend', function() {
-                $('#search-expert').removeClass('hidden');
+            $('#search-expert-fold').addClass('unfolded')
+            .one('transitionend', function() {
                 $('#search-expert').removeClass('fadeout');
             });
         } else {
+            // switching to basic search
+            $('#search-basic').removeClass('hidden');
             $('#search-expert').addClass('fadeout');
-            $('#search-expert-fold').removeClass('unfolded');
-            $('#search-expert-fold').one('transitionend', function() {
-                $('#search-expert').addClass('hidden');
-                $('#search-basic').removeClass('hidden');
+            $('#search-expert-fold').removeClass('unfolded')
+            .one('transitionend', function() {
+                //$('#search-expert').addClass('hidden');
                 $('#search-basic').removeClass('fadeout'); 
             });
         }
