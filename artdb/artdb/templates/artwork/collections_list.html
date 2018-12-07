@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load has_group %}
 
 {% block collectionslist %}
 <section class="thumbnail-area">
@@ -14,29 +15,49 @@
             <form method="GET" action="">
                 <select name="collection-selector" id="collection-selector">
                         <option value="">All collections</option>
-                    {% for collection in collections %}
-                        <option value="{{collection.id}}">{{collection.title}}</option>
-                    {% endfor %}
+                        {% for collection in all_collections %}
+                            <option value="{{collection.id}}">{{collection.title}}</option>
+                        {% endfor %}
                 </select>
             </form>
         </div>
         {% endif %}
     </div>
 
-    <div class="list">
-    <h2 class="centered">Your collections</h2>
-    {% if collections %}
+
+    <div class="list"></div>
         <table id="js-collections-list" class="collections-list">
-            {% for collection in collections %}
+        {% if my_collections %}
+            <tr><th colspan="2">My Collections</th></tr>
+            {% for collection in my_collections %}
                 <tr class="collection" data-collectionid="{{collection.id}}"><td>{{collection.title}}</td>
                 <td>{{collection.size}}</td>
                 </tr>
             {% endfor %}
-        </table>
-    {% else %}
-        <p>there are no collections yet</p>
-    {% endif %}
+        {% endif %}
+        {% if collections %}
+            {% regroup collections|dictsort:"user.get_full_name" by user.get_full_name as grouped_collections %}
+            {% for collection_user in grouped_collections %}
+                    <tr><th colspan="2">
+                    {% if collection_user.grouper %}
+                        {{ collection_user.grouper }}
+                    {% else %}
+                        Unnamed Editor
+                    {% endif %}
+                    </th></tr>
+                    {% for collection in collection_user.list %}
+                        <tr class="collection" data-collectionid="{{collection.id}}"><td>{{collection.title}}</td>
+                        <td>{{collection.size}}</td>
+                        </tr>
+                    {% endfor %}
+
+            {% endfor %}
+            </table>
+        {% else %}
+        <p>There are no other collections yet.</p>
+        {% endif %}
     </div>
+
 </section>
 
 <script type='text/javascript'>

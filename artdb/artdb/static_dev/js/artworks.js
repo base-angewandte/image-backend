@@ -33,8 +33,10 @@ $(document).ready(function() {
                 if (!val) return;
                 var elKey, elVal;
                 var elEntry = document.createElement('div');
+                console.log(key);
                 switch (key) {
                     case 'artists':
+                        if (val.length === 0) break;
                         elKey = createEl('div', 'key', 'Artist');
                         elEntry.appendChild(elKey);
                         for (var i = 0; i < val.length; i++) {
@@ -45,6 +47,7 @@ $(document).ready(function() {
                         }
                         break;
                     case 'keywords':
+                        if (val.length === 0) break;
                         elKey = createEl('div', 'key', 'Keywords');
                         elEntry.appendChild(elKey);
                         for (var i = 0; i < val.length; i++) {
@@ -53,6 +56,15 @@ $(document).ready(function() {
                             elVal.dataset.keyword = val[i].name;
                             elEntry.appendChild(elVal);
                         }
+                        break;
+                    case 'locationOfCreation':
+                        if (val.length === 0) break;
+                        elKey = createEl('div', 'key', 'LocationOfCreation');
+                        elEntry.appendChild(elKey);
+                        elVal = createEl('div', 'value', val.name, searchForLocation);
+                        elVal.classList.add('tag');
+                        elVal.dataset.location = val.name;
+                        elEntry.appendChild(elVal);
                         break;
                     default:
                         if ((val !== '') && (val !== null)) {
@@ -165,15 +177,20 @@ $(document).ready(function() {
 
 
     function searchForKeyword(e) {
-        console.log('search for keyword');
-        console.log(e.currentTarget.dataset.keyword);
+        const keyword = e.currentTarget.dataset.keyword.replace(/\s/g, "+");
+        const url = `?keyword=${keyword}`;
+        window.location.href = url;
+    }
+
+    function searchForLocation(e) {
+        const location = e.currentTarget.dataset.location.replace(/\s/g, "+");
+        const url = `?location=${location}`;
+        window.location.href = url;
     }
 
     function searchForArtist(e) {
-        console.log('search for artist');
-        const artists = e.currentTarget.dataset.artist.replace(/\s/g, "+");
-        const url = `?artists=${artists}`;
-        console.log(url);
+        const artist = e.currentTarget.dataset.artist.replace(/\s/g, "+");
+        const url = `?artist=${artist}`;
         window.location.href = url;
     }
 
@@ -187,17 +204,25 @@ $(document).ready(function() {
     // search basic/expert switch
     $("#js-search-switch").click(function(e) {
         if ($(this).prop('checked')) {
-            $('#search-basic').addClass('fadeout');
-            $('#search-basic').one('transitionend', function() {
-                $(this).addClass('hidden');
+            // switching to expert search
+            $('#search-basic').addClass('fadeout')
+            .one('transitionend', function() {
+                $('#search-basic').addClass('hidden');
             });
-            $('#search-expert').removeClass('hidden fadeout');
+            $('#search-expert').removeClass('hidden');
+            $('#search-expert-fold').addClass('unfolded')
+            .one('transitionend', function() {
+                $('#search-expert').removeClass('fadeout');
+            });
         } else {
+            // switching to basic search
+            $('#search-basic').removeClass('hidden');
             $('#search-expert').addClass('fadeout');
-            $('#search-expert').one('transitionend', function() {
-                $('#search-expert').addClass('hidden');
+            $('#search-expert-fold').removeClass('unfolded')
+            .one('transitionend', function() {
+                //$('#search-expert').addClass('hidden');
+                $('#search-basic').removeClass('fadeout'); 
             });
-            $('#search-basic').removeClass('hidden fadeout');
         }
     }); 
 });

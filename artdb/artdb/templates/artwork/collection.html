@@ -6,7 +6,7 @@
     <div class="thumbnail-navbar">
         <nav class="navigation">
             <ol>
-                <li><a href="{% url 'artworks_list' %}">All Artworks{{id}}</a></li><li class="selected"><a href="{% url 'collections_list' %}">Collections</a></li>
+                <li><a href="{% url 'artworks_list' %}">All Artworks</a></li><li class="selected"><a href="{% url 'collections_list' %}">Collections</a></li>
             </ol>
         </nav>
         {% if collections %}
@@ -14,7 +14,7 @@
             <form method="GET" action="">
                 <select name="collection-selector" id="collection-selector">
                     <option value="">All collections</option>
-                    {% for collection in collections %}
+                    {% for collection in all_collections %}
                     <option value="{{collection.id}}" {% if collection.id == id %} selected {% endif %}>{{collection.title}}</option>
                     {% endfor %}
                 </select>

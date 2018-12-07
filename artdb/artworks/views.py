@@ -5,17 +5,21 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, ExpressionWrapper, BooleanField
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
+from django.utils.decorators import method_decorator
 from dal import autocomplete
 from rest_framework.response import Response
 from artworks.models import *
 from artworks.forms import *
 from artworks.serializers import ArtworkSerializer
 
+
+@login_required
 def artworks_list(request):
     """
     Render the thumbnailbrowser.
     """
+    queryAll = request.GET.get('search')
     queryArtworkTitle = request.GET.get('title')
     queryArtistName = request.GET.get('artist')
     queryKeyword = request.GET.get('keyword')
@@ -24,21 +28,33 @@ def artworks_list(request):
     queryLocation = request.GET.get('location')
     qObjects = Q()
     context = {}
+    expertSearch = False
 
-    if queryArtworkTitle:
-        qObjects.add(Q(title__icontains=queryArtworkTitle), Q.AND)
-    if queryLocation:
-        qObjects.add(Q(locationOfCreation__icontains=queryLocation), Q.AND)
-    if queryDateFrom:
-        qObjects.add(Q(dateYearFrom__gte=int(queryDateFrom)), Q.AND)
-    if queryDateTo:
-        qObjects.add(Q(dateYearTo__lte=int(queryDateTo)), Q.AND)
-    if queryArtistName:
-        artists = Artist.objects.filter(name__icontains=queryArtistName)
-        qObjects.add(Q(artists__in=artists), Q.AND)
-    if queryKeyword:
-        keywords = Keyword.objects.filter(name__icontains=queryKeyword)
-        qObjects.add(Q(keywords__in=keywords), Q.AND)
+    if queryAll:
+        terms = [term.strip() for term in queryAll.split()]
+        for term in terms:
+            qObjects.add(Q(title__icontains=term), Q.OR)
+            artists = Artist.objects.filter(name__icontains=term)
+            qObjects.add(Q(artists__in=artists), Q.OR)
+            qObjects.add(Q(locationOfCreation__name__icontains=term), Q.OR)
+            keywords = Keyword.objects.filter(name__icontains=term)
+            qObjects.add(Q(keywords__in=keywords), Q.OR)
+    else:
+        expertSearch = True
+        if queryArtworkTitle:
+            qObjects.add(Q(title__icontains=queryArtworkTitle), Q.AND)
+        if queryLocation:
+            qObjects.add(Q(locationOfCreation__name__icontains=queryLocation), Q.AND)
+        if queryDateFrom:
+            qObjects.add(Q(dateYearFrom__gte=int(queryDateFrom)), Q.AND)
+        if queryDateTo:
+            qObjects.add(Q(dateYearTo__lte=int(queryDateTo)), Q.AND)
+        if queryArtistName:
+            artists = Artist.objects.filter(name__icontains=queryArtistName)
+            qObjects.add(Q(artists__in=artists), Q.AND)
+        if queryKeyword:
+            keywords = Keyword.objects.filter(name__icontains=queryKeyword)
+            qObjects.add(Q(keywords__in=keywords), Q.AND)
 
     querysetList = Artwork.objects.filter(qObjects).distinct().order_by('title')
 
@@ -52,17 +68,20 @@ def artworks_list(request):
         artworks = paginator.page(paginator.num_pages)
 
     context['BASE_HEADER'] = settings.BASE_HEADER
-    context['title'] = 'artworks'
     context['artworks'] = artworks
+    context['query_all'] = queryAll
     context['query_title'] = queryArtworkTitle
     context['query_artist'] = queryArtistName
     context['query_keyword'] = queryKeyword
     context['query_date_from'] = queryDateFrom
     context['query_date_to'] = queryDateTo
     context['query_location'] = queryLocation
+    context['expert_search'] = expertSearch
     return render(request, 'artwork/thumbnailbrowser.html', context)
 
 
+# TODO: exchange all those get_object_or_404 when json
+@login_required
 def details(request, id=None):
     """
     Return artwork details in json format.
@@ -72,6 +91,7 @@ def details(request, id=None):
     return JsonResponse(serializer.data)
 
 
+@login_required
 def artwork_detail_overlay(request, id=None):
     """
     Render an overlay showing a large version of the image and the artwork's details.
@@ -82,6 +102,7 @@ def artwork_detail_overlay(request, id=None):
     return render(request, 'artwork/artwork_detail_overlay.html', context)
 
 
+@permission_required('artworks.change_artwork')
 def artwork_edit(request, id):
     """
     Render an overlay showing the editable fields of an artwork.
@@ -107,15 +128,8 @@ def artwork_edit(request, id):
 @login_required
 def artwork_collect(request, id):
     """
-    Add or remove an artwork to a collection.
+    Add or remove an artwork from/to a collection.
     """
-    # TODO: user should only be able to manipulate her own collections
-    # if request.user.is_authenticated():
-        # Do something for authenticated users.
-        # collections = request.user.collections.get(user = userID).order_by('name')
-        # userID = request.user.id
-    #else:
-        # Do something for anonymous users.
     if request.method == 'GET':
         artwork = get_object_or_404(Artwork, id=id)
         context = {}
@@ -125,30 +139,30 @@ def artwork_collect(request, id):
         context['artwork'] = artwork
         return render(request, 'artwork/artwork_collect_overlay.html', context)
     if request.method == 'POST':
-        artwork = get_object_or_404(Artwork, id=request.POST['artwork-id'])
-        if (request.POST['action'] == 'add'):
-            col = get_object_or_404(ArtworkCollection, id=request.POST['collection-id'])
-            # col.artworks.add(artwork)
-            ArtworkCollectionMembership.objects.create(collection=col, artwork=artwork)
-            return JsonResponse({'action': 'added'})
-        if (request.POST['action'] == 'remove'):
-            col = get_object_or_404(ArtworkCollection, id=request.POST['collection-id'])
-            # col.artworks.remove(artwork)
-            ArtworkCollectionMembership.objects.filter(collection=col, artwork=artwork).delete()
-            return JsonResponse({'action': 'removed'})
+        artwork = Artwork.objects.get(id=request.POST['artwork-id'])
         if (request.POST['action'] == 'addCollection'):
             colTitle = request.POST['collection-title']
             if (colTitle):
                 u = User.objects.get(id=request.user.id)
-                col = ArtworkCollection.objects.create(title=colTitle, user=u)
-                # col.artworks.add(artwork)
-                ArtworkCollectionMembership.objects.create(collection=col, artwork=artwork)
+                newcol = ArtworkCollection.objects.create(title=colTitle, user=u)
+                ArtworkCollectionMembership.objects.create(collection=newcol, artwork=artwork)
                 return JsonResponse({'action': 'reload'})
             else:
                 return JsonResponse({'error': 'collection title missing'}, status=500)
-        return JsonResponse({'action': 'none'})
+        else:
+            col = ArtworkCollection.objects.get(id=request.POST['collection-id'])
+            # users can only manipulate their own collections via this view
+            if (request.user == col.user):
+                if (request.POST['action'] == 'add'):
+                    ArtworkCollectionMembership.objects.create(collection=col, artwork=artwork)
+                    return JsonResponse({'action': 'added'})
+                if (request.POST['action'] == 'remove'):
+                    ArtworkCollectionMembership.objects.filter(collection=col, artwork=artwork).delete()
+                    return JsonResponse({'action': 'removed'})
+        return JsonResponse({'action': 'collection error'})
 
 
+@login_required
 def collection(request, id=None):
     """
     Render all artwork thumbnails of a single collection.
@@ -163,31 +177,38 @@ def collection(request, id=None):
         context['created_by_username'] = col.user.get_username()
         context['created_by_fullname'] = col.user.get_full_name()
         context['memberships'] = col.artworkcollectionmembership_set.all()
-        context['collections'] = ArtworkCollection.objects.all()
+        context['collections'] = ArtworkCollection.objects.filter(user__groups__in=[1,])
         return render(request, 'artwork/collection.html', context)
     if request.method == 'POST':
-        membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'])
-        if not membership:
-            return JsonResponse({'error': 'membership does not exist'})
-        if (request.POST['action'] == 'left'):
-            membership.up()
-            return JsonResponse({'action': 'reload'})
-        if (request.POST['action'] == 'right'):
-            membership.down()
-            return JsonResponse({'action': 'swap'})
-        return JsonResponse({'action': 'none'})
+        # users can only manipulate their own collections via this view
+        col = ArtworkCollection.objects.get(id=id)
+        if (request.user == col.user):
+            membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'])
+            if not membership:
+                return JsonResponse({'error': 'membership does not exist'})
+            if (request.POST['action'] == 'left'):
+                membership.up()
+                return JsonResponse({'action': 'swapleft'})
+            if (request.POST['action'] == 'right'):
+                membership.down()
+                return JsonResponse({'action': 'swapright'})
+        return JsonResponse({'action': 'permission missing'})
 
 
+# TODO: user should be able to see own *and* all other collections
+@login_required
 def collections_list(request, id=None):
     """
     Render a list of all collections.
     """
     context = {}
     context['BASE_HEADER'] = settings.BASE_HEADER
-    context['collections'] = ArtworkCollection.objects.filter(user=request.user)
+    context['collections'] = ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user)
+    context['my_collections'] = ArtworkCollection.objects.filter(user=request.user)
     return render(request, 'artwork/collections_list.html', context)
 
 
+@method_decorator(login_required, name='dispatch')
 class ArtistAutocomplete(autocomplete.Select2QuerySetView):
     """
     Return dal suggestions for the artist input field.
@@ -203,6 +224,7 @@ class ArtistAutocomplete(autocomplete.Select2QuerySetView):
             return Artist.objects.none()
 
 
+@method_decorator(login_required, name='dispatch')
 class ArtworkAutocomplete(autocomplete.Select2QuerySetView):
     """
     Return dal suggestions for the basic search.
@@ -227,6 +249,7 @@ class ArtworkAutocomplete(autocomplete.Select2QuerySetView):
         return result.title
 
 
+@method_decorator(login_required, name='dispatch')
 class KeywordAutocomplete(autocomplete.Select2QuerySetView):
     """
     Return dal suggestions for the artwork's keywords input field.

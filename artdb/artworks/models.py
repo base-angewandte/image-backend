@@ -90,7 +90,7 @@ class Artwork(models.Model):
         return self.title
 
 
-@receiver(models.signals.post_save, sender=Artwork)
+# @receiver(models.signals.post_save, sender=Artwork)
 def move_uploaded_image(sender, instance, created, **kwargs):
     """
     Move the uploaded image after an Artwork instance has been created.  
@@ -147,6 +147,7 @@ class ArtworkCollection(models.Model):
         
     def size(self):
         return self.artworks.count()
+
 
 class ArtworkCollectionMembership(OrderedModel):
     collection = models.ForeignKey(ArtworkCollection, on_delete=models.CASCADE)
