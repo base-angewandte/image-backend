@@ -13,12 +13,12 @@ def process_user_attributes(sender, user, created, attributes, *args, **kwargs):
     permissions = attributes.get('permissions')
 
     # TODO
-    if permissions and 'TBD' in permissions.split(','):
+    if permissions and 'edit_image' in permissions.split(','):
         user.is_staff = True
         # p = Permission.objects.filter().exclude()
         # user.user_permissions.set(p)
     else:
         user.is_staff = False
-        user.user_permissions.clear()
+        # user.user_permissions.clear()
 
     user.save()
