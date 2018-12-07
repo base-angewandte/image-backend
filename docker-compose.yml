@@ -20,7 +20,7 @@ services:
       - POSTGRES_DB=$DB_NAME
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - ./dockerdata/postgres/pgdata:/var/lib/postgresql/data/pgdata
+      - ./dockerdata/postgres/10/data:/var/lib/postgresql/data/pgdata
     networks:
       - artdbnet
     restart: always
@@ -36,7 +36,8 @@ services:
       - 8300
     volumes:
       - ./artdb:/django
-      - ./artdb/assets:/django/assets
+      - ./artdb/assets/static:/django/assets/static
+      - $MEDIA_DIR:/django/assets/media
       - ./logs:/logs
     networks:
       - artdbnet

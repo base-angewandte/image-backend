@@ -80,7 +80,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third-party apps
-    'debug_toolbar',
     'rest_framework',
     'versatileimagefield',
     'django_cleanup',
@@ -148,6 +147,7 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
+    INSTALLED_APPS += ['debug_toolbar']
     # insert before SessionMiddleware
     MIDDLEWARE.insert(
         MIDDLEWARE.index('django.contrib.sessions.middleware.SessionMiddleware'),
@@ -354,7 +354,6 @@ SESSION_COOKIE_NAME = 'sessionid_{}'.format(PROJECT_NAME)
 CSRF_COOKIE_NAME = 'csrftoken_{}'.format(PROJECT_NAME)
 
 # base Header
-BASE_HEADER = ''
-# BASE_HEADER_SITE_URL = env.str('BASE_HEADER_SITE_URL', SITE_URL)
-# BASE_HEADER_JSON = '{}bs/base-header.json'.format(BASE_HEADER_SITE_URL)
-# BASE_HEADER = '{}{}'.format(BASE_HEADER_SITE_URL, requests.get(BASE_HEADER_JSON).json()['latest'])
+BASE_HEADER_SITE_URL = env.str('BASE_HEADER_SITE_URL', SITE_URL)
+BASE_HEADER_JSON = '{}bs/base-header.json'.format(BASE_HEADER_SITE_URL)
+BASE_HEADER = '{}{}'.format(BASE_HEADER_SITE_URL, requests.get(BASE_HEADER_JSON).json()['latest'])

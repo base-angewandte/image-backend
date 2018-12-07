@@ -91,7 +91,7 @@
     vi .env
     
     # django env
-    cp ./artdb/artb/env-skel ./artdb/artdb/.env
+    cp ./artdb/artdb/env-skel ./artdb/artdb/.env
     vi ./artdb/artdb/.env
     ```
 
