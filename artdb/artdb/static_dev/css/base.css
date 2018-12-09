@@ -77,7 +77,10 @@ h2.centered {
 
 /* base header/footer wrapper */
 .wrapper{background-color:var(--light-bg-color);box-sizing:border-box;display:block;margin:0 auto;max-width:1400px;min-width:305px;padding:79px 8px 8px;position:relative;}@media only screen and (min-width:640px){.wrapper{padding:71px 16px 16px;}}
-.wrapper-footer{padding:0 16px;}
+.wrapper-footer {
+    margin-top: 48px;
+    padding:0 16px;
+}
 
 
 /* the classes of body are used to represent different states:
@@ -138,7 +141,7 @@ and a close button */
     top: var(--topbar-height);
     display: table-cell;
     width: var(--sidebar-width);
-    height: calc(100% - var(--topbar-height) - var(--footer-height));
+    height: calc(100% - var(--topbar-height));
     margin-left: calc(100% - var(--sidebar-width));
     background-color: var(--dark-grey-1-color);
     padding: 16px;
@@ -149,7 +152,7 @@ and a close button */
 
 @media screen and (max-width: 1083px) {
     .sidebar-detached {
-        height: calc(100% - var(--topbar-height) - var(--footer-height-lg));
+        height: calc(100% - var(--topbar-height));
     }
 }
 
