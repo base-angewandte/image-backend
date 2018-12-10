@@ -7,12 +7,12 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext as _
 from dal import autocomplete
 from rest_framework.response import Response
 from artworks.models import *
 from artworks.forms import *
 from artworks.serializers import ArtworkSerializer
-
 
 @login_required
 def artworks_list(request):

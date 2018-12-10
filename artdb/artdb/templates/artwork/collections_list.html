@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load has_group %}
+{% load i18n %}
 
 {% block collectionslist %}
 <section class="thumbnail-area">
@@ -7,14 +8,14 @@
     <div class="thumbnail-navbar">
         <nav class="navigation">
             <ol>
-                <li><a href="{% url 'artworks_list' %}">All Artworks</a></li><li class="selected"><a href="{% url 'collections_list' %}">Collections</a></li>
+                <li><a href="{% url 'artworks_list' %}">{% trans 'All Artworks' %}</a></li><li class="selected"><a href="{% url 'collections_list' %}">{% trans 'Collections' %}</a></li>
             </ol>
         </nav>
         {% if collections %}
         <div id="collection-nav">
             <form method="GET" action="">
                 <select name="collection-selector" id="collection-selector">
-                        <option value="">All collections</option>
+                        <option value="">{% trans 'All Collections' %}</option>
                         {% for collection in all_collections %}
                             <option value="{{collection.id}}">{{collection.title}}</option>
                         {% endfor %}
@@ -28,7 +29,7 @@
     <div class="list"></div>
         <table id="js-collections-list" class="collections-list">
         {% if my_collections %}
-            <tr><th colspan="2">My Collections</th></tr>
+            <tr><th colspan="2">{% trans 'My Collections' %}</th></tr>
             {% for collection in my_collections %}
                 <tr class="collection" data-collectionid="{{collection.id}}"><td>{{collection.title}}</td>
                 <td>{{collection.size}}</td>
@@ -54,7 +55,7 @@
             {% endfor %}
             </table>
         {% else %}
-        <p>There are no other collections yet.</p>
+        {% trans 'NoCollections' %}
         {% endif %}
     </div>
 

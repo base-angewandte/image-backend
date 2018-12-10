@@ -228,7 +228,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'de-at'
+LANGUAGE_CODE = 'de'
 TIME_ZONE = 'Europe/Vienna'
 USE_I18N = True
 USE_L10N = True
@@ -237,6 +237,10 @@ USE_TZ = True
 LANGUAGES = (
     ('de', _('German')),
     ('en', _('English')),
+)
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'artdb', 'locale'),
 )
 
 # Static files (CSS, JavaScript, Images)

@@ -19,7 +19,7 @@ $(document).ready(function() {
             return el;
         }
 
-        $.getJSON('/artwork/'+artworkID+'.json', function(data) {
+        $.getJSON('./artwork/'+artworkID+'.json', function(data) {
             var elDetails = document.createElement('div');
             
             var func = function() { showCollectOverlay(artworkID); }
@@ -120,7 +120,7 @@ $(document).ready(function() {
 
     // open the detail overlay
     function showDetailOverlay(artworkID) {
-        const url = '/artwork/' + artworkID + '/detail_overlay.html';
+        const url = './artwork/' + artworkID + '/detail_overlay.html';
         showOverlay(detailClassName);
         $('#detail-overlay').load(url, function() {
             elInspector = document.getElementById('detail-overlay-inspector');
@@ -131,7 +131,7 @@ $(document).ready(function() {
 
     // open the collect artwork overlay 
     showCollectOverlay = function(artworkID) {
-        const url = '/artwork/' + artworkID + '/collect_overlay.html';
+        const url = './artwork/' + artworkID + '/collect_overlay.html';
         showOverlay(collectClassName);
         $('#collect-overlay').load(url, function() {
             console.log("loaded");
@@ -142,7 +142,7 @@ $(document).ready(function() {
 
     // open the detail edit overlay 
     showEditOverlay = function(artworkID) {
-        const url = '/artwork/' + artworkID + '/edit_overlay.html';
+        const url = './artwork/' + artworkID + '/edit_overlay.html';
         showOverlay(editClassName);
         $('#edit-overlay').load(url, function() {
             $('.image-big').addClass('shown');

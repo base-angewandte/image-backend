@@ -1,3 +1,5 @@
+{% load i18n %}
+
     {% if artworks %}
     <div id="thumbnails">
         {% for artwork in artworks %}
@@ -19,7 +21,7 @@
     {% endfor %}
     </div>
     {% else %}
-    <p>no artworks there</p>
+    {% trans 'NoArtworks' %}
     {% endif %}
     <div class="wrapper wrapper-footer">
         <base-footer lang="{{ LANGUAGE_CODE }}" logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" post-lang="true" post-csrf="{{ csrf_token }}"></base-footer>
