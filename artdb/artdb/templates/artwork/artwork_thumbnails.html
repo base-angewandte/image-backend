@@ -3,7 +3,7 @@
     {% if artworks %}
     <div id="thumbnails">
         {% for artwork in artworks %}
-        <div data-artworkid="{{artwork.id}}" data-url="/{{ FORCE_SCRIPT_NAME }}artwork/{{artwork.id}}" class="thumbnail">
+        <div data-artworkid="{{artwork.id}}" data-url="{{ FORCE_SCRIPT_NAME }}/artwork/{{artwork.id}}" class="thumbnail">
             <div class="vertically-center">
                 {% if not artwork.imageOriginal %}
                     <div class="picture-thumbnail picture-thumbnail-missing"></div>
