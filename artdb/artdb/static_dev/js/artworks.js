@@ -103,7 +103,7 @@ $(document).ready(function() {
             selectedThumbnail = clickedThumbnail;
             $(selectedThumbnail).addClass(selectClass);
             elInspector = document.getElementById('thumbnailbrowser-inspector');
-            updateInspector(elInspector, selectedThumbnail.dataset.artworkid);
+            updateInspector(elInspector, selectedThumbnail.dataset.artworkid, selectedThumbnail.dataset.url);
         }
     });
 
@@ -121,30 +121,30 @@ $(document).ready(function() {
 
     // open the detail overlay
     function showDetailOverlay(artworkID, url) {
-        url = url + '/detail_overlay.html';
+        overlayUrl = url + '/detail_overlay.html';
         showOverlay(detailClassName);
-        $('#detail-overlay').load(url, function() {
+        $('#detail-overlay').load(overlayUrl, function() {
             elInspector = document.getElementById('detail-overlay-inspector');
-            updateInspector(elInspector, artworkID);       
+            updateInspector(elInspector, artworkID, url);       
             $('.image-big').addClass('shown');
         });
     }
 
     // open the collect artwork overlay 
     showCollectOverlay = function(artworkID, url) {
-        url = url + '/collect_overlay.html';
+        overlayUrl = url + '/collect_overlay.html';
         showOverlay(collectClassName);
-        $('#collect-overlay').load(url, function() {
+        $('#collect-overlay').load(overlayUrl, function() {
             elInspector = document.getElementById('collect-overlay-inspector');
-            updateInspector(elInspector, artworkID);
+            updateInspector(elInspector, artworkID, url);
         });
     }
 
     // open the detail edit overlay
     showEditOverlay = function(artworkID, url) {
-        url = url + '/edit_overlay.html';
+        overlayUrl = url + '/edit_overlay.html';
         showOverlay(editClassName);
-        $('#edit-overlay').load(url, function() {
+        $('#edit-overlay').load(overlayUrl, function() {
             $('.image-big').addClass('shown');
         });
     }
