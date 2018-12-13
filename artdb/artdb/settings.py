@@ -181,12 +181,21 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'general.context_processors.global_settings',
             ],
             'debug': DEBUG,
             'string_if_invalid': "[invalid variable '%s'!]" if DEBUG else "",
         },
     },
 ]
+
+
+CONTEXT_SETTINGS = (
+    'DEBUG',
+    'BASE_HEADER',
+    'FORCE_SCRIPT_NAME',
+)
 
 WSGI_APPLICATION = '{}.wsgi.application'.format(PROJECT_NAME)
 

@@ -67,7 +67,6 @@ def artworks_list(request):
     except EmptyPage:
         artworks = paginator.page(paginator.num_pages)
 
-    context['BASE_HEADER'] = settings.BASE_HEADER
     context['artworks'] = artworks
     context['query_all'] = queryAll
     context['query_title'] = queryArtworkTitle
@@ -170,7 +169,6 @@ def collection(request, id=None):
     if request.method == 'GET':
         col = get_object_or_404(ArtworkCollection, id=id)
         context = {}
-        context['BASE_HEADER'] = settings.BASE_HEADER
         context['title']  = col.title
         context['id']  = col.id
         context['created_by_id'] = col.user.id
@@ -202,7 +200,6 @@ def collections_list(request, id=None):
     Render a list of all collections.
     """
     context = {}
-    context['BASE_HEADER'] = settings.BASE_HEADER
     context['collections'] = ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user)
     context['my_collections'] = ArtworkCollection.objects.filter(user=request.user)
     return render(request, 'artwork/collections_list.html', context)
