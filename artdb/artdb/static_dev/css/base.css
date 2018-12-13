@@ -467,6 +467,8 @@ and a close button */
     text-align: center;
     margin-right: 2px;
     height: 48px;
+    min-width: 130px;
+    padding: 16px;
 }
 
 .thumbnail-area .navigation li.selected {
@@ -474,11 +476,7 @@ and a close button */
 }
 
 .thumbnail-area .navigation li a {
-    display: table-cell;
-    height: 46px;
-    min-width: 98px;
-    padding: 16px;
-    vertical-align: middle;
+    display: block;
     text-align: center;
     text-decoration: none;
     color: #000;
