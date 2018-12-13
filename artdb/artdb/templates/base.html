@@ -19,8 +19,12 @@
     </head>
     <body class="show-thumbnailbrowser">
         {% get_current_language as LANGUAGE_CODE %}
-        <div class="wrapper">
-            <base-header active="image" lang="{{ LANGUAGE_CODE }}" post-lang="true" post-csrf="{{ csrf_token }}"></base-header>
+        <div class="topbar-wrapper">
+            <div id="topbar">
+                <div class="wrapper">
+                    <base-header active="image" lang="{{ LANGUAGE_CODE }}" post-lang="true" post-csrf="{{ csrf_token }}"></base-header>
+                </div>
+            </div>
         </div>
         <div id="thumbnailbrowser">
             {% block collectionslist %}

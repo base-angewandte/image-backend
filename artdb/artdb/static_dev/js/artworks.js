@@ -5,7 +5,7 @@ $(document).ready(function() {
     const editClassName = 'show-edit-overlay';
     const detailClassName = 'show-detail-overlay';
     const collectClassName = 'show-collect-overlay';
-
+    var bSmallTopbar = false;
 
     // load artwork data (JSON) and show it in the inspector/sidebar
     updateInspector = function(elInspector, artworkID) {
@@ -224,5 +224,37 @@ $(document).ready(function() {
                 $('#search-basic').removeClass('fadeout'); 
             });
         }
-    }); 
+    });
+    
+    window.addEventListener('scroll', throttle(handleScroll, 30));
+
+    function handleScroll() {
+        if (window.pageYOffset >= 32) {
+            $('#topbar').addClass('small');
+            $('.button-close').addClass('fixed');
+            bSmallTopbar = true;
+        } else {
+            if (bSmallTopbar) {
+                $('#topbar').removeClass('small');
+                $('.button-close').removeClass('fixed');
+                bSmallTopbar = false;
+            }
+        }
+    }
+
+    function throttle(callback) {
+        var active = false; // a simple flag
+        var evt; // to keep track of the last event
+        var handler = function(){ // fired only when screen has refreshed
+          active = false; // release our flag 
+          callback(evt);
+          }
+        return function handleEvent(e) { // the actual event handler
+          evt = e; // save our event at each call
+          if (!active) { // only if we weren't already doing it
+            active = true; // raise the flag
+            requestAnimationFrame(handler); // wait for next screen refresh
+          };
+        }
+    }
 });
