@@ -8,7 +8,7 @@ $(document).ready(function() {
     var bSmallTopbar = false;
 
     // load artwork data (JSON) and show it in the inspector/sidebar
-    updateInspector = function(elInspector, artworkID) {
+    updateInspector = function(elInspector, artworkID, url) {
         // helper function
         // creates elements with optional css classes, text and eventListeners
         function createEl(tagName, cssClassName, text, func) {
@@ -19,13 +19,14 @@ $(document).ready(function() {
             return el;
         }
 
-        $.getJSON('./artwork/'+artworkID+'.json', function(data) {
+        const jsonUrl = url + '.json';
+        $.getJSON(jsonUrl, function(data) {
             var elDetails = document.createElement('div');
             
-            var func = function() { showCollectOverlay(artworkID); }
+            var func = function() { showCollectOverlay(artworkID, url); }
             elDetails.appendChild(createEl('button', 'inspector-button', 'Merken', func));
             
-            func = function() { showEditOverlay(artworkID); }
+            func = function() { showEditOverlay(artworkID, url); }
             elDetails.appendChild(createEl('button', 'inspector-button', 'Edit', func));
             
             // build all the elements and append them to the DOM 
@@ -92,7 +93,7 @@ $(document).ready(function() {
         var clickedThumbnail = e.currentTarget;
         if ($(clickedThumbnail).hasClass(selectClass)) {
             // Clicking a thumbnail twice, shows the detail overlay
-            showDetailOverlay(clickedThumbnail.dataset.artworkid);
+            showDetailOverlay(clickedThumbnail.dataset.artworkid, clickedThumbnail.dataset.url);
         } else {
             // Clicking a thumbnail once, selects it and shows the details
             // in the inspector.
@@ -119,8 +120,8 @@ $(document).ready(function() {
 
 
     // open the detail overlay
-    function showDetailOverlay(artworkID) {
-        const url = './artwork/' + artworkID + '/detail_overlay.html';
+    function showDetailOverlay(artworkID, url) {
+        url = url + '/detail_overlay.html';
         showOverlay(detailClassName);
         $('#detail-overlay').load(url, function() {
             elInspector = document.getElementById('detail-overlay-inspector');
@@ -130,19 +131,18 @@ $(document).ready(function() {
     }
 
     // open the collect artwork overlay 
-    showCollectOverlay = function(artworkID) {
-        const url = './artwork/' + artworkID + '/collect_overlay.html';
+    showCollectOverlay = function(artworkID, url) {
+        url = url + '/collect_overlay.html';
         showOverlay(collectClassName);
         $('#collect-overlay').load(url, function() {
-            console.log("loaded");
             elInspector = document.getElementById('collect-overlay-inspector');
             updateInspector(elInspector, artworkID);
         });
     }
 
-    // open the detail edit overlay 
-    showEditOverlay = function(artworkID) {
-        const url = './artwork/' + artworkID + '/edit_overlay.html';
+    // open the detail edit overlay
+    showEditOverlay = function(artworkID, url) {
+        url = url + '/edit_overlay.html';
         showOverlay(editClassName);
         $('#edit-overlay').load(url, function() {
             $('.image-big').addClass('shown');

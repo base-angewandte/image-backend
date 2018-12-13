@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-10 12:02+0100\n"
+"POT-Creation-Date: 2018-12-13 12:39+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,16 +20,84 @@ msgstr ""
 
 #: artdb/settings.py:238
 msgid "German"
-msgstr ""
+msgstr "German"
 
 #: artdb/settings.py:239
 msgid "English"
 msgstr "English"
 
-#: artdb/templates/artwork/artwork_thumbnails.html:24
-msgid "NoArtworks"
-msgstr "There are no artworks."
+#: artdb/templates/artwork/artwork_edit_overlay.html:21
+msgid "Cancel"
+msgstr "Cancel"
 
-#: artdb/templates/base.html:44
+#: artdb/templates/artwork/artwork_edit_overlay.html:21
+msgid "Save"
+msgstr "Save"
+
+#: artdb/templates/artwork/artwork_thumbnails.html:24
+#: artdb/templates/artwork/artwork_thumbnails_orderable.html:24
+msgid "NoArtworks"
+msgstr "There are no artworks here yet."
+
+#: artdb/templates/artwork/collection.html:9
+#: artdb/templates/artwork/collections_list.html:11
+#: artdb/templates/artwork/thumbnailbrowser.html:111
+msgid "All Artworks"
+msgstr "All Artworks"
+
+#: artdb/templates/artwork/collection.html:9
+#: artdb/templates/artwork/collections_list.html:11
+#: artdb/templates/artwork/thumbnailbrowser.html:111
+msgid "Collections"
+msgstr "Collections"
+
+#: artdb/templates/artwork/collection.html:16
+#: artdb/templates/artwork/collections_list.html:18
+msgid "All Collections"
+msgstr "All Collections"
+
+#: artdb/templates/artwork/collections_list.html:32
+msgid "My Collections"
+msgstr "My Collections"
+
+#: artdb/templates/artwork/collections_list.html:58
+msgid "NoCollections"
+msgstr "There are no collections yet."
+
+#: artdb/templates/artwork/thumbnailbrowser.html:116
+#, fuzzy
+msgid "Search Artworks"
+msgstr "Search Artworks"
+
+#: artdb/templates/artwork/thumbnailbrowser.html:122
+msgid "Expert"
+msgstr "Expert"
+
+#: artdb/templates/artwork/thumbnailbrowser.html:131
+msgid "Artist"
+msgstr "Artist"
+
+#: artdb/templates/artwork/thumbnailbrowser.html:135
+msgid "Date From"
+msgstr "From (date of creation)"
+
+#: artdb/templates/artwork/thumbnailbrowser.html:135
+#: artdb/templates/artwork/thumbnailbrowser.html:138
+msgid "YYYY"
+msgstr "YYYY"
+
+#: artdb/templates/artwork/thumbnailbrowser.html:138
+msgid "Date To"
+msgstr "To (date of creation)"
+
+#: artdb/templates/artwork/thumbnailbrowser.html:140
+msgid "Location"
+msgstr "Location of creation"
+
+#: artdb/templates/artwork/thumbnailbrowser.html:143
+msgid "Keywords"
+msgstr "Keywords"
+
+#: artdb/templates/base.html:48
 msgid "This resolution is not supported."
 msgstr "This resolution is not supported."

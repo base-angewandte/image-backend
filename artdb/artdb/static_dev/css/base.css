@@ -131,6 +131,8 @@ h2.centered {
 .wrapper-footer {
     margin-top: 48px;
     padding:0 16px;
+    position: absolute;
+    bottom: 0px;
 }
 
 
@@ -202,7 +204,7 @@ and a close button */
     height: calc(100% - var(--topbar-height));
     margin-left: calc(100% - var(--sidebar-width));
     background-color: var(--dark-grey-1-color);
-    padding: 16px;
+    padding: 32px 16px 16px 16px;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
     z-index: 1;
@@ -294,6 +296,10 @@ and a close button */
 
 .inspector div {
     margin-top: 28px;
+}
+
+.inspector > div {
+    margin-top: 0px;
 }
 
 .inspector .key {
@@ -450,8 +456,8 @@ and a close button */
     padding: 18px;
 }
 
-.thumbnail-navbar select {
-
+.thumbnail-area {
+    min-height: 100%;
 }
 
 .thumbnail-area .navigation {

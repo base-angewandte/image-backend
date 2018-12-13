@@ -113,7 +113,7 @@ $(document).ready(function() {
         </nav>
         <div class="search-topbar">
             <form method="GET" action="" id="search-basic">
-                <input id="search-basic-artworks-field" placeholder="Search Artworks" name="search" value="{{ query_all|default:'' }}" autocomplete="off" role="title search" autofocus/><span id="js-clear-search-artwork-field"></span>
+                <input id="search-basic-artworks-field" placeholder="{% trans 'Search Artworks' %}" name="search" value="{{ query_all|default:'' }}" autocomplete="off" role="title search" autofocus/><span id="js-clear-search-artwork-field"></span>
             </form>
             <div class="switch-labeled">
                 <label class="switch">
@@ -132,10 +132,10 @@ $(document).ready(function() {
                 </div>
                 <div class="col-2">
                     <div class="extra-margin">
-                        <label>{% trans 'Date From' %}</label><input class="search-small-input" placeholder="YYYY" name="date_from" value="{{ query_date_from|default:''}}" autocomplete="off" role="date_from search"/>
+                        <label>{% trans 'Date From' %}</label><input class="search-small-input" placeholder="{% trans 'YYYY' %}" name="date_from" value="{{ query_date_from|default:''}}" autocomplete="off" role="date_from search"/>
                     </div>
                     <div>
-                        <label>{% trans 'Date To' %}</label><input class="search-small-input" placeholder="YYYY" name="date_to" value="{{ query_date_to|default:''}}" autocomplete="off" role="date_to search"/>
+                        <label>{% trans 'Date To' %}</label><input class="search-small-input" placeholder="{% trans 'YYYY' %}" name="date_to" value="{{ query_date_to|default:''}}" autocomplete="off" role="date_to search"/>
                     </div>
                     <label>{% trans 'Location' %}</label><input placeholder="" name="location" value="{{ query_location|default:''}}" autocomplete="off" role="location search"/>
                 </div>

@@ -67,7 +67,7 @@
             change: function(event, ui) {
                 let id = ui.item.value;
                 if (id) {
-                    window.location = `/collection/${id}.html`;
+                    window.location = `./collection/${id}.html`;
                 } else {
                     window.location = '{% url 'collections_list' %}';
                 }
@@ -76,7 +76,7 @@
         $("#js-collections-list tr").on('click', function (e) {
             var clickedCollection = e.currentTarget.dataset.collectionid;
             if (clickedCollection) {
-                window.location = `/collection/${clickedCollection}.html`;
+                window.location = `./collection/${clickedCollection}.html`;
             }
         });
     });

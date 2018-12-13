@@ -21,7 +21,7 @@
             {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan=2>You do not have any collections yet.</td>
+                    <td colspan=2>{{collection.title}}</td>
                 </tr>
             {% endif %}
         </table>
@@ -42,7 +42,7 @@ $(document).ready(function() {
     $(".removeFromCollection").on('click', function (e) {
         var artworkID = e.currentTarget.dataset['artworkid'];
         var collectionID = e.currentTarget.dataset['collectionid'];
-        var url = '/artwork/' + artworkID + '/collect_overlay.html';
+        var url = './artwork/' + artworkID + '/collect_overlay.html';
         $.ajax({
             type: 'POST',
             url: url,
@@ -63,7 +63,7 @@ $(document).ready(function() {
     $(".addToCollection").on('click', function (e) {
         var artworkID = e.currentTarget.dataset['artworkid'];
         var collectionID = e.currentTarget.dataset['collectionid'];
-        var url = '/artwork/' + artworkID + '/collect_overlay.html';
+        var url = './artwork/' + artworkID + '/collect_overlay.html';
         $.ajax({
             type: 'POST',
             url: url,
@@ -85,7 +85,7 @@ $(document).ready(function() {
         e.preventDefault();
         var data = $(this).serializeArray();
         console.log(data);
-        var url = '/artwork/' + data[0]['value'] + '/collect_overlay.html';
+        var url = './artwork/' + data[0]['value'] + '/collect_overlay.html';
         $.ajax({
             type: 'POST',
             url: url,

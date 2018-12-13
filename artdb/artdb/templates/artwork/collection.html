@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block collectionslist %}
 <section class="thumbnail-area">
@@ -6,14 +7,14 @@
     <div class="thumbnail-navbar">
         <nav class="navigation">
             <ol>
-                <li><a href="{% url 'artworks_list' %}">All Artworks</a></li><li class="selected"><a href="{% url 'collections_list' %}">Collections</a></li>
+                <li><a href="{% url 'artworks_list' %}">{% trans 'All Artworks' %}</a></li><li class="selected"><a href="{% url 'collections_list' %}">{% trans 'Collections' %}</a></li>
             </ol>
         </nav>
         {% if collections %}
         <div id="collection-nav">
             <form method="GET" action="">
                 <select name="collection-selector" id="collection-selector">
-                    <option value="">All collections</option>
+                    <option value="">{% trans 'All Collections' %}</option>
                     {% for collection in all_collections %}
                     <option value="{{collection.id}}" {% if collection.id == id %} selected {% endif %}>{{collection.title}}</option>
                     {% endfor %}
@@ -41,7 +42,7 @@ $(document).ready(function() {
         change: function(event, ui) {
             let id = ui.item.value;
             if (id) {
-                window.location = `/collection/${id}.html`;
+                window.location = `./collection/${id}.html`;
             } else {
                 window.location = '{% url 'collections_list' %}';
             }
@@ -52,7 +53,7 @@ $(document).ready(function() {
         e.stopPropagation();
         var thumbnail = e.currentTarget.parentElement;
         var membershipID = thumbnail.dataset['membershipid'];
-        var url = `/collection/${collectionID}.html`;
+        var url = `./collection/${collectionID}.html`;
         $.ajax({
             type: 'POST',
             url: url,
@@ -74,7 +75,7 @@ $(document).ready(function() {
         e.stopPropagation();
         var thumbnail = e.currentTarget.parentElement;
         var membershipID = thumbnail.dataset['membershipid'];
-        var url = `/collection/${collectionID}.html`;
+        var url = `./collection/${collectionID}.html`;
         $.ajax({
             type: 'POST',
             url: url,
