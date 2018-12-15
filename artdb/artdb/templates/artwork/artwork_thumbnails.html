@@ -21,8 +21,5 @@
     {% endfor %}
     </div>
     {% else %}
-    {% trans 'NoArtworks' %}
+    <div class="nothing-found">{% trans 'NoArtworks' %}</div>
     {% endif %}
-    <div class="wrapper wrapper-footer">
-        <base-footer lang="{{ LANGUAGE_CODE }}" logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" post-lang="true" post-csrf="{{ csrf_token }}"></base-footer>
-    </div>

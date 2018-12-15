@@ -127,14 +127,6 @@ h2.centered {
     }
 }
 
-
-.wrapper-footer {
-    margin-top: 48px;
-    padding:0 16px;
-}
-
-
-
 /* the classes of body are used to represent different states:
 thumbnails = normal thumbnail browsing
 detail-overlay = show the artwork detail overlay
@@ -155,6 +147,14 @@ body.show-edit-overlay #edit-overlay,
 body.show-collect-overlay #collect-overlay
 {
     display: table;
+}
+
+body:not(.show-thumbnailbrowser) .wrapper-footer {
+    display: none;
+}
+
+.wrapper-footer {
+    padding: 64px calc(var(--sidebar-width) + 16px) 16px 16px;
 }
 
 /* the overlay consists of a content area, a sidebar
@@ -239,7 +239,7 @@ and a close button */
 
 /* thumbnailbrowser */
 #thumbnailbrowser {
-    height: 100vh;
+    height: calc(100vh - 87px);
     width: 100%;
     background-color: var(--light-bg-color);
     padding: 0 var(--sidebar-width) 0 0;
@@ -982,4 +982,10 @@ table.collections-list tr:active td {
         padding: 16px;
         min-height: 50%;
     }
+}
+
+.nothing-found {
+    font-size: 16px;
+    padding: 32px 16px 32px 16px;
+    text-align: center;
 }
