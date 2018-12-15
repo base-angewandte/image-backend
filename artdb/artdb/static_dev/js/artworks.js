@@ -1,6 +1,7 @@
 $(document).ready(function() {
     var selectedThumbnail = null;
     var thumbnailbrowserScrollPosition = $(window).scrollTop();
+    var elCurrentInspector = null;
     const thumbnailClassName = 'show-thumbnailbrowser';
     const editClassName = 'show-edit-overlay';
     const detailClassName = 'show-detail-overlay';
@@ -82,6 +83,7 @@ $(document).ready(function() {
                 elDetails.appendChild(elEntry);
             }); 
             elInspector.replaceChild(elDetails, elInspector.getElementsByTagName('div')[0]);
+            elCurrentInspector = elInspector;
         });
     }
 
@@ -117,8 +119,18 @@ $(document).ready(function() {
         closeOverlay();
     };  
 
+    // copy the content from one inspector to another
+    // this avoids unnecessary reloads
+    function copyInspectorDetails(elNewInspector) {
+        elCurrentDetails = elCurrentInspector.getElementsByTagName('div')[0].cloneNode(true);
+        elNewInspector.replaceChild(elCurrentDetails, elNewInspector.getElementsByTagName('div')[0]);
+        elCurrentInspector = elNewInspector;
+    }
+
     // hide the overlay
     function closeOverlay() {
+        var elNewInspector = document.getElementById('thumbnailbrowser-inspector');
+        copyInspectorDetails(elNewInspector);
         document.body.className = thumbnailClassName;
         window.scrollTo(0,thumbnailbrowserScrollPosition);
     }
@@ -139,8 +151,8 @@ $(document).ready(function() {
     function showDetailOverlay(url) {
         overlayUrl = url + '/detail_overlay.html';
         $('#detail-overlay').load(overlayUrl, function() {
-            elInspector = document.getElementById('detail-overlay-inspector');
-            updateInspector(elInspector, url); 
+            var elInspector = document.getElementById('detail-overlay-inspector');
+            copyInspectorDetails(elInspector);
             $('.image-big').addClass('shown');
             showOverlay(detailClassName);
         });
@@ -151,7 +163,7 @@ $(document).ready(function() {
         overlayUrl = url + '/collect_overlay.html';
         $('#collect-overlay').load(overlayUrl, function() {
             elInspector = document.getElementById('collect-overlay-inspector');
-            updateInspector(elInspector, url);
+            copyInspectorDetails(elInspector);
             showOverlay(collectClassName);
         });
     }
