@@ -5,6 +5,12 @@
 {% block extra_scripts %}
 <script type="text/javascript">
 $(document).ready(function() {
+    var expertSearch = "{{ expert_search }}";
+    if (expertSearch == "True") {
+        $("#js-search-switch").prop('checked', true);
+        showExpertSearch(false);
+    }
+
     $("#search-basic-artworks-field").autocomplete({
         source: function(request, response) {
             $.ajax({
@@ -113,7 +119,7 @@ $(document).ready(function() {
         </nav>
         <div class="search-topbar">
             <form method="GET" action="" id="search-basic">
-                <input id="search-basic-artworks-field" placeholder="{% trans 'Search Artworks' %}" name="search" value="{{ query_all|default:'' }}" autocomplete="off" role="title search" autofocus/><span id="js-clear-search-artwork-field"></span>
+                <input id="search-basic-artworks-field" placeholder="{% trans 'Search Artworks' %}" name="search" value="{{ query_search|default:'' }}" autocomplete="off" role="title search" autofocus/><span id="js-clear-search-artwork-field"></span>
             </form>
             <div class="switch-labeled">
                 <label class="switch">
@@ -127,6 +133,7 @@ $(document).ready(function() {
         <div id="search-expert-fold">
             <form method="GET" action="" id="search-expert" class="hidden fadeout">
                 <div class="col-1">
+                    <input type="hidden" name="searchtype" value="expert">
                     <label>Title</label><input id="search-expert-artworks-field" placeholder="" name="title" value="{{ query_title|default:'' }}" autocomplete="off" role="title search" autofocus/>
                     <label>{% trans 'Artist' %}</label><input id="search-expert-artist-field" placeholder="" name="artist" value="{{ query_artist|default:''}}" autocomplete="off" role="artist search"/>
                 </div>

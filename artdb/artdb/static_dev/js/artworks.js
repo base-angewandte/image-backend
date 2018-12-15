@@ -12,11 +12,10 @@ $(document).ready(function() {
     updateInspector = function(elInspector, url) {
         // helper function
         // creates elements with optional css classes, text and eventListeners
-        function createEl(tagName, cssClassName, text, func) {
+        function createEl(tagName, cssClassName, text) {
             var el = document.createElement(tagName);
             if (cssClassName) el.classList.add(cssClassName);
             if (text) el.appendChild(document.createTextNode(text));
-            if (func) el.addEventListener('click', func);
             return el;
         }
 
@@ -42,7 +41,7 @@ $(document).ready(function() {
                         elKey = createEl('div', 'key', 'Artist');
                         elEntry.appendChild(elKey);
                         for (var i = 0; i < val.length; i++) {
-                            elVal = createEl('div', 'value', val[i].name, searchForArtist);
+                            elVal = createEl('div', 'value', val[i].name);
                             elVal.classList.add('tag');
                             elVal.dataset.artist = val[i].name;
                             elEntry.appendChild(elVal);
@@ -53,7 +52,7 @@ $(document).ready(function() {
                         elKey = createEl('div', 'key', 'Keywords');
                         elEntry.appendChild(elKey);
                         for (var i = 0; i < val.length; i++) {
-                            elVal = createEl('div', 'value', val[i].name, searchForKeyword);
+                            elVal = createEl('div', 'value', val[i].name);
                             elVal.classList.add('tag');
                             elVal.dataset.keyword = val[i].name;
                             elEntry.appendChild(elVal);
@@ -63,7 +62,7 @@ $(document).ready(function() {
                         if (val.length === 0) break;
                         elKey = createEl('div', 'key', 'LocationOfCreation');
                         elEntry.appendChild(elKey);
-                        elVal = createEl('div', 'value', val.name, searchForLocation);
+                        elVal = createEl('div', 'value', val.name);
                         elVal.classList.add('tag');
                         elVal.dataset.location = val.name;
                         elEntry.appendChild(elVal);
@@ -86,27 +85,6 @@ $(document).ready(function() {
             elCurrentInspector = elInspector;
         });
     }
-
-    // the page consists of a sidebar and a main view
-    // per default, clickable thumbnails are shown
-    $('.thumbnail').on('click', function (e) {
-        const selectClass = 'selected';
-        var clickedThumbnail = e.currentTarget;
-        if ($(clickedThumbnail).hasClass(selectClass)) {
-            // Clicking a thumbnail twice, shows the detail overlay
-            showDetailOverlay(clickedThumbnail.dataset.url);
-        } else {
-            // Clicking a thumbnail once, selects it and shows the details
-            // in the inspector.
-            if (selectedThumbnail !== null) {
-                $(selectedThumbnail).removeClass(selectClass);
-            }
-            selectedThumbnail = clickedThumbnail;
-            $(selectedThumbnail).addClass(selectClass);
-            elInspector = document.getElementById('thumbnailbrowser-inspector');
-            updateInspector(elInspector,  selectedThumbnail.dataset.url);
-        }
-    });
 
     // hide the collect artwork overlay
     hideCollectOverlay = function() {
@@ -177,24 +155,6 @@ $(document).ready(function() {
         });
     }
 
-    function searchForKeyword(e) {
-        const keyword = e.currentTarget.dataset.keyword.replace(/\s/g, "+");
-        const url = `?keyword=${keyword}`;
-        window.location.href = url;
-    }
-
-    function searchForLocation(e) {
-        const location = e.currentTarget.dataset.location.replace(/\s/g, "+");
-        const url = `?location=${location}`;
-        window.location.href = url;
-    }
-
-    function searchForArtist(e) {
-        const artist = e.currentTarget.dataset.artist.replace(/\s/g, "+");
-        const url = `?artist=${artist}`;
-        window.location.href = url;
-    }
-
     // do not submit empty form fields
     $("#search-expert").submit(function() {
         $(this).find(":input").filter(function() { return !this.value; }).attr("disabled", "disabled");
@@ -202,10 +162,8 @@ $(document).ready(function() {
     });
     $("form" ).find(":input").prop("disabled", false);
 
-    // search basic/expert switch
-    $("#js-search-switch").click(function(e) {
-        if ($(this).prop('checked')) {
-            // switching to expert search
+    showExpertSearch = function(bAnimated) {
+        if (bAnimated) {
             $('#search-basic').addClass('fadeout')
             .one('transitionend', function() {
                 $('#search-basic').addClass('hidden');
@@ -215,19 +173,92 @@ $(document).ready(function() {
             .one('transitionend', function() {
                 $('#search-expert').removeClass('fadeout');
             });
+        } else {
+            $('#search-basic').addClass('hidden', 'fadeout');
+            $('#search-expert').removeClass('hidden');
+            $('#search-expert').removeClass('fadeout');         
+            $('#search-expert-fold').addClass('unfolded-noanimation');
+        }
+    }
+
+    showBasicSearch = function() {
+        $('#search-basic').removeClass('hidden');
+        $('#search-expert').addClass('fadeout');
+        if ($('#search-expert-fold').hasClass('unfolded-noanimation')) {
+            $('#search-expert-fold').addClass('unfolded');
+            $('#search-expert-fold').removeClass('unfolded-noanimation');
+        }
+        $('#search-expert-fold').removeClass('unfolded')
+        .one('transitionend', function() {
+            //$('#search-expert').addClass('hidden');
+            $('#search-basic').removeClass('fadeout'); 
+        });
+    }
+
+    // search basic/expert switch
+    $("#js-search-switch").click(function(e) {
+        if ($(this).prop('checked')) {
+            console.log("switching to expert");
+            showExpertSearch(true);
         } else {
-            // switching to basic search
-            $('#search-basic').removeClass('hidden');
-            $('#search-expert').addClass('fadeout');
-            $('#search-expert-fold').removeClass('unfolded')
-            .one('transitionend', function() {
-                //$('#search-expert').addClass('hidden');
-                $('#search-basic').removeClass('fadeout'); 
-            });
+            console.log("switching to basic");
+            showBasicSearch();
         }
     });
     
+    // ---------------------------------------------------
+    // event listeners
+    // ---------------------------------------------------
+
     window.addEventListener('scroll', throttle(handleScroll, 30));
+
+    // the page consists of a sidebar and a main view
+    // per default, clickable thumbnails are shown
+    $('.thumbnail').on('click', function (e) {
+        const selectClass = 'selected';
+        var clickedThumbnail = e.currentTarget;
+        if ($(clickedThumbnail).hasClass(selectClass)) {
+            // Clicking a thumbnail twice, shows the detail overlay
+            showDetailOverlay(clickedThumbnail.dataset.url);
+        } else {
+            // Clicking a thumbnail once, selects it and shows the details
+            // in the inspector.
+            if (selectedThumbnail !== null) {
+                $(selectedThumbnail).removeClass(selectClass);
+            }
+            selectedThumbnail = clickedThumbnail;
+            $(selectedThumbnail).addClass(selectClass);
+            elInspector = document.getElementById('thumbnailbrowser-inspector');
+            updateInspector(elInspector,  selectedThumbnail.dataset.url);
+        }
+    });
+
+    $(".inspector").on('click', function (e) {
+        function getParameters(s) {
+            return s.replace(/\s/g, "+");
+        }
+        var url = "?searchtype=expert&";
+
+        if (e.target.dataset.artist) {
+            var artist = encodeURIComponent(e.target.dataset.artist.trim());
+            url += `artist=${artist}`;
+        }
+        if (e.target.dataset.keyword) {
+            var keyword = encodeURIComponent(e.target.dataset.keyword.trim());
+            url += `keyword=${keyword}`;
+        }
+        if (e.target.dataset.location) {
+            var location = encodeURIComponent(e.target.dataset.location.trim());
+            url += `location=${location}`;
+        }
+
+        window.location.href = url;
+    });
+
+
+    // ---------------------------------------------------
+    // Base layout scroll handling
+    // ---------------------------------------------------
 
     function handleScroll() {
         if (window.pageYOffset >= 32) {

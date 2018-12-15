@@ -19,7 +19,8 @@ def artworks_list(request):
     """
     Render the thumbnailbrowser.
     """
-    queryAll = request.GET.get('search')
+    querySearch = request.GET.get('search')
+    querySearchType = request.GET.get('searchtype')
     queryArtworkTitle = request.GET.get('title')
     queryArtistName = request.GET.get('artist')
     queryKeyword = request.GET.get('keyword')
@@ -30,16 +31,7 @@ def artworks_list(request):
     context = {}
     expertSearch = False
 
-    if queryAll:
-        terms = [term.strip() for term in queryAll.split()]
-        for term in terms:
-            qObjects.add(Q(title__icontains=term), Q.OR)
-            artists = Artist.objects.filter(name__icontains=term)
-            qObjects.add(Q(artists__in=artists), Q.OR)
-            qObjects.add(Q(locationOfCreation__name__icontains=term), Q.OR)
-            keywords = Keyword.objects.filter(name__icontains=term)
-            qObjects.add(Q(keywords__in=keywords), Q.OR)
-    else:
+    if querySearchType == 'expert':
         expertSearch = True
         if queryArtworkTitle:
             qObjects.add(Q(title__icontains=queryArtworkTitle), Q.AND)
@@ -55,6 +47,16 @@ def artworks_list(request):
         if queryKeyword:
             keywords = Keyword.objects.filter(name__icontains=queryKeyword)
             qObjects.add(Q(keywords__in=keywords), Q.AND)
+    else:
+        if querySearch:
+            terms = [term.strip() for term in querySearch.split()]
+            for term in terms:
+                qObjects.add(Q(title__icontains=term), Q.OR)
+                artists = Artist.objects.filter(name__icontains=term)
+                qObjects.add(Q(artists__in=artists), Q.OR)
+                qObjects.add(Q(locationOfCreation__name__icontains=term), Q.OR)
+                keywords = Keyword.objects.filter(name__icontains=term)
+                qObjects.add(Q(keywords__in=keywords), Q.OR)
 
     querysetList = Artwork.objects.filter(qObjects).distinct().order_by('title')
 
@@ -68,7 +70,7 @@ def artworks_list(request):
         artworks = paginator.page(paginator.num_pages)
 
     context['artworks'] = artworks
-    context['query_all'] = queryAll
+    context['query_search'] = querySearch
     context['query_title'] = queryArtworkTitle
     context['query_artist'] = queryArtistName
     context['query_keyword'] = queryKeyword

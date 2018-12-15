@@ -550,6 +550,11 @@ and a close button */
     transition-delay: 0.1s;
 }
 
+#search-expert-fold.unfolded-noanimation {
+    max-height: 145px;
+    transition: none;
+}
+
 
 #search-expert.fadeout,
 #search-basic.fadeout {

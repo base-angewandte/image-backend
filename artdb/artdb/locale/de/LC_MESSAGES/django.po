@@ -37,7 +37,7 @@ msgstr "Sichern"
 #: artdb/templates/artwork/artwork_thumbnails.html:24
 #: artdb/templates/artwork/artwork_thumbnails_orderable.html:24
 msgid "NoArtworks"
-msgstr "Keine Werke vorhanden"
+msgstr "Keine Werke gefunden."
 
 #: artdb/templates/artwork/collection.html:9
 #: artdb/templates/artwork/collections_list.html:11
