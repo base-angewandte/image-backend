@@ -2,7 +2,7 @@
     {% if memberships %}
     <div id="thumbnails">
         {% for membership in memberships %}
-        <div data-artworkid="{{membership.artwork.id}}" data-url="{{ FORCE_SCRIPT_NAME }}/artwork/{{membership.artwork.id}}" data-membershipid="{{membership.id}}" class="thumbnail orderable">
+        <div data-url="{{ FORCE_SCRIPT_NAME }}/artwork/{{membership.artwork.id}}" data-membershipid="{{membership.id}}" class="thumbnail orderable">
             <div class="vertically-center">
                 {% if not membership.artwork.imageOriginal %}
                     <div class="picture-thumbnail picture-thumbnail-missing"></div>

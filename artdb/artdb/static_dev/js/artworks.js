@@ -8,7 +8,7 @@ $(document).ready(function() {
     var bSmallTopbar = false;
 
     // load artwork data (JSON) and show it in the inspector/sidebar
-    updateInspector = function(elInspector, artworkID, url) {
+    updateInspector = function(elInspector, url) {
         // helper function
         // creates elements with optional css classes, text and eventListeners
         function createEl(tagName, cssClassName, text, func) {
@@ -23,10 +23,10 @@ $(document).ready(function() {
         $.getJSON(jsonUrl, function(data) {
             var elDetails = document.createElement('div');
             
-            var func = function() { showCollectOverlay(artworkID, url); }
+            var func = function() { showCollectOverlay(url); }
             elDetails.appendChild(createEl('button', 'inspector-button', 'Merken', func));
             
-            func = function() { showEditOverlay(artworkID, url); }
+            func = function() { showEditOverlay(url); }
             elDetails.appendChild(createEl('button', 'inspector-button', 'Edit', func));
             
             // build all the elements and append them to the DOM 
@@ -85,7 +85,6 @@ $(document).ready(function() {
         });
     }
 
-
     // the page consists of a sidebar and a main view
     // per default, clickable thumbnails are shown
     $('.thumbnail').on('click', function (e) {
@@ -93,7 +92,7 @@ $(document).ready(function() {
         var clickedThumbnail = e.currentTarget;
         if ($(clickedThumbnail).hasClass(selectClass)) {
             // Clicking a thumbnail twice, shows the detail overlay
-            showDetailOverlay(clickedThumbnail.dataset.artworkid, clickedThumbnail.dataset.url);
+            showDetailOverlay(clickedThumbnail.dataset.url);
         } else {
             // Clicking a thumbnail once, selects it and shows the details
             // in the inspector.
@@ -103,78 +102,68 @@ $(document).ready(function() {
             selectedThumbnail = clickedThumbnail;
             $(selectedThumbnail).addClass(selectClass);
             elInspector = document.getElementById('thumbnailbrowser-inspector');
-            updateInspector(elInspector, selectedThumbnail.dataset.artworkid, selectedThumbnail.dataset.url);
+            updateInspector(elInspector,  selectedThumbnail.dataset.url);
         }
     });
-
-
-    // switch to a specific view
-    function showOverlay(classNameToAdd) {
-        // remember the scroll position
-        if ($('body').hasClass(thumbnailClassName)) {
-            thumbnailbrowserScrollPosition = $(window).scrollTop();
-            window.scrollTo(0, 0);
-        }
-        document.body.className = classNameToAdd;
-    }
-
-
-    // open the detail overlay
-    function showDetailOverlay(artworkID, url) {
-        overlayUrl = url + '/detail_overlay.html';
-        showOverlay(detailClassName);
-        $('#detail-overlay').load(overlayUrl, function() {
-            elInspector = document.getElementById('detail-overlay-inspector');
-            updateInspector(elInspector, artworkID, url);       
-            $('.image-big').addClass('shown');
-        });
-    }
-
-    // open the collect artwork overlay 
-    showCollectOverlay = function(artworkID, url) {
-        overlayUrl = url + '/collect_overlay.html';
-        showOverlay(collectClassName);
-        $('#collect-overlay').load(overlayUrl, function() {
-            elInspector = document.getElementById('collect-overlay-inspector');
-            updateInspector(elInspector, artworkID, url);
-        });
-    }
-
-    // open the detail edit overlay
-    showEditOverlay = function(artworkID, url) {
-        overlayUrl = url + '/edit_overlay.html';
-        showOverlay(editClassName);
-        $('#edit-overlay').load(overlayUrl, function() {
-            $('.image-big').addClass('shown');
-        });
-    }
-
-    // close the overlay
-    function closeOverlay() {
-        document.body.className = thumbnailClassName;
-        $(window).scrollTop(thumbnailbrowserScrollPosition);
-    }
-
-
-    // hide the detail overlay
-    hideDetailOverlay = function() {
-        $('.image-big').removeClass('shown');
-        closeOverlay();
-    };  
-
-
-    hideEditOverlay = function() {
-        // TODO: reload data
-        $('.image-big').removeClass('shown');
-        closeOverlay();
-    };
-
 
     // hide the collect artwork overlay
     hideCollectOverlay = function() {
         closeOverlay();
     };
 
+    // hide the detail or edit overlay
+    hideImageAndOverlay = function() {
+        $('.image-big').removeClass('shown');
+        closeOverlay();
+    };  
+
+    // hide the overlay
+    function closeOverlay() {
+        document.body.className = thumbnailClassName;
+        window.scrollTo(0,thumbnailbrowserScrollPosition);
+    }
+
+    // show a specific overlay
+    function showOverlay(classNameToAdd) {
+        if ($('body').hasClass(thumbnailClassName)) {
+            // remember the scroll position
+            thumbnailbrowserScrollPosition = $(window).scrollTop();
+            document.body.className = classNameToAdd;
+            window.scrollTo(0, 0);
+        } else {
+            document.body.className = classNameToAdd;
+        }
+    }
+
+    // show the detail overlay
+    function showDetailOverlay(url) {
+        overlayUrl = url + '/detail_overlay.html';
+        $('#detail-overlay').load(overlayUrl, function() {
+            elInspector = document.getElementById('detail-overlay-inspector');
+            updateInspector(elInspector, url); 
+            $('.image-big').addClass('shown');
+            showOverlay(detailClassName);
+        });
+    }
+
+    // show the collect artwork overlay 
+    showCollectOverlay = function(url) {
+        overlayUrl = url + '/collect_overlay.html';
+        $('#collect-overlay').load(overlayUrl, function() {
+            elInspector = document.getElementById('collect-overlay-inspector');
+            updateInspector(elInspector, url);
+            showOverlay(collectClassName);
+        });
+    }
+
+    // show the detail edit overlay
+    showEditOverlay = function(url) {
+        overlayUrl = url + '/edit_overlay.html';
+        $('#edit-overlay').load(overlayUrl, function() {
+            $('.image-big').addClass('shown');
+            showOverlay(editClassName);
+        });
+    }
 
     function searchForKeyword(e) {
         const keyword = e.currentTarget.dataset.keyword.replace(/\s/g, "+");

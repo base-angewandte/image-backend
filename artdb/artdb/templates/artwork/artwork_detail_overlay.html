@@ -1,10 +1,13 @@
 <div class="content">
     <img class="image-big" src="{{artwork.imageOriginal.thumbnail.930x768}}"/>
-    <button name="close" class="button-close" id="hideDetailOverlay" onClick="hideDetailOverlay()"></button>
+    <button name="close" class="button-close" id="hideDetailOverlay" onClick="hideImageAndOverlay()"></button>
 </div>
 
 <div class="sidebar-attached">
     <aside class="inspector" id="detail-overlay-inspector">
-        <div></div>
+        <div>
+            <button class="inspector-button">Merken</button><button class="inspector-button">Edit</button>
+        </div>
+        </aside>
     </aside>
 </div>
