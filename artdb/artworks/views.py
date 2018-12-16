@@ -121,7 +121,8 @@ def artwork_edit(request, id):
             updated_artwork.save()
             # TODO: redirectURL = "%i.json" % artwork.id
             # TODO: reload/close? scroll to thumbnail
-            return redirect('/', id=artwork.id)
+            # TODO!!!
+            return redirect('images', id=artwork.id)
     return render(request, 'artwork/artwork_edit_overlay.html', context)
 
 
@@ -197,7 +198,6 @@ def collection(request, id=None):
             return JsonResponse(status=403, data={'status': 'false', 'message': 'Permission needed'})
 
 
-# TODO: user should be able to see own *and* all other collections
 @login_required
 def collections_list(request, id=None):
     """
