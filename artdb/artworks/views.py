@@ -122,7 +122,7 @@ def artwork_edit(request, id):
             # TODO: redirectURL = "%i.json" % artwork.id
             # TODO: reload/close? scroll to thumbnail
             # TODO!!!
-            return redirect('images', id=artwork.id)
+            return redirect('image', id=artwork.id)
     return render(request, 'artwork/artwork_edit_overlay.html', context)
 
 
