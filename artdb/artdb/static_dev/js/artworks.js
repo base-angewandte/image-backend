@@ -12,10 +12,13 @@ $(document).ready(function() {
     updateInspector = function(elInspector, url) {
         // helper function
         // creates elements with optional css classes, text and eventListeners
-        function createEl(tagName, cssClassName, text) {
+        function createEl(tagName, cssClasses, text, url) {
             var el = document.createElement(tagName);
-            if (cssClassName) el.classList.add(cssClassName);
+            cssClasses.forEach(function(cssClassName) {
+                el.classList.add(cssClassName);
+            });
             if (text) el.appendChild(document.createTextNode(text));
+            if (url) el.dataset.url = url;
             return el;
         }
 
@@ -23,11 +26,9 @@ $(document).ready(function() {
         $.getJSON(jsonUrl, function(data) {
             var elDetails = document.createElement('div');
             
-            var func = function() { showCollectOverlay(url); }
-            elDetails.appendChild(createEl('button', 'inspector-button', 'Merken', func));
+            elDetails.appendChild(createEl('button', ['inspector-button', 'button-collect'], 'Merken', url));
             
-            func = function() { showEditOverlay(url); }
-            elDetails.appendChild(createEl('button', 'inspector-button', 'Edit', func));
+            elDetails.appendChild(createEl('button', ['inspector-button','button-edit'], 'Edit', url));
             
             // build all the elements and append them to the DOM 
             $.each( data, function( key, val ) {
@@ -38,40 +39,37 @@ $(document).ready(function() {
                 switch (key) {
                     case 'artists':
                         if (val.length === 0) break;
-                        elKey = createEl('div', 'key', 'Artist');
+                        elKey = createEl('div', ['key'], 'Artist');
                         elEntry.appendChild(elKey);
                         for (var i = 0; i < val.length; i++) {
-                            elVal = createEl('div', 'value', val[i].name);
-                            elVal.classList.add('tag');
+                            elVal = createEl('div', ['value','tag'], val[i].name);
                             elVal.dataset.artist = val[i].name;
                             elEntry.appendChild(elVal);
                         }
                         break;
                     case 'keywords':
                         if (val.length === 0) break;
-                        elKey = createEl('div', 'key', 'Keywords');
+                        elKey = createEl('div', ['key'], 'Keywords');
                         elEntry.appendChild(elKey);
                         for (var i = 0; i < val.length; i++) {
-                            elVal = createEl('div', 'value', val[i].name);
-                            elVal.classList.add('tag');
+                            elVal = createEl('div', ['value','tag'], val[i].name);
                             elVal.dataset.keyword = val[i].name;
                             elEntry.appendChild(elVal);
                         }
                         break;
                     case 'locationOfCreation':
                         if (val.length === 0) break;
-                        elKey = createEl('div', 'key', 'LocationOfCreation');
+                        elKey = createEl('div', ['key'], 'LocationOfCreation');
                         elEntry.appendChild(elKey);
-                        elVal = createEl('div', 'value', val.name);
-                        elVal.classList.add('tag');
+                        elVal = createEl('div', ['value','tag'], val.name);
                         elVal.dataset.location = val.name;
                         elEntry.appendChild(elVal);
                         break;
                     default:
                         if ((val !== '') && (val !== null)) {
-                            elKey = createEl('div', 'key', key);
+                            elKey = createEl('div', ['key'], key);
                             elEntry.appendChild(elKey);
-                            elVal = createEl('div', 'value', val);
+                            elVal = createEl('div', ['value'], val);
                             if (key === 'titleEnglish') {
                                 elKey.classList.add('key-titleEnglish');
                                 elVal.classList.add('val-titleEnglish');
@@ -116,18 +114,22 @@ $(document).ready(function() {
     // show a specific overlay
     function showOverlay(classNameToAdd) {
         if ($('body').hasClass(thumbnailClassName)) {
+            // no overlay is currently shown
             // remember the scroll position
             thumbnailbrowserScrollPosition = $(window).scrollTop();
             document.body.className = classNameToAdd;
             window.scrollTo(0, 0);
         } else {
+            // an overlay is already shown
+            // close the current overlay before showing the new one
+            // (detail -> collect, detail -> edit, collect -> edit)
             document.body.className = classNameToAdd;
         }
     }
 
     // show the detail overlay
     function showDetailOverlay(url) {
-        overlayUrl = url + '/detail_overlay.html';
+        var overlayUrl = url + '/detail_overlay.html';
         $('#detail-overlay').load(overlayUrl, function() {
             var elInspector = document.getElementById('detail-overlay-inspector');
             copyInspectorDetails(elInspector);
@@ -138,7 +140,7 @@ $(document).ready(function() {
 
     // show the collect artwork overlay 
     showCollectOverlay = function(url) {
-        overlayUrl = url + '/collect_overlay.html';
+        var overlayUrl = url + '/collect_overlay.html';
         $('#collect-overlay').load(overlayUrl, function() {
             elInspector = document.getElementById('collect-overlay-inspector');
             copyInspectorDetails(elInspector);
@@ -148,7 +150,7 @@ $(document).ready(function() {
 
     // show the detail edit overlay
     showEditOverlay = function(url) {
-        overlayUrl = url + '/edit_overlay.html';
+        var overlayUrl = url + '/edit_overlay.html';
         $('#edit-overlay').load(overlayUrl, function() {
             $('.image-big').addClass('shown');
             showOverlay(editClassName);
@@ -229,30 +231,35 @@ $(document).ready(function() {
             selectedThumbnail = clickedThumbnail;
             $(selectedThumbnail).addClass(selectClass);
             elInspector = document.getElementById('thumbnailbrowser-inspector');
-            updateInspector(elInspector,  selectedThumbnail.dataset.url);
+            updateInspector(elInspector, selectedThumbnail.dataset.url);
         }
     });
 
-    $(".inspector").on('click', function (e) {
-        function getParameters(s) {
-            return s.replace(/\s/g, "+");
+    $("body").on('click', function (e) {
+        if ($(e.target).hasClass('tag')) {
+            function getParameters(s) {
+                return s.replace(/\s/g, "+");
+            }
+            var url = "?searchtype=expert&";
+    
+            if (e.target.dataset.artist) {
+                var artist = encodeURIComponent(e.target.dataset.artist.trim());
+                url += `artist=${artist}`;
+            }
+            if (e.target.dataset.keyword) {
+                var keyword = encodeURIComponent(e.target.dataset.keyword.trim());
+                url += `keyword=${keyword}`;
+            }
+            if (e.target.dataset.location) {
+                var location = encodeURIComponent(e.target.dataset.location.trim());
+                url += `location=${location}`;
+            }
+            window.location.href = url;
+        } else if ($(e.target).hasClass('button-collect')) {
+            showCollectOverlay(e.target.dataset.url);
+        } else if ($(e.target).hasClass('button-edit')) {
+            showEditOverlay(e.target.dataset.url);
         }
-        var url = "?searchtype=expert&";
-
-        if (e.target.dataset.artist) {
-            var artist = encodeURIComponent(e.target.dataset.artist.trim());
-            url += `artist=${artist}`;
-        }
-        if (e.target.dataset.keyword) {
-            var keyword = encodeURIComponent(e.target.dataset.keyword.trim());
-            url += `keyword=${keyword}`;
-        }
-        if (e.target.dataset.location) {
-            var location = encodeURIComponent(e.target.dataset.location.trim());
-            url += `location=${location}`;
-        }
-
-        window.location.href = url;
     });
 
 

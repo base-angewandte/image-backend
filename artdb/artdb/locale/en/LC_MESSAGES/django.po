@@ -88,7 +88,7 @@ msgstr "YYYY"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:138
 msgid "Date To"
-msgstr "To (date of creation)"
+msgstr "To"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:140
 msgid "Location"

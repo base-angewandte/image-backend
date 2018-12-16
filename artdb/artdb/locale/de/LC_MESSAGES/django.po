@@ -87,7 +87,7 @@ msgstr ""
 
 #: artdb/templates/artwork/thumbnailbrowser.html:138
 msgid "Date To"
-msgstr "Bis (Erstellungsdatum)"
+msgstr "Bis"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:140
 msgid "Location"
