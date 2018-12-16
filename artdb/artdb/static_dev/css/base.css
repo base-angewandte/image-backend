@@ -758,12 +758,18 @@ and a close button */
 }
 
 /* pagination */
-.paginator .current-page {
+.pagination .current-page a {
     font-weight: 700;
+    line-height: 30px!important;
+    padding-top: 2px !important;
 }
 
 .paginator li {
     display: inline-block;
+}
+
+.paginator li a {
+    line-height: 32px !important;
 }
 
 
