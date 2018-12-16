@@ -81,13 +81,12 @@ def artworks_list(request):
     return render(request, 'artwork/thumbnailbrowser.html', context)
 
 
-# TODO: exchange all those get_object_or_404 when json
 @login_required
 def details(request, id=None):
     """
     Return artwork details in json format.
     """
-    artwork = get_object_or_404(Artwork, id=id)
+    artwork = Artwork.objects.get(id=id)
     serializer = ArtworkSerializer(artwork)
     return JsonResponse(serializer.data)
 
@@ -97,7 +96,7 @@ def artwork_detail_overlay(request, id=None):
     """
     Render an overlay showing a large version of the image and the artwork's details.
     """
-    artwork = get_object_or_404(Artwork, id=id)
+    artwork = Artwork.objects.get(id=id)
     context = {}
     context['artwork'] = artwork
     return render(request, 'artwork/artwork_detail_overlay.html', context)
@@ -108,7 +107,7 @@ def artwork_edit(request, id):
     """
     Render an overlay showing the editable fields of an artwork.
     """
-    artwork = get_object_or_404(Artwork, id=id)
+    artwork = Artwork.objects.get(id=id)
     context = {}
     context['form'] = ArtworkForm(instance=artwork)
     context['id'] = artwork.id
@@ -132,7 +131,7 @@ def artwork_collect(request, id):
     Add or remove an artwork from/to a collection.
     """
     if request.method == 'GET':
-        artwork = get_object_or_404(Artwork, id=id)
+        artwork = Artwork.objects.get(id=id)
         context = {}
         qs = ArtworkCollection.objects.all()
         collections = qs.filter(user=request.user).order_by('-createdAt')
@@ -176,13 +175,14 @@ def collection(request, id=None):
         context['created_by_id'] = col.user.id
         context['created_by_username'] = col.user.get_username()
         context['created_by_fullname'] = col.user.get_full_name()
+        context['created_by_userid'] = col.user.id
         context['memberships'] = col.artworkcollectionmembership_set.all()
         context['collections'] = ArtworkCollection.objects.filter(user__groups__in=[1,])
         return render(request, 'artwork/collection.html', context)
     if request.method == 'POST':
         # users can only manipulate their own collections via this view
         col = ArtworkCollection.objects.get(id=id)
-        if (request.user == col.user):
+        if (request.user.id == col.user.id):
             membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'])
             if not membership:
                 return JsonResponse({'error': 'membership does not exist'})
@@ -192,7 +192,8 @@ def collection(request, id=None):
             if (request.POST['action'] == 'right'):
                 membership.down()
                 return JsonResponse({'action': 'swapright'})
-        return JsonResponse({'action': 'permission missing'})
+        else:
+            return JsonResponse(status=550, data={'status': 'false', 'message': 'Permission denied'})
 
 
 # TODO: user should be able to see own *and* all other collections

@@ -53,7 +53,7 @@ $(document).ready(function() {
         e.stopPropagation();
         var thumbnail = e.currentTarget.parentElement;
         var membershipID = thumbnail.dataset['membershipid'];
-        var url = `./collection/${collectionID}.html`;
+        var url = `{{ FORCE_SCRIPT_NAME }}/collection/${collectionID}.html`;
         $.ajax({
             type: 'POST',
             url: url,
@@ -75,7 +75,7 @@ $(document).ready(function() {
         e.stopPropagation();
         var thumbnail = e.currentTarget.parentElement;
         var membershipID = thumbnail.dataset['membershipid'];
-        var url = `./collection/${collectionID}.html`;
+        var url = `{{ FORCE_SCRIPT_NAME }}/collection/${collectionID}.html`;
         $.ajax({
             type: 'POST',
             url: url,
