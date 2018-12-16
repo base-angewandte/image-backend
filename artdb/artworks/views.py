@@ -177,7 +177,8 @@ def collection(request, id=None):
         context['created_by_fullname'] = col.user.get_full_name()
         context['created_by_userid'] = col.user.id
         context['memberships'] = col.artworkcollectionmembership_set.all()
-        context['collections'] = ArtworkCollection.objects.filter(user__groups__in=[1,])
+        context['collections'] = ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user)
+        context['my_collections'] = ArtworkCollection.objects.filter(user=request.user)
         return render(request, 'artwork/collection.html', context)
     if request.method == 'POST':
         # users can only manipulate their own collections via this view

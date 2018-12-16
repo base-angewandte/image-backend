@@ -15,10 +15,25 @@
         <div id="collection-nav">
             <form method="GET" action="">
                 <select name="collection-selector" id="collection-selector">
-                        <option value="">{% trans 'All Collections' %}</option>
-                        {% for collection in all_collections %}
-                            <option value="{{collection.id}}">{{collection.title}}</option>
-                        {% endfor %}
+                    <option value="">{% trans 'All Collections' %}</option>
+                    <optgroup label="{% trans 'My Collections' %}">
+                    {% for collection in my_collections %}
+                        <option value="{{collection.id}}">{{collection.title}}</option>
+                    {% endfor %}
+                    </optgroup>
+                    {% regroup collections|dictsort:"user.get_full_name" by user.get_full_name as grouped_collections %}
+                    {% for collection_user in grouped_collections %}
+                        <optgroup label="
+                            {% if collection_user.grouper %}
+                                {{ collection_user.grouper }}
+                            {% else %}
+                                Unnamed Editor
+                            {% endif %}">
+                            {% for collection in collection_user.list %}
+                                <option value="{{collection.id}}">{{collection.title}}</option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endfor %}
                 </select>
             </form>
         </div>
