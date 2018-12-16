@@ -17,8 +17,10 @@
                 {% endfor %}
             </div>
             {% if request.user.id == created_by_userid %}
-            <div class="moveleft"></div>             
-            <div class="moveright"></div>
+            <div class="picture-control">
+                <div class="moveleft"></div>             
+                <div class="moveright"></div>
+            </div>
             {% endif %}
         </div>        
     {% endfor %}

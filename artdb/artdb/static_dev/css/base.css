@@ -418,13 +418,23 @@ and a close button */
     overflow: hidden;
 }
 
+.thumbnail.orderable:hover .picture-control {
+    width: 180px;
+    height: 32px;
+    position: absolute;
+    bottom: 0;
+    background-color: rgba(18,18,18,0.63);
+    margin: auto;
+    border-radius: 16px;
+    bottom: 10px;
+}
+
 .thumbnail.orderable:hover .moveleft {
     width: 32px;
     height: 32px;
     position: absolute;
-    background-color: blue;
-    left: 10px;
-    bottom: 114px;
+    background: url(arrow_big_left.svg) no-repeat center center;
+    left: 0px;
     z-index: 4;
 }
 
@@ -440,9 +450,8 @@ and a close button */
     width: 32px;
     height: 32px;
     position: absolute;
-    background-color: red;
-    right: 10px;
-    bottom: 114px;
+    background: url(arrow_big_right.svg) no-repeat center center;
+    right: 0px;
     z-index: 4;
 }
 
@@ -790,7 +799,7 @@ table.collections-list tr.addCollection {
 
 table.collections-list th {
     text-align: left;
-    padding: 8px;
+    padding: 32px 8px 8px 8px;
     vertical-align: middle;
     font-size: 14px;
     overflow: hidden;

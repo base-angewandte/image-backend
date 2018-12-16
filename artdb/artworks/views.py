@@ -168,7 +168,7 @@ def collection(request, id=None):
     Render all artwork thumbnails of a single collection.
     """
     if request.method == 'GET':
-        col = get_object_or_404(ArtworkCollection, id=id)
+        col = ArtworkCollection.objects.get(id=id)
         context = {}
         context['title']  = col.title
         context['id']  = col.id
@@ -185,7 +185,7 @@ def collection(request, id=None):
         if (request.user.id == col.user.id):
             membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'])
             if not membership:
-                return JsonResponse({'error': 'membership does not exist'})
+                return JsonResponse(status=404, data={'status': 'false', 'message': 'Artwork not found'})
             if (request.POST['action'] == 'left'):
                 membership.up()
                 return JsonResponse({'action': 'swapleft'})
@@ -193,7 +193,7 @@ def collection(request, id=None):
                 membership.down()
                 return JsonResponse({'action': 'swapright'})
         else:
-            return JsonResponse(status=550, data={'status': 'false', 'message': 'Permission denied'})
+            return JsonResponse(status=403, data={'status': 'false', 'message': 'Permission needed'})
 
 
 # TODO: user should be able to see own *and* all other collections

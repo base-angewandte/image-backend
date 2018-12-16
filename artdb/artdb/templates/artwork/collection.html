@@ -51,7 +51,7 @@ $(document).ready(function() {
 
     $('.moveleft').on('click', function (e) {
         e.stopPropagation();
-        var thumbnail = e.currentTarget.parentElement;
+        var thumbnail = e.currentTarget.parentElement.parentElement;
         var membershipID = thumbnail.dataset['membershipid'];
         var url = `{{ FORCE_SCRIPT_NAME }}/collection/${collectionID}.html`;
         $.ajax({
@@ -73,7 +73,7 @@ $(document).ready(function() {
 
     $('.moveright').on('click', function (e) {
         e.stopPropagation();
-        var thumbnail = e.currentTarget.parentElement;
+        var thumbnail = e.currentTarget.parentElement.parentElement;
         var membershipID = thumbnail.dataset['membershipid'];
         var url = `{{ FORCE_SCRIPT_NAME }}/collection/${collectionID}.html`;
         $.ajax({
