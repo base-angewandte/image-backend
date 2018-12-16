@@ -28,3 +28,13 @@ class ArtworkSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artwork
         fields = ('title', 'titleEnglish', 'artists', 'locationOfCreation', 'date', 'material', 'dimensions', 'keywords', 'credits')
+
+
+class ArtworkSerializerGerman(serializers.ModelSerializer):
+    artists = ArtistSerializer(read_only=True, many=True)
+    keywords = KeywordSerializer(read_only=True, many=True)
+    locationOfCreation = LocationSerializer(read_only=True, many=False)
+
+    class Meta:
+        model = Artwork
+        fields = ('title', 'titleEnglish', 'artists', 'locationOfCreation', 'date', 'material', 'dimensions', 'keywords', 'credits')

@@ -2,6 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.forms import ModelMultipleChoiceField
 from django.utils.encoding import smart_text
+from django.utils.translation import ugettext_lazy as _
 from dal import autocomplete
 from artworks.models import Artwork, Keyword
 # https://gist.github.com/tdsymonds/abdcb395f172a016ed785f59043749e3

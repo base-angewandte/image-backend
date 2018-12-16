@@ -287,7 +287,7 @@ $(document).ready(function() {
         var handler = function(){ // fired only when screen has refreshed
           active = false; // release our flag 
           callback(evt);
-          }
+        }
         return function handleEvent(e) { // the actual event handler
           evt = e; // save our event at each call
           if (!active) { // only if we weren't already doing it

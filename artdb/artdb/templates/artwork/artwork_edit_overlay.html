@@ -2,7 +2,7 @@
 {% load i18n %}
 {{ form.media }}
 
-<form method="POST" enctype="multipart/form-data" class="editform" action="/artwork/{{id}}/edit_overlay.html">
+<form method="POST" enctype="multipart/form-data" class="editform" action="{{ FORCE_SCRIPT_NAME }}/artwork/{{id}}/edit_overlay.html">
 {% csrf_token %}
 <div class="content">
     <div class="image-wrapperA">
