@@ -11,8 +11,8 @@
                 <li><a href="{% url 'artworks_list' %}">{% trans 'All Artworks' %}</a></li><li class="selected"><a href="{% url 'collections_list' %}">{% trans 'Collections' %}</a></li>
             </ol>
         </nav>
-        {% if collections %}
         <div id="collection-nav">
+        {% if collections %}
             <form method="GET" action="">
                 <select name="collection-selector" id="collection-selector">
                     <option value="">{% trans 'All Collections' %}</option>
@@ -36,12 +36,11 @@
                     {% endfor %}
                 </select>
             </form>
-        </div>
         {% endif %}
+        </div>
     </div>
 
-
-    <div class="list"></div>
+    <div class="list">
         <table id="js-collections-list" class="collections-list">
         {% if my_collections %}
             <tr><th colspan="2">{% trans 'My Collections' %}</th></tr>
@@ -68,21 +67,21 @@
                     {% endfor %}
 
             {% endfor %}
-            </table>
-        {% else %}
-        <div class="nothing-found">{% trans 'NoCollections' %}</div>
         {% endif %}
+        </table>
     </div>
 
 </section>
+{% endblock collectionslist %}
 
+{% block extra_scripts %}
 <script type='text/javascript'>
     $(document).ready(function() {
         $("#collection-selector").selectmenu({
             change: function(event, ui) {
                 let id = ui.item.value;
                 if (id) {
-                    window.location = `./collection/${id}.html`;
+                    window.location = `{{ FORCE_SCRIPT_NAME }}/collection/${id}.html`;
                 } else {
                     window.location = '{% url 'collections_list' %}';
                 }
@@ -91,10 +90,11 @@
         $("#js-collections-list tr").on('click', function (e) {
             var clickedCollection = e.currentTarget.dataset.collectionid;
             if (clickedCollection) {
-                window.location = `./collection/${clickedCollection}.html`;
+                window.location = `{{ FORCE_SCRIPT_NAME }}/collection/${clickedCollection}.html`;
             }
         });
     });
 </script>
-{% endblock collectionslist %}
+{% endblock extra_scripts %}
+
 

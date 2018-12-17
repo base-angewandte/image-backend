@@ -42,7 +42,9 @@
     {% include "artwork/artwork_thumbnails_orderable.html" %}
     
 </section>
+{% endblock collectionslist %}
 
+{% block extra_scripts %}
 <script type='text/javascript'>
 $(document).ready(function() {
     function swapPositions(a, b) {
@@ -109,4 +111,4 @@ $(document).ready(function() {
     }); 
 });
 </script>
-{% endblock collectionslist %}
+{% endblock extra_scripts %} 
