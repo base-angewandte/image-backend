@@ -10,7 +10,7 @@
                 <li><a href="{% url 'artworks_list' %}">{% trans 'All Artworks' %}</a></li><li class="selected"><a href="{% url 'collections_list' %}">{% trans 'Collections' %}</a></li>
             </ol>
         </nav>
-        {% if collections %}
+        {% if collections or my_collections %}
         <div id="collection-nav">
             <form method="GET" action="">
                 <select name="collection-selector" id="collection-selector">

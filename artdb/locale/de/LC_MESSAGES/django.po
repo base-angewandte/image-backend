@@ -20,8 +20,8 @@ msgstr ""
 
 #: artworks/forms.py:26
 msgid "Title"
-msgstr ""
+msgstr "Title"
 
 #: artworks/forms.py:27
 msgid "English Title"
-msgstr ""
+msgstr "Englischer Titel"

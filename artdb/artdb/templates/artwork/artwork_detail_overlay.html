@@ -1,3 +1,5 @@
+{% load i18n %}
+
 <div class="content">
     <img class="image-big" src="{{artwork.imageOriginal.thumbnail.930x768}}"/>
     <button name="close" class="button-close" id="hideDetailOverlay" onClick="hideImageAndOverlay()"></button>
@@ -6,7 +8,7 @@
 <div class="sidebar-attached">
     <aside class="inspector" id="detail-overlay-inspector">
         <div>
-            <button class="inspector-button">Merken</button><button class="inspector-button">Edit</button>
+            <button class="inspector-button">{% trans 'Collect' %}</button><button class="inspector-button">{% trans 'Edit' %}</button>
         </div>
         </aside>
     </aside>

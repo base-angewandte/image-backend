@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-16 20:07+0100\n"
+"POT-Creation-Date: 2018-12-19 08:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,14 +17,25 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#: artdb/settings.py:247
-msgid "German"
-msgstr "German"
-
 #: artdb/settings.py:248
+msgid "German"
+msgstr "Deutsch"
+
+#: artdb/settings.py:249
 msgid "English"
-msgstr "English"
+msgstr "Englisch"
+
+#: artdb/templates/artwork/artwork_collect_overlay.html:26
+msgid "NoCollections"
+msgstr "Es sind noch keine Arbeitsmappen erstellt worden."
+
+#: artdb/templates/artwork/artwork_detail_overlay.html:11
+msgid "Collect"
+msgstr "Merken"
+
+#: artdb/templates/artwork/artwork_detail_overlay.html:11
+msgid "Edit"
+msgstr "Editieren"
 
 #: artdb/templates/artwork/artwork_edit_overlay.html:22
 msgid "Cancel"
@@ -41,13 +52,13 @@ msgstr "Keine Werke gefunden."
 
 #: artdb/templates/artwork/collection.html:10
 #: artdb/templates/artwork/collections_list.html:11
-#: artdb/templates/artwork/thumbnailbrowser.html:117
+#: artdb/templates/artwork/thumbnailbrowser.html:9
 msgid "All Artworks"
 msgstr "Alle Werke"
 
 #: artdb/templates/artwork/collection.html:10
 #: artdb/templates/artwork/collections_list.html:11
-#: artdb/templates/artwork/thumbnailbrowser.html:117
+#: artdb/templates/artwork/thumbnailbrowser.html:9
 msgid "Collections"
 msgstr "Arbeitsmappen"
 
@@ -58,47 +69,43 @@ msgstr "Alle Arbeitsmappen"
 
 #: artdb/templates/artwork/collection.html:18
 #: artdb/templates/artwork/collections_list.html:19
-#: artdb/templates/artwork/collections_list.html:47
+#: artdb/templates/artwork/collections_list.html:46
 msgid "My Collections"
 msgstr "Meine Arbeitsmappen"
 
-#: artdb/templates/artwork/collections_list.html:73
-msgid "NoCollections"
-msgstr "Es sind noch keine Arbeitsmappen erstellt worden."
-
-#: artdb/templates/artwork/thumbnailbrowser.html:122
+#: artdb/templates/artwork/thumbnailbrowser.html:14
 msgid "Search Artworks"
-msgstr "nach Kunstwerken suchen"
+msgstr "nach Kunstwerken suche"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:128
+#: artdb/templates/artwork/thumbnailbrowser.html:20
 msgid "Expert"
 msgstr "Experte"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:138
+#: artdb/templates/artwork/thumbnailbrowser.html:30
 msgid "Artist"
 msgstr "KünstlerIn"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:142
+#: artdb/templates/artwork/thumbnailbrowser.html:34
 msgid "Date From"
 msgstr "Von (Erstellungsdatum)"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:142
-#: artdb/templates/artwork/thumbnailbrowser.html:145
+#: artdb/templates/artwork/thumbnailbrowser.html:34
+#: artdb/templates/artwork/thumbnailbrowser.html:37
 msgid "YYYY"
 msgstr "JJJJ"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:145
+#: artdb/templates/artwork/thumbnailbrowser.html:37
 msgid "Date To"
 msgstr "Bis"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:147
+#: artdb/templates/artwork/thumbnailbrowser.html:39
 msgid "Location"
 msgstr "Erstellungsort"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:150
+#: artdb/templates/artwork/thumbnailbrowser.html:42
 msgid "Keywords"
 msgstr "Schlagworte"
 
-#: artdb/templates/base.html:51
+#: artdb/templates/base.html:52
 msgid "This resolution is not supported."
 msgstr "Diese Auflösung wird nicht unterstützt."

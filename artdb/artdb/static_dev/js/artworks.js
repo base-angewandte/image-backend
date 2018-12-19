@@ -35,11 +35,10 @@ $(document).ready(function() {
                 if (!val) return;
                 var elKey, elVal;
                 var elEntry = document.createElement('div');
-                console.log(key);
                 switch (key) {
                     case 'artists':
                         if (val.length === 0) break;
-                        elKey = createEl('div', ['key'], 'Artist');
+                        elKey = createEl('div', ['key'], gettext('Artist'));
                         elEntry.appendChild(elKey);
                         for (var i = 0; i < val.length; i++) {
                             elVal = createEl('div', ['value','tag'], val[i].name);

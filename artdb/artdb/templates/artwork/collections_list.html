@@ -12,7 +12,7 @@
             </ol>
         </nav>
         <div id="collection-nav">
-        {% if collections %}
+        {% if collections or my_collections %}
             <form method="GET" action="">
                 <select name="collection-selector" id="collection-selector">
                     <option value="">{% trans 'All Collections' %}</option>

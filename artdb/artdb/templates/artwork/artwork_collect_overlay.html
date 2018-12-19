@@ -1,3 +1,5 @@
+{% load i18n %}
+
 <div class="content">
     <div class="center">
         {% spaceless %}
@@ -21,7 +23,7 @@
             {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan=2>{{collection.title}}</td>
+                    <td colspan=2>{% trans 'NoCollections' %}</td>
                 </tr>
             {% endif %}
         </table>
