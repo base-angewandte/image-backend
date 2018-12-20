@@ -48,7 +48,7 @@ $(document).ready(function() {
                         break;
                     case 'keywords':
                         if (val.length === 0) break;
-                        elKey = createEl('div', ['key'], 'Keywords');
+                        elKey = createEl('div', ['key'], gettext('Keywords');
                         elEntry.appendChild(elKey);
                         for (var i = 0; i < val.length; i++) {
                             elVal = createEl('div', ['value','tag'], val[i].name);
@@ -58,7 +58,7 @@ $(document).ready(function() {
                         break;
                     case 'locationOfCreation':
                         if (val.length === 0) break;
-                        elKey = createEl('div', ['key'], 'LocationOfCreation');
+                        elKey = createEl('div', ['key'],gettext('Location'));
                         elEntry.appendChild(elKey);
                         elVal = createEl('div', ['value','tag'], val.name);
                         elVal.dataset.location = val.name;
