@@ -48,7 +48,7 @@ $(document).ready(function() {
                         break;
                     case 'keywords':
                         if (val.length === 0) break;
-                        elKey = createEl('div', ['key'], gettext('Keywords');
+                        elKey = createEl('div', ['key'], gettext('Keywords'));
                         elEntry.appendChild(elKey);
                         for (var i = 0; i < val.length; i++) {
                             elVal = createEl('div', ['value','tag'], val[i].name);

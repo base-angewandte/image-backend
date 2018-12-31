@@ -17,8 +17,8 @@
     --primary-button-color: #029290;
     --remove-button-color: #f54a26;
     --topbar-height: 55px;
-    --footer-height: 50px;
-    --footer-height-lg: 110px;
+    --topbar-wrapper-height: 87px;
+    --footer-wrapper-height: 144px;
     --sidebar-width: 232px;
     --edit-overlay-formwidth: 448px;
 }
@@ -91,7 +91,7 @@ h2.centered {
 }
 
 .topbar-wrapper {
-    min-height: calc(32px + var(--topbar-height));
+    min-height: var(--topbar-wrapper-height);
 }
 
 #topbar.small {
@@ -163,7 +163,7 @@ and a close button */
     position: absolute;
     z-index: 2;
     width: 100%;
-    height: 100%;
+    height: calc(100% - var(--topbar-wrapper-height));
     padding-top: 0;
     background-color: var(--light-grey-3-color);
 }
@@ -239,7 +239,7 @@ and a close button */
 
 /* thumbnailbrowser */
 #thumbnailbrowser {
-    height: calc(100vh - 87px);
+    height: calc(100vh - var(--topbar-wrapper-height) - var(--footer-wrapper-height));
     width: 100%;
     background-color: var(--light-bg-color);
     padding: 0 var(--sidebar-width) 0 0;
