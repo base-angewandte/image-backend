@@ -1,5 +1,8 @@
 {% load i18n %}
     {% if memberships %}
+    <div class="collection-functions">
+        <button class="btn-download">{% trans 'Download PowerPoint' %}</button>
+    </div>
     <div id="thumbnails">
         {% for membership in memberships %}
         <div data-url="{{ FORCE_SCRIPT_NAME }}/artwork/{{membership.artwork.id}}" data-membershipid="{{membership.id}}" class="thumbnail orderable">

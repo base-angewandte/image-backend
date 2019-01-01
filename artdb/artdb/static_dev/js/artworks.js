@@ -234,6 +234,19 @@ $(document).ready(function() {
         }
     });
 
+    $('.clear-search-artwork-field').on('click', function(e) {
+        $(this).hide();
+        $('#search-basic-artworks-field').focus();
+    });
+
+    $('#search-basic-artworks-field').keyup(function() {
+        if ($(this).val()) {
+            $('.clear-search-artwork-field').show();
+        } else {
+            $('.clear-search-artwork-field').hide();
+        }
+    });
+
     $("body").on('click', function (e) {
         if ($(e.target).hasClass('tag')) {
             function getParameters(s) {

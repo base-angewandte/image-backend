@@ -11,7 +11,7 @@
         </nav>
         <div class="search-topbar">
             <form method="GET" action="" id="search-basic">
-                <input id="search-basic-artworks-field" placeholder="{% trans 'Search Artworks' %}" name="search" value="{{ query_search|default:'' }}" autocomplete="off" role="title search" autofocus/><span id="js-clear-search-artwork-field"></span>
+                <input id="search-basic-artworks-field" placeholder="{% trans 'Search Artworks' %}" name="search" value="{{ query_search|default:'' }}" autocomplete="off" role="title search" autofocus/><input type="reset" value="" class="clear-search-artwork-field"/>
             </form>
             <div class="switch-labeled">
                 <label class="switch">

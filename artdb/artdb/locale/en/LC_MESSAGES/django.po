@@ -96,11 +96,11 @@ msgstr ""
 
 #: artdb/templates/artwork/thumbnailbrowser.html:37
 msgid "Date To"
-msgstr ""
+msgstr "To"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:39
 msgid "Location"
-msgstr ""
+msgstr "Location of creation"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:42
 msgid "Keywords"
