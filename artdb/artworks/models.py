@@ -90,7 +90,7 @@ class Artwork(models.Model):
         return self.title
 
 
-# @receiver(models.signals.post_save, sender=Artwork)
+@receiver(models.signals.post_save, sender=Artwork)
 def move_uploaded_image(sender, instance, created, **kwargs):
     """
     Move the uploaded image after an Artwork instance has been created.  
@@ -139,14 +139,14 @@ class ArtworkCollection(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
 
-    # TODO: add membership through model to make orderable
-    # https://stackoverflow.com/questions/18212268/django-sorting-object-based-on-user-defined-order-in-template
-
     def __str__(self):
         return '{0} by {1}'.format(self.title, self.user.get_username())
         
     def size(self):
         return self.artworks.count()
+    
+    class Meta:
+        permissions = (('can_download_pptx', 'Can download as PowerPoint file'),)
 
 
 class ArtworkCollectionMembership(OrderedModel):

@@ -33,7 +33,7 @@
             {% block thumbnailbrowser %}
             {% endblock thumbnailbrowser %}
             <section class="sidebar-detached fixed">
-                <aside class="inspector" id="thumbnailbrowser-inspector">
+                <aside class="inspector{% if perms.artworks.change_artwork %} editable{% endif %}" id="thumbnailbrowser-inspector">
                 <div></div>
                 </aside>
             </section>

@@ -35,6 +35,9 @@
                     {% endfor %}
                 </select>
             </form>
+            {% if perms.artworks.can_download_pptx %}
+            <a class="btn-download" href="" alt="{% trans 'Download PowerPoint' %}" title="{% trans 'Download PowerPoint' %}"></a>
+            {% endif %}
         </div>
         {% endif %}
     </div>

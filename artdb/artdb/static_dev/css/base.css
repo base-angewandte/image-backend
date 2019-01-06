@@ -343,6 +343,12 @@ and a close button */
     overflow-wrap: normal;
 }
 
+.inspector .value.tag:hover,
+.inspector .value.tag:focus,
+.inspector .value.tag:active {
+    background-color: #366B88;
+}
+
 .inspector-button {
     display: inline-block;
     width: 200px;
@@ -796,22 +802,23 @@ and a close button */
     font-weight: 600 !important;
 }
 
-.collection-functions {
-    display: block;
-    width: 100%;
-    padding: 18px;
-    height: 50px;
-}
-
-.collection-functions button {
+a.btn-download {
     display: block;
     float: right;
-    margin: 0;
+    height: 28px;
+    width: 25px;
+    margin: 10px 0px 10px 16px;
     border: 0;
     color: var(--base-color);
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 16px;
-    background-color: var(--light-bg-color);
+    background: url(download_pptx.svg) no-repeat center center;
+}
+
+a.btn-download:hover,
+a.btn-download:focus,
+a.btn-download:active {
+    background: url(download_pptx_active.svg) no-repeat center center;
 }
 
 /* collection list */

@@ -25,11 +25,10 @@ $(document).ready(function() {
         const jsonUrl = url + '.json';
         $.getJSON(jsonUrl, function(data) {
             var elDetails = document.createElement('div');
-            
             elDetails.appendChild(createEl('button', ['inspector-button', 'button-collect'], 'Merken', url));
-            
-            elDetails.appendChild(createEl('button', ['inspector-button','button-edit'], 'Edit', url));
-            
+            if (elInspector.classList.contains('editable')) {
+                elDetails.appendChild(createEl('button', ['inspector-button','button-edit'], 'Edit', url));
+            };
             // build all the elements and append them to the DOM 
             $.each( data, function( key, val ) {
                 if (!val) return;
@@ -58,7 +57,7 @@ $(document).ready(function() {
                         break;
                     case 'locationOfCreation':
                         if (val.length === 0) break;
-                        elKey = createEl('div', ['key'],gettext('Location'));
+                        elKey = createEl('div', ['key'], gettext('Location'));
                         elEntry.appendChild(elKey);
                         elVal = createEl('div', ['value','tag'], val.name);
                         elVal.dataset.location = val.name;

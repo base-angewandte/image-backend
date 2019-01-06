@@ -99,6 +99,7 @@ def artwork_detail_overlay(request, id=None):
     artwork = Artwork.objects.get(id=id)
     context = {}
     context['artwork'] = artwork
+    context['is_staff'] = request.user.is_staff
     return render(request, 'artwork/artwork_detail_overlay.html', context)
 
 
