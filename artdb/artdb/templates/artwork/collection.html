@@ -36,7 +36,7 @@
                 </select>
             </form>
             {% if perms.artworks.can_download_pptx %}
-            <a class="btn-download" href="" alt="{% trans 'Download PowerPoint' %}" title="{% trans 'Download PowerPoint' %}"></a>
+            <a class="btn-download" href="{{ FORCE_SCRIPT_NAME }}/collection/{{id}}.pptx" alt="{% trans 'Download PowerPoint' %}" title="{% trans 'Download PowerPoint' %}"></a>
             {% endif %}
         </div>
         {% endif %}
@@ -49,69 +49,172 @@
 
 {% block extra_scripts %}
 <script type='text/javascript'>
-$(document).ready(function() {
-    function swapPositions(a, b) {
-            var copy = b.cloneNode(true);
-            a.parentNode.insertBefore(copy, a);
-            b.parentNode.insertBefore(a, b);
-            b.parentNode.replaceChild(b, copy);
-    }
-    var collectionID = {{id}};
 
+$(document).ready(function() {
+    var collectionID = {{id}};
+    var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+
+
+    // this select menu allows the user to switch from one collection to another
     $( "#collection-selector" ).selectmenu({
         change: function(event, ui) {
             let id = ui.item.value;
             if (id) {
                 window.location = `{{ FORCE_SCRIPT_NAME }}/collection/${id}.html`;
             } else {
-                window.location = '{% url 'collections_list' %}';
+                window.location = '{% url "collections_list" %}';
             }
         }   
     });
 
-    $('.moveleft').on('click', function (e) {
+
+    // the connector allows to connect or disconnect two artworks
+    // connected artworks are shown on one slide in the exportable powerpoint presentation
+    // connected artworks also stick together when left to the left or right
+    $('.thumbnail-area').on('click', '.connector', function (e) {
         e.stopPropagation();
-        var thumbnail = e.currentTarget.parentElement.parentElement;
-        var membershipID = thumbnail.dataset['membershipid'];
         var url = `{{ FORCE_SCRIPT_NAME }}/collection/${collectionID}.html`;
         $.ajax({
             type: 'POST',
             url: url,
             data: {
                 'csrfmiddlewaretoken': '{{ csrf_token }}',
-                'membership-id': membershipID,
-                'action': 'left'
+                'member-left': e.currentTarget.dataset.memberleft,
+                'member-right': e.currentTarget.dataset.memberright,
+                'action': e.currentTarget.dataset.action
             },
             success: function(message) {
-                swapPositions(thumbnail, thumbnail.previousElementSibling);
+                updateSlides();
+                console.log('disconnecting');
             },
             error: function(error) {
                 console.log(error);
             }
-        })
+        });
     });
 
-    $('.moveright').on('click', function (e) {
-        e.stopPropagation();
-        var thumbnail = e.currentTarget.parentElement.parentElement;
-        var membershipID = thumbnail.dataset['membershipid'];
-        var url = `{{ FORCE_SCRIPT_NAME }}/collection/${collectionID}.html`;
+
+    // moves the selected artwork in a collection in certain direction
+    // direction = 'left' or 'right'
+    moveArtwork = function(selectedThumbnail, direction) {
         $.ajax({
             type: 'POST',
-            url: url,
+            url: selectedThumbnail.dataset.collectionurl,
             data: {
-                'csrfmiddlewaretoken': '{{ csrf_token }}',
-                'membership-id': membershipID,
-                'action': 'right'
+                'csrfmiddlewaretoken': csrftoken,
+                'membership-id': selectedThumbnail.dataset.membershipid,
+                'action': direction
             },
             success: function(message) {
-                swapPositions(thumbnail, thumbnail.nextElementSibling);
+                updateSlides();
             },
             error: function(error) {
                 console.log(error);
             }
-        })
-    }); 
+        });
+    }
+
+
+    // after an artwork has been connected, disconnected or moved
+    // the whole collection gets updated
+    updateSlides = function() {
+        divOldThumbnails = document.getElementById('thumbnails');
+        var jsonUrl = divOldThumbnails.dataset.url;
+        var path = divOldThumbnails.dataset.scriptname;
+        var divNewThumbnails = document.createElement('div');
+        divNewThumbnails.id = 'thumbnails';
+        divNewThumbnails.dataset.url = divOldThumbnails.dataset.url;
+        divNewThumbnails.dataset.scriptname = divOldThumbnails.dataset.scriptname;
+
+        $.getJSON(jsonUrl, function(data) {
+            // build all the elements and append them to the DOM
+            previousMember = null;
+            previousThumbnail = null;
+            previousNeedsConnection = false;
+
+            for (member of data.members) {
+                // build the thumbnail
+                var divThumbnail = document.createElement('div');
+                divThumbnail.classList.add('thumbnail', 'orderable');
+                divThumbnail.dataset.url = `${path}/artwork/${member.artwork.id}`;
+                divThumbnail.dataset.membershipid = member.id;
+                var divCenter = document.createElement('div');
+                divCenter.classList.add('vertically-center');
+                var elImage =  document.createElement('img');
+                elImage.classList.add('picture-thumbnail');
+                elImage.src = member.artwork.imageOriginal.thumbnail;
+                divCenter.appendChild(elImage);
+                divThumbnail.appendChild(divCenter);
+                var divTitle = document.createElement('div');
+                divTitle.classList.add('thumbnail-title');
+                var elTitle = document.createTextNode(member.artwork.title);
+                divTitle.appendChild(elTitle);
+                divThumbnail.appendChild(divTitle);
+                var divArtist = document.createElement('div');
+                divArtist.classList.add('thumbnail-artist');
+                var artistList = [];
+                for (artist of member.artwork.artists) {
+                    artistList.push(artist.name);
+                }
+                var elTitle = document.createTextNode(artistList.join(', '));
+                divArtist.appendChild(elTitle);
+                divThumbnail.appendChild(divArtist);
+
+                // between the thumbnails are connectors which allow
+                // to connect two artworks together
+                var divControl = document.createElement('div');
+                divControl.classList.add('connector');
+
+                // connected artworks belong in a containing div, so the wrapping
+                // in the browser can work correctly
+                if (member.connectedWith) {
+                    if (previousNeedsConnection === false) {
+                        previousNeedsConnection = true;
+                        previousMember = member;
+                        previousThumbnail = divThumbnail;
+                    } else {
+                        // build the containing div
+                        var divTwoImagesOnOneSlide = document.createElement('div');
+                        divTwoImagesOnOneSlide.classList.add('slide-for-two-artworks');
+                        // add the disconnect functionality
+                        divControl.dataset.action = 'disconnect';
+                        divControl.dataset.memberleft = previousMember.id;
+                        divControl.dataset.memberright = member.id;
+                        divTwoImagesOnOneSlide.append(previousThumbnail, divThumbnail, divControl);
+                        divNewThumbnails.appendChild(divTwoImagesOnOneSlide);
+                        previousMember = null;
+                        previousThumbnail = null;
+                        previousNeedsConnection = false;
+                    }
+                } else {
+                    if (previousMember) {
+                        // if the previous artwork wasn't connected,
+                        // add the connect-functionality here
+                        divControl.dataset.action = 'connect';
+                        divControl.dataset.memberleft = previousMember.id;
+                        divControl.dataset.memberright = member.id;
+                        divNewThumbnails.append(divControl);
+                    }
+                    divNewThumbnails.appendChild(divThumbnail);
+                    previousMember = member;
+                    previousThumbnail = divThumbnail;
+                }
+            }
+            divOldThumbnails.parentElement.replaceChild(divNewThumbnails, divOldThumbnails);
+            // after the thumbnails have been updated, the former selected thumbnail
+            // has to be re-selected
+            if (selectedThumbnail) {
+                selectedThumbnail.classList.remove('selected');
+                var newSelectedThumbnail = $("[data-membershipid='" + selectedThumbnail.dataset.membershipid +"']")[0];
+                if (newSelectedThumbnail) {
+                    newSelectedThumbnail.classList.add('selected');
+                    selectedThumbnail = newSelectedThumbnail;
+                }
+            }
+        });
+    }
+
+    updateSlides();
 });
 </script>
 {% endblock extra_scripts %} 

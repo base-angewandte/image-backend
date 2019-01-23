@@ -1,6 +1,7 @@
 from datetime import datetime
+from io import BytesIO
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, ExpressionWrapper, BooleanField
 from django.conf import settings
@@ -12,7 +13,9 @@ from dal import autocomplete
 from rest_framework.response import Response
 from artworks.models import *
 from artworks.forms import *
-from artworks.serializers import ArtworkSerializer
+from artworks.serializers import ArtworkSerializer, CollectionSerializer
+from pptx import Presentation
+from pptx.dml.color import RGBColor 
 
 @login_required
 def artworks_list(request):
@@ -186,17 +189,41 @@ def collection(request, id=None):
         # users can only manipulate their own collections via this view
         col = ArtworkCollection.objects.get(id=id)
         if (request.user.id == col.user.id):
-            membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'])
-            if not membership:
-                return JsonResponse(status=404, data={'status': 'false', 'message': 'Artwork not found'})
-            if (request.POST['action'] == 'left'):
-                membership.up()
-                return JsonResponse({'action': 'swapleft'})
-            if (request.POST['action'] == 'right'):
-                membership.down()
-                return JsonResponse({'action': 'swapright'})
+            if 'membership-id' in request.POST:
+                membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'])
+                if not membership:
+                    return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not find artwork membership'})
+                    # move artwork left
+                if (request.POST['action'] == 'left'):
+                    membership.moveLeft()
+                    return JsonResponse({'message': 'moved left'})
+                    # move artwork right
+                if (request.POST['action'] == 'right'):
+                    membership.moveRight()
+                    return JsonResponse({'message': 'moved right'})
+                return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not manipulate artwork membership'})
+            else:
+                leftMember = ArtworkCollectionMembership.objects.get(id=request.POST['member-left'])
+                rightMember = ArtworkCollectionMembership.objects.get(id=request.POST['member-right'])
+                if (request.POST['action'] == 'connect'):
+                    if leftMember.connect(rightMember):
+                        return JsonResponse({'message': 'connected'})
+                if (request.POST['action'] == 'disconnect'):
+                    print("disconnecting")
+                    if leftMember.disconnect(rightMember):
+                        return JsonResponse({'message': 'disconnected'})
         else:
             return JsonResponse(status=403, data={'status': 'false', 'message': 'Permission needed'})
+
+
+@login_required
+def collection_json(request, id=None):
+    """
+    Return collection data in json format.
+    """
+    col = ArtworkCollection.objects.get(id=id)
+    serializer = CollectionSerializer(col)
+    return JsonResponse(serializer.data)
 
 
 @login_required
@@ -262,3 +289,97 @@ class KeywordAutocomplete(autocomplete.Select2QuerySetView):
             return qs.filter(name__icontains=self.q)
         else:
             return Keyword.objects.none()
+
+
+def collection_download_as_pptx(request, id=None):
+    """
+    Return a downloadable powerpoint presentation of the collection
+    """
+    def get_new_slide():
+        blank_slide_layout = prs.slide_layouts[6]
+        slide = prs.slides.add_slide(blank_slide_layout)
+        fill = slide.background.fill
+        fill.solid()
+        fill.fore_color.rgb = RGBColor(0, 0, 0)
+        return slide
+
+    def add_slide_with_one_picture(img_path, padding):
+        slide = get_new_slide()
+        add_picture_to_slide(slide, img_path, padding, 'center')
+
+    def add_slide_with_two_pictures(img_path_left, img_path_right, padding):
+        slide = get_new_slide()
+        add_picture_to_slide(slide, img_path_left, padding, 'left')
+        add_picture_to_slide(slide, img_path_right, padding, 'right')
+
+    def add_picture_to_slide(slide, img_path, padding, position):
+        pic = slide.shapes.add_picture(img_path, 0, padding)
+        image_width = pic.image.size[0]
+        image_height = pic.image.size[1]
+        aspect_ratio = image_width / image_height
+        distance_between = padding * 2
+
+        # calculate width and height
+        if (position == 'center'):
+            picture_max_width = int(prs.slide_width - (padding * 2))
+        else:
+            picture_max_width = int((prs.slide_width - (padding * 2) - distance_between)/2)
+        if (image_height > image_width):
+            pic.height = picture_max_height
+            pic.width = int(picture_max_height * aspect_ratio)
+        else:
+            pic.width = picture_max_width
+            pic.height = int(picture_max_width / aspect_ratio)
+
+        # position the image
+        if (position == 'center'):
+            pic.left = int((prs.slide_width - pic.width) / 2)
+        if (position == 'left'):
+            pic.left = int(padding)
+            # pic.left = int(padding + (pic.width / 2))
+        if (position == 'right'):
+            pic.left = int(padding + picture_max_width + distance_between)
+
+    # define the presentation dimensions
+    prs = Presentation()
+    prs.slide_width = 24384000  # taken from Keynote 16:9 pptx
+    prs.slide_height = 13716000 # taken from Keynote 16:9 pptx
+    padding = prs.slide_width / 100
+    textbox_height = prs.slide_height / 10
+    picture_max_height = int(prs.slide_height - (padding * 2) - textbox_height)
+    distance_between = prs.slide_width / 10
+
+    col = ArtworkCollection.objects.get(id=id)
+    memberships = col.artworkcollectionmembership_set.all()
+    connected_member = None
+    for membership in memberships:
+        if membership.connectedWith:
+            if not (connected_member):
+                connected_member = membership
+            else:
+                add_slide_with_two_pictures(connected_member.artwork.imageOriginal.path, membership.artwork.imageOriginal.path, padding)
+                connected_member = None
+        else:
+            add_slide_with_one_picture(membership.artwork.imageOriginal.path, padding)
+
+
+        # titles.append(membership.artwork.title)
+        # titles.append(membership.artwork.imageOriginal.path)
+        #img_path = membership.artwork.imageOriginal.path
+        # pic = slide.shapes.add_picture(img_path, 0, padding)
+
+    # title = slide.shapes.title
+    # subtitle = slide.placeholders[1]
+    # title.text = "Hello, World!"
+    # subtitle.text = "bla"
+    # subtitle.text = ''.join(titles)
+    # pic = slide.shapes.add_picture(img_path, 0, padding)
+
+    output = BytesIO()
+    prs.save(output)
+    output.seek(0)
+    response = HttpResponse(output.read(), content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation')
+    response['Content-Disposition'] = 'attachment; filename="sample.pptx"'
+    output.close()
+
+    return response

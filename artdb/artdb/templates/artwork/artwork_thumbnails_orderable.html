@@ -1,29 +1,6 @@
 {% load i18n %}
     {% if memberships %}
-    <div id="thumbnails">
-        {% for membership in memberships %}
-        <div data-url="{{ FORCE_SCRIPT_NAME }}/artwork/{{membership.artwork.id}}" data-membershipid="{{membership.id}}" class="thumbnail orderable">
-            <div class="vertically-center">
-                {% if not membership.artwork.imageOriginal %}
-                    <div class="picture-thumbnail picture-thumbnail-missing"></div>
-                {% else %}
-                    <img class="picture-thumbnail" src="{{membership.artwork.imageOriginal.thumbnail.180x180}}"/>
-                {% endif %}
-            </div>
-            <div class="thumbnail-title">{{membership.artwork.title}}</div>
-            <div class="thumbnail-artist">
-                {% for artist in membership.artwork.artists.all %}
-                    {{ artist.name }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </div>
-            {% if request.user.id == created_by_userid %}
-            <div class="picture-control">
-                <div class="moveleft"></div>             
-                <div class="moveright"></div>
-            </div>
-            {% endif %}
-        </div>        
-    {% endfor %}
+    <div id="thumbnails" data-scriptname="{{ FORCE_SCRIPT_NAME }}" data-url="{{ FORCE_SCRIPT_NAME }}/collection/{{id}}.json">
     </div>
     {% else %}
     <div class="nothing-found">{% trans 'NoArtworks' %}</div>

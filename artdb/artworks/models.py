@@ -153,6 +153,101 @@ class ArtworkCollectionMembership(OrderedModel):
     collection = models.ForeignKey(ArtworkCollection, on_delete=models.CASCADE)
     artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE)
     order_with_respect_to = 'collection'
+    # needsOwnSlide == True means that this artwork will get its own slide
+    # in the exportable pptx presentation.
+    # needsOwnSlide == False means, it will be put on a slide next to another artwork
+    needsOwnSlide = models.BooleanField(null=False, blank=False, default=False)
+    connectedWith = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+
+
+    def moveLeft(self):
+        # did the user click a single one or a connected one?
+        if self.connectedWith:
+            if (self.connectedWith == self.previous()):
+                # right side
+                leftSide = self.previous()
+                rightSide = self
+            else:
+                # left side
+                leftSide = self
+                rightSide = self.next()
+        else:
+            leftSide = self
+            rightSide = None
+           
+        if leftSide.previous():
+            if leftSide.previous().connectedWith:
+                # the leftSide is connected. let's move twice
+                leftSide.up()
+                if rightSide:
+                    rightSide.up()
+            leftSide.up()
+            if rightSide:
+                rightSide.up()
+
+
+    def moveRight(self):
+        # did the user click a single one or a connected one?
+        if self.connectedWith:
+            if (self.connectedWith == self.previous()):
+                # right side
+                leftSide = self.previous()
+                rightSide = self
+            else:
+                # left side
+                leftSide = self
+                rightSide = self.next()
+        else:
+            leftSide = None
+            rightSide = self
+           
+        if rightSide.next():
+            if rightSide.next().connectedWith:
+                # the rightSide is connected. let's move twice
+                rightSide.down()
+                if leftSide:
+                    leftSide.down()
+            rightSide.down()
+            if leftSide:
+                leftSide.down()
+
+
+    def disconnect(self, partner):
+        if (self.connectedWith == partner) and (self == partner.connectedWith):
+            self.connectedWith = None
+            partner.connectedWith = None
+            self.save()
+            partner.save()
+            return True
+        return False
+
+
+    def connect(self, partner):
+        if (self.connectedWith == None) and (partner.connectedWith == None):
+            self.connectedWith = partner
+            partner.connectedWith = self
+            self.save()
+            partner.save()
+            return True
+        return False
+
+
+    def toggleNeedsOwnSlide(self):
+        if (self.needsOwnSlide):
+            self.disconnect()
+        self.needsOwnSlide = not self.needsOwnSlide
+        self.save()
+
+    def connectWithPosition(self, direction):
+        if (direction == 'left'):
+            partner = self.previous()
+        if (direction == 'right'):
+            partner = self.next()
+        if (partner):
+            self.connectWith(partner)
+            return True
+        else:
+            return False
 
     class Meta:
         ordering = ('collection', 'order')

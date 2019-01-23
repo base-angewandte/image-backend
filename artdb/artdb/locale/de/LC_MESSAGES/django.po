@@ -75,7 +75,7 @@ msgstr "Meine Arbeitsmappen"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:14
 msgid "Search Artworks"
-msgstr "nach Kunstwerken suche"
+msgstr "nach Kunstwerken suchen"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:20
 msgid "Expert"

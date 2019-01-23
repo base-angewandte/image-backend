@@ -43,10 +43,13 @@
 
 <script>
 $(document).ready(function() {
+
     $(".removeFromCollection").on('click', function (e) {
+        e.preventDefault();
         var artworkID = e.currentTarget.dataset['artworkid'];
         var collectionID = e.currentTarget.dataset['collectionid'];
-        var url = './artwork/' + artworkID + '/collect_overlay.html';
+        var url = '{{ FORCE_SCRIPT_NAME }}/artwork/' + artworkID + '/collect_overlay.html';
+        console.log(url);
         $.ajax({
             type: 'POST',
             url: url,
@@ -65,9 +68,11 @@ $(document).ready(function() {
         })
     });
     $(".addToCollection").on('click', function (e) {
+        e.preventDefault();
+        console.log('add to Collection');
         var artworkID = e.currentTarget.dataset['artworkid'];
         var collectionID = e.currentTarget.dataset['collectionid'];
-        var url = './artwork/' + artworkID + '/collect_overlay.html';
+        var url = '{{ FORCE_SCRIPT_NAME }}/artwork/' + artworkID + '/collect_overlay.html';
         $.ajax({
             type: 'POST',
             url: url,
@@ -87,9 +92,10 @@ $(document).ready(function() {
     });
     $("#addCollectionForm").on('submit', function (e) {
         e.preventDefault();
+        console.log('addCollection');
+        console.log(e);
         var data = $(this).serializeArray();
-        console.log(data);
-        var url = './artwork/' + data[0]['value'] + '/collect_overlay.html';
+        var url = '{{ FORCE_SCRIPT_NAME }}/artwork/' + data[0]['value'] + '/collect_overlay.html';
         $.ajax({
             type: 'POST',
             url: url,

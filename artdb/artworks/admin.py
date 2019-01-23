@@ -9,7 +9,7 @@ class ArtworkCollectionMembershipInline(OrderedTabularInline):
     model = ArtworkCollectionMembership
     autocomplete_fields = ['artwork']
     extra = 0
-    fields = ('artwork', 'order', 'move_up_down_links',)
+    fields = ('artwork', 'needsOwnSlide', 'connectedWith', 'order', 'move_up_down_links',)
     readonly_fields = ('order', 'move_up_down_links',)
     ordering = ('order',)
 

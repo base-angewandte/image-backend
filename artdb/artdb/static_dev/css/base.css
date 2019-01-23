@@ -362,6 +362,14 @@ and a close button */
     font-size: 14px;
 }
 
+.inspector-button.button-move-left,
+.inspector-button.button-move-right {
+    width: 97px;
+}
+.inspector-button.button-move-right {
+    float: right;
+}
+
 .artwork-details {
     padding-top: 16px;
 }
@@ -389,8 +397,9 @@ and a close button */
 }
 
 .thumbnail.selected {
-    background-color: #fff;
+    background-color: #fff !important;
     box-shadow: 0px 2px 2px 0px rgba(71,71,71,0.5);
+    border: 0 !important;
 }
 
 .picture-thumbnail {
@@ -424,42 +433,56 @@ and a close button */
     overflow: hidden;
 }
 
-.thumbnail.orderable:hover .picture-control {
-    width: 180px;
-    height: 32px;
-    position: absolute;
-    bottom: 0;
-    background-color: rgba(18,18,18,0.63);
-    margin: auto;
-    border-radius: 16px;
-    bottom: 10px;
+.thumbnail.orderable {
+    margin-right: 0;
+    margin-left: 0;
 }
 
-.thumbnail.orderable:hover .moveleft {
-    width: 32px;
-    height: 32px;
-    position: absolute;
-    background: url(arrow_big_left.svg) no-repeat center center;
-    left: 0px;
-    z-index: 4;
+.thumbnails:last-child,
+.thumbnails:last-child:hover {
+    background-color: pink;
 }
 
-.thumbnail.orderable:hover:first-child .moveleft {
+#thumbnails > .thumbnail:last-child .connector {
     display: none;
 }
 
-.thumbnail.orderable:hover:last-child .moveright {
-    display: none;
+#thumbnails .connector {
+    width: 64px;
 }
 
-.thumbnail.orderable:hover .moveright {
-    width: 32px;
-    height: 32px;
-    position: absolute;
-    background: url(arrow_big_right.svg) no-repeat center center;
-    right: 0px;
-    z-index: 4;
+#thumbnails .connector:hover {
+    background: url(connect.svg) no-repeat center;
 }
+
+#thumbnails .slide-for-two-artworks {
+    display: flex;
+    position: relative;
+    background-color: #f9f9f9;
+    border: 3px solid #e3e3e3;
+    margin-right: 64px;
+    margin-left: 64px;
+}
+
+#thumbnails .slide-for-two-artworks .thumbnail {
+    margin: 0;
+}
+
+#thumbnails .slide-for-two-artworks .thumbnail + .thumbnail {
+    margin: 0;
+}
+
+#thumbnails .slide-for-two-artworks .connector {
+    position: absolute;
+    width: 34px;
+    height: 248px;
+    left: 183px;
+}
+
+#thumbnails .slide-for-two-artworks .connector:hover {
+    background: url(disconnect.svg) no-repeat center;
+}
+
 
 /* thumbnailbrowser navbar */
 .thumbnail-navbar {

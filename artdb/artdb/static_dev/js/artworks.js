@@ -1,5 +1,8 @@
+// global variables used across all javascripts
+var selectedThumbnail = null;
+
+
 $(document).ready(function() {
-    var selectedThumbnail = null;
     var thumbnailbrowserScrollPosition = $(window).scrollTop();
     var elCurrentInspector = null;
     const thumbnailClassName = 'show-thumbnailbrowser';
@@ -8,26 +11,45 @@ $(document).ready(function() {
     const collectClassName = 'show-collect-overlay';
     var bSmallTopbar = false;
 
-    // load artwork data (JSON) and show it in the inspector/sidebar
-    updateInspector = function(elInspector, url) {
-        // helper function
-        // creates elements with optional css classes, text and eventListeners
-        function createEl(tagName, cssClasses, text, url) {
-            var el = document.createElement(tagName);
-            cssClasses.forEach(function(cssClassName) {
-                el.classList.add(cssClassName);
-            });
-            if (text) el.appendChild(document.createTextNode(text));
-            if (url) el.dataset.url = url;
-            return el;
-        }
 
+    // ---------------------------------------------------------
+    // Get the CSRF Token
+    // see: https://docs.djangoproject.com/en/2.2/ref/csrf/#ajax
+    // ---------------------------------------------------------
+    var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+
+
+    // ---------------------------------------------------------
+    // Helper Function
+    // creates elements with optional css classes, text and eventListeners
+    // ---------------------------------------------------------
+    function createEl(tagName, cssClasses, text, url) {
+        var el = document.createElement(tagName);
+        cssClasses.forEach(function(cssClassName) {
+            el.classList.add(cssClassName);
+        });
+        if (text) el.appendChild(document.createTextNode(text));
+        if (url) el.dataset.url = url;
+        return el;
+    }
+
+
+    // ---------------------------------------------------------
+    // Update the Inspector
+    // load artwork data (JSON) and show it in the sidebar
+    // ---------------------------------------------------------
+    updateInspector = function(elInspector) {
+        const url = selectedThumbnail.dataset.url;
         const jsonUrl = url + '.json';
         $.getJSON(jsonUrl, function(data) {
             var elDetails = document.createElement('div');
             elDetails.appendChild(createEl('button', ['inspector-button', 'button-collect'], 'Merken', url));
             if (elInspector.classList.contains('editable')) {
                 elDetails.appendChild(createEl('button', ['inspector-button','button-edit'], 'Edit', url));
+            };
+            if (selectedThumbnail.dataset.membershipid) {
+                elDetails.appendChild(createEl('button', ['inspector-button','button-move-left'], 'Move left', url));
+                elDetails.appendChild(createEl('button', ['inspector-button','button-move-right'], 'Move right', url));
             };
             // build all the elements and append them to the DOM 
             $.each( data, function( key, val ) {
@@ -81,6 +103,7 @@ $(document).ready(function() {
             elCurrentInspector = elInspector;
         });
     }
+
 
     // hide the collect artwork overlay
     hideCollectOverlay = function() {
@@ -214,7 +237,7 @@ $(document).ready(function() {
 
     // the page consists of a sidebar and a main view
     // per default, clickable thumbnails are shown
-    $('.thumbnail').on('click', function (e) {
+    $('.thumbnail-area').on('click', '.thumbnail', function (e) {
         const selectClass = 'selected';
         var clickedThumbnail = e.currentTarget;
         if ($(clickedThumbnail).hasClass(selectClass)) {
@@ -229,7 +252,7 @@ $(document).ready(function() {
             selectedThumbnail = clickedThumbnail;
             $(selectedThumbnail).addClass(selectClass);
             elInspector = document.getElementById('thumbnailbrowser-inspector');
-            updateInspector(elInspector, selectedThumbnail.dataset.url);
+            updateInspector(elInspector);
         }
     });
 
@@ -247,7 +270,24 @@ $(document).ready(function() {
     });
 
     $("body").on('click', function (e) {
-        if ($(e.target).hasClass('tag')) {
+        if (e.target.classList.contains('thumbnail')) {
+            const selectClass = 'selected';
+            var clickedThumbnail = e.currentTarget;
+            if ($(clickedThumbnail).hasClass(selectClass)) {
+                // Clicking a thumbnail twice, shows the detail overlay
+                showDetailOverlay(clickedThumbnail.dataset.url);
+            } else {
+                // Clicking a thumbnail once, selects it and shows the details
+                // in the inspector.
+                if (selectedThumbnail !== null) {
+                    $(selectedThumbnail).removeClass(selectClass);
+                }
+                selectedThumbnail = clickedThumbnail;
+                $(selectedThumbnail).addClass(selectClass);
+                elInspector = document.getElementById('thumbnailbrowser-inspector');
+                updateInspector(elInspector);
+            }
+        } else if (e.target.classList.contains('tag')) {
             function getParameters(s) {
                 return s.replace(/\s/g, "+");
             }
@@ -270,6 +310,10 @@ $(document).ready(function() {
             showCollectOverlay(e.target.dataset.url);
         } else if ($(e.target).hasClass('button-edit')) {
             showEditOverlay(e.target.dataset.url);
+        } else if ($(e.target).hasClass('button-move-left')) {
+            moveArtwork(selectedThumbnail, 'left');
+        } else if ($(e.target).hasClass('button-move-right')) {
+            moveArtwork(selectedThumbnail, 'right');
         }
     });
 
