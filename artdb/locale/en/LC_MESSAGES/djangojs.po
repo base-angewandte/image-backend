@@ -1,0 +1,265 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-24 23:09+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: assets/static/admin/js/SelectFilter2.js:47
+#, javascript-format
+msgid "Available %s"
+msgstr ""
+
+#: assets/static/admin/js/SelectFilter2.js:53
+#, javascript-format
+msgid ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
+msgstr ""
+
+#: assets/static/admin/js/SelectFilter2.js:69
+#, javascript-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr ""
+
+#: assets/static/admin/js/SelectFilter2.js:74
+msgid "Filter"
+msgstr ""
+
+#: assets/static/admin/js/SelectFilter2.js:78
+msgid "Choose all"
+msgstr ""
+
+#: assets/static/admin/js/SelectFilter2.js:78
+#, javascript-format
+msgid "Click to choose all %s at once."
+msgstr ""
+
+#: assets/static/admin/js/SelectFilter2.js:84
+msgid "Choose"
+msgstr ""
+
+#: assets/static/admin/js/SelectFilter2.js:86
+msgid "Remove"
+msgstr ""
+
+#: assets/static/admin/js/SelectFilter2.js:92
+#, javascript-format
+msgid "Chosen %s"
+msgstr ""
+
+#: assets/static/admin/js/SelectFilter2.js:98
+#, javascript-format
+msgid ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
+msgstr ""
+
+#: assets/static/admin/js/SelectFilter2.js:108
+msgid "Remove all"
+msgstr ""
+
+#: assets/static/admin/js/SelectFilter2.js:108
+#, javascript-format
+msgid "Click to remove all chosen %s at once."
+msgstr ""
+
+#: assets/static/admin/js/actions.js:48 assets/static/admin/js/actions.min.js:2
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] ""
+msgstr[1] ""
+
+#: assets/static/admin/js/actions.js:117
+#: assets/static/admin/js/actions.min.js:4
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+
+#: assets/static/admin/js/actions.js:129
+#: assets/static/admin/js/actions.min.js:5
+msgid ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
+msgstr ""
+
+#: assets/static/admin/js/actions.js:131
+#: assets/static/admin/js/actions.min.js:5
+msgid ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:13
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:118
+msgid "Now"
+msgstr ""
+
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:14
+msgid "Midnight"
+msgstr ""
+
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:15
+msgid "6 a.m."
+msgstr ""
+
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:16
+msgid "Noon"
+msgstr ""
+
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:17
+msgid "6 p.m."
+msgstr ""
+
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:83
+#, javascript-format
+msgid "Note: You are %s hour ahead of server time."
+msgid_plural "Note: You are %s hours ahead of server time."
+msgstr[0] ""
+msgstr[1] ""
+
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:91
+#, javascript-format
+msgid "Note: You are %s hour behind server time."
+msgid_plural "Note: You are %s hours behind server time."
+msgstr[0] ""
+msgstr[1] ""
+
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:136
+msgid "Choose a Time"
+msgstr ""
+
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:166
+msgid "Choose a time"
+msgstr ""
+
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:183
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:343
+msgid "Cancel"
+msgstr ""
+
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:248
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:328
+msgid "Today"
+msgstr ""
+
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:265
+msgid "Choose a Date"
+msgstr ""
+
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:322
+msgid "Yesterday"
+msgstr ""
+
+#: assets/static/admin/js/admin/DateTimeShortcuts.js:334
+msgid "Tomorrow"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:12
+msgid "January"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:13
+msgid "February"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:14
+msgid "March"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:15
+msgid "April"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:16
+msgid "May"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:17
+msgid "June"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:18
+msgid "July"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:19
+msgid "August"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:20
+msgid "September"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:21
+msgid "October"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:22
+msgid "November"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:23
+msgid "December"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:26
+msgctxt "one letter Sunday"
+msgid "S"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:27
+msgctxt "one letter Monday"
+msgid "M"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:28
+msgctxt "one letter Tuesday"
+msgid "T"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:29
+msgctxt "one letter Wednesday"
+msgid "W"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:30
+msgctxt "one letter Thursday"
+msgid "T"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:31
+msgctxt "one letter Friday"
+msgid "F"
+msgstr ""
+
+#: assets/static/admin/js/calendar.js:32
+msgctxt "one letter Saturday"
+msgid "S"
+msgstr ""
+
+#: assets/static/admin/js/collapse.js:10 assets/static/admin/js/collapse.js:21
+#: assets/static/admin/js/collapse.min.js:4
+msgid "Show"
+msgstr ""
+
+#: assets/static/admin/js/collapse.js:18
+#: assets/static/admin/js/collapse.min.js:4
+msgid "Hide"
+msgstr ""

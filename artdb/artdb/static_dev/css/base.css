@@ -50,6 +50,7 @@ body {
     overflow-x: hidden;
     background-color: var(--light-bg-color);
     display: inline-block;
+    width: 100%;
     min-width: 1280px;
 }
 
@@ -210,12 +211,6 @@ and a close button */
     z-index: 1;
 }
 
-@media screen and (max-width: 1083px) {
-    .sidebar-detached {
-        height: calc(100% - var(--topbar-height));
-    }
-}
-
 .sidebar-attached {
     display: table-cell;
     height: 100%;
@@ -229,6 +224,12 @@ and a close button */
 }
 
 /* media queries */
+@media (max-width: 1083px) {
+    .sidebar-detached {
+        height: calc(100% - var(--topbar-height));
+    }
+}
+
 @media (max-width: 1280px) {
     .sidebar-detached {
         margin-left: calc(1280px - var(--sidebar-width)) !important;
@@ -299,6 +300,10 @@ and a close button */
 
 .inspector > div {
     margin-top: 0px;
+}
+
+.inspector-button:hover {
+    background-color: var(--base-color);
 }
 
 .inspector .key {
@@ -459,10 +464,20 @@ and a close button */
 #thumbnails .slide-for-two-artworks {
     display: flex;
     position: relative;
-    background-color: #f9f9f9;
-    border: 3px solid #e3e3e3;
-    margin-right: 64px;
+    background-color: #E5E5E5;
+    border: 3px solid var(--light-bg-color);
+}
+
+.slide-for-two-artworks + .thumbnail {
     margin-left: 64px;
+}
+
+.thumbnail + .slide-for-two-artworks {
+    margin-left: 64px;
+}
+
+.slide-for-two-artworks + .slide-for-two-artworks {
+    margin-left: 32px;
 }
 
 #thumbnails .slide-for-two-artworks .thumbnail {
@@ -574,6 +589,15 @@ and a close button */
     transition-delay: 0.3s;
 }
 
+.ui-widget.ui-widget-content {
+    border: 1px solid #cccccc;
+}
+
+#ui-id-1 {
+    width: 480px;
+    font-size: 16px;
+}
+
 #search-expert-fold {
     max-height: 0px;
     display: block;
@@ -609,10 +633,11 @@ and a close button */
     vertical-align: middle;
     font-size: 14pt;
     background: url(icons-basiswien-01.516de83.svg) 0 no-repeat;
+    background-position: left 8px bottom 12px;
     background-size: 20px;
     -webkit-appearance: none;
-    padding: 0 0 0 26px;
-    margin: 0 0 0 8px;
+    padding: 0 0 0 34px;
+    margin: 0 0 0 0px;
     box-shadow: none;
 }
 

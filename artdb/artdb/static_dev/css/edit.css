@@ -131,9 +131,19 @@
     background-color: var(--primary-button-color);
 }
 
+.sidebar-attached .inspector-button.confirm:hover {
+    margin-left: 16px !important;
+    background-color: var(--base-color);
+}
+
 .sidebar-attached .inspector-button.cancel {
     background-color: var(--mid-grey-3-color);
 }
+
+.sidebar-attached .inspector-button.cancel:hover {
+    background-color: var(--base-color);
+}
+
 
 .sidebar-attached .select2-selection__clear {
     display: inline-block;

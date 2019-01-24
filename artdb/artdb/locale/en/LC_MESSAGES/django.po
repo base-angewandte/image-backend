@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-19 08:17+0100\n"
+"POT-Creation-Date: 2019-01-24 22:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-#: artdb/settings.py:248
+
+#: artdb/settings.py:249
 msgid "German"
 msgstr ""
 
-#: artdb/settings.py:249
+#: artdb/settings.py:250
 msgid "English"
 msgstr ""
 
@@ -46,7 +47,7 @@ msgid "Save"
 msgstr ""
 
 #: artdb/templates/artwork/artwork_thumbnails.html:24
-#: artdb/templates/artwork/artwork_thumbnails_orderable.html:29
+#: artdb/templates/artwork/artwork_thumbnails_orderable.html:6
 msgid "NoArtworks"
 msgstr "No Artworks found."
 
@@ -71,6 +72,10 @@ msgstr ""
 #: artdb/templates/artwork/collections_list.html:19
 #: artdb/templates/artwork/collections_list.html:46
 msgid "My Collections"
+msgstr ""
+
+#: artdb/templates/artwork/collection.html:39
+msgid "Download PowerPoint"
 msgstr ""
 
 #: artdb/templates/artwork/thumbnailbrowser.html:14

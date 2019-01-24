@@ -43,13 +43,13 @@ $(document).ready(function() {
         const jsonUrl = url + '.json';
         $.getJSON(jsonUrl, function(data) {
             var elDetails = document.createElement('div');
-            elDetails.appendChild(createEl('button', ['inspector-button', 'button-collect'], 'Merken', url));
+            elDetails.appendChild(createEl('button', ['inspector-button', 'button-collect'], gettext('addtocollection'), url));
             if (elInspector.classList.contains('editable')) {
-                elDetails.appendChild(createEl('button', ['inspector-button','button-edit'], 'Edit', url));
+                elDetails.appendChild(createEl('button', ['inspector-button','button-edit'], gettext('Edit'), url));
             };
             if (selectedThumbnail.dataset.membershipid) {
-                elDetails.appendChild(createEl('button', ['inspector-button','button-move-left'], 'Move left', url));
-                elDetails.appendChild(createEl('button', ['inspector-button','button-move-right'], 'Move right', url));
+                elDetails.appendChild(createEl('button', ['inspector-button','button-move-left'], gettext('Move left'), url));
+                elDetails.appendChild(createEl('button', ['inspector-button','button-move-right'], gettext('Move right'), url));
             };
             // build all the elements and append them to the DOM 
             $.each( data, function( key, val ) {
@@ -87,7 +87,7 @@ $(document).ready(function() {
                         break;
                     default:
                         if ((val !== '') && (val !== null)) {
-                            elKey = createEl('div', ['key'], key);
+                            elKey = createEl('div', ['key'], gettext(key));
                             elEntry.appendChild(elKey);
                             elVal = createEl('div', ['value'], val);
                             if (key === 'titleEnglish') {
