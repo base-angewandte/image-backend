@@ -46,3 +46,4 @@ sqlparse==0.2.4           # via django-debug-toolbar
 typed-ast==1.1.0
 urllib3==1.23             # via requests
 wrapt==1.10.11
+python-pptx==0.6.16
