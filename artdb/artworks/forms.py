@@ -21,6 +21,9 @@ class ArtworkForm(forms.ModelForm):
         widgets = {
             'artists': autocomplete.ModelSelect2Multiple(url='artist-autocomplete'),
             'keywords': autocomplete.ModelSelect2Multiple(url='keyword-autocomplete'),
+            'locationOfCreation': Select2Widget,
+            'title': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
+            'titleEnglish': forms.Textarea(attrs={'cols': 40, 'rows': 10})
         }
 
     def __init__(self, *args, **kwargs):

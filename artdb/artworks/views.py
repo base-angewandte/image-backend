@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
+from django.template.defaultfilters import slugify
 from dal import autocomplete
 from rest_framework.response import Response
 from artworks.models import *
@@ -16,6 +17,9 @@ from artworks.forms import *
 from artworks.serializers import ArtworkSerializer, CollectionSerializer
 from pptx import Presentation
 from pptx.dml.color import RGBColor 
+from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE
+from pptx.enum.shapes import MSO_SHAPE
+from pptx.util import Pt
 
 @login_required
 def artworks_list(request):
@@ -303,51 +307,88 @@ def collection_download_as_pptx(request, id=None):
         fill.fore_color.rgb = RGBColor(0, 0, 0)
         return slide
 
-    def add_slide_with_one_picture(img_path, padding):
+    def add_description(slide, description, width, left):
+        shapes = slide.shapes
+        top = prs.slide_height - textbox_height - padding
+        shape = shapes.add_shape(MSO_SHAPE.RECTANGLE, left, top, width, textbox_height)
+        shape.fill.background()
+        shape.line.fill.background()
+        text_frame = shape.text_frame
+        text_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
+        text_frame.word_wrap = True
+        p = text_frame.paragraphs[0]
+        run = p.add_run()
+        run.text = description
+        font = run.font
+        font.size = Pt(30)
+
+    def add_slide_with_one_picture(artwork, padding):
+        img_path = artwork.imageOriginal.path
         slide = get_new_slide()
         add_picture_to_slide(slide, img_path, padding, 'center')
+        width = prs.slide_width - (padding * 2)
+        add_description(slide, artwork.get_description(), width, padding)
 
-    def add_slide_with_two_pictures(img_path_left, img_path_right, padding):
+    def add_slide_with_two_pictures(artwork_left, artwork_right, padding):
+        img_path_left = artwork_left.imageOriginal.path        
+        img_path_right = artwork_right.imageOriginal.path
         slide = get_new_slide()
         add_picture_to_slide(slide, img_path_left, padding, 'left')
         add_picture_to_slide(slide, img_path_right, padding, 'right')
+        text_width = int((prs.slide_width - (padding * 2) - distance_between)/2)
+        add_description(slide, artwork_left.get_description(), text_width, padding)
+        left = padding + text_width + distance_between
+        add_description(slide, artwork_right.get_description(), text_width, left)
 
     def add_picture_to_slide(slide, img_path, padding, position):
         pic = slide.shapes.add_picture(img_path, 0, padding)
         image_width = pic.image.size[0]
         image_height = pic.image.size[1]
         aspect_ratio = image_width / image_height
-        distance_between = padding * 2
 
         # calculate width and height
         if (position == 'center'):
             picture_max_width = int(prs.slide_width - (padding * 2))
+            if (image_height > image_width):
+                pic.height = picture_max_height
+                pic.width = int(picture_max_height * aspect_ratio)
+            else:
+                pic.height = picture_max_height
+                pic.width = int(picture_max_height * aspect_ratio)
         else:
             picture_max_width = int((prs.slide_width - (padding * 2) - distance_between)/2)
-        if (image_height > image_width):
-            pic.height = picture_max_height
-            pic.width = int(picture_max_height * aspect_ratio)
-        else:
-            pic.width = picture_max_width
-            pic.height = int(picture_max_width / aspect_ratio)
+            if (image_height > image_width):
+                pic.height = picture_max_height
+                pic.width = int(picture_max_height * aspect_ratio)
+            else:
+                pic.width = picture_max_width
+                pic.height = int(picture_max_width / aspect_ratio)
+                pic.top = padding + int((picture_max_height - pic.height) / 2)
 
-        # position the image
+        # position the image left/right
         if (position == 'center'):
             pic.left = int((prs.slide_width - pic.width) / 2)
         if (position == 'left'):
-            pic.left = int(padding)
+            if (image_height < image_width):
+                pic.left = int(padding)
+            else:
+                pic.left = padding + int((picture_max_width - pic.width)/2)
             # pic.left = int(padding + (pic.width / 2))
         if (position == 'right'):
-            pic.left = int(padding + picture_max_width + distance_between)
+            if (image_height < image_width):
+                pic.left = padding + picture_max_width + distance_between
+            else:
+                pic.left = padding + picture_max_width + distance_between + int((picture_max_width - pic.width)/2)
+
 
     # define the presentation dimensions
     prs = Presentation()
     prs.slide_width = 24384000  # taken from Keynote 16:9 pptx
     prs.slide_height = 13716000 # taken from Keynote 16:9 pptx
-    padding = prs.slide_width / 100
+    padding = int(prs.slide_width / 100)
     textbox_height = prs.slide_height / 10
     picture_max_height = int(prs.slide_height - (padding * 2) - textbox_height)
-    distance_between = prs.slide_width / 10
+    distance_between = padding * 2
 
     col = ArtworkCollection.objects.get(id=id)
     memberships = col.artworkcollectionmembership_set.all()
@@ -357,10 +398,10 @@ def collection_download_as_pptx(request, id=None):
             if not (connected_member):
                 connected_member = membership
             else:
-                add_slide_with_two_pictures(connected_member.artwork.imageOriginal.path, membership.artwork.imageOriginal.path, padding)
+                add_slide_with_two_pictures(connected_member.artwork, membership.artwork, padding)
                 connected_member = None
         else:
-            add_slide_with_one_picture(membership.artwork.imageOriginal.path, padding)
+            add_slide_with_one_picture(membership.artwork, padding)
 
 
         # titles.append(membership.artwork.title)
@@ -379,7 +420,7 @@ def collection_download_as_pptx(request, id=None):
     prs.save(output)
     output.seek(0)
     response = HttpResponse(output.read(), content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation')
-    response['Content-Disposition'] = 'attachment; filename="sample.pptx"'
+    response['Content-Disposition'] = 'attachment; filename="' + slugify(col.title) + '.pptx"'
     output.close()
 
     return response

@@ -85,9 +85,16 @@ class Artwork(models.Model):
     updatedAt = models.DateTimeField(auto_now = True, null=True)
     keywords = models.ManyToManyField(Keyword, blank=True)
     locationOfCreation = TreeForeignKey(Location, blank=True, null=True, on_delete=models.SET_NULL)
+    checked = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
+
+    def get_description(self):
+        artists = ', '.join(artist.name for artist in self.artists.all())
+        parts = [artists, self.title, self.date]
+        description = ', '.join(x.strip() for x in parts if x.strip())
+        return description
 
 
 @receiver(models.signals.post_save, sender=Artwork)
@@ -153,12 +160,7 @@ class ArtworkCollectionMembership(OrderedModel):
     collection = models.ForeignKey(ArtworkCollection, on_delete=models.CASCADE)
     artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE)
     order_with_respect_to = 'collection'
-    # needsOwnSlide == True means that this artwork will get its own slide
-    # in the exportable pptx presentation.
-    # needsOwnSlide == False means, it will be put on a slide next to another artwork
-    needsOwnSlide = models.BooleanField(null=False, blank=False, default=False)
     connectedWith = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
-
 
     def moveLeft(self):
         # did the user click a single one or a connected one?

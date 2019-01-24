@@ -70,6 +70,7 @@
 .sidebar-attached .select2-container {
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
+    width: 100% !important;
 }
 
 .sidebar-attached .select2-container--default .select2-selection--single {
@@ -221,3 +222,16 @@
     max-width: 590px;
 }
 
+#edit-overlay label {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#edit-overlay input[type=checkbox] {
+    display: block;
+    width: 31px;
+    height: 31px;
+    padding: 0;
+    margin: 0;
+}
