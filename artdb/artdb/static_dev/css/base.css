@@ -49,6 +49,8 @@ body {
     overflow-y: scroll;
     overflow-x: hidden;
     background-color: var(--light-bg-color);
+    display: inline-block;
+    min-width: 1280px;
 }
 
 .hidden {
@@ -188,7 +190,7 @@ and a close button */
 
 .overlay .content {
     display: table-cell;
-    width: calc(100% - var(--sidebar-width));
+    min-width: calc(1280px - var(--sidebar-width));
     height: 100%;
     background-color: var(--light-bg-color);
     vertical-align: middle;
@@ -228,12 +230,11 @@ and a close button */
 
 /* media queries */
 @media (max-width: 1280px) {
-    #sidebar-detached {
+    .sidebar-detached {
         margin-left: calc(1280px - var(--sidebar-width)) !important;
     }
-    .button-close {
-        right: auto !important;
-        left: calc(1245px - var(--sidebar-width)) !important;
+    .body {
+        overflow-x: scroll;
     }
 }
 

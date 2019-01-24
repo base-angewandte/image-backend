@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.forms import ModelMultipleChoiceField
 from django.utils.encoding import smart_text
 from django.utils.translation import ugettext_lazy as _
+from django_select2.forms import Select2Widget
 from dal import autocomplete
 from artworks.models import Artwork, Keyword
 # https://gist.github.com/tdsymonds/abdcb395f172a016ed785f59043749e3
@@ -21,10 +22,10 @@ class ArtworkForm(forms.ModelForm):
         widgets = {
             'artists': autocomplete.ModelSelect2Multiple(url='artist-autocomplete'),
             'keywords': autocomplete.ModelSelect2Multiple(url='keyword-autocomplete'),
-            'locationOfCreation': Select2Widget,
             'title': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
             'titleEnglish': forms.Textarea(attrs={'cols': 40, 'rows': 10})
         }
+        # add and customize 'locationOfCreation': Select2Widget,
 
     def __init__(self, *args, **kwargs):
         # remove hard-coded help_text for ManyToManyFields that use a SelectMultiple widget

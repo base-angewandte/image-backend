@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     'mptt',
     'massadmin',
     'ordered_model',
+    'django_select2',
 
     # Project apps
     'general',
