@@ -96,17 +96,21 @@
 $(document).ready(function() {
     var reader = new FileReader();
     reader.onload = function (e) {
+        console.log(e);
         $('.image-big').attr('src', e.target.result);
     }
    
     function readURL(input) {
         if (input.files && input.files[0]) {
             reader.readAsDataURL(input.files[0]);
+            console.log(input.files[0]);
+            console.lof("read");
         }
     }
     
     $('.imageselector').change(function() {
         readURL(this);
     });
+});
 </script>
 <script src="{% static 'js/artwork_form.js' %}"></script>
