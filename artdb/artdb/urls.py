@@ -17,6 +17,7 @@ import django_cas_ng.views
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.urls import path, include
+from django.utils.translation import gettext_lazy as _
 
 # adding this, so MEDIA dir can be served during development 
 from django.conf.urls.static import static
@@ -29,6 +30,8 @@ js_info_dict = {
 }
 
 admin.site.login = login_required(admin.site.login)
+admin.site.index_title = _('Image Editing')
+admin.site.site_header = _('Image Editing')
 
 urlpatterns = [
     path('', include('artworks.urls')),

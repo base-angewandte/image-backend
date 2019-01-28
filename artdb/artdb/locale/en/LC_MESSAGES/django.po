@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-24 22:09+0100\n"
+"POT-Creation-Date: 2019-01-28 14:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: artdb/settings.py:249
+#: artdb/settings.py:253
 msgid "German"
 msgstr ""
 
-#: artdb/settings.py:250
+#: artdb/settings.py:254
 msgid "English"
+msgstr ""
+
+#: artdb/templates/admin/base_site.html:5 artdb/urls.py:33 artdb/urls.py:34
+msgid "Image Editing"
 msgstr ""
 
 #: artdb/templates/artwork/artwork_collect_overlay.html:26
