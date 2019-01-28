@@ -11,13 +11,14 @@ def process_user_attributes(sender, user, created, attributes, *args, **kwargs):
     if not user or not attributes:
         return
 
-    permissions = attributes.get('permissions')
-
     if user.username in settings.SUPERUSERS:
         user.is_staff = True
         user.is_superuser = True
     else:
         user.is_superuser = False
+
+        permissions = attributes.get('permissions')
+
         # TODO
         if permissions and 'edit_image' in permissions.split(','):
             user.is_staff = True
