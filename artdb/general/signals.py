@@ -13,20 +13,18 @@ def process_user_attributes(sender, user, created, attributes, *args, **kwargs):
 
     permissions = attributes.get('permissions')
 
-    # TODO
-    if permissions and 'edit_image' in permissions.split(','):
-        user.is_staff = True
-        # p = Permission.objects.filter().exclude()
-        # user.user_permissions.set(p)
-    else:
-        user.is_staff = False
-        # user.user_permissions.clear()
-
     if user.username in settings.SUPERUSERS:
         user.is_staff = True
         user.is_superuser = True
     else:
-        user.is_staff = False
         user.is_superuser = False
+        # TODO
+        if permissions and 'edit_image' in permissions.split(','):
+            user.is_staff = True
+            # p = Permission.objects.filter().exclude()
+            # user.user_permissions.set(p)
+        else:
+            user.is_staff = False
+            # user.user_permissions.clear()
 
     user.save()
