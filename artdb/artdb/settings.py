@@ -90,7 +90,6 @@ INSTALLED_APPS = [
 
     # Project apps
     'general',
-    'artworkusers',
     'artworks',
 ]
 
