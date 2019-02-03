@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
+{% comment %}
+---------------------------------------------------------
+This template defines how the default artworks browser
+is rendered. It brings its own javascript, needed for the 
+basic and the extended search.
+---------------------------------------------------------
+{% endcomment %}
+
 {% block thumbnailbrowser %}
 <section class="thumbnail-area">
     <div class="thumbnail-navbar">
@@ -36,7 +44,7 @@
                     <div>
                         <label>{% trans 'Date To' %}</label><input class="search-small-input" placeholder="{% trans 'YYYY' %}" name="date_to" value="{{ query_date_to|default:''}}" autocomplete="off" role="date_to search"/>
                     </div>
-                    <label>{% trans 'Location' %}</label><input placeholder="" name="location" value="{{ query_location|default:''}}" autocomplete="off" role="location search"/>
+                    <label>{% trans 'Location_of_creation' %}</label><input placeholder="" name="location_of_creation" value="{{ query_location_of_creation|default:''}}" autocomplete="off" role="location_of_creation search"/>
                 </div>
                 <div class="col-3">
                     <label>{% trans 'Keywords' %}</label>
@@ -68,7 +76,7 @@ $(document).ready(function() {
     $("#search-basic-artworks-field").autocomplete({
         source: function(request, response) {
             $.ajax({
-            url: "http://localhost:8000/artwork-autocomplete/",
+            url: "{{ FORCE_SCRIPT_NAME }}/artwork-autocomplete/",
             dataType: "json",
             data: {
                 q: request.term
@@ -97,7 +105,7 @@ $(document).ready(function() {
     $("#search-expert-artworks-field").autocomplete({
         source: function(request, response) {
             $.ajax({
-            url: "http://localhost:8000/artwork-autocomplete/",
+            url: "{{ FORCE_SCRIPT_NAME }}/artwork-autocomplete/",
             dataType: "json",
             data: {
                 q: request.term
@@ -119,7 +127,7 @@ $(document).ready(function() {
     $("#search-expert-artist-field").autocomplete({
         source: function(request, response) {
             $.ajax({
-            url: "http://localhost:8000/artist-autocomplete/",
+            url: "{{ FORCE_SCRIPT_NAME }}/artist-autocomplete/",
             dataType: "json",
             data: {
                 q: request.term
@@ -141,7 +149,7 @@ $(document).ready(function() {
     $("#search-expert-keywords-field").autocomplete({
         source: function(request, response) {
             $.ajax({
-            url: "http://localhost:8000/keyword-autocomplete/",
+            url: "{{ FORCE_SCRIPT_NAME }}/keyword-autocomplete/",
             dataType: "json",
             data: {
                 q: request.term

@@ -1,6 +1,13 @@
 {% load proper_paginate %}
 {% load url_replace %}
 
+{% comment %}
+---------------------------------------------------------
+this template defines how the pagination works;
+it is used in the thumbnailbrowser.html template
+---------------------------------------------------------
+{% endcomment %}
+
     {% if artworks %}
     <div class="paginator">
         {% if artworks.has_other_pages %}

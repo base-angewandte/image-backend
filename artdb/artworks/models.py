@@ -13,8 +13,8 @@ class Artist(models.Model):
     """
     name = models.CharField(max_length=255, null=False)
     synonyms = models.CharField(max_length=255, null=False, blank=True)
-    createdAt = models.DateTimeField(auto_now_add = True)
-    updatedAt = models.DateTimeField(auto_now = True, null=True)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True, null=True)
 
     class Meta:
         ordering = ['name']
@@ -71,20 +71,20 @@ class Artwork(models.Model):
     """
     # VersatileImageField allows to create resized versions of the
     # image (renditions) on demand
-    imageOriginal = VersatileImageField(max_length = 127, null=False, blank=True, upload_to=get_path_to_original_file)
+    image_original = VersatileImageField(max_length = 127, null=False, blank=True, upload_to=get_path_to_original_file)
     title = models.CharField(max_length=255, blank=True)
-    titleEnglish = models.CharField(max_length=255, blank=True)
+    title_english = models.CharField(max_length=255, blank=True)
     artists = models.ManyToManyField(Artist, blank=True)
     date = models.CharField(max_length=319, blank=True, help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende 14. Jh., 5.3.1799, um 1700')
-    dateYearFrom = models.IntegerField(null=True, blank=True)
-    dateYearTo = models.IntegerField(null=True, blank=True)
+    date_year_from = models.IntegerField(null=True, blank=True)
+    date_year_to = models.IntegerField(null=True, blank=True)
     material = models.TextField(null=True, blank=True)
     dimensions = models.CharField(max_length=255, blank=True)
     credits = models.TextField(blank=True)
-    createdAt = models.DateTimeField(auto_now_add = True)
-    updatedAt = models.DateTimeField(auto_now = True, null=True)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True, null=True)
     keywords = models.ManyToManyField(Keyword, blank=True)
-    locationOfCreation = TreeForeignKey(Location, blank=True, null=True, on_delete=models.SET_NULL)
+    location_of_creation = TreeForeignKey(Location, blank=True, null=True, on_delete=models.SET_NULL)
     checked = models.BooleanField(default=False)
 
     def __str__(self):
@@ -122,8 +122,8 @@ def delete_artwork_images(sender, instance, **kwargs):
     """
     Delete Artwork's originalImage and all renditions on post_delete.
     """
-    instance.imageOriginal.delete_all_created_images()
-    instance.imageOriginal.delete(save=False)
+    instance.image_original.delete_all_created_images()
+    instance.image_original.delete(save=False)
 
 
 @receiver(models.signals.pre_save, sender=Artwork)
@@ -133,7 +133,7 @@ def delete_renditions_on_change(sender, update_fields, instance, **kwargs):
     """
     if instance._state.adding is False:
         old_artwork = Artwork.objects.get(pk=instance.id)
-        old_artwork.imageOriginal.delete_all_created_images()
+        old_artwork.image_original.delete_all_created_images()
 
 
 class ArtworkCollection(models.Model):
@@ -143,8 +143,8 @@ class ArtworkCollection(models.Model):
     title = models.CharField(max_length=255)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     artworks = models.ManyToManyField(Artwork, through='ArtworkCollectionMembership')
-    createdAt = models.DateTimeField(auto_now_add=True)
-    updatedAt = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return '{0} by {1}'.format(self.title, self.user.get_username())
@@ -160,64 +160,64 @@ class ArtworkCollectionMembership(OrderedModel):
     collection = models.ForeignKey(ArtworkCollection, on_delete=models.CASCADE)
     artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE)
     order_with_respect_to = 'collection'
-    connectedWith = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+    connected_with = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
 
-    def moveLeft(self):
+    def move_left(self):
         # did the user click a single one or a connected one?
-        if self.connectedWith:
-            if (self.connectedWith == self.previous()):
+        if self.connected_with:
+            if (self.connected_with == self.previous()):
                 # right side
-                leftSide = self.previous()
-                rightSide = self
+                left_side = self.previous()
+                right_side = self
             else:
                 # left side
-                leftSide = self
-                rightSide = self.next()
+                left_side = self
+                right_side = self.next()
         else:
-            leftSide = self
-            rightSide = None
+            left_side = self
+            right_side = None
            
-        if leftSide.previous():
-            if leftSide.previous().connectedWith:
-                # the leftSide is connected. let's move twice
-                leftSide.up()
-                if rightSide:
-                    rightSide.up()
-            leftSide.up()
-            if rightSide:
-                rightSide.up()
+        if left_side.previous():
+            if left_side.previous().connected_with:
+                # the left_side is connected. let's move twice
+                left_side.up()
+                if right_side:
+                    right_side.up()
+            left_side.up()
+            if right_side:
+                right_side.up()
 
 
-    def moveRight(self):
+    def move_right(self):
         # did the user click a single one or a connected one?
-        if self.connectedWith:
-            if (self.connectedWith == self.previous()):
+        if self.connected_with:
+            if (self.connected_with == self.previous()):
                 # right side
-                leftSide = self.previous()
-                rightSide = self
+                left_side = self.previous()
+                right_side = self
             else:
                 # left side
-                leftSide = self
-                rightSide = self.next()
+                left_side = self
+                right_side = self.next()
         else:
-            leftSide = None
-            rightSide = self
+            left_side = None
+            right_side = self
            
-        if rightSide.next():
-            if rightSide.next().connectedWith:
+        if right_side.next():
+            if right_side.next().connected_with:
                 # the rightSide is connected. let's move twice
-                rightSide.down()
-                if leftSide:
-                    leftSide.down()
-            rightSide.down()
-            if leftSide:
-                leftSide.down()
+                right_side.down()
+                if left_side:
+                    left_side.down()
+            right_side.down()
+            if left_side:
+                left_side.down()
 
 
     def disconnect(self, partner):
-        if (self.connectedWith == partner) and (self == partner.connectedWith):
-            self.connectedWith = None
-            partner.connectedWith = None
+        if (self.connected_with == partner) and (self == partner.connected_with):
+            self.connected_with = None
+            partner.connected_with = None
             self.save()
             partner.save()
             return True
@@ -225,31 +225,14 @@ class ArtworkCollectionMembership(OrderedModel):
 
 
     def connect(self, partner):
-        if (self.connectedWith == None) and (partner.connectedWith == None):
-            self.connectedWith = partner
-            partner.connectedWith = self
+        if (self.connected_with == None) and (partner.connected_with == None):
+            self.connected_with = partner
+            partner.connected_with = self
             self.save()
             partner.save()
             return True
         return False
-
-
-    def toggleNeedsOwnSlide(self):
-        if (self.needsOwnSlide):
-            self.disconnect()
-        self.needsOwnSlide = not self.needsOwnSlide
-        self.save()
-
-    def connectWithPosition(self, direction):
-        if (direction == 'left'):
-            partner = self.previous()
-        if (direction == 'right'):
-            partner = self.next()
-        if (partner):
-            self.connectWith(partner)
-            return True
-        else:
-            return False
+        
 
     class Meta:
         ordering = ('collection', 'order')

@@ -12,17 +12,17 @@ class ArtworkForm(forms.ModelForm):
     # TODO: localization
     # https://docs.djangoproject.com/en/2.0/topics/forms/modelforms/
   
-    imageOriginal = forms.ImageField(label_suffix='', label='Upload', widget=forms.FileInput, required=False)
-    imageOriginal.widget.attrs.update({'class': 'imageselector'})
+    image_original = forms.ImageField(label_suffix='', label='Upload', widget=forms.FileInput, required=False)
+    image_original.widget.attrs.update({'class': 'imageselector'})
 
     class Meta:
         model = Artwork
-        exclude = ['id', 'createdAt', 'updatedAt']
+        exclude = ['id', 'created_at', 'updated_at']
         widgets = {
             'artists': autocomplete.ModelSelect2Multiple(url='artist-autocomplete'),
             'keywords': autocomplete.ModelSelect2Multiple(url='keyword-autocomplete'),
             'title': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
-            'titleEnglish': forms.Textarea(attrs={'cols': 40, 'rows': 10})
+            'title_english': forms.Textarea(attrs={'cols': 40, 'rows': 10})
         }
         # add and customize 'locationOfCreation': Select2Widget,
 

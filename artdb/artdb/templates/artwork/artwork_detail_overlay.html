@@ -1,7 +1,14 @@
 {% load i18n %}
 
+{% comment %}
+---------------------------------------------------------
+this template defines the overlay the user sees
+when she double-clicks a specific artwork
+---------------------------------------------------------
+{% endcomment %}
+
 <div class="content">
-    <img class="image-big" src="{{artwork.imageOriginal.thumbnail.930x768}}"/>
+    <img class="image-big" src="{{artwork.image_original.thumbnail.930x768}}"/>
     <button name="close" class="button-close" id="hideDetailOverlay" onClick="hideImageAndOverlay()"></button>
 </div>
 

@@ -26,42 +26,42 @@ def artworks_list(request):
     """
     Render the thumbnailbrowser.
     """
-    querySearch = request.GET.get('search')
-    querySearchType = request.GET.get('searchtype')
-    queryArtworkTitle = request.GET.get('title')
-    queryArtistName = request.GET.get('artist')
-    queryKeyword = request.GET.get('keyword')
-    queryDateFrom = request.GET.get('date_from')
-    queryDateTo = request.GET.get('date_to')
-    queryLocation = request.GET.get('location')
+    query_search = request.GET.get('search')
+    query_search_type = request.GET.get('searchtype')
+    query_artwork_title = request.GET.get('title')
+    query_artist_name = request.GET.get('artist')
+    query_keyword = request.GET.get('keyword')
+    query_date_from = request.GET.get('date_from')
+    query_date_to = request.GET.get('date_to')
+    query_location_of_creation = request.GET.get('location_of_creation')
     qObjects = Q()
     context = {}
     expertSearch = False
 
-    if querySearchType == 'expert':
+    if query_search_type == 'expert':
         expertSearch = True
-        if queryArtworkTitle:
-            qObjects.add(Q(title__icontains=queryArtworkTitle), Q.AND)
-        if queryLocation:
-            qObjects.add(Q(locationOfCreation__name__icontains=queryLocation), Q.AND)
-        if queryDateFrom:
-            qObjects.add(Q(dateYearFrom__gte=int(queryDateFrom)), Q.AND)
-        if queryDateTo:
-            qObjects.add(Q(dateYearTo__lte=int(queryDateTo)), Q.AND)
-        if queryArtistName:
-            artists = Artist.objects.filter(name__icontains=queryArtistName)
+        if query_artwork_title:
+            qObjects.add(Q(title__icontains=query_artwork_title), Q.AND)
+        if query_location_of_creation:
+            qObjects.add(Q(location_of_creation__name__icontains=query_location_of_creation), Q.AND)
+        if query_date_from:
+            qObjects.add(Q(dateYearFrom__gte=int(query_date_from)), Q.AND)
+        if query_date_to:
+            qObjects.add(Q(dateYearTo__lte=int(query_date_to)), Q.AND)
+        if query_artist_name:
+            artists = Artist.objects.filter(name__icontains=query_artist_name)
             qObjects.add(Q(artists__in=artists), Q.AND)
-        if queryKeyword:
-            keywords = Keyword.objects.filter(name__icontains=queryKeyword)
+        if query_keyword:
+            keywords = Keyword.objects.filter(name__icontains=query_keyword)
             qObjects.add(Q(keywords__in=keywords), Q.AND)
     else:
-        if querySearch:
-            terms = [term.strip() for term in querySearch.split()]
+        if query_search:
+            terms = [term.strip() for term in query_search.split()]
             for term in terms:
                 qObjects.add(Q(title__icontains=term), Q.OR)
                 artists = Artist.objects.filter(name__icontains=term)
                 qObjects.add(Q(artists__in=artists), Q.OR)
-                qObjects.add(Q(locationOfCreation__name__icontains=term), Q.OR)
+                qObjects.add(Q(location_of_creation__name__icontains=term), Q.OR)
                 keywords = Keyword.objects.filter(name__icontains=term)
                 qObjects.add(Q(keywords__in=keywords), Q.OR)
 
@@ -77,13 +77,13 @@ def artworks_list(request):
         artworks = paginator.page(paginator.num_pages)
 
     context['artworks'] = artworks
-    context['query_search'] = querySearch
-    context['query_title'] = queryArtworkTitle
-    context['query_artist'] = queryArtistName
-    context['query_keyword'] = queryKeyword
-    context['query_date_from'] = queryDateFrom
-    context['query_date_to'] = queryDateTo
-    context['query_location'] = queryLocation
+    context['query_search'] = query_search
+    context['query_title'] = query_artwork_title
+    context['query_artist'] = query_artist_name
+    context['query_keyword'] = query_keyword
+    context['query_date_from'] = query_date_from
+    context['query_date_to'] = query_date_to
+    context['query_location_of_creation'] = query_location_of_creation
     context['expert_search'] = expertSearch
     return render(request, 'artwork/thumbnailbrowser.html', context)
 
@@ -119,13 +119,13 @@ def artwork_edit(request, id):
     context = {}
     context['form'] = ArtworkForm(instance=artwork)
     context['id'] = artwork.id
-    context['imageOriginal'] = artwork.imageOriginal
+    context['image_original'] = artwork.image_original
     if request.method == "POST":
         form = ArtworkForm(request.POST, request.FILES, instance=artwork)
         if form.is_valid():
             updated_artwork = form.save(commit=False)
             # TODO: artwork.user = request.user
-            updated_artwork.updatedAt = datetime.now()
+            updated_artwork.updated_at = datetime.now()
             updated_artwork.save()
             # TODO: redirectURL = "%i.json" % artwork.id
             # TODO: reload/close? scroll to thumbnail
@@ -144,17 +144,17 @@ def artwork_collect(request, id):
         artwork = Artwork.objects.get(id=id)
         context = {}
         qs = ArtworkCollection.objects.all()
-        collections = qs.filter(user=request.user).order_by('-createdAt')
+        collections = qs.filter(user=request.user).order_by('-created_at')
         context['collections'] = collections
         context['artwork'] = artwork
         return render(request, 'artwork/artwork_collect_overlay.html', context)
     if request.method == 'POST':
         artwork = Artwork.objects.get(id=request.POST['artwork-id'])
         if (request.POST['action'] == 'addCollection'):
-            colTitle = request.POST['collection-title']
-            if (colTitle):
+            col_title = request.POST['collection-title']
+            if (col_title):
                 u = User.objects.get(id=request.user.id)
-                newcol = ArtworkCollection.objects.create(title=colTitle, user=u)
+                newcol = ArtworkCollection.objects.create(title=col_title, user=u)
                 ArtworkCollectionMembership.objects.create(collection=newcol, artwork=artwork)
                 return JsonResponse({'action': 'reload'})
             else:
@@ -200,17 +200,18 @@ def collection(request, id=None):
                     return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not find artwork membership'})
                     # move artwork left
                 if (request.POST['action'] == 'left'):
-                    membership.moveLeft()
+                    membership.move_left()
                     return JsonResponse({'message': 'moved left'})
                     # move artwork right
                 if (request.POST['action'] == 'right'):
-                    membership.moveRight()
+                    membership.move_right()
                     return JsonResponse({'message': 'moved right'})
                 return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not manipulate artwork membership'})
             else:
                 leftMember = ArtworkCollectionMembership.objects.get(id=request.POST['member-left'])
                 rightMember = ArtworkCollectionMembership.objects.get(id=request.POST['member-right'])
                 if (request.POST['action'] == 'connect'):
+                    print("connecting")
                     if leftMember.connect(rightMember):
                         return JsonResponse({'message': 'connected'})
                 if (request.POST['action'] == 'disconnect'):

@@ -9,16 +9,16 @@ class ArtworkCollectionMembershipInline(OrderedTabularInline):
     model = ArtworkCollectionMembership
     autocomplete_fields = ['artwork']
     extra = 0
-    fields = ('artwork', 'needsOwnSlide', 'connectedWith', 'order', 'move_up_down_links',)
+    fields = ('artwork', 'connected_with', 'order', 'move_up_down_links',)
     readonly_fields = ('order', 'move_up_down_links',)
     ordering = ('order',)
 
 
 class ArtworkAdmin(admin.ModelAdmin):
     form = ArtworkAdminForm
-    readonly_fields = ('createdAt','updatedAt')
-    list_display = ('title', 'createdAt', 'updatedAt')
-    ordering = ('-createdAt',)
+    readonly_fields = ('created_at','updated_at')
+    list_display = ('title', 'created_at', 'updated_at')
+    ordering = ('-created_at',)
     search_fields = ['title']
     # inlines = (ArtworkCollectionMembershipInline,)
 
@@ -27,17 +27,17 @@ class ArtworkAdmin(admin.ModelAdmin):
 
 
 class ArtworkCollectionAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
-    readonly_fields = ('createdAt','updatedAt')
-    list_display = ('title', 'createdAt', 'updatedAt')
-    ordering = ('-createdAt',)
+    readonly_fields = ('created_at','updated_at')
+    list_display = ('title', 'created_at', 'updated_at')
+    ordering = ('-created_at',)
     search_fields = ['title']
     inlines = (ArtworkCollectionMembershipInline,)
 
 
 class ArtistAdmin(admin.ModelAdmin):
-    readonly_fields = ('createdAt','updatedAt')
-    list_display = ('name', 'createdAt', 'updatedAt')
-    ordering = ('-createdAt',)
+    readonly_fields = ('created_at','updated_at')
+    list_display = ('name', 'created_at', 'updated_at')
+    ordering = ('-created_at',)
     search_fields = ['name',]
 
 

@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
+{% comment %}
+---------------------------------------------------------
+This template defines how a collection is rendered.
+It brings its own javascript, needed for the select menu
+and the reordering and connecting artworks.
+It also renders all thumbnails dynamically via javascript.
+---------------------------------------------------------
+{% endcomment %}
+
 {% block collectionslist %}
 <section class="thumbnail-area">
 
@@ -42,7 +51,11 @@
         {% endif %}
     </div>
 
-    {% include "artwork/artwork_thumbnails_orderable.html" %}
+    {% if memberships %}
+    <div id="thumbnails"></div>
+    {% else %}
+    <div class="nothing-found">{% trans 'NoArtworks' %}</div>
+    {% endif %}
     
 </section>
 {% endblock collectionslist %}
@@ -51,8 +64,9 @@
 <script type='text/javascript'>
 
 $(document).ready(function() {
-    var collectionID = {{id}};
+    var collectionID = {{ id }};
     var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+    var mainPath = '{{ FORCE_SCRIPT_NAME }}';
 
 
     // this select menu allows the user to switch from one collection to another
@@ -60,7 +74,7 @@ $(document).ready(function() {
         change: function(event, ui) {
             let id = ui.item.value;
             if (id) {
-                window.location = `{{ FORCE_SCRIPT_NAME }}/collection/${id}.html`;
+                window.location = `{${mainPath}}/collection/${id}.html`;
             } else {
                 window.location = '{% url "collections_list" %}';
             }
@@ -118,13 +132,12 @@ $(document).ready(function() {
     // after an artwork has been connected, disconnected or moved
     // the whole collection gets updated
     updateSlides = function() {
-        divOldThumbnails = document.getElementById('thumbnails');
-        var jsonUrl = divOldThumbnails.dataset.url;
-        var path = divOldThumbnails.dataset.scriptname;
+        var path = '{{ FORCE_SCRIPT_NAME }}';
+        var jsonUrl = '{{ FORCE_SCRIPT_NAME }}/collection/{{id}}.json';
+        
+        var divOldThumbnails = document.getElementById('thumbnails');
         var divNewThumbnails = document.createElement('div');
         divNewThumbnails.id = 'thumbnails';
-        divNewThumbnails.dataset.url = divOldThumbnails.dataset.url;
-        divNewThumbnails.dataset.scriptname = divOldThumbnails.dataset.scriptname;
 
         $.getJSON(jsonUrl, function(data) {
             // build all the elements and append them to the DOM
@@ -142,7 +155,7 @@ $(document).ready(function() {
                 divCenter.classList.add('vertically-center');
                 var elImage =  document.createElement('img');
                 elImage.classList.add('picture-thumbnail');
-                elImage.src = member.artwork.imageOriginal.thumbnail;
+                elImage.src = member.artwork.image_original.thumbnail;
                 divCenter.appendChild(elImage);
                 divThumbnail.appendChild(divCenter);
                 var divTitle = document.createElement('div');
@@ -167,7 +180,7 @@ $(document).ready(function() {
 
                 // connected artworks belong in a containing div, so the wrapping
                 // in the browser can work correctly
-                if (member.connectedWith) {
+                if (member.connected_with) {
                     if (previousNeedsConnection === false) {
                         previousNeedsConnection = true;
                         previousMember = member;

@@ -1,7 +1,0 @@
-{% load i18n %}
-    {% if memberships %}
-    <div id="thumbnails" data-scriptname="{{ FORCE_SCRIPT_NAME }}" data-url="{{ FORCE_SCRIPT_NAME }}/collection/{{id}}.json">
-    </div>
-    {% else %}
-    <div class="nothing-found">{% trans 'NoArtworks' %}</div>
-    {% endif %}

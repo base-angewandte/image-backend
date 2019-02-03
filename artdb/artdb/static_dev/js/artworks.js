@@ -16,12 +16,13 @@ $(document).ready(function() {
     // Get the CSRF Token
     // see: https://docs.djangoproject.com/en/2.2/ref/csrf/#ajax
     // ---------------------------------------------------------
-    var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+    // var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
 
 
     // ---------------------------------------------------------
     // Helper Function
-    // creates elements with optional css classes, text and eventListeners
+    // creates document elements with optional css classes, text
+    // and a dataset.url
     // ---------------------------------------------------------
     function createEl(tagName, cssClasses, text, url) {
         var el = document.createElement(tagName);
@@ -40,7 +41,9 @@ $(document).ready(function() {
     // ---------------------------------------------------------
     updateInspector = function(elInspector) {
         const url = selectedThumbnail.dataset.url;
+        console.log(url);
         const jsonUrl = url + '.json';
+        console.log(jsonUrl);
         $.getJSON(jsonUrl, function(data) {
             var elDetails = document.createElement('div');
             elDetails.appendChild(createEl('button', ['inspector-button', 'button-collect'], gettext('addtocollection'), url));
@@ -77,12 +80,12 @@ $(document).ready(function() {
                             elEntry.appendChild(elVal);
                         }
                         break;
-                    case 'locationOfCreation':
+                    case 'location_of_creation':
                         if (val.length === 0) break;
-                        elKey = createEl('div', ['key'], gettext('Location'));
+                        elKey = createEl('div', ['key'], gettext('location_of_creation'));
                         elEntry.appendChild(elKey);
                         elVal = createEl('div', ['value','tag'], val.name);
-                        elVal.dataset.location = val.name;
+                        elVal.dataset.location_of_creation = val.name;
                         elEntry.appendChild(elVal);
                         break;
                     default:
@@ -301,9 +304,9 @@ $(document).ready(function() {
                 var keyword = encodeURIComponent(e.target.dataset.keyword.trim());
                 url += `keyword=${keyword}`;
             }
-            if (e.target.dataset.location) {
-                var location = encodeURIComponent(e.target.dataset.location.trim());
-                url += `location=${location}`;
+            if (e.target.dataset.location_of_creation) {
+                var location_of_creation = encodeURIComponent(e.target.dataset.location_of_creation.trim());
+                url += `location_of_creation=${location_of_creation}`;
             }
             window.location.href = url;
         } else if ($(e.target).hasClass('button-collect')) {

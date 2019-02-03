@@ -1,5 +1,12 @@
 {% load i18n %}
 
+{% comment %}
+---------------------------------------------------------
+this template defines the overlay the user sees
+when she selects a specific collection of artworks
+---------------------------------------------------------
+{% endcomment %}
+
 <div class="content">
     <div class="center">
         {% spaceless %}
@@ -49,7 +56,6 @@ $(document).ready(function() {
         var artworkID = e.currentTarget.dataset['artworkid'];
         var collectionID = e.currentTarget.dataset['collectionid'];
         var url = '{{ FORCE_SCRIPT_NAME }}/artwork/' + artworkID + '/collect_overlay.html';
-        console.log(url);
         $.ajax({
             type: 'POST',
             url: url,

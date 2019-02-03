@@ -2,16 +2,23 @@
 {% load i18n %}
 {{ form.media }}
 
+{% comment %}
+---------------------------------------------------------
+this template defines the overlay the user sees
+when she clicks the EDIT button in the inspector
+---------------------------------------------------------
+{% endcomment %}
+
 <form method="POST" enctype="multipart/form-data" class="editform" action="{{ FORCE_SCRIPT_NAME }}/artwork/{{id}}/edit_overlay.html">
 {% csrf_token %}
 <div class="content">
     <div class="image-wrapperA">
         <div class="image-wrapperB">
-            <img class="image-big" src="{{imageOriginal.thumbnail.930x768}}"/>
+            <img class="image-big" src="{{image_original.thumbnail.930x768}}"/>
             <div class="image-wrapperC">
-                    {{ form.imageOriginal.label_tag }}
-                    {{ form.imageOriginal }}
-                    {{ form.imageOriginal.errors }}
+                    {{ form.image_original.label_tag }}
+                    {{ form.image_original }}
+                    {{ form.image_original.errors }}
             </div>  
         </div>
     </div>
@@ -29,9 +36,9 @@
             {{ form.title }}
         </div>
         <div>
-            {{ form.titleEnglish.errors }}
-            {{ form.titleEnglish.label_tag }}
-            {{ form.titleEnglish }}
+            {{ form.title_english.errors }}
+            {{ form.title_english.label_tag }}
+            {{ form.title_english }}
         </div>
         <div>
             {{ form.artists.errors }}
@@ -45,14 +52,14 @@
                 {{ form.date }}
             </div>
             <div class="input-small">
-                {{ form.dateYearFrom.errors }}
-                {{ form.dateYearFrom.label_tag }}
-                {{ form.dateYearFrom }}
+                {{ form.date_year_from.errors }}
+                {{ form.date_year_from.label_tag }}
+                {{ form.date_year_from }}
             </div>
             <div class="input-small">
-                {{ form.dateYearTo.errors }}
-                {{ form.dateYearTo.label_tag }}
-                {{ form.dateYearTo }}
+                {{ form.date_year_to.errors }}
+                {{ form.date_year_to.label_tag }}
+                {{ form.date_year_to }}
             </div>
         </div>
         <div>
@@ -66,9 +73,9 @@
             {{ form.dimensions }}
         </div>
         <div>
-            {{ form.locationOfCreation.errors }}
-            {{ form.locationOfCreation.label_tag }}
-            {{ form.locationOfCreation }}
+            {{ form.location_of_creation.errors }}
+            {{ form.location_of_creation.label_tag }}
+            {{ form.location_of_creation }}
         </div>
         <div>
             {{ form.keywords.errors }}
@@ -96,15 +103,12 @@
 $(document).ready(function() {
     var reader = new FileReader();
     reader.onload = function (e) {
-        console.log(e);
         $('.image-big').attr('src', e.target.result);
     }
    
     function readURL(input) {
         if (input.files && input.files[0]) {
             reader.readAsDataURL(input.files[0]);
-            console.log(input.files[0]);
-            console.lof("read");
         }
     }
     
