@@ -90,9 +90,15 @@ class Artwork(models.Model):
     def __str__(self):
         return self.title
 
-    def get_description(self):
+    def get_description(self, language):
         artists = ', '.join(artist.name for artist in self.artists.all())
-        parts = [artists, self.title, self.date]
+        title_in_language = ''
+        if language == 'en':
+            if self.title_english:
+                title_in_language = self.title_english
+        else:
+            title_in_language = self.title
+        parts = [artists, title_in_language, self.date]
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
 
@@ -102,7 +108,7 @@ def move_uploaded_image(sender, instance, created, **kwargs):
     """
     Move the uploaded image after an Artwork instance has been created.  
     """
-    imagefile = instance.imageOriginal
+    imagefile = instance.image_original
     old_name = imagefile.name
     relative_path = get_path_to_original_file(instance, old_name)
     absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)

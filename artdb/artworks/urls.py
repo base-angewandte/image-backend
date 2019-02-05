@@ -9,7 +9,8 @@ urlpatterns = [
     path('artwork/<int:id>/collect_overlay.html', artwork_collect, name='artwork_collect'),
     path('collection/<int:id>.html', collection, name='collection'),
     path('collections.html', collections_list, name='collections_list'),
-    path('collection/<int:id>.pptx', collection_download_as_pptx, name="download_pptx"),
+    path('collection/<int:id>_de.pptx', collection_download_as_pptx_de, name="download_pptx"),
+    path('collection/<int:id>_en.pptx', collection_download_as_pptx_en, name="download_pptx"),
     path('collection/<int:id>.json', collection_json, name='collection_json'),
     re_path(
         r'^artist-autocomplete/$',

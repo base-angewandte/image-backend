@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="21px" height="28px" viewBox="0 0 21 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>download_german_pptx_active</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-226.000000, -202.000000)">
+            <g id="download_german_pptx_active" transform="translate(226.000000, 202.000000)">
+                <g id="Group-4" stroke="#9C27B0" stroke-width="1.3">
+                    <g id="Group-8">
+                        <path d="M0.65,0.65 L0.65,27.35 L20.35,27.35 L20.35,6.27411705 L14.580288,0.65 L0.65,0.65 Z" id="Rectangle"></path>
+                        <polyline id="Path-2" points="14 1 14 7 20 7"></polyline>
+                    </g>
+                </g>
+                <text id="DE" font-family="SourceSansPro-Semibold, Source Sans Pro" font-size="13" font-weight="500" fill="#9C27B0">
+                    <tspan x="2.9795" y="24">DE</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

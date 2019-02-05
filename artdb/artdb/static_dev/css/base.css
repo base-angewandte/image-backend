@@ -851,24 +851,90 @@ and a close button */
     font-weight: 600 !important;
 }
 
-a.btn-download {
+#js-download-pptx {
     display: block;
     float: right;
-    height: 28px;
-    width: 25px;
-    margin: 10px 0px 10px 16px;
+    height: 48px;
+    min-width: 48px;
+    margin: 0px 0px 12px 0px;
     border: 0;
-    color: var(--base-color);
-    font-family: 'Source Sans Pro', sans-serif;
-    font-size: 16px;
-    background: url(download_pptx.svg) no-repeat center center;
+    box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out;
+    background-color: white;
 }
 
-a.btn-download:hover,
-a.btn-download:focus,
-a.btn-download:active {
-    background: url(download_pptx_active.svg) no-repeat center center;
+.btn-download-pptx {
+    background: white url(download_pptx.svg) no-repeat center center;
+    min-width: 48px;
+    height: 48px;
+    float: left;
 }
+
+#js-download-pptx a {
+    display: none;
+}
+
+#js-download-pptx.unfolding {
+    min-width: 144px;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out;
+}
+
+#js-download-pptx.unfolded {
+    min-width: 144px;
+    background-color: white;
+}
+
+#js-download-pptx.unfolded a,
+#js-download-pptx.unfolded div {
+    display: inline-block;
+    min-width: 48px;
+    height: 48px;
+    margin: 0px 0px 12px 0px;
+    line-height: 48px;
+    text-align: center;
+    text-decoration: none;
+    color: #000;
+    vertical-align: bottom;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 16px;
+    background-color: #fff;
+}
+
+#js-download-pptx.unfolded a:hover,
+#js-download-pptx.unfolded a:focus,
+#js-download-pptx.unfolded a:active {
+    color: var(--base-color);
+}
+
+.btn-download-pptx:hover,
+.btn-download-pptx:focus,
+.btn-download-pptx:active {
+    background: white url(download_pptx_active.svg) no-repeat center center;
+}
+
+.btn-download-pptx-german {
+    background: white url(download_pptx_german.svg) no-repeat center center;
+}
+
+.btn-download-pptx-german:hover,
+.btn-download-pptx-german:focus,
+.btn-download-pptx-german:active {
+    background: white url(download_pptx_german_active.svg) no-repeat center center;
+}
+
+.btn-download-pptx-english {
+    background: white url(download_pptx_english.svg) no-repeat center center;
+}
+
+.btn-download-pptx-english:hover,
+.btn-download-pptx-english:focus,
+.btn-download-pptx-english:active {
+    background: white url(download_pptx_english_active.svg) no-repeat center center;
+}
+
+
 
 /* collection list */
 

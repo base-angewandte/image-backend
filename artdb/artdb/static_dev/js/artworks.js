@@ -41,9 +41,7 @@ $(document).ready(function() {
     // ---------------------------------------------------------
     updateInspector = function(elInspector) {
         const url = selectedThumbnail.dataset.url;
-        console.log(url);
         const jsonUrl = url + '.json';
-        console.log(jsonUrl);
         $.getJSON(jsonUrl, function(data) {
             var elDetails = document.createElement('div');
             elDetails.appendChild(createEl('button', ['inspector-button', 'button-collect'], gettext('addtocollection'), url));
@@ -216,7 +214,6 @@ $(document).ready(function() {
         }
         $('#search-expert-fold').removeClass('unfolded')
         .one('transitionend', function() {
-            //$('#search-expert').addClass('hidden');
             $('#search-basic').removeClass('fadeout'); 
         });
     }
@@ -224,11 +221,22 @@ $(document).ready(function() {
     // search basic/expert switch
     $("#js-search-switch").click(function(e) {
         if ($(this).prop('checked')) {
-            console.log("switching to expert");
             showExpertSearch(true);
         } else {
-            console.log("switching to basic");
             showBasicSearch();
+        }
+    });
+
+    // powerpoint download select menu
+    $("#js-download-pptx").click(function(e) {
+        if ($(this).hasClass('unfolded')) {
+            $('#js-download-pptx').removeClass('unfolded');
+        } else {
+            $('#js-download-pptx').addClass('unfolding')
+            .one('transitionend', function() {
+                $('#js-download-pptx').removeClass('unfolding');
+                $('#js-download-pptx').addClass('unfolded');
+            });
         }
     });
     

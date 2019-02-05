@@ -211,11 +211,9 @@ def collection(request, id=None):
                 leftMember = ArtworkCollectionMembership.objects.get(id=request.POST['member-left'])
                 rightMember = ArtworkCollectionMembership.objects.get(id=request.POST['member-right'])
                 if (request.POST['action'] == 'connect'):
-                    print("connecting")
                     if leftMember.connect(rightMember):
                         return JsonResponse({'message': 'connected'})
                 if (request.POST['action'] == 'disconnect'):
-                    print("disconnecting")
                     if leftMember.disconnect(rightMember):
                         return JsonResponse({'message': 'disconnected'})
         else:
@@ -297,7 +295,15 @@ class KeywordAutocomplete(autocomplete.Select2QuerySetView):
             return Keyword.objects.none()
 
 
-def collection_download_as_pptx(request, id=None):
+def collection_download_as_pptx_en(request, id=None):
+    return collection_download_as_pptx(request, id, 'en')
+
+
+def collection_download_as_pptx_de(request, id=None):
+    return collection_download_as_pptx(request, id, 'de')
+
+
+def collection_download_as_pptx(request, id=None, language='de'):
     """
     Return a downloadable powerpoint presentation of the collection
     """
@@ -325,22 +331,22 @@ def collection_download_as_pptx(request, id=None):
         font.size = Pt(30)
 
     def add_slide_with_one_picture(artwork, padding):
-        img_path = artwork.imageOriginal.path
+        img_path = artwork.image_original.path
         slide = get_new_slide()
         add_picture_to_slide(slide, img_path, padding, 'center')
         width = prs.slide_width - (padding * 2)
-        add_description(slide, artwork.get_description(), width, padding)
+        add_description(slide, artwork.get_description(language), width, padding)
 
     def add_slide_with_two_pictures(artwork_left, artwork_right, padding):
-        img_path_left = artwork_left.imageOriginal.path        
-        img_path_right = artwork_right.imageOriginal.path
+        img_path_left = artwork_left.image_original.path        
+        img_path_right = artwork_right.image_original.path
         slide = get_new_slide()
         add_picture_to_slide(slide, img_path_left, padding, 'left')
         add_picture_to_slide(slide, img_path_right, padding, 'right')
         text_width = int((prs.slide_width - (padding * 2) - distance_between)/2)
-        add_description(slide, artwork_left.get_description(), text_width, padding)
+        add_description(slide, artwork_left.get_description(language), text_width, padding)
         left = padding + text_width + distance_between
-        add_description(slide, artwork_right.get_description(), text_width, left)
+        add_description(slide, artwork_right.get_description(language), text_width, left)
 
     def add_picture_to_slide(slide, img_path, padding, position):
         pic = slide.shapes.add_picture(img_path, 0, padding)
@@ -396,7 +402,7 @@ def collection_download_as_pptx(request, id=None):
     memberships = col.artworkcollectionmembership_set.all()
     connected_member = None
     for membership in memberships:
-        if membership.connectedWith:
+        if membership.connected_with:
             if not (connected_member):
                 connected_member = membership
             else:
@@ -404,19 +410,6 @@ def collection_download_as_pptx(request, id=None):
                 connected_member = None
         else:
             add_slide_with_one_picture(membership.artwork, padding)
-
-
-        # titles.append(membership.artwork.title)
-        # titles.append(membership.artwork.imageOriginal.path)
-        #img_path = membership.artwork.imageOriginal.path
-        # pic = slide.shapes.add_picture(img_path, 0, padding)
-
-    # title = slide.shapes.title
-    # subtitle = slide.placeholders[1]
-    # title.text = "Hello, World!"
-    # subtitle.text = "bla"
-    # subtitle.text = ''.join(titles)
-    # pic = slide.shapes.add_picture(img_path, 0, padding)
 
     output = BytesIO()
     prs.save(output)
