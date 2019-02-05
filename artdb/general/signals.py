@@ -1,5 +1,6 @@
-from django.db.models import Q
+from django.conf import settings
 from django.contrib.auth.models import Permission
+from django.db.models import Q
 from django.dispatch import receiver
 
 from django_cas_ng.signals import cas_user_authenticated
@@ -10,15 +11,21 @@ def process_user_attributes(sender, user, created, attributes, *args, **kwargs):
     if not user or not attributes:
         return
 
-    permissions = attributes.get('permissions')
-
-    # TODO
-    if permissions and 'edit_image' in permissions.split(','):
+    if user.username in settings.SUPERUSERS:
         user.is_staff = True
-        # p = Permission.objects.filter().exclude()
-        # user.user_permissions.set(p)
+        user.is_superuser = True
     else:
-        user.is_staff = False
-        # user.user_permissions.clear()
+        user.is_superuser = False
+
+        permissions = attributes.get('permissions')
+
+        # TODO
+        if permissions and 'edit_image' in permissions.split(','):
+            user.is_staff = True
+            # p = Permission.objects.filter().exclude()
+            # user.user_permissions.set(p)
+        else:
+            user.is_staff = False
+            # user.user_permissions.clear()
 
     user.save()

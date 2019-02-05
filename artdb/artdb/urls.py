@@ -15,7 +15,9 @@ Including another URLconf
 """
 import django_cas_ng.views
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
 from django.urls import path, include
+from django.utils.translation import gettext_lazy as _
 
 # adding this, so MEDIA dir can be served during development 
 from django.conf.urls.static import static
@@ -27,10 +29,15 @@ js_info_dict = {
     'packages': ('languages', )
 }
 
+admin.site.login = login_required(admin.site.login)
+admin.site.index_title = _('Image Editing')
+admin.site.site_header = _('Image Editing')
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', include('artworks.urls')),
-    path('admin/', include("massadmin.urls")),
+
+    path('editing/', admin.site.urls),
+    path('editing/', include('massadmin.urls')),
 
     path(r'accounts/login/', django_cas_ng.views.login, name='cas_ng_login'),
     path(r'accounts/logout/', django_cas_ng.views.logout, name='cas_ng_logout'),
