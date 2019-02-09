@@ -49,8 +49,8 @@ $(document).ready(function() {
                 elDetails.appendChild(createEl('button', ['inspector-button','button-edit'], gettext('Edit'), url));
             };
             if (selectedThumbnail.dataset.membershipid) {
-                elDetails.appendChild(createEl('button', ['inspector-button','button-move-left'], gettext('Move left'), url));
-                elDetails.appendChild(createEl('button', ['inspector-button','button-move-right'], gettext('Move right'), url));
+                elDetails.appendChild(createEl('button', ['inspector-button','button-move-left'], '', url));
+                elDetails.appendChild(createEl('button', ['inspector-button','button-move-right'], '', url));
             };
             // build all the elements and append them to the DOM 
             $.each( data, function( key, val ) {
@@ -84,6 +84,14 @@ $(document).ready(function() {
                         elEntry.appendChild(elKey);
                         elVal = createEl('div', ['value','tag'], val.name);
                         elVal.dataset.location_of_creation = val.name;
+                        elEntry.appendChild(elVal);
+                        break;
+                    case 'location_current':
+                        if (val.length === 0) break;
+                        elKey = createEl('div', ['key'], gettext('location_current'));
+                        elEntry.appendChild(elKey);
+                        elVal = createEl('div', ['value','tag'], val.name);
+                        elVal.dataset.location_current = val.name;
                         elEntry.appendChild(elVal);
                         break;
                     default:
@@ -315,6 +323,10 @@ $(document).ready(function() {
             if (e.target.dataset.location_of_creation) {
                 var location_of_creation = encodeURIComponent(e.target.dataset.location_of_creation.trim());
                 url += `location_of_creation=${location_of_creation}`;
+            }
+            if (e.target.dataset.location_current) {
+                var location_current = encodeURIComponent(e.target.dataset.location_current.trim());
+                url += `location_current=${location_current}`;
             }
             window.location.href = url;
         } else if ($(e.target).hasClass('button-collect')) {

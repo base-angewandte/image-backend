@@ -14,7 +14,11 @@ when she clicks the EDIT button in the inspector
 <div class="content">
     <div class="image-wrapperA">
         <div class="image-wrapperB">
+            {% if image_original %}
             <img class="image-big" src="{{image_original.thumbnail.930x768}}"/>
+            {% else %}
+            <img class="image-big" src=""/>
+            {% endif %}
             <div class="image-wrapperC">
                     {{ form.image_original.label_tag }}
                     {{ form.image_original }}
@@ -76,6 +80,11 @@ when she clicks the EDIT button in the inspector
             {{ form.location_of_creation.errors }}
             {{ form.location_of_creation.label_tag }}
             {{ form.location_of_creation }}
+        </div>
+        <div>
+            {{ form.location_current.errors }}
+            {{ form.location_current.label_tag }}
+            {{ form.location_current }}
         </div>
         <div>
             {{ form.keywords.errors }}

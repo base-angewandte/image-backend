@@ -128,22 +128,13 @@
 
 .sidebar-attached .inspector-button.confirm {
     margin-left: 16px !important;
-    background-color: var(--primary-button-color);
+    background-color: var(--base-color);
 }
 
 .sidebar-attached .inspector-button.confirm:hover {
     margin-left: 16px !important;
-    background-color: var(--base-color);
+    background-color: var(--base-second-color);
 }
-
-.sidebar-attached .inspector-button.cancel {
-    background-color: var(--mid-grey-3-color);
-}
-
-.sidebar-attached .inspector-button.cancel:hover {
-    background-color: var(--base-color);
-}
-
 
 .sidebar-attached .select2-selection__clear {
     display: inline-block;
@@ -206,7 +197,7 @@
 	z-index: -1;
 }
 
-#edit-overlay label[for="id_imageOriginal"] {
+#edit-overlay label[for="id_image_original"] {
     font-size: 25px;
     font-weight: 400;
     min-width: 220px;

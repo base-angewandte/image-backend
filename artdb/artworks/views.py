@@ -34,6 +34,7 @@ def artworks_list(request):
     query_date_from = request.GET.get('date_from')
     query_date_to = request.GET.get('date_to')
     query_location_of_creation = request.GET.get('location_of_creation')
+    query_location_current = request.GET.get('location_current')
     qObjects = Q()
     context = {}
     expertSearch = False
@@ -44,6 +45,8 @@ def artworks_list(request):
             qObjects.add(Q(title__icontains=query_artwork_title), Q.AND)
         if query_location_of_creation:
             qObjects.add(Q(location_of_creation__name__icontains=query_location_of_creation), Q.AND)
+        if query_location_current:
+            qObjects.add(Q(location_current__name__icontains=query_location_current), Q.AND)
         if query_date_from:
             qObjects.add(Q(dateYearFrom__gte=int(query_date_from)), Q.AND)
         if query_date_to:
@@ -84,6 +87,7 @@ def artworks_list(request):
     context['query_date_from'] = query_date_from
     context['query_date_to'] = query_date_to
     context['query_location_of_creation'] = query_location_of_creation
+    context['query_location_current'] = query_location_current
     context['expert_search'] = expertSearch
     return render(request, 'artwork/thumbnailbrowser.html', context)
 

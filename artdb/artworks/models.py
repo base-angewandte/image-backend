@@ -84,8 +84,10 @@ class Artwork(models.Model):
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True, null=True)
     keywords = models.ManyToManyField(Keyword, blank=True)
-    location_of_creation = TreeForeignKey(Location, blank=True, null=True, on_delete=models.SET_NULL)
+    location_of_creation = TreeForeignKey(Location, blank=True, null=True, on_delete=models.SET_NULL, related_name='artworks_created_here')
+    location_current = TreeForeignKey(Location, blank=True, null=True, on_delete=models.SET_NULL, related_name='artworks_currently_located_here')
     checked = models.BooleanField(default=False)
+    published = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
