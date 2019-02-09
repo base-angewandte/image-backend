@@ -28,18 +28,7 @@ class ArtworkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Artwork
-        fields = ('title', 'title_english', 'artists', 'location_of_creation', 'location_current', 'date', 'material', 'dimensions', 'keywords', 'credits')
-
-
-# TODO: delete? needed?
-#class ArtworkSerializerGerman(serializers.ModelSerializer):
-#    artists = ArtistSerializer(read_only=True, many=True)
-#    keywords = KeywordSerializer(read_only=True, many=True)
-#    location_of_creation = LocationSerializer(read_only=True, many=False)
-#
-#    class Meta:
-#        model = Artwork
-#        fields = ('title', 'titleEnglish', 'artists', 'location_of_creation', 'date', 'material', 'dimensions', 'keywords', 'credits')
+        fields = ('title', 'title_english', 'artists', 'location_of_creation', 'location_current', 'date', 'material', 'dimensions', 'keywords', 'credits', 'checked','published')
 
 
 class ThumbnailSerializer(serializers.ModelSerializer):

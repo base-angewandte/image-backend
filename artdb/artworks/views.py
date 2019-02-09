@@ -68,7 +68,7 @@ def artworks_list(request):
                 keywords = Keyword.objects.filter(name__icontains=term)
                 qObjects.add(Q(keywords__in=keywords), Q.OR)
 
-    querysetList = Artwork.objects.filter(qObjects).distinct().order_by('title')
+    querysetList = Artwork.objects.filter(qObjects).exclude(published=False).distinct().order_by('title')
 
     paginator = Paginator(querysetList, 40) # show 40 artworks per page
     pageNr = request.GET.get('page')
