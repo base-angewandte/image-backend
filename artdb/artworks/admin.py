@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from mptt.admin import MPTTModelAdmin
 from artworks.models import *
 from artworks.forms import ArtworkForm, ArtworkAdminForm
@@ -16,14 +17,20 @@ class ArtworkCollectionMembershipInline(OrderedTabularInline):
 
 class ArtworkAdmin(admin.ModelAdmin):
     form = ArtworkAdminForm
-    readonly_fields = ('created_at','updated_at')
     list_display = ('title', 'created_at', 'updated_at')
     ordering = ('-created_at',)
     search_fields = ['title']
-    # inlines = (ArtworkCollectionMembershipInline,)
+    fields = ('published', 'checked', 'thumbnail_image', 'image_original', 'title', 'title_english', 'artists', 'date', 'date_year_from', 'date_year_to', 'material', 'dimensions', 'credits', 'keywords', 'location_of_creation', 'location_current', 'created_at', 'updated_at',)
+    readonly_fields = ('created_at','updated_at', 'thumbnail_image')
 
     class Media:
         js = ['js/artwork_form.js']
+
+    def thumbnail_image(self, obj):
+        if obj.image_original:
+            return format_html('<img src="{url}" />'.format(url = obj.image_original.thumbnail['180x180']))
+        else:
+            return format_html('none')
 
 
 class ArtworkCollectionAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
@@ -54,5 +61,3 @@ admin.site.register(Artist, ArtistAdmin)
 admin.site.register(Artwork, ArtworkAdmin)
 admin.site.register(Keyword, KeywordAdmin)
 admin.site.register(Location, LocationAdmin)
-
-
