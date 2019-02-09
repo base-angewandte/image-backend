@@ -75,7 +75,7 @@ class Artwork(models.Model):
     title = models.CharField(max_length=255, blank=True)
     title_english = models.CharField(max_length=255, blank=True)
     artists = models.ManyToManyField(Artist, blank=True)
-    date = models.CharField(max_length=319, blank=True, help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende 14. Jh., 5.3.1799, um 1700')
+    date = models.CharField(max_length=319, blank=True, help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende/Anfang 14. Jh., 5.3.1799, ca./um/vor/nach 1700')
     date_year_from = models.IntegerField(null=True, blank=True)
     date_year_to = models.IntegerField(null=True, blank=True)
     material = models.TextField(null=True, blank=True)
