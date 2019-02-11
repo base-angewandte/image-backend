@@ -257,9 +257,10 @@ and a close button */
     display: block;
 }
 
-#detail-overlay .image-big.picture-missing {
-    width: 512px;
-    height: 512px;
+#detail-overlay .image-big.picture-missing,
+#edit-overlay .image-big.picture-missing {
+    width: 590px;
+    height: 590px;
     background-color: #E8E8E8;
 }
 
