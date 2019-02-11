@@ -257,6 +257,12 @@ and a close button */
     display: block;
 }
 
+#detail-overlay .image-big.picture-missing {
+    width: 512px;
+    height: 512px;
+    background-color: #E8E8E8;
+}
+
 /* edit-overlay */
 #edit-overlay form {
     display: table-row;

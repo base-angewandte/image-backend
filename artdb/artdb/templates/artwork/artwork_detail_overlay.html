@@ -8,7 +8,11 @@ when she double-clicks a specific artwork
 {% endcomment %}
 
 <div class="content">
-    <img class="image-big" src="{{artwork.image_original.thumbnail.930x768}}"/>
+    {% if not artwork.image_original %}
+        <div class="image-big picture-missing"></div>
+    {% else %}
+        <img class="image-big" src="{{artwork.image_original.thumbnail.930x768}}"/>
+    {% endif %}
     <button name="close" class="button-close" id="hideDetailOverlay" onClick="hideImageAndOverlay()"></button>
 </div>
 

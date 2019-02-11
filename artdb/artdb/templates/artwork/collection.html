@@ -78,7 +78,7 @@ $(document).ready(function() {
         change: function(event, ui) {
             let id = ui.item.value;
             if (id) {
-                window.location = `{${mainPath}}/collection/${id}.html`;
+                window.location = `${mainPath}/collection/${id}.html`;
             } else {
                 window.location = '{% url "collections_list" %}';
             }
@@ -103,7 +103,6 @@ $(document).ready(function() {
             },
             success: function(message) {
                 updateSlides();
-                console.log('disconnecting');
             },
             error: function(error) {
                 console.log(error);
@@ -157,10 +156,16 @@ $(document).ready(function() {
                 divThumbnail.dataset.membershipid = member.id;
                 var divCenter = document.createElement('div');
                 divCenter.classList.add('vertically-center');
-                var elImage =  document.createElement('img');
-                elImage.classList.add('picture-thumbnail');
-                elImage.src = member.artwork.image_original.thumbnail;
-                divCenter.appendChild(elImage);
+                if (member.artwork.image_original.thumbnail !== undefined) {
+                    var elImage =  document.createElement('img');
+                    elImage.classList.add('picture-thumbnail');
+                    elImage.src = member.artwork.image_original.thumbnail;
+                    divCenter.appendChild(elImage);
+                } else {
+                    var elDivNoImage = document.createElement('div');
+                    elDivNoImage.classList.add('picture-thumbnail', 'picture-thumbnail-missing');
+                    divCenter.appendChild(elDivNoImage);
+                }
                 divThumbnail.appendChild(divCenter);
                 var divTitle = document.createElement('div');
                 divTitle.classList.add('thumbnail-title');
