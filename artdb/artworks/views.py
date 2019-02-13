@@ -135,10 +135,10 @@ def artwork_edit(request, id):
             # TODO: reload/close? scroll to thumbnail
             # TODO!!!
             # return redirect('image', id=artwork.id)
-            return HttpResponse("<script>history.back();</script>")
+            return HttpResponse("<script>history.go(-1);</script>")
     return render(request, 'artwork/artwork_edit_overlay.html', context)
 
-
+    
 @login_required
 def artwork_collect(request, id):
     """

@@ -67,19 +67,15 @@ $(document).ready(function() {
         if (matchedParts) {
             var from, to;
             if (preposition === 'Anfang') {
-                console.log('1');
                 from = ((matchedParts[1]-1)*100)+1;
                 to = from + 15;
             } else if (preposition === 'Ende') {
-                console.log('2');
                 to = ((matchedParts[1]-1)*100)+100;
                 from = to - 15;
             } else if (matchedParts[3]) {
-                console.log('3');
                 from = ((matchedParts[1]-1)*100)+1;
                 to = (matchedParts[3]*100);
             } else {
-                console.log('4');
                 from = ((matchedParts[1]-1)*100)+1;
                 to = from + 99;
             }

@@ -218,6 +218,10 @@
     background-color: red;
 }
 
+#edit-overlay .content {
+    min-width: calc(1280px - var(--edit-overlay-formwidth));
+}
+
 #edit-overlay .image-big {
     max-height: 590px;
     max-width: 590px;

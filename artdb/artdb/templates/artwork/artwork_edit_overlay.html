@@ -31,7 +31,7 @@ when she clicks the EDIT button in the inspector
 
 <div class="sidebar-attached">
     <div class="confirmationarea">
-        <button name="cancel" class="inspector-button cancel js-close-edit-overlay" onclick="hideImageAndOverlay(); return false;">{% trans 'Cancel' %}</button><button class="inspector-button confirm" type="submit">{% trans 'Save' %}</button>
+        <button name="cancel" class="inspector-button cancel js-close-edit-overlay" onclick="hideImageAndOverlay(); return false;">{% trans 'Cancel' %}</button><button class="inspector-button confirm" type="submit" onclick="location.reload()">{% trans 'Save' %}</button>
     </div>
     {% spaceless %}
     <div class="metadataarea">
@@ -134,6 +134,8 @@ $(document).ready(function() {
     $('.imageselector').change(function() {
         readURL(this);
     });
+
+    hideAndReload
 });
 </script>
 <script src="{% static 'js/artwork_form.js' %}"></script>

@@ -125,6 +125,11 @@ $(document).ready(function() {
         closeOverlay();
     };  
 
+    hideAndReload = function() {
+        hideImageAndOverlay();
+        location.reload();
+    }
+
     // copy the content from one inspector to another
     // this avoids unnecessary reloads
     function copyInspectorDetails(elNewInspector) {
@@ -136,7 +141,9 @@ $(document).ready(function() {
     // hide the overlay
     function closeOverlay() {
         var elNewInspector = document.getElementById('thumbnailbrowser-inspector');
-        copyInspectorDetails(elNewInspector);
+        if (elNewInspector) {
+            copyInspectorDetails(elNewInspector);
+        }
         document.body.className = thumbnailClassName;
         window.scrollTo(0,thumbnailbrowserScrollPosition);
     }
