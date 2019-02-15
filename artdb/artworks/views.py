@@ -80,7 +80,7 @@ def artworks_list(request):
             def get_keywords(term):
                 return Keyword.objects.filter(Q(name__istartswith=term) | Q(name__istartswith=' ' + term))
 
-            querysetList = Artwork.objects.annotate(
+            querysetList = (Artwork.objects.annotate(
                 rank=Case(
                     When(reduce(operator.or_, (Q(title__istartswith=term) for term in terms)), then=Value(2)),
                     When(reduce(operator.or_, (Q(title__icontains=' ' + term) for term in terms)), then=Value(3)),
@@ -90,15 +90,11 @@ def artworks_list(request):
                     When(reduce(operator.or_, (Q(keywords__in=get_keywords(term)) for term in terms)), then=Value(5)),
                     default=Value(99),
                     output_field=IntegerField(),
-                )
-            ).exclude(
-                rank=99,
-                published=False
-            ).distinct(
-                'id', 'rank', 'title'
-            ).order_by(
-                'rank','title'
-            )
+                ))
+                .exclude(rank=99)
+                .exclude(published=False)
+                .distinct('id', 'rank', 'title')
+                .order_by('rank','title'))
         else:
             querysetList = Artwork.objects.all()
 
