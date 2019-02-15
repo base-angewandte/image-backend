@@ -30,6 +30,11 @@
     box-sizing: border-box;
 }
 
+body::after{
+    position:absolute; width:0; height:0; overflow:hidden; z-index:-1;
+    content:url(close_button_active.svg) url(download_pptx_active.svg) url(download_pptx_german_active.svg) url(download_pptx_english_active.svg) url(arrow_right_active.svg) url(arrow_left_active.svg);
+}
+
 input:focus,
 select:focus,
 textarea:focus,
@@ -182,6 +187,11 @@ and a close button */
     width: 18px;
     height: 18px;
     border: 0;
+}
+
+.overlay .button-close:hover,
+.overlay .button-close:active {
+    background-image: url(close_button_active.svg);
 }
 
 .overlay .button-close.fixed {
