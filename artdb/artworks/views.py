@@ -1,9 +1,11 @@
 from datetime import datetime
 from io import BytesIO
+from functools import reduce
+import operator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q, ExpressionWrapper, BooleanField
+from django.db.models import Q, ExpressionWrapper, BooleanField, Case, Value, IntegerField, When
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, permission_required
@@ -35,40 +37,70 @@ def artworks_list(request):
     query_date_to = request.GET.get('date_to')
     query_location_of_creation = request.GET.get('location_of_creation')
     query_location_current = request.GET.get('location_current')
-    qObjects = Q()
+    q_objects = Q()
     context = {}
     expertSearch = False
 
     if query_search_type == 'expert':
         expertSearch = True
-        if query_artwork_title:
-            qObjects.add(Q(title__icontains=query_artwork_title), Q.AND)
+        querysetList = Artwork.objects.all()
         if query_location_of_creation:
-            qObjects.add(Q(location_of_creation__name__icontains=query_location_of_creation), Q.AND)
+            q_objects.add(Q(location_of_creation__name__icontains=query_location_of_creation), Q.AND)
         if query_location_current:
-            qObjects.add(Q(location_current__name__icontains=query_location_current), Q.AND)
+            q_objects.add(Q(location_current__name__icontains=query_location_current), Q.AND)
         if query_date_from:
-            qObjects.add(Q(dateYearFrom__gte=int(query_date_from)), Q.AND)
+            q_objects.add(Q(dateYearFrom__gte=int(query_date_from)), Q.AND)
         if query_date_to:
-            qObjects.add(Q(dateYearTo__lte=int(query_date_to)), Q.AND)
+            q_objects.add(Q(dateYearTo__lte=int(query_date_to)), Q.AND)
         if query_artist_name:
             artists = Artist.objects.filter(name__icontains=query_artist_name)
-            qObjects.add(Q(artists__in=artists), Q.AND)
+            q_objects.add(Q(artists__in=artists), Q.AND)
         if query_keyword:
             keywords = Keyword.objects.filter(name__icontains=query_keyword)
-            qObjects.add(Q(keywords__in=keywords), Q.AND)
+            q_objects.add(Q(keywords__in=keywords), Q.AND)
+
+        if query_artwork_title:
+            # order results by startswith match. see: https://stackoverflow.com/a/48409962
+            querysetList = querysetList.filter(title__icontains=query_artwork_title)
+            expression = Q(title__startswith=query_artwork_title)
+            is_match = ExpressionWrapper(expression, output_field=BooleanField())
+            querysetList = querysetList.annotate(myfield=is_match)
+
+        querysetList = (querysetList.filter(q_objects)
+                .exclude(published=False)
+                .order_by('title', 'location_of_creation')
+                .distinct())
     else:
         if query_search:
             terms = [term.strip() for term in query_search.split()]
-            for term in terms:
-                qObjects.add(Q(title__icontains=term), Q.OR)
-                artists = Artist.objects.filter(name__icontains=term)
-                qObjects.add(Q(artists__in=artists), Q.OR)
-                qObjects.add(Q(location_of_creation__name__icontains=term), Q.OR)
-                keywords = Keyword.objects.filter(name__icontains=term)
-                qObjects.add(Q(keywords__in=keywords), Q.OR)
 
-    querysetList = Artwork.objects.filter(qObjects).exclude(published=False).distinct().order_by('title')
+            def get_artists(term):
+                return Artist.objects.filter(Q(name__istartswith=term) | Q(name__icontains=' ' + term))
+
+            def get_keywords(term):
+                return Keyword.objects.filter(Q(name__istartswith=term) | Q(name__istartswith=' ' + term))
+
+            querysetList = Artwork.objects.annotate(
+                rank=Case(
+                    When(reduce(operator.or_, (Q(title__istartswith=term) for term in terms)), then=Value(2)),
+                    When(reduce(operator.or_, (Q(title__icontains=' ' + term) for term in terms)), then=Value(3)),
+                    When(reduce(operator.or_, (Q(title__icontains=term) for term in terms)), then=Value(6)),
+                    When(reduce(operator.or_, (Q(artists__in=get_artists(term)) for term in terms)), then=Value(1)),
+                    When(reduce(operator.or_, (Q(location_of_creation__name__istartswith=term) for term in terms)), then=Value(4)),
+                    When(reduce(operator.or_, (Q(keywords__in=get_keywords(term)) for term in terms)), then=Value(5)),
+                    default=Value(99),
+                    output_field=IntegerField(),
+                )
+            ).exclude(
+                rank=99,
+                published=False
+            ).distinct(
+                'id', 'rank', 'title'
+            ).order_by(
+                'rank','title'
+            )
+        else:
+            querysetList = Artwork.objects.all()
 
     paginator = Paginator(querysetList, 40) # show 40 artworks per page
     pageNr = request.GET.get('page')
@@ -271,9 +303,8 @@ class ArtworkAutocomplete(autocomplete.Select2QuerySetView):
         qs = Artwork.objects.all()
         if self.q:
             qs = qs.filter(title__icontains=self.q).order_by('title')
-            # order results by startswith match
-            # see: https://stackoverflow.com/questions/11622501
-            expression = Q(title__startswith=self.q)
+            # order results by startswith match. see: https://stackoverflow.com/a/48409962
+            expression = Q(title__istartswith=self.q) | Q(title__icontains=' ' + self.q)
             is_match = ExpressionWrapper(expression, output_field=BooleanField())
             qs = qs.annotate(myfield=is_match)
             qs = qs.order_by('-myfield')[:4]
