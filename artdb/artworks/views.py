@@ -56,7 +56,8 @@ def artworks_list(request):
             q_objects.add(Q(dateYearTo__lte=int(query_date_to)), Q.AND)
         if query_artist_name:
             artists = Artist.objects.filter(name__icontains=query_artist_name)
-            q_objects.add(Q(artists__in=artists), Q.AND)
+            synonyms = Artist.objects.filter(synonyms__icontains=query_artist_name)
+            q_objects.add((Q(artists__in=artists) | Q(artists__in=synonyms)), Q.AND)
         if query_keyword:
             keywords = Keyword.objects.filter(name__icontains=query_keyword)
             q_objects.add(Q(keywords__in=keywords), Q.AND)

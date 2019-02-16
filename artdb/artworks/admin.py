@@ -17,7 +17,7 @@ class ArtworkCollectionMembershipInline(OrderedTabularInline):
 
 class ArtworkAdmin(admin.ModelAdmin):
     form = ArtworkAdminForm
-    list_display = ('title', 'created_at', 'updated_at')
+    list_display = ('title', 'checked', 'published', 'created_at', 'updated_at')
     ordering = ('-created_at',)
     search_fields = ['title']
     fields = ('published', 'checked', 'thumbnail_image', 'image_original', 'title', 'title_english', 'artists', 'date', 'date_year_from', 'date_year_to', 'material', 'dimensions', 'credits', 'keywords', 'location_of_creation', 'location_current', 'created_at', 'updated_at',)
