@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.forms import TextInput, Textarea
 from mptt.admin import MPTTModelAdmin
 from artworks.models import *
 from artworks.forms import ArtworkForm, ArtworkAdminForm
 from ordered_model.admin import OrderedTabularInline, OrderedInlineModelAdminMixin
-
 
 class ArtworkCollectionMembershipInline(OrderedTabularInline):
     model = ArtworkCollectionMembership
@@ -20,8 +20,13 @@ class ArtworkAdmin(admin.ModelAdmin):
     list_display = ('title', 'checked', 'published', 'created_at', 'updated_at')
     ordering = ('-created_at',)
     search_fields = ['title']
-    fields = ('published', 'checked', 'thumbnail_image', 'image_original', 'title', 'title_english', 'artists', 'date', 'date_year_from', 'date_year_to', 'material', 'dimensions', 'credits', 'keywords', 'location_of_creation', 'location_current', 'created_at', 'updated_at',)
+    fields = ('published', 'checked', 'thumbnail_image', 'image_original', 'title', 'title_english', 'artists', 'date', 'date_year_from', 'date_year_to', 'material', 'dimensions', 'credits', 'keywords', 'location_of_creation', 'location_current', 'created_at', 'updated_at')
     readonly_fields = ('created_at','updated_at', 'thumbnail_image')
+    formfield_overrides = {
+        models.CharField: {'widget': TextInput(attrs={'size':'80'})},
+        models.TextField: {'widget': Textarea(attrs={'rows':2, 'cols':80})},
+    }
+    list_filter = ('published', 'checked', 'created_at', 'updated_at')
 
     class Media:
         js = ['js/artwork_form.js']
@@ -46,6 +51,7 @@ class ArtistAdmin(admin.ModelAdmin):
     list_display = ('name', 'created_at', 'updated_at')
     ordering = ('-created_at',)
     search_fields = ['name',]
+    list_filter = ('created_at', 'updated_at')
 
 
 class KeywordAdmin(MPTTModelAdmin):

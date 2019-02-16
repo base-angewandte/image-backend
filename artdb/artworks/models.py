@@ -7,6 +7,8 @@ from django.conf import settings
 from versatileimagefield.fields import VersatileImageField
 from mptt.models import MPTTModel, TreeForeignKey
 from ordered_model.models import OrderedModel
+
+
 class Artist(models.Model):
     """
     One Artist can be the maker of 0-n artworks.

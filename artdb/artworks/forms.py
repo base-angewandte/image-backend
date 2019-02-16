@@ -4,7 +4,7 @@ from django.forms import ModelMultipleChoiceField
 from django.utils.encoding import smart_text
 from django.utils.translation import ugettext_lazy as _
 from dal import autocomplete
-from artworks.models import Artwork, Keyword
+from artworks.models import Artwork, Artist, Keyword
 # https://gist.github.com/tdsymonds/abdcb395f172a016ed785f59043749e3
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
@@ -45,6 +45,12 @@ class ArtworkAdminForm(forms.ModelForm):
     keywords = MPTTMultipleChoiceField(
         Keyword.objects.all(), 
         widget=FilteredSelectMultiple('Keywords', False),
+        required=False
+    )
+
+    artists = MPTTMultipleChoiceField(
+        Artist.objects.all(), 
+        widget=FilteredSelectMultiple('Artists', False),
         required=False
     )
 
