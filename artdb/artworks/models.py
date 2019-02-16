@@ -1,12 +1,12 @@
 import os
 from django.db import models
+from django.db.models.functions import Upper
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.conf import settings
 from versatileimagefield.fields import VersatileImageField
 from mptt.models import MPTTModel, TreeForeignKey
 from ordered_model.models import OrderedModel
-
 class Artist(models.Model):
     """
     One Artist can be the maker of 0-n artworks.
@@ -103,6 +103,9 @@ class Artwork(models.Model):
         parts = [artists, title_in_language, self.date]
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
+
+    class Meta:
+        ordering = [Upper('title'), ]
 
 
 @receiver(models.signals.post_save, sender=Artwork)

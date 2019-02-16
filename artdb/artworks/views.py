@@ -12,16 +12,18 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify
+from django.db.models.functions import Upper
 from dal import autocomplete
 from rest_framework.response import Response
-from artworks.models import *
-from artworks.forms import *
-from artworks.serializers import ArtworkSerializer, CollectionSerializer
 from pptx import Presentation
 from pptx.dml.color import RGBColor 
 from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.util import Pt
+from artworks.models import *
+from artworks.forms import *
+from artworks.serializers import ArtworkSerializer, CollectionSerializer
+
 
 @login_required
 def artworks_list(request):
@@ -43,7 +45,7 @@ def artworks_list(request):
 
     if query_search_type == 'expert':
         expertSearch = True
-        querysetList = Artwork.objects.all()
+        querysetList = Artwork.objects.filter(published=True)
         if query_location_of_creation:
             q_objects.add(Q(location_of_creation__name__icontains=query_location_of_creation), Q.AND)
         if query_location_current:
@@ -67,7 +69,6 @@ def artworks_list(request):
             querysetList = querysetList.annotate(myfield=is_match)
 
         querysetList = (querysetList.filter(q_objects)
-                .exclude(published=False)
                 .order_by('title', 'location_of_creation')
                 .distinct())
     else:
@@ -91,12 +92,15 @@ def artworks_list(request):
                     default=Value(99),
                     output_field=IntegerField(),
                 ))
+                .filter(published=True)
                 .exclude(rank=99)
-                .exclude(published=False)
-                .distinct('id', 'rank', 'title')
-                .order_by('rank','title'))
+                .distinct('id', 'rank', 'title',)
+                .order_by('rank', 'title',))
         else:
-            querysetList = Artwork.objects.all()
+            # what the user gets, when she isn't using the search at all
+            querysetList = (Artwork.objects
+                .filter(published=True)
+                .order_by('-updated_at'))
 
     paginator = Paginator(querysetList, 40) # show 40 artworks per page
     pageNr = request.GET.get('page')
@@ -163,7 +167,7 @@ def artwork_edit(request, id):
             # TODO: reload/close? scroll to thumbnail
             # TODO!!!
             # return redirect('image', id=artwork.id)
-            return HttpResponse("<script>history.go(-1);</script>")
+            return HttpResponse("<script>window.location=document.referrer;</script>")
     return render(request, 'artwork/artwork_edit_overlay.html', context)
 
     
