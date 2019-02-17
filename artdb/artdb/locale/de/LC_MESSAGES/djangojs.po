@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-24 23:09+0100\n"
+"POT-Creation-Date: 2019-02-17 15:35+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,43 +18,48 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: artdb/static_dev/js/artworks.js:46
+#: artdb/static_dev/js/artworks.js:47
 msgid "addtocollection"
-msgstr "Merken"
+msgstr "In Arbeitsmappe hinzufügen"
 
-#: artdb/static_dev/js/artworks.js:48
+#: artdb/static_dev/js/artworks.js:49
 msgid "Edit"
 msgstr "Editieren"
 
-#: artdb/static_dev/js/artworks.js:51
-msgid "Move left"
-msgstr "<"
-
-#: artdb/static_dev/js/artworks.js:52
-msgid "Move right"
-msgstr ">"
-
-#: artdb/static_dev/js/artworks.js:62
+#: artdb/static_dev/js/artworks.js:63
 msgid "Artist"
-msgstr "Künstler"
+msgstr "Künstler_in"
 
-#: artdb/static_dev/js/artworks.js:72
+#: artdb/static_dev/js/artworks.js:73
 msgid "Keywords"
 msgstr "Schlagworte"
 
-#: artdb/static_dev/js/artworks.js:82
-msgid "Location"
-msgstr "Erstellungsort"
+#: artdb/static_dev/js/artworks.js:83
+msgid "location_of_creation"
+msgstr "Entstehungsort"
+
+#: artdb/static_dev/js/artworks.js:91
+msgid "location_current"
+msgstr "Standort"
 
 # manually added translations
 msgid "credits"
-msgstr "Quelle"
+msgstr "Abbildungsnachweis"
 
 msgid "date"
-msgstr "Erstellungsdatum"
+msgstr "Datierung"
 
 msgid "dimensions"
-msgstr "Dimensionen"
+msgstr "Format"
 
 msgid "checked"
 msgstr "überprüft"
+
+msgid "not published"
+msgstr "nicht veröffentlicht"
+
+msgid "material"
+msgstr "Material/Technik"
+
+msgid "description"
+msgstr "Anmerkungen"

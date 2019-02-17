@@ -367,7 +367,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
         slide = get_new_slide()
         add_picture_to_slide(slide, img_path, padding, 'center')
         width = prs.slide_width - (padding * 2)
-        add_description(slide, artwork.get_description(language), width, padding)
+        add_description(slide, artwork.get_short_description(language), width, padding)
 
     def add_slide_with_two_pictures(artwork_left, artwork_right, padding):
         img_path_left = artwork_left.image_original.path        
@@ -376,9 +376,9 @@ def collection_download_as_pptx(request, id=None, language='de'):
         add_picture_to_slide(slide, img_path_left, padding, 'left')
         add_picture_to_slide(slide, img_path_right, padding, 'right')
         text_width = int((prs.slide_width - (padding * 2) - distance_between)/2)
-        add_description(slide, artwork_left.get_description(language), text_width, padding)
+        add_description(slide, artwork_left.get_short_description(language), text_width, padding)
         left = padding + text_width + distance_between
-        add_description(slide, artwork_right.get_description(language), text_width, left)
+        add_description(slide, artwork_right.get_short_description(language), text_width, left)
 
     def add_picture_to_slide(slide, img_path, padding, position):
         pic = slide.shapes.add_picture(img_path, 0, padding)

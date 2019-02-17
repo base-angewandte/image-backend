@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-28 14:15+0100\n"
+"POT-Creation-Date: 2019-02-17 15:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: artdb/settings.py:253
+#: artdb/settings.py:252
 msgid "German"
 msgstr ""
 
-#: artdb/settings.py:254
+#: artdb/settings.py:253
 msgid "English"
 msgstr ""
 
@@ -30,91 +30,113 @@ msgstr ""
 msgid "Image Editing"
 msgstr ""
 
-#: artdb/templates/artwork/artwork_collect_overlay.html:26
+#: artdb/templates/artwork/artwork_collect_overlay.html:33
 msgid "NoCollections"
 msgstr "There are no collections yet."
 
-#: artdb/templates/artwork/artwork_detail_overlay.html:11
+#: artdb/templates/artwork/artwork_detail_overlay.html:22
 msgid "Collect"
-msgstr ""
+msgstr "Add to Folder"
 
-#: artdb/templates/artwork/artwork_detail_overlay.html:11
+#: artdb/templates/artwork/artwork_detail_overlay.html:22
 msgid "Edit"
 msgstr ""
 
-#: artdb/templates/artwork/artwork_edit_overlay.html:22
+#: artdb/templates/artwork/artwork_edit_overlay.html:34
 msgid "Cancel"
 msgstr ""
 
-#: artdb/templates/artwork/artwork_edit_overlay.html:22
+#: artdb/templates/artwork/artwork_edit_overlay.html:34
 msgid "Save"
 msgstr ""
 
-#: artdb/templates/artwork/artwork_thumbnails.html:24
-#: artdb/templates/artwork/artwork_thumbnails_orderable.html:6
+#: artdb/templates/artwork/artwork_thumbnails.html:31
+#: artdb/templates/artwork/collection.html:61
 msgid "NoArtworks"
-msgstr "No Artworks found."
+msgstr "No artworks found."
 
-#: artdb/templates/artwork/collection.html:10
-#: artdb/templates/artwork/collections_list.html:11
-#: artdb/templates/artwork/thumbnailbrowser.html:9
+#: artdb/templates/artwork/collection.html:19
+#: artdb/templates/artwork/collections_list.html:19
+#: artdb/templates/artwork/thumbnailbrowser.html:17
 msgid "All Artworks"
 msgstr ""
 
-#: artdb/templates/artwork/collection.html:10
-#: artdb/templates/artwork/collections_list.html:11
-#: artdb/templates/artwork/thumbnailbrowser.html:9
-msgid "Collections"
-msgstr ""
-
-#: artdb/templates/artwork/collection.html:17
-#: artdb/templates/artwork/collections_list.html:18
-msgid "All Collections"
-msgstr ""
-
-#: artdb/templates/artwork/collection.html:18
+#: artdb/templates/artwork/collection.html:19
 #: artdb/templates/artwork/collections_list.html:19
-#: artdb/templates/artwork/collections_list.html:46
-msgid "My Collections"
-msgstr ""
+#: artdb/templates/artwork/thumbnailbrowser.html:17
+msgid "Collections"
+msgstr "Folder"
 
-#: artdb/templates/artwork/collection.html:39
+#: artdb/templates/artwork/collection.html:26
+#: artdb/templates/artwork/collections_list.html:26
+msgid "All Collections"
+msgstr "All Folders"
+
+#: artdb/templates/artwork/collection.html:27
+#: artdb/templates/artwork/collections_list.html:27
+#: artdb/templates/artwork/collections_list.html:54
+msgid "My Collections"
+msgstr "My Folders"
+
+#: artdb/templates/artwork/collection.html:48
 msgid "Download PowerPoint"
 msgstr ""
 
-#: artdb/templates/artwork/thumbnailbrowser.html:14
+#: artdb/templates/artwork/collection.html:49
+msgid "Close"
+msgstr ""
+
+#: artdb/templates/artwork/collection.html:49
+msgid "show/hide download options"
+msgstr ""
+
+#: artdb/templates/artwork/collection.html:50
+msgid "Download PowerPoint German"
+msgstr ""
+
+#: artdb/templates/artwork/collection.html:51
+msgid "Download PowerPoint English"
+msgstr ""
+
+#: artdb/templates/artwork/thumbnailbrowser.html:22
 msgid "Search Artworks"
-msgstr ""
+msgstr "Search"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:20
+#: artdb/templates/artwork/thumbnailbrowser.html:28
 msgid "Expert"
-msgstr ""
+msgstr "Advanced Search"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:30
+#: artdb/templates/artwork/thumbnailbrowser.html:38
 msgid "Artist"
 msgstr ""
 
-#: artdb/templates/artwork/thumbnailbrowser.html:34
+#: artdb/templates/artwork/thumbnailbrowser.html:42
 msgid "Date From"
-msgstr "From (date of creation)"
+msgstr "Date From"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:34
-#: artdb/templates/artwork/thumbnailbrowser.html:37
+#: artdb/templates/artwork/thumbnailbrowser.html:42
+#: artdb/templates/artwork/thumbnailbrowser.html:45
 msgid "YYYY"
 msgstr ""
 
-#: artdb/templates/artwork/thumbnailbrowser.html:37
+#: artdb/templates/artwork/thumbnailbrowser.html:45
 msgid "Date To"
 msgstr "To"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:39
-msgid "Location"
-msgstr "Location of creation"
+#: artdb/templates/artwork/thumbnailbrowser.html:48
+msgid "Location_of_creation"
+msgstr "Place of Production"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:42
+#: artdb/templates/artwork/thumbnailbrowser.html:51
+#, fuzzy
+#| msgid "Location"
+msgid "Location_current"
+msgstr "Location"
+
+#: artdb/templates/artwork/thumbnailbrowser.html:55
 msgid "Keywords"
 msgstr ""
 
-#: artdb/templates/base.html:52
+#: artdb/templates/base.html:62
 msgid "This resolution is not supported."
 msgstr ""

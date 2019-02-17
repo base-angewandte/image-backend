@@ -82,6 +82,7 @@ class Artwork(models.Model):
     date_year_to = models.IntegerField(null=True, blank=True)
     material = models.TextField(null=True, blank=True)
     dimensions = models.CharField(max_length=255, blank=True)
+    description = models.TextField(blank=True)
     credits = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True, null=True)
@@ -94,7 +95,7 @@ class Artwork(models.Model):
     def __str__(self):
         return self.title
 
-    def get_description(self, language):
+    def get_short_description(self, language):
         artists = ', '.join(artist.name for artist in self.artists.all())
         title_in_language = ''
         if language == 'en':

@@ -93,6 +93,11 @@ when she clicks the EDIT button in the inspector
             {{ form.keywords }}
         </div>
         <div>
+            {{ form.description.errors }}
+            {{ form.description.label_tag }}
+            {{ form.description }}
+        </div>
+        <div>
             {{ form.credits.errors }}
             {{ form.credits.label_tag }}
             {{ form.credits }}
