@@ -634,15 +634,6 @@ and a close button */
     transition-delay: 0.3s;
 }
 
-.ui-widget.ui-widget-content {
-    border: 1px solid #cccccc;
-}
-
-#ui-id-1 {
-    width: 480px;
-    font-size: 16px;
-}
-
 #search-expert-fold {
     max-height: 0px;
     display: block;
@@ -876,23 +867,6 @@ and a close button */
 #collection-selector-button:active,
 #collection-selector-button:focus {
     outline:none;
-}
-
-.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus {
-    border: 0;
-    background: #fff !important;
-    color: var(--base-color) !important;
-}
-
-.ui-state-active, .ui-widget-content .ui-state-active, .ui-button.ui-state-active:hover {
-    background: var(--base-color) !important;
-    border-color: var(--base-color) !important;
-}
-
-.ui-selectmenu-menu .ui-menu .ui-selectmenu-optgroup {
-    font-family: 'Source Sans Pro', sans-serif !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
 }
 
 #js-download-pptx {
@@ -1190,6 +1164,47 @@ table.collections-list tr:active td {
     color: #fff;
     border-color: var(--base-color);
 }
+
+/* jquery-ui adjustments */
+
+.ui-widget.ui-widget-content {
+    border: 1px solid #cccccc;
+}
+
+.ui-menu .ui-menu-item,
+.ui-menu .ui-menu-item div {
+    width: 480px;
+    font-size: 16px;
+}
+
+#collection-selector-menu {
+    width: 480px !important;
+}
+
+.ui-selectmenu-menu .ui-menu .ui-selectmenu-optgroup,
+.ui-menu .ui-menu-item-wrapper {
+    padding: 4px 16px 4px 16px !important;
+}
+
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus {
+    border: 0;
+    background: #fff !important;
+    color: var(--base-color) !important;
+}
+
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-button.ui-state-active:hover {
+    border-color: var(--base-color) !important;
+    background: var(--base-color) !important;
+    color: #fff !important;
+}
+
+.ui-selectmenu-menu .ui-menu .ui-selectmenu-optgroup {
+    font-family: 'Source Sans Pro', sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+}
+
+/* other */
 
 .not-supported {
     display: none;
