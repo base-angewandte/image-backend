@@ -34,7 +34,7 @@ basic and the extended search.
             <form method="GET" action="" id="search-expert" class="hidden fadeout">
                 <div class="column col-1">
                     <input type="hidden" name="searchtype" value="expert">
-                    <label>Title</label><input id="search-expert-artworks-field" placeholder="" name="title" value="{{ query_title|default:'' }}" autocomplete="off" role="title search" autofocus/>
+                    <label>{% trans 'Title' %}</label><input id="search-expert-artworks-field" placeholder="" name="title" value="{{ query_title|default:'' }}" autocomplete="off" role="title search" autofocus/>
                     <label>{% trans 'Artist' %}</label><input id="search-expert-artist-field" placeholder="" name="artist" value="{{ query_artist|default:''}}" autocomplete="off" role="artist search"/>
                 </div>
                 <div class="column col-2">
@@ -73,9 +73,12 @@ basic and the extended search.
 <script type="text/javascript">
 $(document).ready(function() {
     var expertSearch = "{{ expert_search }}";
+    console.log(expertSearch);
     if (expertSearch == "True") {
         $("#js-search-switch").prop('checked', true);
         showExpertSearch(false);
+    } else {
+        $("#js-search-switch").prop('checked', false);
     }
 
     // hide the collect artwork overlay

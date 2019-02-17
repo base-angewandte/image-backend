@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-16 20:07+0100\n"
+"POT-Creation-Date: 2019-02-17 18:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,10 +18,94 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: artworks/forms.py:26
-msgid "Title"
-msgstr "Title"
+#: artworks/models.py:16 artworks/models.py:45 artworks/models.py:59
+msgid "Name"
+msgstr ""
 
-#: artworks/forms.py:27
-msgid "English Title"
-msgstr "Englischer Titel"
+#: artworks/models.py:17 artworks/models.py:60
+msgid "Synonyms"
+msgstr ""
+
+#: artworks/models.py:76
+msgid "Original Image"
+msgstr "Original Bild"
+
+#: artworks/models.py:77 artworks/models.py:157
+msgid "Title"
+msgstr "Titel"
+
+#: artworks/models.py:78
+msgid "Title, English"
+msgstr "Titel, englisch"
+
+#: artworks/models.py:79 artworks/models.py:89
+msgid "Artists"
+msgstr "Künstler_in"
+
+#: artworks/models.py:80
+msgid "Date"
+msgstr "Datierung"
+
+#: artworks/models.py:81
+msgid "Date From"
+msgstr "Datierung, von"
+
+#: artworks/models.py:82
+msgid "Date To"
+msgstr "Datierung, bis"
+
+#: artworks/models.py:83
+msgid "Material/Technique"
+msgstr "Material/Technik"
+
+#: artworks/models.py:84
+msgid "Dimensions"
+msgstr "Format"
+
+#: artworks/models.py:85
+msgid "Descriptions"
+msgstr "Anmerkungen"
+
+#: artworks/models.py:86
+msgid "Credits"
+msgstr "Abbildungsnachweis"
+
+#: artworks/models.py:87 artworks/models.py:160
+msgid "Created at"
+msgstr "Erstellt"
+
+#: artworks/models.py:88 artworks/models.py:161
+msgid "Updated at"
+msgstr "Aktualisiert"
+
+#: artworks/models.py:90
+msgid "Place of Production"
+msgstr "Entstehungsort"
+
+#: artworks/models.py:91
+msgid "Location"
+msgstr "Standort"
+
+#: artworks/models.py:92
+msgid "Checked"
+msgstr "Geprüft"
+
+#: artworks/models.py:93
+msgid "Published"
+msgstr "Veröffentlicht"
+
+#: artworks/models.py:158
+msgid "User"
+msgstr "Benutzer_in"
+
+#: artworks/models.py:159
+msgid "Artworks"
+msgstr "Kunstwerke"
+
+#: artworks/models.py:174
+msgid "Folder"
+msgstr "Arbeitsmappe"
+
+#: artworks/models.py:175
+msgid "Artwork"
+msgstr "Kunstwerk"

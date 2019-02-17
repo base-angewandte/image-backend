@@ -4,17 +4,17 @@ from django.db.models.functions import Upper
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.conf import settings
+from django.utils.translation import ugettext, ugettext_lazy as _
 from versatileimagefield.fields import VersatileImageField
 from mptt.models import MPTTModel, TreeForeignKey
 from ordered_model.models import OrderedModel
-
 
 class Artist(models.Model):
     """
     One Artist can be the maker of 0-n artworks.
     """
-    name = models.CharField(max_length=255, null=False)
-    synonyms = models.CharField(max_length=255, null=False, blank=True)
+    name = models.CharField(verbose_name=_('Name'), max_length=255, null=False)
+    synonyms = models.CharField(verbose_name=_('Synonyms'), max_length=255, null=False, blank=True)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True, null=True)
 
@@ -42,7 +42,7 @@ class Keyword(MPTTModel):
     """
     Keywords are nodes in a fixed hierarchical taxonomy.
     """
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(verbose_name=_('Name'), max_length=255, unique=True)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
 
     def __str__(self):
@@ -56,8 +56,8 @@ class Location(MPTTModel):
     """
     Locations are nodes in a fixed hierarchical taxonomy.
     """
-    name = models.CharField(max_length=255)
-    synonyms = models.CharField(max_length=255, blank=True)
+    name = models.CharField(verbose_name=_('Name'), max_length=255)
+    synonyms = models.CharField(verbose_name=_('Synonyms'), max_length=255, blank=True)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
 
     def __str__(self):
@@ -73,24 +73,24 @@ class Artwork(models.Model):
     """
     # VersatileImageField allows to create resized versions of the
     # image (renditions) on demand
-    image_original = VersatileImageField(max_length = 127, null=False, blank=True, upload_to=get_path_to_original_file)
-    title = models.CharField(max_length=255, blank=True)
-    title_english = models.CharField(max_length=255, blank=True)
-    artists = models.ManyToManyField(Artist, blank=True)
-    date = models.CharField(max_length=319, blank=True, help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende/Anfang 14. Jh., 5.3.1799, ca./um/vor/nach 1700')
-    date_year_from = models.IntegerField(null=True, blank=True)
-    date_year_to = models.IntegerField(null=True, blank=True)
-    material = models.TextField(null=True, blank=True)
-    dimensions = models.CharField(max_length=255, blank=True)
-    description = models.TextField(blank=True)
-    credits = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add = True)
-    updated_at = models.DateTimeField(auto_now = True, null=True)
-    keywords = models.ManyToManyField(Keyword, blank=True)
-    location_of_creation = TreeForeignKey(Location, blank=True, null=True, on_delete=models.SET_NULL, related_name='artworks_created_here')
-    location_current = TreeForeignKey(Location, blank=True, null=True, on_delete=models.SET_NULL, related_name='artworks_currently_located_here')
-    checked = models.BooleanField(default=False)
-    published = models.BooleanField(default=False)
+    image_original = VersatileImageField(verbose_name=_('Original Image'), max_length = 127, null=False, blank=True, upload_to=get_path_to_original_file)
+    title = models.CharField(verbose_name=_('Title'), max_length=255, blank=True)
+    title_english = models.CharField(verbose_name=_('Title, English'), max_length=255, blank=True)
+    artists = models.ManyToManyField(Artist, verbose_name=_('Artists'), blank=True)
+    date = models.CharField(verbose_name=_('Date'), max_length=319, blank=True, help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende/Anfang 14. Jh., 5.3.1799, ca./um/vor/nach 1700')
+    date_year_from = models.IntegerField(verbose_name=_('Date From'), null=True, blank=True)
+    date_year_to = models.IntegerField(verbose_name=_('Date To'), null=True, blank=True)
+    material = models.TextField(verbose_name=_('Material/Technique'), null=True, blank=True)
+    dimensions = models.CharField(verbose_name=_('Dimensions'), max_length=255, blank=True)
+    description = models.TextField(verbose_name=_('Descriptions'), blank=True)
+    credits = models.TextField(verbose_name=_('Credits'), blank=True)
+    created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add = True)
+    updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now = True, null=True)
+    keywords = models.ManyToManyField(Keyword, verbose_name=_('Artists'), blank=True)
+    location_of_creation = TreeForeignKey(Location, verbose_name=_('Place of Production'), blank=True, null=True, on_delete=models.SET_NULL, related_name='artworks_created_here')
+    location_current = TreeForeignKey(Location, verbose_name=_('Location'), blank=True, null=True, on_delete=models.SET_NULL, related_name='artworks_currently_located_here')
+    checked = models.BooleanField(verbose_name=_('Checked'), default=False)
+    published = models.BooleanField(verbose_name=_('Published'), default=False)  
 
     def __str__(self):
         return self.title
@@ -154,11 +154,11 @@ class ArtworkCollection(models.Model):
     """
     Specific users can create collections of artworks.
     """
-    title = models.CharField(max_length=255)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    artworks = models.ManyToManyField(Artwork, through='ArtworkCollectionMembership')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    title = models.CharField(verbose_name=_('Title'), max_length=255)
+    user = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
+    artworks = models.ManyToManyField(Artwork, verbose_name=_('Artworks'), through='ArtworkCollectionMembership')
+    created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now=True)
 
     def __str__(self):
         return '{0} by {1}'.format(self.title, self.user.get_username())
@@ -171,8 +171,8 @@ class ArtworkCollection(models.Model):
 
 
 class ArtworkCollectionMembership(OrderedModel):
-    collection = models.ForeignKey(ArtworkCollection, on_delete=models.CASCADE)
-    artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE)
+    collection = models.ForeignKey(ArtworkCollection, verbose_name=_('Folder'), on_delete=models.CASCADE)
+    artwork = models.ForeignKey(Artwork, verbose_name=_('Artwork'), on_delete=models.CASCADE)
     order_with_respect_to = 'collection'
     connected_with = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-17 15:35+0100\n"
+"POT-Creation-Date: 2019-02-17 18:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,17 +30,45 @@ msgstr "Englisch"
 msgid "Image Editing"
 msgstr "Image Redaktion"
 
+#: artdb/templates/artwork/artwork_collect_overlay.html:13
+msgid "Add artwork to your collections"
+msgstr "Meine Arbeitsmappen"
+
+#: artdb/templates/artwork/artwork_collect_overlay.html:18
+msgid "New folder title"
+msgstr "Titel der neuen Arbeitsmappe"
+
+#: artdb/templates/artwork/artwork_collect_overlay.html:18
+msgid "title"
+msgstr "Titel"
+
+#: artdb/templates/artwork/artwork_collect_overlay.html:19
+#: artdb/templates/artwork/artwork_collect_overlay.html:27
+msgid "add"
+msgstr "Hinzufügen"
+
+#: artdb/templates/artwork/artwork_collect_overlay.html:26
+msgid "remove"
+msgstr "Entfernen"
+
 #: artdb/templates/artwork/artwork_collect_overlay.html:33
 msgid "NoCollections"
 msgstr "Es sind noch keine Arbeitsmappen erstellt worden."
 
-#: artdb/templates/artwork/artwork_detail_overlay.html:22
-msgid "Collect"
-msgstr "In Arbeitsmappe hinzufügen"
+#: artdb/templates/artwork/artwork_collect_overlay.html:46
+#, fuzzy
+#| msgid "NoCollections"
+msgid "addtocollection"
+msgstr "Es sind noch keine Arbeitsmappen erstellt worden."
 
+#: artdb/templates/artwork/artwork_collect_overlay.html:46
 #: artdb/templates/artwork/artwork_detail_overlay.html:22
 msgid "Edit"
 msgstr "Editieren"
+
+#: artdb/templates/artwork/artwork_detail_overlay.html:22
+msgid "Collect"
+msgstr "In Arbeitsmappe hinzufügen"
 
 #: artdb/templates/artwork/artwork_edit_overlay.html:34
 msgid "Cancel"
@@ -59,7 +87,7 @@ msgstr "Keine Werke gefunden."
 #: artdb/templates/artwork/collections_list.html:19
 #: artdb/templates/artwork/thumbnailbrowser.html:17
 msgid "All Artworks"
-msgstr "Alle Werke"
+msgstr "Alle Kunstwerke"
 
 #: artdb/templates/artwork/collection.html:19
 #: artdb/templates/artwork/collections_list.html:19
@@ -102,19 +130,17 @@ msgstr "PowerPoint Deutsch herunterladen"
 msgid "Download PowerPoint English"
 msgstr "PowerPoint Englisch herunterladen"
 
-#: artdb/templates/artwork/collection.html:51
-#, fuzzy
-#| msgid "Download PowerPoint"
-msgid "download PowerPoint English"
-msgstr "PowerPoint Englisch herunterladen"
-
 #: artdb/templates/artwork/thumbnailbrowser.html:22
 msgid "Search Artworks"
 msgstr "Suche"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:28
 msgid "Expert"
-msgstr "Erweiterte Suche"
+msgstr "Erw. Suche"
+
+#: artdb/templates/artwork/thumbnailbrowser.html:37
+msgid "Title"
+msgstr "Titel"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:38
 msgid "Artist"
@@ -122,7 +148,7 @@ msgstr "Künstler_in"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:42
 msgid "Date From"
-msgstr "Datierung (von)"
+msgstr "Datierung, von"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:42
 #: artdb/templates/artwork/thumbnailbrowser.html:45
@@ -131,15 +157,13 @@ msgstr "JJJJ"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:45
 msgid "Date To"
-msgstr "Datierung (bis)"
+msgstr "Datierung, bis"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:48
 msgid "Location_of_creation"
 msgstr "Entstehungsort"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:51
-#, fuzzy
-#| msgid "Location"
 msgid "Location_current"
 msgstr "Standort"
 

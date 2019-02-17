@@ -842,9 +842,9 @@ and a close button */
 .switch .text-label-small {
     display: block;
     position: absolute;
-    font-size: 11px;
-    top: 30px;
-    left: 10px;
+    font-size: 10px;
+    top: 33px;
+    left: 1px;
     color: var(--mid-grey-3-color);
 }
 

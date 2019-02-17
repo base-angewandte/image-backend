@@ -99,7 +99,8 @@ $(document).ready(function() {
                             elKey = createEl('div', ['key'], gettext(key));
                             elEntry.appendChild(elKey);
                             elVal = createEl('div', ['value'], val);
-                            if (key === 'titleEnglish') {
+                            console.log(key);
+                            if (key === 'title_english') {
                                 elKey.classList.add('key-titleEnglish');
                                 elVal.classList.add('val-titleEnglish');
                             }

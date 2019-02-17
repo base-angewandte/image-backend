@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-17 15:42+0100\n"
+"POT-Creation-Date: 2019-02-17 17:46+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,17 +30,45 @@ msgstr ""
 msgid "Image Editing"
 msgstr ""
 
+#: artdb/templates/artwork/artwork_collect_overlay.html:13
+msgid "Add artwork to your collections"
+msgstr "My folders"
+
+#: artdb/templates/artwork/artwork_collect_overlay.html:18
+msgid "New folder title"
+msgstr ""
+
+#: artdb/templates/artwork/artwork_collect_overlay.html:18
+msgid "title"
+msgstr ""
+
+#: artdb/templates/artwork/artwork_collect_overlay.html:19
+#: artdb/templates/artwork/artwork_collect_overlay.html:27
+msgid "add"
+msgstr ""
+
+#: artdb/templates/artwork/artwork_collect_overlay.html:26
+msgid "remove"
+msgstr ""
+
 #: artdb/templates/artwork/artwork_collect_overlay.html:33
 msgid "NoCollections"
 msgstr "There are no collections yet."
 
-#: artdb/templates/artwork/artwork_detail_overlay.html:22
-msgid "Collect"
-msgstr "Add to Folder"
+#: artdb/templates/artwork/artwork_collect_overlay.html:46
+#, fuzzy
+#| msgid "NoCollections"
+msgid "addtocollection"
+msgstr "There are no collections yet."
 
+#: artdb/templates/artwork/artwork_collect_overlay.html:46
 #: artdb/templates/artwork/artwork_detail_overlay.html:22
 msgid "Edit"
 msgstr ""
+
+#: artdb/templates/artwork/artwork_detail_overlay.html:22
+msgid "Collect"
+msgstr "Add to Folder"
 
 #: artdb/templates/artwork/artwork_edit_overlay.html:34
 msgid "Cancel"
@@ -65,7 +93,7 @@ msgstr ""
 #: artdb/templates/artwork/collections_list.html:19
 #: artdb/templates/artwork/thumbnailbrowser.html:17
 msgid "Collections"
-msgstr "Folder"
+msgstr "Folders"
 
 #: artdb/templates/artwork/collection.html:26
 #: artdb/templates/artwork/collections_list.html:26
@@ -104,7 +132,7 @@ msgstr "Search"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:28
 msgid "Expert"
-msgstr "Advanced Search"
+msgstr "Adv. Search"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:38
 msgid "Artist"
@@ -128,8 +156,6 @@ msgid "Location_of_creation"
 msgstr "Place of Production"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:51
-#, fuzzy
-#| msgid "Location"
 msgid "Location_current"
 msgstr "Location"
 
