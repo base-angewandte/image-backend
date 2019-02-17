@@ -16,7 +16,7 @@ select menu.
     <div class="thumbnail-navbar">
         <nav class="navigation">
             <ol>
-                <li><a href="{% url 'artworks_list' %}">{% trans 'All Artworks' %}</a></li><li class="selected"><a href="{% url 'collections_list' %}">{% trans 'Collections' %}</a></li>
+                <li><a href="{{ FORCE_SCRIPT_NAME }}/{% url 'artworks-list' %}">{% trans 'All Artworks' %}</a></li><li class="selected"><a href="{{ FORCE_SCRIPT_NAME }}/{% url 'collections-list' %}">{% trans 'Collections' %}</a></li>
             </ol>
         </nav>
         <div id="collection-nav">
@@ -91,7 +91,7 @@ select menu.
                 if (id) {
                     window.location = `{{ FORCE_SCRIPT_NAME }}/collection/${id}.html`;
                 } else {
-                    window.location = '{% url 'collections_list' %}';
+                    window.location = '{{ FORCE_SCRIPT_NAME }}/{% url "collections-list" %}';
                 }
             }   
         });

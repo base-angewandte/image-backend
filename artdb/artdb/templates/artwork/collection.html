@@ -16,7 +16,7 @@ It also renders all thumbnails dynamically via javascript.
     <div class="thumbnail-navbar">
         <nav class="navigation">
             <ol>
-                <li><a href="{% url 'artworks_list' %}">{% trans 'All Artworks' %}</a></li><li class="selected"><a href="{% url 'collections_list' %}">{% trans 'Collections' %}</a></li>
+                <li><a href="{{ FORCE_SCRIPT_NAME }}/{% url 'artworks-list' %}">{% trans 'All Artworks' %}</a></li><li class="selected"><a href="{{ FORCE_SCRIPT_NAME }}/{% url 'collections-list' %}">{% trans 'Collections' %}</a></li>
             </ol>
         </nav>
         {% if collections or my_collections %}
@@ -47,8 +47,8 @@ It also renders all thumbnails dynamically via javascript.
             {% if perms.artworks.can_download_pptx %}
             <div id="js-download-pptx" alt="{% trans 'Download PowerPoint' %}" title="{% trans 'Download PowerPoint' %}">
                 <div class="btn-download-pptx" alt="{% trans 'Close' %}" title="{% trans 'show/hide download options' %}"></div>
-                <a href="{{ FORCE_SCRIPT_NAME }}/collection/{{id}}_de.pptx" class="btn-download-pptx-german" alt="{% trans 'Download PowerPoint German' %}" title="{% trans 'download PowerPoint German' %}"></a>
-                <a href="{{ FORCE_SCRIPT_NAME }}/collection/{{id}}_en.pptx" class="btn-download-pptx-english" alt="{% trans 'Download PowerPoint English' %}" title="{% trans 'download PowerPoint English' %}"></a>
+                <a href="{{ FORCE_SCRIPT_NAME }}{% url 'download-pptx-de' id %}" class="btn-download-pptx-german" alt="{% trans 'Download PowerPoint German' %}" title="{% trans 'download PowerPoint German' %}"></a>
+                <a href="{{ FORCE_SCRIPT_NAME }}{% url 'download-pptx-en' id %}"  class="btn-download-pptx-english" alt="{% trans 'Download PowerPoint English' %}" title="{% trans 'download PowerPoint English' %}"></a>
             </div>
             {% endif %}
         </div>
@@ -80,7 +80,7 @@ $(document).ready(function() {
             if (id) {
                 window.location = `${mainPath}/collection/${id}.html`;
             } else {
-                window.location = '{% url "collections_list" %}';
+                window.location = '{% url "collections-list" %}';
             }
         }   
     });

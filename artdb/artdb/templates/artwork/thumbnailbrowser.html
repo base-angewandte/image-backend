@@ -14,7 +14,7 @@ basic and the extended search.
     <div class="thumbnail-navbar">
         <nav class="navigation">
             <ol>
-                <li class="selected"><a href="{% url 'artworks_list' %}">{% trans 'All Artworks' %}</a></li><li><a href="{% url 'collections_list' %}">{% trans 'Collections' %}</a></li>
+                <li class="selected"><a href="{% url 'artworks-list' %}">{% trans 'All Artworks' %}</a></li><li><a href="{% url 'collections-list' %}">{% trans 'Collections' %}</a></li>
             </ol>
         </nav>
         <div class="search-topbar">
@@ -81,7 +81,7 @@ $(document).ready(function() {
     $("#search-basic-artworks-field").autocomplete({
         source: function(request, response) {
             $.ajax({
-            url: "{{ FORCE_SCRIPT_NAME }}/artwork-autocomplete/",
+            url: "{{ FORCE_SCRIPT_NAME }}/{% url 'artwork-autocomplete' %}",
             dataType: "json",
             data: {
                 q: request.term
@@ -110,7 +110,7 @@ $(document).ready(function() {
     $("#search-expert-artworks-field").autocomplete({
         source: function(request, response) {
             $.ajax({
-            url: "{{ FORCE_SCRIPT_NAME }}/artwork-autocomplete/",
+            url: "{{ FORCE_SCRIPT_NAME }}/{% url 'artwork-autocomplete' %}",
             dataType: "json",
             data: {
                 q: request.term
@@ -132,7 +132,7 @@ $(document).ready(function() {
     $("#search-expert-artist-field").autocomplete({
         source: function(request, response) {
             $.ajax({
-            url: "{{ FORCE_SCRIPT_NAME }}/artist-autocomplete/",
+            url: "{{ FORCE_SCRIPT_NAME }}/{% url 'artist-autocomplete' %}",
             dataType: "json",
             data: {
                 q: request.term
@@ -154,7 +154,7 @@ $(document).ready(function() {
     $("#search-expert-keywords-field").autocomplete({
         source: function(request, response) {
             $.ajax({
-            url: "{{ FORCE_SCRIPT_NAME }}/keyword-autocomplete/",
+            url: "{{ FORCE_SCRIPT_NAME }}/{% url 'keyword-autocomplete' %}",
             dataType: "json",
             data: {
                 q: request.term
