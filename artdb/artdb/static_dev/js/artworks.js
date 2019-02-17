@@ -94,12 +94,15 @@ $(document).ready(function() {
                         elVal.dataset.location_current = val.name;
                         elEntry.appendChild(elVal);
                         break;
+                    case 'published':
+                        break;
+                    case 'checked':
+                        break;
                     default:
                         if ((val !== '') && (val !== null)) {
                             elKey = createEl('div', ['key'], gettext(key));
                             elEntry.appendChild(elKey);
                             elVal = createEl('div', ['value'], val);
-                            console.log(key);
                             if (key === 'title_english') {
                                 elKey.classList.add('key-titleEnglish');
                                 elVal.classList.add('val-titleEnglish');
