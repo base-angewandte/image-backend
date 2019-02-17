@@ -36,7 +36,7 @@ when she selects a specific collection of artworks
         </table>
     </form>
     {% endspaceless %}
-    <button name="close" class="button-close"  onClick="hideImageAndOverlay()"></button>
+    <button name="close" class="button-close"  onClick="hideCollectOverlay()"></button>
     </div>
 </div>
     
@@ -49,7 +49,7 @@ when she selects a specific collection of artworks
 </div>
 
 <script>
-$(document).ready(function() {
+$(document).ready(function() {  
 
     $(".removeFromCollection").on('click', function (e) {
         e.preventDefault();
@@ -73,6 +73,7 @@ $(document).ready(function() {
             }
         })
     });
+
     $(".addToCollection").on('click', function (e) {
         e.preventDefault();
         console.log('add to Collection');
@@ -96,6 +97,7 @@ $(document).ready(function() {
             }
         })
     });
+
     $("#addCollectionForm").on('submit', function (e) {
         e.preventDefault();
         console.log('addCollection');

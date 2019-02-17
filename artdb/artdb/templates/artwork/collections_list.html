@@ -16,7 +16,7 @@ select menu.
     <div class="thumbnail-navbar">
         <nav class="navigation">
             <ol>
-                <li><a href="{{ FORCE_SCRIPT_NAME }}/{% url 'artworks-list' %}">{% trans 'All Artworks' %}</a></li><li class="selected"><a href="{{ FORCE_SCRIPT_NAME }}/{% url 'collections-list' %}">{% trans 'Collections' %}</a></li>
+                <li><a href="{% url 'artworks-list' %}">{% trans 'All Artworks' %}</a></li><li class="selected"><a href="{% url 'collections-list' %}">{% trans 'Collections' %}</a></li>
             </ol>
         </nav>
         <div id="collection-nav">

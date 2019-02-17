@@ -78,6 +78,13 @@ $(document).ready(function() {
         showExpertSearch(false);
     }
 
+    // hide the collect artwork overlay
+    hideCollectOverlay = function() {
+        closeOverlay();
+        // here we do not need location.reload();
+        // compare: collection.html template
+    };
+
     $("#search-basic-artworks-field").autocomplete({
         source: function(request, response) {
             $.ajax({

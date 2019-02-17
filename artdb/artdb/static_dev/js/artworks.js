@@ -113,23 +113,6 @@ $(document).ready(function() {
         });
     }
 
-
-    // hide the collect artwork overlay
-    hideCollectOverlay = function() {
-        closeOverlay();
-    };
-
-    // hide the detail or edit overlay
-    hideImageAndOverlay = function() {
-        $('.image-big').removeClass('shown');
-        closeOverlay();
-    };  
-
-    hideAndReload = function() {
-        hideImageAndOverlay();
-        location.reload();
-    }
-
     // copy the content from one inspector to another
     // this avoids unnecessary reloads
     function copyInspectorDetails(elNewInspector) {
@@ -138,8 +121,14 @@ $(document).ready(function() {
         elCurrentInspector = elNewInspector;
     }
 
+    // hide the detail or edit overlay
+    hideImageAndOverlay = function() {
+        $('.image-big').removeClass('shown');
+        closeOverlay();
+    };  
+
     // hide the overlay
-    function closeOverlay() {
+    closeOverlay = function() {
         var elNewInspector = document.getElementById('thumbnailbrowser-inspector');
         if (elNewInspector) {
             copyInspectorDetails(elNewInspector);

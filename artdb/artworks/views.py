@@ -164,10 +164,6 @@ def artwork_edit(request, id):
             # TODO: artwork.user = request.user
             updated_artwork.updated_at = datetime.now()
             updated_artwork.save()
-            # TODO: redirectURL = "%i.json" % artwork.id
-            # TODO: reload/close? scroll to thumbnail
-            # TODO!!!
-            # return redirect('image', id=artwork.id)
             return HttpResponse("<script>window.location=document.referrer;</script>")
     return render(request, 'artwork/artwork_edit_overlay.html', context)
 

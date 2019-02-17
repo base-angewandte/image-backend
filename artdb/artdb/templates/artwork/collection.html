@@ -16,7 +16,7 @@ It also renders all thumbnails dynamically via javascript.
     <div class="thumbnail-navbar">
         <nav class="navigation">
             <ol>
-                <li><a href="{{ FORCE_SCRIPT_NAME }}/{% url 'artworks-list' %}">{% trans 'All Artworks' %}</a></li><li class="selected"><a href="{{ FORCE_SCRIPT_NAME }}/{% url 'collections-list' %}">{% trans 'Collections' %}</a></li>
+                <li><a href="{% url 'artworks-list' %}">{% trans 'All Artworks' %}</a></li><li class="selected"><a href="{% url 'collections-list' %}">{% trans 'Collections' %}</a></li>
             </ol>
         </nav>
         {% if collections or my_collections %}
@@ -72,7 +72,6 @@ $(document).ready(function() {
     var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
     var mainPath = '{{ FORCE_SCRIPT_NAME }}';
 
-
     // this select menu allows the user to switch from one collection to another
     $( "#collection-selector" ).selectmenu({
         change: function(event, ui) {
@@ -85,6 +84,11 @@ $(document).ready(function() {
         }   
     });
 
+    // hide the collect artwork overlay
+    hideCollectOverlay = function() {
+        closeOverlay();
+        location.reload();
+    };
 
     // the connector allows to connect or disconnect two artworks
     // connected artworks are shown on one slide in the exportable powerpoint presentation
