@@ -88,7 +88,7 @@ $(document).ready(function() {
     $("#search-basic-artworks-field").autocomplete({
         source: function(request, response) {
             $.ajax({
-            url: "{{ FORCE_SCRIPT_NAME }}/{% url 'artwork-autocomplete' %}",
+            url: "{% url 'artwork-autocomplete' %}",
             dataType: "json",
             data: {
                 q: request.term
@@ -110,6 +110,9 @@ $(document).ready(function() {
                 $(this.form).submit();
             }
         },
+        open: function(){
+                $('.ui-autocomplete').css('width', '480px');
+        },
         minLength: 3,
         selectFirst: false
     });
@@ -117,7 +120,7 @@ $(document).ready(function() {
     $("#search-expert-artworks-field").autocomplete({
         source: function(request, response) {
             $.ajax({
-            url: "{{ FORCE_SCRIPT_NAME }}/{% url 'artwork-autocomplete' %}",
+            url: "{% url 'artwork-autocomplete' %}",
             dataType: "json",
             data: {
                 q: request.term
@@ -132,6 +135,9 @@ $(document).ready(function() {
             }
             });
         },
+        open: function(){
+                $('.ui-autocomplete').css('width', '320px');
+        },
         minLength: 3,
         selectFirst: false
     });
@@ -139,7 +145,7 @@ $(document).ready(function() {
     $("#search-expert-artist-field").autocomplete({
         source: function(request, response) {
             $.ajax({
-            url: "{{ FORCE_SCRIPT_NAME }}/{% url 'artist-autocomplete' %}",
+            url: "{% url 'artist-autocomplete' %}",
             dataType: "json",
             data: {
                 q: request.term
@@ -154,6 +160,9 @@ $(document).ready(function() {
             }
             });
         },
+        open: function(){
+                $('.ui-autocomplete').css('width', '320px');
+        },
         minLength: 3,
         selectFirst: false
     });
@@ -161,7 +170,7 @@ $(document).ready(function() {
     $("#search-expert-keywords-field").autocomplete({
         source: function(request, response) {
             $.ajax({
-            url: "{{ FORCE_SCRIPT_NAME }}/{% url 'keyword-autocomplete' %}",
+            url: "{% url 'keyword-autocomplete' %}",
             dataType: "json",
             data: {
                 q: request.term

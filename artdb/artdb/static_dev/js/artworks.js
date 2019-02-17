@@ -167,11 +167,16 @@ $(document).ready(function() {
     // show the collect artwork overlay 
     showCollectOverlay = function(url) {
         var overlayUrl = url + '/collect_overlay.html';
-        console.log(overlayUrl);
         $('#collect-overlay').load(overlayUrl, function() {
             elInspector = document.getElementById('collect-overlay-inspector');
             copyInspectorDetails(elInspector);
             showOverlay(collectClassName);
+        });
+    }
+
+    updateCollectOverlay = function(url) {
+        $('#collect-overlay').load(url, function() {
+            copyInspectorDetails(elInspector);
         });
     }
 

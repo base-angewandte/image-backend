@@ -24,7 +24,7 @@ class ArtworkForm(forms.ModelForm):
             'title': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
             'title_english': forms.Textarea(attrs={'cols': 40, 'rows': 10})
         }
-        # add and customize 'locationOfCreation': Select2Widget,
+        # TODO: add and customize 'locationOfCreation': Select2Widget,
 
     def __init__(self, *args, **kwargs):
         # remove hard-coded help_text for ManyToManyFields that use a SelectMultiple widget
