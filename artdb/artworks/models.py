@@ -86,7 +86,7 @@ class Artwork(models.Model):
     credits = models.TextField(verbose_name=_('Credits'), blank=True)
     created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add = True)
     updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now = True, null=True)
-    keywords = models.ManyToManyField(Keyword, verbose_name=_('Artists'), blank=True)
+    keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'), blank=True)
     location_of_creation = TreeForeignKey(Location, verbose_name=_('Place of Production'), blank=True, null=True, on_delete=models.SET_NULL, related_name='artworks_created_here')
     location_current = TreeForeignKey(Location, verbose_name=_('Location'), blank=True, null=True, on_delete=models.SET_NULL, related_name='artworks_currently_located_here')
     checked = models.BooleanField(verbose_name=_('Checked'), default=False)

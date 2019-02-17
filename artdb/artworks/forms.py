@@ -44,16 +44,21 @@ class MPTTMultipleChoiceField(ModelMultipleChoiceField):
 class ArtworkAdminForm(forms.ModelForm):
     keywords = MPTTMultipleChoiceField(
         Keyword.objects.all(), 
-        widget=FilteredSelectMultiple('Keywords', False),
-        required=False
+        widget=FilteredSelectMultiple(_('Keywords'), False),
+        required=False,
+
     )
 
     artists = MPTTMultipleChoiceField(
         Artist.objects.all(), 
-        widget=FilteredSelectMultiple('Artists', False),
+        widget=FilteredSelectMultiple(_('Artists'), False),
         required=False
     )
 
     class Meta:
         model = Artwork
         fields = '__all__'
+        labels = {
+             'Keywords': _('Keywords'),
+             'Artists': _('Artists')
+        }

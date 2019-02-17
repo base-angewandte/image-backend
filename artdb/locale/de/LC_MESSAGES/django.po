@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-17 18:25+0100\n"
+"POT-Creation-Date: 2019-02-17 19:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,13 +18,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: artworks/forms.py:47 artworks/models.py:89
+msgid "Keywords"
+msgstr "Schlagworte"
+
+#: artworks/forms.py:54 artworks/models.py:79
+msgid "Artists"
+msgstr "Künstler_in"
+
 #: artworks/models.py:16 artworks/models.py:45 artworks/models.py:59
 msgid "Name"
 msgstr ""
 
 #: artworks/models.py:17 artworks/models.py:60
 msgid "Synonyms"
-msgstr ""
+msgstr "Synonyme"
 
 #: artworks/models.py:76
 msgid "Original Image"
@@ -37,10 +45,6 @@ msgstr "Titel"
 #: artworks/models.py:78
 msgid "Title, English"
 msgstr "Titel, englisch"
-
-#: artworks/models.py:79 artworks/models.py:89
-msgid "Artists"
-msgstr "Künstler_in"
 
 #: artworks/models.py:80
 msgid "Date"
