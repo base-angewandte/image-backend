@@ -47,8 +47,8 @@ It also renders all thumbnails dynamically via javascript.
             {% if perms.artworks.can_download_pptx %}
             <div id="js-download-pptx" alt="{% trans 'Download PowerPoint' %}" title="{% trans 'Download PowerPoint' %}">
                 <div class="btn-download-pptx" alt="{% trans 'Close' %}" title="{% trans 'show/hide download options' %}"></div>
-                <a href="{{ FORCE_SCRIPT_NAME }}{% url 'download-pptx-de' id %}" class="btn-download-pptx-german" alt="{% trans 'Download PowerPoint German' %}" title="{% trans 'Download PowerPoint German' %}"></a>
-                <a href="{{ FORCE_SCRIPT_NAME }}{% url 'download-pptx-en' id %}"  class="btn-download-pptx-english" alt="{% trans 'Download PowerPoint English' %}" title="{% trans 'Download PowerPoint English' %}"></a>
+                <a href="{% url 'download-pptx-de' id %}" class="btn-download-pptx-german" alt="{% trans 'Download PowerPoint German' %}" title="{% trans 'Download PowerPoint German' %}"></a>
+                <a href="{% url 'download-pptx-en' id %}"  class="btn-download-pptx-english" alt="{% trans 'Download PowerPoint English' %}" title="{% trans 'Download PowerPoint English' %}"></a>
             </div>
             {% endif %}
         </div>
