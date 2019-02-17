@@ -51,9 +51,9 @@ def artworks_list(request):
         if query_location_current:
             q_objects.add(Q(location_current__name__icontains=query_location_current), Q.AND)
         if query_date_from:
-            q_objects.add(Q(dateYearFrom__gte=int(query_date_from)), Q.AND)
+            q_objects.add(Q(date_year_from__gte=int(query_date_from)), Q.AND)
         if query_date_to:
-            q_objects.add(Q(dateYearTo__lte=int(query_date_to)), Q.AND)
+            q_objects.add(Q(date_year_to__lte=int(query_date_to)), Q.AND)
         if query_artist_name:
             artists = Artist.objects.filter(name__icontains=query_artist_name)
             synonyms = Artist.objects.filter(synonyms__icontains=query_artist_name)
