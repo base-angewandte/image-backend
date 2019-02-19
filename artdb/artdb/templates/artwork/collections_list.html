@@ -91,7 +91,7 @@ select menu.
                 if (id) {
                     window.location = `{{ FORCE_SCRIPT_NAME }}/collection/${id}.html`;
                 } else {
-                    window.location = '{{ FORCE_SCRIPT_NAME }}/{% url "collections-list" %}';
+                    window.location = '{% url "collections-list" %}';
                 }
             }   
         });

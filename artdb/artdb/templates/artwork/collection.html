@@ -95,7 +95,7 @@ $(document).ready(function() {
     // connected artworks also stick together when left to the left or right
     $('.thumbnail-area').on('click', '.connector', function (e) {
         e.stopPropagation();
-        var url = `{{ FORCE_SCRIPT_NAME }}/collection/${collectionID}.html`;
+        var url = `collection/${collectionID}.html`;
         $.ajax({
             type: 'POST',
             url: url,
@@ -140,7 +140,7 @@ $(document).ready(function() {
     // the whole collection gets updated
     updateSlides = function() {
         var path = '{{ FORCE_SCRIPT_NAME }}';
-        var jsonUrl = '{{ FORCE_SCRIPT_NAME }}/collection/{{id}}.json';
+        var jsonUrl = 'collection/{{id}}.json';
         
         var divOldThumbnails = document.getElementById('thumbnails');
         var divNewThumbnails = document.createElement('div');
