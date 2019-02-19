@@ -35,7 +35,7 @@ select menu.
                             {% if collection_user.grouper %}
                                 {{ collection_user.grouper }}
                             {% else %}
-                                Unnamed Editor
+                                {% trans 'Unnamed Editor' %}
                             {% endif %}">
                             {% for collection in collection_user.list %}
                                 <option value="{{collection.id}}">{{collection.title}}</option>
