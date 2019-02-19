@@ -50,10 +50,6 @@ def artworks_list(request):
             q_objects.add(Q(location_of_creation__name__icontains=query_location_of_creation), Q.AND)
         if query_location_current:
             q_objects.add(Q(location_current__name__icontains=query_location_current), Q.AND)
-        if query_date_from:
-            q_objects.add(Q(date_year_from__gte=int(query_date_from)), Q.AND)
-        if query_date_to:
-            q_objects.add(Q(date_year_to__lte=int(query_date_to)), Q.AND)
         if query_artist_name:
             artists = Artist.objects.filter(name__icontains=query_artist_name)
             synonyms = Artist.objects.filter(synonyms__icontains=query_artist_name)
@@ -68,13 +64,29 @@ def artworks_list(request):
             expression = Q(title__startswith=query_artwork_title)
             is_match = ExpressionWrapper(expression, output_field=BooleanField())
             querysetList = querysetList.annotate(myfield=is_match)
+        if query_date_from:
+            try:
+                year = int(query_date_from)
+                q_objects.add(Q(date_year_from__gte=year), Q.AND)
+            except ValueError as err:
+                querysetList = []
+                print(err)
+        if query_date_to:
+            try:
+                year = int(query_date_from)
+                q_objects.add(Q(date_year_to__gte=year), Q.AND)
+            except ValueError as err:
+                querysetList = []
+                print(err)
 
-        querysetList = (querysetList.filter(q_objects)
-                .order_by('title', 'location_of_creation')
-                .distinct())
+        if querysetList:
+            querysetList = (querysetList.filter(q_objects)
+                    .order_by('title', 'location_of_creation')
+                    .distinct())
     else:
         if query_search:
             terms = [term.strip() for term in query_search.split()]
+
 
             def get_artists(term):
                 return Artist.objects.filter(Q(name__istartswith=term) | Q(name__icontains=' ' + term))
