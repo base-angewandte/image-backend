@@ -55,7 +55,7 @@ $(document).ready(function() {
         e.preventDefault();
         var artworkID = e.currentTarget.dataset['artworkid'];
         var collectionID = e.currentTarget.dataset['collectionid'];
-        var url = '{{ FORCE_SCRIPT_NAME }}/artwork/' + artworkID + '/collect_overlay.html';
+        var url = 'artwork/' + artworkID + '/collect_overlay.html';
         $.ajax({
             type: 'POST',
             url: url,
@@ -79,7 +79,7 @@ $(document).ready(function() {
         console.log('add to Collection');
         var artworkID = e.currentTarget.dataset['artworkid'];
         var collectionID = e.currentTarget.dataset['collectionid'];
-        var url = '{{ FORCE_SCRIPT_NAME }}/artwork/' + artworkID + '/collect_overlay.html';
+        var url = 'artwork/' + artworkID + '/collect_overlay.html';
         $.ajax({
             type: 'POST',
             url: url,
@@ -101,7 +101,7 @@ $(document).ready(function() {
     $("#addCollectionForm").on('submit', function (e) {
         e.preventDefault();
         var data = $(this).serializeArray();
-        var url = '{{ FORCE_SCRIPT_NAME }}/artwork/' + data[0]['value'] + '/collect_overlay.html';
+        var url = 'artwork/' + data[0]['value'] + '/collect_overlay.html';
         $.ajax({
             type: 'POST',
             url: url,
