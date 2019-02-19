@@ -73,7 +73,7 @@ def artworks_list(request):
                 print(err)
         if query_date_to:
             try:
-                year = int(query_date_from)
+                year = int(query_date_to)
                 q_objects.add(Q(date_year_to__gte=year), Q.AND)
             except ValueError as err:
                 querysetList = []
