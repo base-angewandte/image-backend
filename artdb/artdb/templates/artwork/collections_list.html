@@ -65,7 +65,7 @@ select menu.
                     {% if collection_user.grouper %}
                         {{ collection_user.grouper }}
                     {% else %}
-                        Unnamed Editor
+                        {% trans 'Unnamed Editor' %}
                     {% endif %}
                     </th></tr>
                     {% for collection in collection_user.list %}
