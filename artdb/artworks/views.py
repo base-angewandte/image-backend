@@ -45,11 +45,15 @@ def artworks_list(request):
 
     if query_search_type == 'expert':
         expertSearch = True
-        querysetList = Artwork.objects.filter(published=True)
+        queryset_list = Artwork.objects.filter(published=True)
         if query_location_of_creation:
-            q_objects.add(Q(location_of_creation__name__icontains=query_location_of_creation), Q.AND)
+            locations = Location.objects.filter(name__istartswith=query_location_of_creation)
+            locations_plus_descendants = Location.objects.get_queryset_descendants(locations, include_self=True)
+            q_objects.add(Q(location_of_creation__in=locations_plus_descendants), Q.AND)
         if query_location_current:
-            q_objects.add(Q(location_current__name__icontains=query_location_current), Q.AND)
+            locations = Location.objects.filter(name__istartswith=query_location_current)
+            locations_plus_descendants = Location.objects.get_queryset_descendants(locations, include_self=True)
+            q_objects.add(Q(location_current_in=locations_plus_descendants), Q.AND)
         if query_artist_name:
             artists = Artist.objects.filter(name__icontains=query_artist_name)
             synonyms = Artist.objects.filter(synonyms__icontains=query_artist_name)
@@ -60,33 +64,32 @@ def artworks_list(request):
 
         if query_artwork_title:
             # order results by startswith match. see: https://stackoverflow.com/a/48409962
-            querysetList = querysetList.filter(title__icontains=query_artwork_title)
-            expression = Q(title__startswith=query_artwork_title)
+            queryset_list = queryset_list.filter(title__icontains=query_artwork_title)
+            expression = Q(title__istartswith=query_artwork_title)
             is_match = ExpressionWrapper(expression, output_field=BooleanField())
-            querysetList = querysetList.annotate(myfield=is_match)
+            queryset_list = queryset_list.annotate(myfield=is_match)
         if query_date_from:
             try:
                 year = int(query_date_from)
                 q_objects.add(Q(date_year_from__gte=year), Q.AND)
             except ValueError as err:
-                querysetList = []
+                queryset_list = []
                 print(err)
         if query_date_to:
             try:
                 year = int(query_date_to)
                 q_objects.add(Q(date_year_to__lte=year), Q.AND)
             except ValueError as err:
-                querysetList = []
+                queryset_list = []
                 print(err)
 
-        if querysetList:
-            querysetList = (querysetList.filter(q_objects)
+        if queryset_list:
+            queryset_list = (queryset_list.filter(q_objects)
                     .order_by('title', 'location_of_creation')
                     .distinct())
     else:
         if query_search:
             terms = [term.strip() for term in query_search.split()]
-
 
             def get_artists(term):
                 return Artist.objects.filter(Q(name__istartswith=term) | Q(name__icontains=' ' + term))
@@ -94,7 +97,7 @@ def artworks_list(request):
             def get_keywords(term):
                 return Keyword.objects.filter(Q(name__istartswith=term) | Q(name__istartswith=' ' + term))
 
-            querysetList = (Artwork.objects.annotate(
+            queryset_list = (Artwork.objects.annotate(
                 rank=Case(
                     When(reduce(operator.or_, (Q(title__istartswith=term) for term in terms)), then=Value(2)),
                     When(reduce(operator.or_, (Q(title__icontains=' ' + term) for term in terms)), then=Value(3)),
@@ -111,11 +114,11 @@ def artworks_list(request):
                 .order_by('rank', 'title',))
         else:
             # what the user gets, when she isn't using the search at all
-            querysetList = (Artwork.objects
+            queryset_list = (Artwork.objects
                 .filter(published=True)
                 .order_by('-updated_at'))
 
-    paginator = Paginator(querysetList, 40) # show 40 artworks per page
+    paginator = Paginator(queryset_list, 40) # show 40 artworks per page
     pageNr = request.GET.get('page')
     try:
         artworks = paginator.get_page(pageNr)
