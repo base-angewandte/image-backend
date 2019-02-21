@@ -215,7 +215,7 @@ def artwork_collect(request, id):
                     ArtworkCollectionMembership.objects.create(collection=col, artwork=artwork)
                     return JsonResponse({'action': 'added'})
                 if (request.POST['action'] == 'remove'):
-                    ArtworkCollectionMembership.objects.filter(collection=col, artwork=artwork).delete()
+                    ArtworkCollectionMembership.objects.get(collection=col, artwork=artwork).remove()
                     return JsonResponse({'action': 'removed'})
         return JsonResponse({'action': 'collection error'})
 
@@ -223,7 +223,8 @@ def artwork_collect(request, id):
 @login_required
 def collection(request, id=None):
     """
-    Render all artwork thumbnails of a single collection.
+    GET: Render all artwork thumbnails of a single collection.
+    POST: move artworks within collection; connect or disconnect them
     """
     if request.method == 'GET':
         col = ArtworkCollection.objects.get(id=id)

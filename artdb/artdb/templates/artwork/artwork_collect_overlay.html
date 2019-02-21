@@ -50,12 +50,13 @@ when she selects a specific collection of artworks
 
 <script>
 $(document).ready(function() {  
+    var mainPath = '/{{ FORCE_SCRIPT_NAME }}';
 
     $(".removeFromCollection").on('click', function (e) {
         e.preventDefault();
         var artworkID = e.currentTarget.dataset['artworkid'];
         var collectionID = e.currentTarget.dataset['collectionid'];
-        var url = 'artwork/' + artworkID + '/collect_overlay.html';
+        var url = mainPath + 'artwork/' + artworkID + '/collect_overlay.html';
         $.ajax({
             type: 'POST',
             url: url,
@@ -79,7 +80,7 @@ $(document).ready(function() {
         console.log('add to Collection');
         var artworkID = e.currentTarget.dataset['artworkid'];
         var collectionID = e.currentTarget.dataset['collectionid'];
-        var url = 'artwork/' + artworkID + '/collect_overlay.html';
+        var url = mainPath + 'artwork/' + artworkID + '/collect_overlay.html';
         $.ajax({
             type: 'POST',
             url: url,
@@ -101,7 +102,7 @@ $(document).ready(function() {
     $("#addCollectionForm").on('submit', function (e) {
         e.preventDefault();
         var data = $(this).serializeArray();
-        var url = 'artwork/' + data[0]['value'] + '/collect_overlay.html';
+        var url = mainPath + 'artwork/' + data[0]['value'] + '/collect_overlay.html';
         $.ajax({
             type: 'POST',
             url: url,
