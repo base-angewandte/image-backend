@@ -12,6 +12,8 @@ urlpatterns = [
     path('collection/<int:id>_de.pptx', collection_download_as_pptx_de, name="download-pptx-de"),
     path('collection/<int:id>_en.pptx', collection_download_as_pptx_en, name="download-pptx-en"),
     path('collection/<int:id>.json', collection_json, name='collection-json'),
+    path('collection/<int:id>/edit/', collection_edit, name='collection-edit'),
+    path('collection/<int:id>/delete/', collection_delete, name='collection-delete'),
     re_path(
         r'^artist-autocomplete/$',
         ArtistAutocomplete.as_view(),

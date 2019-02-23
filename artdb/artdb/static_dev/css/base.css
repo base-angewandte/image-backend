@@ -32,7 +32,7 @@
 
 body::after{
     position:absolute; width:0; height:0; overflow:hidden; z-index:-1;
-    content:url(close_button_active.svg) url(download_pptx_active.svg) url(download_pptx_german_active.svg) url(download_pptx_english_active.svg) url(arrow_right_active.svg) url(arrow_left_active.svg);
+    content:url(close_button_active.svg) url(download_pptx_active.svg) url(download_pptx_german_active.svg) url(download_pptx_english_active.svg) url(arrow_right_active.svg) url(arrow_left_active.svg) url(edit_active.svg);
 }
 
 input:focus,
@@ -384,7 +384,9 @@ and a close button */
     text-transform: uppercase;
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 14px;
+    line-height: 38px;
     vertical-align: bottom;
+    text-align: center;
 }
 
 .inspector-button.button-move-left,
@@ -613,6 +615,7 @@ and a close button */
     display: inline-block;
     height: 48px;
     margin: 0 auto 0 auto;
+    vertical-align: top;
 }
 
 /* search */
@@ -855,13 +858,15 @@ and a close button */
 }
 
 #collection-selector-button {
+    display: inline-block;
     width: 480px;
     height: 48px;
     border: 0;
     padding: 16px;
     line-height: 16px;
     font-size: 16px;
-    box-shadow: 0 0 3px 0 rgba(0,0,0,.05)
+    box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
+    margin-right: 2px;
 }
 
 #collection-selector-button:active,
@@ -869,9 +874,24 @@ and a close button */
     outline:none;
 }
 
+#js-edit-collection {
+    display: inline-block;
+    height: 48px;
+    min-width: 48px;
+    margin: 0px 2px 12px 0px;
+    border: 0;
+    box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
+    background: white url(edit.svg) no-repeat center center;
+}
+
+#js-edit-collection:hover,
+#js-edit-collection:focus,
+#js-edit-collection:active {
+    background: white url(edit_active.svg) no-repeat center center;
+}
+
 #js-download-pptx {
-    display: block;
-    float: right;
+    display: inline-block;
     height: 48px;
     min-width: 48px;
     margin: 0px 0px 12px 0px;

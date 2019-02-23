@@ -49,8 +49,12 @@ $(document).ready(function() {
                 elDetails.appendChild(createEl('button', ['inspector-button','button-edit'], gettext('Edit'), url));
             };
             if (selectedThumbnail.dataset.membershipid) {
-                elDetails.appendChild(createEl('button', ['inspector-button','button-move-left'], '', url));
-                elDetails.appendChild(createEl('button', ['inspector-button','button-move-right'], '', url));
+                var leftButton = createEl('button', ['inspector-button','button-move-left'], '', url);
+                leftButton.dataset.action = 'move';
+                var rightButton = createEl('button', ['inspector-button','button-move-right'], '', url);
+                rightButton.dataset.action = 'move';
+                elDetails.appendChild(leftButton);
+                elDetails.appendChild(rightButton);
             };
             // build all the elements and append them to the DOM 
             $.each( data, function( key, val ) {
@@ -120,9 +124,11 @@ $(document).ready(function() {
     // copy the content from one inspector to another
     // this avoids unnecessary reloads
     function copyInspectorDetails(elNewInspector) {
-        elCurrentDetails = elCurrentInspector.getElementsByTagName('div')[0].cloneNode(true);
-        elNewInspector.replaceChild(elCurrentDetails, elNewInspector.getElementsByTagName('div')[0]);
-        elCurrentInspector = elNewInspector;
+        if (elCurrentInspector) {
+            elCurrentDetails = elCurrentInspector.getElementsByTagName('div')[0].cloneNode(true);
+            elNewInspector.replaceChild(elCurrentDetails, elNewInspector.getElementsByTagName('div')[0]);
+            elCurrentInspector = elNewInspector;
+        }
     }
 
     // hide the detail or edit overlay
@@ -187,8 +193,15 @@ $(document).ready(function() {
     // show the detail edit overlay
     showEditOverlay = function(url) {
         var overlayUrl = url + '/edit_overlay.html';
+        elNewInspector = null;
         $('#edit-overlay').load(overlayUrl, function() {
             $('.image-big').addClass('shown');
+            showOverlay(editClassName);
+        });
+    }
+
+    showCollectionEditOverlay = function(url) {
+        $('#edit-overlay').load(url, function() {
             showOverlay(editClassName);
         });
     }
@@ -238,19 +251,6 @@ $(document).ready(function() {
             showExpertSearch(true);
         } else {
             showBasicSearch();
-        }
-    });
-
-    // powerpoint download select menu
-    $("#js-download-pptx").click(function(e) {
-        if ($(this).hasClass('unfolded')) {
-            $('#js-download-pptx').removeClass('unfolded');
-        } else {
-            $('#js-download-pptx').addClass('unfolding')
-            .one('transitionend', function() {
-                $('#js-download-pptx').removeClass('unfolding');
-                $('#js-download-pptx').addClass('unfolded');
-            });
         }
     });
     

@@ -20,8 +20,9 @@ It also renders all thumbnails dynamically via javascript.
             </ol>
         </nav>
         {% if collections or my_collections %}
+        {% spaceless %}
         <div id="collection-nav">
-            <form method="GET" action="">
+            <form method="GET" action="select-collection">
                 <select name="collection-selector" id="collection-selector">
                     <option value="">{% trans 'All Collections' %}</option>
                     <optgroup label="{% trans 'My Collections' %}">
@@ -39,6 +40,9 @@ It also renders all thumbnails dynamically via javascript.
                     {% endfor %}
                 </select>
             </form>
+            {% if created_by_id == user.id %}
+            <div id="js-edit-collection" alt="{% trans 'Edit Collection' %}" title="{% trans 'Edit Collection' %}"></div>
+            {% endif %}
             {% if perms.artworks.can_download_pptx %}
             <div id="js-download-pptx" alt="{% trans 'Download PowerPoint' %}" title="{% trans 'Download PowerPoint' %}">
                 <div class="btn-download-pptx" alt="{% trans 'Close' %}" title="{% trans 'show/hide download options' %}"></div>
@@ -47,6 +51,7 @@ It also renders all thumbnails dynamically via javascript.
             </div>
             {% endif %}
         </div>
+        {% endspaceless %}
         {% endif %}
     </div>
 
@@ -67,6 +72,12 @@ $(document).ready(function() {
     var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
     var mainPath = '{{ FORCE_SCRIPT_NAME }}';
 
+    // hide the collect artwork overlay
+    hideCollectOverlay = function() {
+        closeOverlay();
+        location.reload();
+    };
+
     // this select menu allows the user to switch from one collection to another
     $( "#collection-selector" ).selectmenu({
         change: function(event, ui) {
@@ -79,18 +90,31 @@ $(document).ready(function() {
         }   
     });
 
-    // hide the collect artwork overlay
-    hideCollectOverlay = function() {
-        closeOverlay();
-        location.reload();
-    };
+    // powerpoint download select menu
+    $("#js-download-pptx").click(function(e) {
+        if ($(this).hasClass('unfolded')) {
+            $('#js-download-pptx').removeClass('unfolded');
+        } else {
+            $('#js-download-pptx').addClass('unfolding')
+            .one('transitionend', function() {
+                $('#js-download-pptx').removeClass('unfolding');
+                $('#js-download-pptx').addClass('unfolded');
+            });
+        }
+    });
+
+    // show the collection-edit overlay
+    $("#js-edit-collection").click(function(e) {
+        var url = '{% url 'collection-edit' id %}';
+        showCollectionEditOverlay(url);
+    });
 
     // the connector allows to connect or disconnect two artworks
     // connected artworks are shown on one slide in the exportable powerpoint presentation
     // connected artworks also stick together when left to the left or right
     $('.thumbnail-area').on('click', '.connector', function (e) {
         e.stopPropagation();
-        var url = `{{ FORCE_SCRIPT_NAME }}/collection/${collectionID}.html`;
+        var url = `${mainPath}/collection/${collectionID}.html`;
         $.ajax({
             type: 'POST',
             url: url,
@@ -108,7 +132,6 @@ $(document).ready(function() {
             }
         });
     });
-
 
     // moves the selected artwork in a collection in certain direction
     // direction = 'left' or 'right'
@@ -129,7 +152,6 @@ $(document).ready(function() {
             }
         });
     }
-
 
     // after an artwork has been connected, disconnected or moved
     // the whole collection gets updated

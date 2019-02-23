@@ -3,7 +3,7 @@ from io import BytesIO
 from functools import reduce
 import operator
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, ExpressionWrapper, BooleanField, Case, Value, IntegerField, When
 from django.conf import settings
@@ -23,7 +23,6 @@ from pptx.util import Pt
 from artworks.models import *
 from artworks.forms import *
 from artworks.serializers import ArtworkSerializer, CollectionSerializer
-
 
 @login_required
 def artworks_list(request):
@@ -176,13 +175,13 @@ def artwork_edit(request, id):
         form = ArtworkForm(request.POST, request.FILES, instance=artwork)
         if form.is_valid():
             updated_artwork = form.save(commit=False)
-            # TODO: artwork.user = request.user
             updated_artwork.updated_at = datetime.now()
             updated_artwork.save()
             return HttpResponse("<script>window.location=document.referrer;</script>")
+    # TODO: render error message correctly
     return render(request, 'artwork/artwork_edit_overlay.html', context)
 
-    
+
 @login_required
 def artwork_collect(request, id):
     """
@@ -243,19 +242,20 @@ def collection(request, id=None):
         # users can only manipulate their own collections via this view
         col = ArtworkCollection.objects.get(id=id)
         if (request.user.id == col.user.id):
-            if 'membership-id' in request.POST:
-                membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'])
-                if not membership:
-                    return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not find artwork membership'})
-                    # move artwork left
-                if (request.POST['action'] == 'left'):
-                    membership.move_left()
-                    return JsonResponse({'message': 'moved left'})
-                    # move artwork right
-                if (request.POST['action'] == 'right'):
-                    membership.move_right()
-                    return JsonResponse({'message': 'moved right'})
-                return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not manipulate artwork membership'})
+            if (request.POST['action'] == 'move'):
+                if 'membership-id' in request.POST:
+                    membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'])
+                    if not membership:
+                        return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not find artwork membership'})
+                        # move artwork left
+                    if (request.POST['action'] == 'left'):
+                        membership.move_left()
+                        return JsonResponse({'message': 'moved left'})
+                        # move artwork right
+                    if (request.POST['action'] == 'right'):
+                        membership.move_right()
+                        return JsonResponse({'message': 'moved right'})
+                    return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not manipulate artwork membership'})
             else:
                 leftMember = ArtworkCollectionMembership.objects.get(id=request.POST['member-left'])
                 rightMember = ArtworkCollectionMembership.objects.get(id=request.POST['member-right'])
@@ -270,6 +270,44 @@ def collection(request, id=None):
 
 
 @login_required
+def collection_edit(request, id):
+    """
+    Render an overlay showing the editable fields of a collection.
+    """
+    collection = ArtworkCollection.objects.get(id=id)
+    if (request.user.id is not collection.user.id):
+        # users can only manipulate their own collections via this view
+        return HttpResponseForbidden()
+    context = {}
+    context['form'] = ArtworkCollectionForm(instance=collection)
+    context['collection'] = collection
+    if request.method == "POST":
+        form = ArtworkCollectionForm(request.POST, instance=collection)
+        if form.is_valid():
+            form.save()
+            return redirect('collection', id=id)
+    # TODO: render error message correctly
+    return render(request, 'artwork/collection_edit_overlay.html', context)
+
+
+@login_required
+def collection_delete(request, id):
+    """
+    Delete a collection.
+    """
+    if request.method == "POST":
+        collection = ArtworkCollection.objects.get(id=id)
+        if (request.user.id is collection.user.id):
+            # users can only manipulate their own collections via this view
+            collection.delete()
+            return redirect('collections-list')
+        else:
+            return HttpResponseForbidden()
+    else:
+        return redirect('collection', id=id)
+
+
+@login_required
 def collection_json(request, id=None):
     """
     Return collection data in json format.
@@ -280,7 +318,7 @@ def collection_json(request, id=None):
 
 
 @login_required
-def collections_list(request, id=None):
+def collections_list(request):
     """
     Render a list of all collections.
     """
