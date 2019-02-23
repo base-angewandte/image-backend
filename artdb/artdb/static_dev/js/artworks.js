@@ -186,6 +186,7 @@ $(document).ready(function() {
 
     updateCollectOverlay = function(url) {
         $('#collect-overlay').load(url, function() {
+            elInspector = document.getElementById('collect-overlay-inspector');
             copyInspectorDetails(elInspector);
         });
     }
