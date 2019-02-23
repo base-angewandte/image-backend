@@ -165,7 +165,7 @@ $(document).ready(function() {
 
     // show the detail overlay
     function showDetailOverlay(url) {
-        var overlayUrl = url + '/detail_overlay.html';
+        var overlayUrl = url + '/detail_overlay/';
         $('#detail-overlay').load(overlayUrl, function() {
             var elInspector = document.getElementById('detail-overlay-inspector');
             copyInspectorDetails(elInspector);
@@ -176,7 +176,7 @@ $(document).ready(function() {
 
     // show the collect artwork overlay 
     showCollectOverlay = function(url) {
-        var overlayUrl = url + '/collect_overlay.html';
+        var overlayUrl = url + '/collect_overlay/';
         $('#collect-overlay').load(overlayUrl, function() {
             elInspector = document.getElementById('collect-overlay-inspector');
             copyInspectorDetails(elInspector);
@@ -192,7 +192,7 @@ $(document).ready(function() {
 
     // show the detail edit overlay
     showEditOverlay = function(url) {
-        var overlayUrl = url + '/edit_overlay.html';
+        var overlayUrl = url + '/edit_overlay/';
         elNewInspector = null;
         $('#edit-overlay').load(overlayUrl, function() {
             $('.image-big').addClass('shown');

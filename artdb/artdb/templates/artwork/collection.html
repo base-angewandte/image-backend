@@ -83,7 +83,7 @@ $(document).ready(function() {
         change: function(event, ui) {
             let id = ui.item.value;
             if (id) {
-                window.location = `${mainPath}/collection/${id}.html`;
+                window.location = `${mainPath}/collection/${id}/`;
             } else {
                 window.location = '{% url "collections-list" %}';
             }
@@ -114,7 +114,7 @@ $(document).ready(function() {
     // connected artworks also stick together when left to the left or right
     $('.thumbnail-area').on('click', '.connector', function (e) {
         e.stopPropagation();
-        var url = `${mainPath}/collection/${collectionID}.html`;
+        var url = `${mainPath}/collection/${collectionID}/`;
         $.ajax({
             type: 'POST',
             url: url,

@@ -84,7 +84,7 @@ select menu.
             change: function(event, ui) {
                 let id = ui.item.value;
                 if (id) {
-                    window.location = `{{ FORCE_SCRIPT_NAME }}/collection/${id}.html`;
+                    window.location = `{{ FORCE_SCRIPT_NAME }}/collection/${id}/`;
                 } else {
                     window.location = '{% url "collections-list" %}';
                 }
@@ -93,7 +93,7 @@ select menu.
         $("#js-collections-list tr").on('click', function (e) {
             var clickedCollection = e.currentTarget.dataset.collectionid;
             if (clickedCollection) {
-                window.location = `{{ FORCE_SCRIPT_NAME }}/collection/${clickedCollection}.html`;
+                window.location = `{{ FORCE_SCRIPT_NAME }}/collection/${clickedCollection}/`;
             }
         });
     });
