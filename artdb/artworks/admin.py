@@ -20,7 +20,7 @@ class ArtworkAdmin(admin.ModelAdmin):
     list_display = ('title', 'checked', 'published', 'created_at', 'updated_at')
     ordering = ('-created_at',)
     search_fields = ['title']
-    fields = ('published', 'checked', 'thumbnail_image', 'image_original', 'title', 'title_english', 'artists', 'date', 'date_year_from', 'date_year_to', 'material', 'dimensions', 'credits', 'keywords', 'location_of_creation', 'location_current', 'created_at', 'updated_at')
+    fields = ('published', 'checked', 'thumbnail_image', 'image_original', 'title', 'title_english', 'artists', 'date', 'date_year_from', 'date_year_to', 'material', 'dimensions', 'keywords', 'location_of_creation', 'location_current', 'description', 'credits', 'created_at', 'updated_at')
     readonly_fields = ('created_at','updated_at', 'thumbnail_image')
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'size':'80'})},

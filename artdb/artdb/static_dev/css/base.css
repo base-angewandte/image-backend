@@ -325,7 +325,7 @@ and a close button */
 }
 
 .inspector .key {
-    display: inilne-block;
+    display: block;
     color: var(--light-grey-1-color);
     font-size: 12px;
     line-height: 14px;
@@ -337,7 +337,7 @@ and a close button */
     color: #fff;
     font-size: 14px;
     line-height: 16px;
-    overflow-wrap: break;
+    overflow-wrap: break-word;
     max-width: 200px;
     margin-top: 0;
 }
