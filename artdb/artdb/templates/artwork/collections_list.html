@@ -44,9 +44,9 @@ select menu.
     </div>
 
     <div class="list">
-        <table id="js-collections-list" class="collections-list">
+        <table id="js-collections-select-list" class="collections-list">
         {% if my_collections %}
-            <tr><th colspan="2">{% trans 'My Collections' %}</th></tr>
+            <tr class="tableheader"><th colspan="2">{% trans 'My Collections' %}</th></tr>
             {% for collection in my_collections %}
                 <tr class="collection" data-collectionid="{{collection.id}}"><td>{{collection.title}}</td>
                 <td>{{collection.size}}</td>
@@ -90,7 +90,7 @@ select menu.
                 }
             }   
         });
-        $("#js-collections-list tr").on('click', function (e) {
+        $("#js-collections-select-list tr").on('click', function (e) {
             var clickedCollection = e.currentTarget.dataset.collectionid;
             if (clickedCollection) {
                 window.location = `{{ FORCE_SCRIPT_NAME }}/collection/${clickedCollection}/`;

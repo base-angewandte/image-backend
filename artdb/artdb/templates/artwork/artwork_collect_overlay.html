@@ -9,11 +9,11 @@ when she selects a specific collection of artworks
 
 <div class="content">
     <div class="center">
-        {% spaceless %}
-        <h2 class="centered">{% trans 'Add artwork to your collections' %}</h2>
-        <form method="POST" action="" id="addCollectionForm">
-            <input type="hidden" name="artworkid" value="{{artwork.id}}">
-            <table class="collections-list">
+    {% spaceless %}
+    <h2 class="centered">{% trans 'Add artwork to your collections' %}</h2>
+    <form method="POST" action="" id="addCollectionForm">
+        <input type="hidden" name="artworkid" value="{{artwork.id}}">
+        <table class="collections-list">
             <tr class="addCollection">
                 <td><input placeholder="{% trans 'New folder title' %}" name="{% trans 'title' %}" autocomplete="off" role="new collection" autofocus/></td>
                 <td class="collectButton"><input type="submit" class="addCollection addCollectionButton" value="{% trans 'add' %}"/></td>
@@ -29,8 +29,8 @@ when she selects a specific collection of artworks
             </tr>
             {% endfor %}
             {% else %}
-                <tr>
-                    <td colspan=2>{% trans 'NoCollections' %}</td>
+                <tr class="addCollection">
+                    <td colspan=2 class="nocollections">{% trans 'NoCollections' %}</td>
                 </tr>
             {% endif %}
         </table>
