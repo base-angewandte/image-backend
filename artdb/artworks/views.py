@@ -52,7 +52,7 @@ def artworks_list(request):
         if query_location_current:
             locations = Location.objects.filter(name__istartswith=query_location_current)
             locations_plus_descendants = Location.objects.get_queryset_descendants(locations, include_self=True)
-            q_objects.add(Q(location_current_in=locations_plus_descendants), Q.AND)
+            q_objects.add(Q(location_current__in=locations_plus_descendants), Q.AND)
         if query_artist_name:
             artists = Artist.objects.filter(name__icontains=query_artist_name)
             synonyms = Artist.objects.filter(synonyms__icontains=query_artist_name)
@@ -60,7 +60,6 @@ def artworks_list(request):
         if query_keyword:
             keywords = Keyword.objects.filter(name__icontains=query_keyword)
             q_objects.add(Q(keywords__in=keywords), Q.AND)
-
         if query_artwork_title:
             # order results by startswith match. see: https://stackoverflow.com/a/48409962
             queryset_list = queryset_list.filter(title__icontains=query_artwork_title)
