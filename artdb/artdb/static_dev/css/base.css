@@ -585,7 +585,7 @@ and a close button */
 }
 
 .thumbnail-area .navigation li.selected {
-    border-bottom: 2px solid var(--base-color);
+    border-bottom: 5px solid var(--base-color);
 }
 
 .thumbnail-area .navigation li a {
@@ -1086,6 +1086,7 @@ table.collections-list tr td.nocollections {
 #js-collections-select-list tr:focus td,
 #js-collections-select-list tr:active td {
     color: var(--base-color);
+    cursor: pointer;
 }
 
 #js-collections-select-list tr.tableheader {
