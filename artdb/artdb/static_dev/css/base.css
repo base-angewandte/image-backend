@@ -410,6 +410,13 @@ and a close button */
     background-color: var(--mid-grey-2-color); 
 }
 
+.show-collect-overlay .inspector-button.button-move-left,
+.show-collect-overlay .inspector-button.button-move-right,
+.show-detail-overlay .inspector-button.button-move-left,
+.show-detail-overlay .inspector-button.button-move-right {
+    visibility: hidden;
+}
+
 .artwork-details {
     padding-top: 16px;
 }
