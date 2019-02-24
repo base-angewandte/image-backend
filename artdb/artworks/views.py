@@ -60,15 +60,6 @@ def artworks_list(request):
         if query_keyword:
             keywords = Keyword.objects.filter(name__icontains=query_keyword)
             q_objects.add(Q(keywords__in=keywords), Q.AND)
-        if query_artwork_title:
-            title_contains = (Q(title__icontains=query_artwork_title) |
-                              Q(title_english__icontains=query_artwork_title))
-            title_starts_with = (Q(title__istartswith=query_artwork_title) |
-                                 Q(title_english__istartswith=query_artwork_title))
-            # order results by startswith match. see: https://stackoverflow.com/a/48409962
-            queryset_list = queryset_list.filter(title_contains)
-            is_match = ExpressionWrapper(title_starts_with, output_field=BooleanField())
-            queryset_list = queryset_list.annotate(starts_with_title=is_match)
         if query_date_from:
             try:
                 year = int(query_date_from)
@@ -84,10 +75,21 @@ def artworks_list(request):
                 queryset_list = []
                 print(err)
 
-        if queryset_list:
+        if query_artwork_title:
+            title_contains = (Q(title__icontains=query_artwork_title) |
+                              Q(title_english__icontains=query_artwork_title))
+            title_starts_with = (Q(title__istartswith=query_artwork_title) |
+                                 Q(title_english__istartswith=query_artwork_title))
+            # order results by startswith match. see: https://stackoverflow.com/a/48409962
+            queryset_list = queryset_list.filter(title_contains)
+            is_match = ExpressionWrapper(title_starts_with, output_field=BooleanField())
+            queryset_list = queryset_list.annotate(starts_with_title=is_match)
             queryset_list = (queryset_list.filter(q_objects)
-                    .order_by('-starts_with_title', 'location_of_creation')
-                    .distinct())
+                    .order_by('-starts_with_title', 'location_of_creation'))
+        else:
+            queryset_list = (queryset_list.filter(q_objects)
+                    .order_by('title', 'location_of_creation'))
+        queryset_list = queryset_list.distinct()
     else:
         if query_search:
             terms = [term.strip() for term in query_search.split()]
