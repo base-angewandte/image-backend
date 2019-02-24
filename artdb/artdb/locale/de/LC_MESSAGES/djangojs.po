@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-17 17:46+0100\n"
+"POT-Creation-Date: 2019-02-24 13:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,57 +18,57 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: artdb/static_dev/js/artworks.js:47
+#: artdb/static_dev/js/artworks.js:37
 msgid "addtocollection"
 msgstr "In Arbeitsmappe hinzufügen"
 
-#: artdb/static_dev/js/artworks.js:49
+#: artdb/static_dev/js/artworks.js:39
 msgid "Edit"
 msgstr "Editieren"
 
-#: artdb/static_dev/js/artworks.js:63
+#: artdb/static_dev/js/artworks.js:57
 msgid "Artist"
 msgstr "Künstler_in"
 
-#: artdb/static_dev/js/artworks.js:73
+#: artdb/static_dev/js/artworks.js:67
 msgid "Keywords"
 msgstr "Schlagworte"
 
-#: artdb/static_dev/js/artworks.js:83
+#: artdb/static_dev/js/artworks.js:77
 msgid "location_of_creation"
 msgstr "Entstehungsort"
 
-#: artdb/static_dev/js/artworks.js:91
+#: artdb/static_dev/js/artworks.js:85
 msgid "location_current"
 msgstr "Standort"
 
 # manually added translations
-msgid "credits"
-msgstr "Abbildungsnachweis"
+#~ msgid "credits"
+#~ msgstr "Abbildungsnachweis"
 
-msgid "date"
-msgstr "Datierung"
+#~ msgid "date"
+#~ msgstr "Datierung"
 
-msgid "dimensions"
-msgstr "Format"
+#~ msgid "dimensions"
+#~ msgstr "Format"
 
-msgid "checked"
-msgstr "überprüft"
+#~ msgid "checked"
+#~ msgstr "überprüft"
 
-msgid "not published"
-msgstr "nicht veröffentlicht"
+#~ msgid "not published"
+#~ msgstr "nicht veröffentlicht"
 
-msgid "material"
-msgstr "Material/Technik"
+#~ msgid "material"
+#~ msgstr "Material/Technik"
 
-msgid "description"
-msgstr "Anmerkungen"
+#~ msgid "description"
+#~ msgstr "Anmerkungen"
 
-msgid "title"
-msgstr "Titel"
+#~ msgid "title"
+#~ msgstr "Titel"
 
-msgid "title_english"
-msgstr "Titel, englisch"
+#~ msgid "title_english"
+#~ msgstr "Titel, englisch"
 
-msgid "published"
-msgstr "veröffentlicht"
+#~ msgid "published"
+#~ msgstr "veröffentlicht"
