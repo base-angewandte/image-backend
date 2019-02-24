@@ -130,12 +130,6 @@ h2.centered {
     filter: none !important;
 }
 
-@media only screen and (min-width:640px){
-    .wrapper {
-        padding:71px 16px 16px;
-    }
-}
-
 /* the classes of body are used to represent different states:
 thumbnails = normal thumbnail browsing
 detail-overlay = show the artwork detail overlay
@@ -232,22 +226,6 @@ and a close button */
     vertical-align: top;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased; 
-}
-
-/* media queries */
-@media (max-width: 1083px) {
-    .sidebar-detached {
-        height: calc(100% - var(--topbar-height));
-    }
-}
-
-@media (max-width: 1280px) {
-    .sidebar-detached {
-        margin-left: calc(1280px - var(--sidebar-width)) !important;
-    }
-    .body {
-        overflow-x: scroll;
-    }
 }
 
 /* thumbnailbrowser */
@@ -1265,10 +1243,20 @@ table.collections-list input {
     background: url(arrow_down_active.svg) no-repeat center center !important;
 }
 
-/* other */
+/* media queries */
+@media (max-width: 1280px) {
+    .sidebar-detached {
+        margin-left: calc(1280px - var(--sidebar-width)) !important;
+    }
+    .body {
+        overflow-x: scroll;
+    }
+}
 
-.not-supported {
-    display: none;
+@media (max-width: 1083px) {
+    .sidebar-detached {
+        height: calc(100% - var(--topbar-height));
+    }
 }
 
 @media only screen and (max-width:599px) {
@@ -1280,6 +1268,17 @@ table.collections-list input {
         padding: 16px;
         min-height: 50%;
     }
+}
+
+@media only screen and (min-width:640px){
+    .wrapper {
+        padding:71px 16px 16px;
+    }
+}
+
+/* other */
+.not-supported {
+    display: none;
 }
 
 .nothing-found {

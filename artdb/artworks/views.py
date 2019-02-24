@@ -251,7 +251,7 @@ def collection(request, id=None):
         # users can only manipulate their own collections via this view
         col = ArtworkCollection.objects.get(id=id)
         if (request.user.id == col.user.id):
-            if (request.POST['action'] == 'move'):
+            if ((request.POST['action'] == 'left') | (request.POST['action'] == 'right')):
                 if 'membership-id' in request.POST:
                     membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'])
                     if not membership:
@@ -266,13 +266,13 @@ def collection(request, id=None):
                         return JsonResponse({'message': 'moved right'})
                     return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not manipulate artwork membership'})
             else:
-                leftMember = ArtworkCollectionMembership.objects.get(id=request.POST['member-left'])
-                rightMember = ArtworkCollectionMembership.objects.get(id=request.POST['member-right'])
+                left_member = ArtworkCollectionMembership.objects.get(id=request.POST['member-left'])
+                right_member = ArtworkCollectionMembership.objects.get(id=request.POST['member-right'])
                 if (request.POST['action'] == 'connect'):
-                    if leftMember.connect(rightMember):
+                    if left_member.connect(right_member):
                         return JsonResponse({'message': 'connected'})
                 if (request.POST['action'] == 'disconnect'):
-                    if leftMember.disconnect(rightMember):
+                    if left_member.disconnect(right_member):
                         return JsonResponse({'message': 'disconnected'})
         else:
             return JsonResponse(status=403, data={'status': 'false', 'message': 'Permission needed'})
