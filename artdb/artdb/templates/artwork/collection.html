@@ -40,7 +40,7 @@ It also renders all thumbnails dynamically via javascript.
                     {% endfor %}
                 </select>
             </form>
-            {% if created_by_id == user.id %}
+            {% if created_by_userid == user.id %}
             <div id="js-edit-collection" alt="{% trans 'Edit Collection' %}" title="{% trans 'Edit Collection' %}"></div>
             {% endif %}
             {% if perms.artworks.can_download_pptx %}
@@ -56,7 +56,11 @@ It also renders all thumbnails dynamically via javascript.
     </div>
 
     {% if memberships %}
-    <div id="thumbnails"></div>
+        {% if created_by_userid == user.id %}
+        <div id="thumbnails" class="editable"></div>
+        {% else %}
+        <div id="thumbnails"></div>
+        {% endif %}
     {% else %}
     <div class="nothing-found">{% trans 'NoArtworks' %}</div>
     {% endif %}
@@ -158,7 +162,6 @@ $(document).ready(function() {
     updateSlides = function() {
         var path = '{{ FORCE_SCRIPT_NAME }}';
         var jsonUrl = path + '/collection/{{id}}.json';
-        
         var divOldThumbnails = document.getElementById('thumbnails');
         var divNewThumbnails = document.createElement('div');
         divNewThumbnails.id = 'thumbnails';
@@ -243,6 +246,7 @@ $(document).ready(function() {
                     previousThumbnail = divThumbnail;
                 }
             }
+            divNewThumbnails.classList = divOldThumbnails.classList;
             divOldThumbnails.parentElement.replaceChild(divNewThumbnails, divOldThumbnails);
             // after the thumbnails have been updated, the former selected thumbnail
             // has to be re-selected

@@ -513,7 +513,7 @@ and a close button */
     width: 64px;
 }
 
-#thumbnails .connector:hover {
+#thumbnails.editable .connector:hover {
     background: url(connect.svg) no-repeat center;
 }
 
@@ -551,7 +551,7 @@ and a close button */
     left: 183px;
 }
 
-#thumbnails .slide-for-two-artworks .connector:hover {
+#thumbnails.editable .slide-for-two-artworks .connector:hover {
     background: url(disconnect.svg) no-repeat center;
 }
 

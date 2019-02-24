@@ -240,7 +240,6 @@ def collection(request, id=None):
         context = {}
         context['title']  = col.title
         context['id']  = col.id
-        context['created_by_id'] = col.user.id
         context['created_by_username'] = col.user.get_username()
         context['created_by_fullname'] = col.user.get_full_name()
         context['created_by_userid'] = col.user.id

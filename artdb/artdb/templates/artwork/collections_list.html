@@ -56,7 +56,7 @@ select menu.
         {% if collections %}
             {% regroup collections|dictsort:"user.get_full_name" by user.get_full_name as grouped_collections %}
             {% for collection_user in grouped_collections %}
-                    <tr><th colspan="2">
+                    <tr class="tableheader"><th colspan="2">
                     {% if collection_user.grouper %}
                         {{ collection_user.grouper }}
                     {% else %}
