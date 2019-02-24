@@ -61,11 +61,14 @@ def artworks_list(request):
             keywords = Keyword.objects.filter(name__icontains=query_keyword)
             q_objects.add(Q(keywords__in=keywords), Q.AND)
         if query_artwork_title:
+            title_contains = (Q(title__icontains=query_artwork_title) |
+                              Q(title_english__icontains=query_artwork_title))
+            title_starts_with = (Q(title__istartswith=query_artwork_title) |
+                                 Q(title_english__istartswith=query_artwork_title))
             # order results by startswith match. see: https://stackoverflow.com/a/48409962
-            queryset_list = queryset_list.filter(title__icontains=query_artwork_title)
-            expression = Q(title__istartswith=query_artwork_title)
-            is_match = ExpressionWrapper(expression, output_field=BooleanField())
-            queryset_list = queryset_list.annotate(myfield=is_match)
+            queryset_list = queryset_list.filter(title_contains)
+            is_match = ExpressionWrapper(title_starts_with, output_field=BooleanField())
+            queryset_list = queryset_list.annotate(starts_with_title=is_match)
         if query_date_from:
             try:
                 year = int(query_date_from)
@@ -83,7 +86,7 @@ def artworks_list(request):
 
         if queryset_list:
             queryset_list = (queryset_list.filter(q_objects)
-                    .order_by('title', 'location_of_creation')
+                    .order_by('-starts_with_title', 'location_of_creation')
                     .distinct())
     else:
         if query_search:
@@ -97,12 +100,20 @@ def artworks_list(request):
 
             queryset_list = (Artwork.objects.annotate(
                 rank=Case(
-                    When(reduce(operator.or_, (Q(title__istartswith=term) for term in terms)), then=Value(2)),
-                    When(reduce(operator.or_, (Q(title__icontains=' ' + term) for term in terms)), then=Value(3)),
-                    When(reduce(operator.or_, (Q(title__icontains=term) for term in terms)), then=Value(6)),
-                    When(reduce(operator.or_, (Q(artists__in=get_artists(term)) for term in terms)), then=Value(1)),
-                    When(reduce(operator.or_, (Q(location_of_creation__name__istartswith=term) for term in terms)), then=Value(4)),
-                    When(reduce(operator.or_, (Q(keywords__in=get_keywords(term)) for term in terms)), then=Value(5)),
+                    When(Q(title__iexact=query_search), then=Value(1)),
+                    When(Q(title_english__iexact=query_search), then=Value(1)),
+                    When(Q(artists__in=get_artists(query_search)), then=Value(2)),
+                    When(Q(title__istartswith=query_search), then=Value(3)),
+                    When(Q(title_english__istartswith=query_search), then=Value(3)),
+                    When(reduce(operator.or_, (Q(artists__in=get_artists(term)) for term in terms)), then=Value(4)),
+                    When(reduce(operator.or_, (Q(title__istartswith=term) for term in terms)), then=Value(5)),
+                    When(reduce(operator.or_, (Q(title_english__istartswith=term) for term in terms)), then=Value(5)),
+                    When(reduce(operator.or_, (Q(title__icontains=' ' + term) for term in terms)), then=Value(6)),
+                    When(reduce(operator.or_, (Q(title_english__icontains=' ' + term) for term in terms)), then=Value(6)),
+                    When(reduce(operator.or_, (Q(title__icontains=term) for term in terms)), then=Value(7)),
+                    When(reduce(operator.or_, (Q(title_english__icontains=term) for term in terms)), then=Value(7)),
+                    When(reduce(operator.or_, (Q(location_of_creation__name__istartswith=term) for term in terms)), then=Value(10)),
+                    When(reduce(operator.or_, (Q(keywords__in=get_keywords(term)) for term in terms)), then=Value(11)),
                     default=Value(99),
                     output_field=IntegerField(),
                 ))
@@ -338,7 +349,7 @@ class ArtistAutocomplete(autocomplete.Select2QuerySetView):
         # return Artist.objects.none()
         qs = Artist.objects.all().order_by('name')
         if self.q:
-            return qs.filter(name__icontains=self.q)
+            return qs.filter(name__istartswith=self.q)
         else:
             return Artist.objects.none()
 
@@ -356,8 +367,9 @@ class ArtworkAutocomplete(autocomplete.Select2QuerySetView):
             # order results by startswith match. see: https://stackoverflow.com/a/48409962
             expression = Q(title__istartswith=self.q) | Q(title__icontains=' ' + self.q)
             is_match = ExpressionWrapper(expression, output_field=BooleanField())
-            qs = qs.annotate(myfield=is_match)
-            qs = qs.order_by('-myfield')[:4]
+            qs = qs.annotate(title_starts_with=is_match)
+            qs = qs.distinct('title', 'title_starts_with')
+            qs = qs.order_by('-title_starts_with', 'title')[:4]
             return qs
         else:
             return Artwork.objects.none()

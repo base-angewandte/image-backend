@@ -32,7 +32,7 @@ msgstr ""
 
 #: artdb/templates/artwork/artwork_collect_overlay.html:13
 msgid "Add artwork to your collections"
-msgstr ""
+msgstr "My folders"
 
 #: artdb/templates/artwork/artwork_collect_overlay.html:18
 msgid "New folder title"
