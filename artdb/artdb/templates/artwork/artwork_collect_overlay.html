@@ -36,7 +36,7 @@ when she selects a specific collection of artworks
         </table>
     </form>
     {% endspaceless %}
-    <button name="close" class="button-close"  onClick="hideCollectOverlay()"></button>
+    <button name="close" class="button-close" onClick="hideCollectOverlay()"></button>
     </div>
 </div>
     
@@ -50,7 +50,7 @@ when she selects a specific collection of artworks
 
 <script>
 $(document).ready(function() {  
-    var mainPath = '{{ FORCE_SCRIPT_NAME }}';
+    mainPath = '{{ FORCE_SCRIPT_NAME }}';
 
     $(".removeFromCollection").on('click', function (e) {
         e.preventDefault();
@@ -77,7 +77,6 @@ $(document).ready(function() {
 
     $(".addToCollection").on('click', function (e) {
         e.preventDefault();
-        console.log('add to Collection');
         var artworkID = e.currentTarget.dataset['artworkid'];
         var collectionID = e.currentTarget.dataset['collectionid'];
         var url = mainPath + '/artwork/' + artworkID + '/collect_overlay/';

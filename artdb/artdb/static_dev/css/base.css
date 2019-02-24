@@ -308,10 +308,6 @@ and a close button */
     padding-top: 18px;
 }
 
-.inspector-button + div {
-    margin-top: 28px;
-}
-
 .inspector div {
     margin-top: 28px;
 }
@@ -320,8 +316,8 @@ and a close button */
     margin-top: 0px;
 }
 
-.inspector-button:hover {
-    background-color: var(--mid-grey-3-color);
+.inspector-button + div {
+    margin-top: 28px;
 }
 
 .inspector .key {
@@ -389,6 +385,12 @@ and a close button */
     text-align: center;
 }
 
+.inspector-button:hover,
+.inspector-button:focus,
+.inspector-button:active {
+    background-color: var(--mid-grey-3-color);
+}
+
 .inspector-button.button-move-left,
 .inspector-button.button-move-right {
     width: 97px;
@@ -420,6 +422,15 @@ and a close button */
     background-color: var(--mid-grey-3-color);
 }
 
+.show-collect-overlay .button-collect {
+    opacity: 0.4;
+}
+
+.show-collect-overlay .button-collect:hover,
+.show-collect-overlay .button-collect:active,
+.show-collect-overlay .button-collect:focus {
+    background-color: var(--mid-grey-2-color); 
+}
 
 .artwork-details {
     padding-top: 16px;

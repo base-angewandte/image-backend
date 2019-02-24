@@ -125,7 +125,7 @@ $(document).ready(function() {
     hideImageAndOverlay = function() {
         $('.image-big').removeClass('shown');
         closeOverlay();
-    };  
+    };
 
     // hide the overlay
     closeOverlay = function() {
