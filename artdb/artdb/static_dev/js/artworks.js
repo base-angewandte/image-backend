@@ -1,7 +1,6 @@
 // global variables used across all javascripts
 var selectedThumbnail = null;
 
-
 $(document).ready(function() {
     var thumbnailbrowserScrollPosition = $(window).scrollTop();
     var elCurrentInspector = null;
@@ -13,17 +12,13 @@ $(document).ready(function() {
 
 
     // ---------------------------------------------------------
-    // Get the CSRF Token
-    // see: https://docs.djangoproject.com/en/2.2/ref/csrf/#ajax
+    // Update the Inspector
+    // load artwork data (JSON) and show it in the sidebar
     // ---------------------------------------------------------
-    // var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
 
-
-    // ---------------------------------------------------------
     // Helper Function
     // creates document elements with optional css classes, text
     // and a dataset.url
-    // ---------------------------------------------------------
     function createEl(tagName, cssClasses, text, url) {
         var el = document.createElement(tagName);
         cssClasses.forEach(function(cssClassName) {
@@ -33,12 +28,7 @@ $(document).ready(function() {
         if (url) el.dataset.url = url;
         return el;
     }
-
-
-    // ---------------------------------------------------------
-    // Update the Inspector
-    // load artwork data (JSON) and show it in the sidebar
-    // ---------------------------------------------------------
+    
     updateInspector = function(elInspector) {
         const url = selectedThumbnail.dataset.url;
         const jsonUrl = url + '.json';
@@ -207,13 +197,6 @@ $(document).ready(function() {
         });
     }
 
-    // do not submit empty form fields
-    $("#search-expert").submit(function() {
-        $(this).find(":input").filter(function() { return !this.value; }).attr("disabled", "disabled");
-        return true;
-    });
-    $("form" ).find(":input").prop("disabled", false);
-
     showExpertSearch = function(bAnimated) {
         if (bAnimated) {
             $('#search-basic').addClass('fadeout')
@@ -246,21 +229,13 @@ $(document).ready(function() {
         });
     }
 
-    // search basic/expert switch
-    $("#js-search-switch").click(function(e) {
-        if ($(this).prop('checked')) {
-            showExpertSearch(true);
-        } else {
-            showBasicSearch();
-        }
-    });
-    
+
     // ---------------------------------------------------
     // event listeners
     // ---------------------------------------------------
 
     window.addEventListener('scroll', throttle(handleScroll, 30));
-
+    
     // the page consists of a sidebar and a main view
     // per default, clickable thumbnails are shown
     $('.thumbnail-area').on('click', '.thumbnail', function (e) {
@@ -281,6 +256,22 @@ $(document).ready(function() {
             updateInspector(elInspector);
         }
     });
+
+    // search basic/expert switch
+    $("#js-search-switch").click(function(e) {
+        if ($(this).prop('checked')) {
+            showExpertSearch(true);
+        } else {
+            showBasicSearch();
+        }
+    });
+
+    // do not submit empty form fields
+    $("#search-expert").submit(function() {
+        $(this).find(":input").filter(function() { return !this.value; }).attr("disabled", "disabled");
+        return true;
+    });
+    $("form" ).find(":input").prop("disabled", false);
 
     $('.clear-search-artwork-field').on('click', function(e) {
         $(this).hide();
@@ -315,24 +306,26 @@ $(document).ready(function() {
             }
         } else if (e.target.classList.contains('tag')) {
             function getParameters(s) {
-                return s.replace(/\s/g, "+");
+                s = s.trim();
+                s = s.replace(/\s+/g, "+");
+                return s;
             }
-            var url = "?searchtype=expert&";
+            var url = mainPath + "/?searchtype=expert&";
     
             if (e.target.dataset.artist) {
-                var artist = encodeURIComponent(e.target.dataset.artist.trim());
+                var artist = getParameters(e.target.dataset.artist);
                 url += `artist=${artist}`;
             }
             if (e.target.dataset.keyword) {
-                var keyword = encodeURIComponent(e.target.dataset.keyword.trim());
+                var keyword = getParameters(e.target.dataset.keyword);
                 url += `keyword=${keyword}`;
             }
             if (e.target.dataset.location_of_creation) {
-                var location_of_creation = encodeURIComponent(e.target.dataset.location_of_creation.trim());
+                var location_of_creation = getParameters(e.target.dataset.location_of_creation);
                 url += `location_of_creation=${location_of_creation}`;
             }
             if (e.target.dataset.location_current) {
-                var location_current = encodeURIComponent(e.target.dataset.location_current.trim());
+                var location_current = getParameters(e.target.dataset.location_current);
                 url += `location_current=${location_current}`;
             }
             window.location.href = url;
@@ -367,16 +360,16 @@ $(document).ready(function() {
     }
 
     function throttle(callback) {
-        var active = false; // a simple flag
+        var bActive = false; // a simple flag
         var evt; // to keep track of the last event
         var handler = function(){ // fired only when screen has refreshed
-          active = false; // release our flag 
+          bActive = false; // release our flag 
           callback(evt);
-        }
+        } 
         return function handleEvent(e) { // the actual event handler
           evt = e; // save our event at each call
-          if (!active) { // only if we weren't already doing it
-            active = true; // raise the flag
+          if (!bActive) { // only if we weren't already doing it
+            bActive = true; // raise the flag
             requestAnimationFrame(handler); // wait for next screen refresh
           };
         }

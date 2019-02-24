@@ -1,3 +1,5 @@
+/* django-autocomplete-light and edit view adjustments */
+
 .sidebar-attached .confirmationarea {
     background-color: var(--mid-grey-1-color);
     padding: 16px 16px 10px 16px;
@@ -222,10 +224,6 @@
     text-transform: uppercase;
     background-color: rgba(60,60,60,0.62);
     border-radius: 8px;
-}
-
-#edit-overlay label[for="id_imageOriginal"]:focus + label[for="id_imageOriginal"]:hover {
-    background-color: red;
 }
 
 #edit-overlay .content {

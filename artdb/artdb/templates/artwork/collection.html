@@ -66,11 +66,11 @@ It also renders all thumbnails dynamically via javascript.
 
 {% block extra_scripts %}
 <script type='text/javascript'>
-
+var mainPath = "";
 $(document).ready(function() {
     var collectionID = {{ id }};
     var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
-    var mainPath = '{{ FORCE_SCRIPT_NAME }}';
+    mainPath= "{{ FORCE_SCRIPT_NAME }}";
 
     // hide the collect artwork overlay
     hideCollectOverlay = function() {
