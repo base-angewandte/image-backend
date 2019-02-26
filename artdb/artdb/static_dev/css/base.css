@@ -648,7 +648,7 @@ and a close button */
 }
 
 #search-expert-fold.unfolded {
-    max-height: 145px;
+    max-height: 100%;
     transition-timing-function: ease-in;
     transition-duration: 0.3s;
     transition-delay: 0.1s;
@@ -1317,6 +1317,21 @@ table.collections-list input {
     }
     .wrapper-footer {
         padding: 0;
+    }
+    #topbar .wrapper {
+        max-width: none;
+        min-width: none;
+    }
+    .search-topbar,
+    #collection-nav {
+        display: block;
+        float: none;
+        margin-top: 16px;
+    }
+    .switch-labeled {
+        display: inline-block;
+        vertical-align: top;
+        float: none;
     }
 }
 
