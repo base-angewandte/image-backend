@@ -231,8 +231,11 @@
 }
 
 #edit-overlay .image-big {
+    display: block;
     max-height: 590px;
     max-width: 590px;
+    height: auto;
+    width: auto;
 }
 
 #edit-overlay label {
