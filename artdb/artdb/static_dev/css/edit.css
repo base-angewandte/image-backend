@@ -235,7 +235,7 @@
     max-height: 590px;
     max-width: 590px;
     height: auto;
-    width: auto;
+    width: 100%;
 }
 
 #edit-overlay label {
