@@ -1297,8 +1297,7 @@ table.collections-list input {
     .sidebar-detached {
         margin-left: calc(830px - var(--sidebar-width)) !important;
     }
-    body {
-        overflow-x: scroll;
+    #thumbnailbrowser {
     }
 }
 
