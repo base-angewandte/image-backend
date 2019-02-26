@@ -210,7 +210,7 @@ and a close button */
     display: table-cell;
     width: var(--sidebar-width);
     height: calc(100% - var(--topbar-height));
-    margin-left: calc(100% - var(--sidebar-width));
+    margin-left: calc(100vw - var(--sidebar-width));
     background-color: var(--dark-grey-1-color);
     padding: 32px 16px 16px 16px;
     -moz-osx-font-smoothing: grayscale;
