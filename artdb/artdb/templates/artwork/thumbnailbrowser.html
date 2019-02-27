@@ -75,7 +75,6 @@ var mainPath = "";
 $(document).ready(function() {
     mainPath= "{{ FORCE_SCRIPT_NAME }}";
     var expertSearch = "{{ expert_search }}";
-
     if (expertSearch == "True") {
         $("#js-search-switch").prop('checked', true);
         showExpertSearch(false);

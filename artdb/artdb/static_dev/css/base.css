@@ -655,7 +655,7 @@ and a close button */
 }
 
 #search-expert-fold.unfolded-noanimation {
-    max-height: 145px;
+    max-height: 100%;
     transition: none;
 }
 

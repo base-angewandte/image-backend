@@ -40,11 +40,10 @@ def artworks_list(request):
     query_location_current = request.GET.get('location_current')
     q_objects = Q()
     context = {}
-    expertSearch = False
+    expert_search = False
 
-    if query_search_type == 'expert':
-        expertSearch = True
-        queryset_list = Artwork.objects.filter(published=True)
+    def get_expert_queryset_list():
+        expert_list = Artwork.objects.filter(published=True)
         if query_location_of_creation:
             locations = Location.objects.filter(name__istartswith=query_location_of_creation)
             locations_plus_descendants = Location.objects.get_queryset_descendants(locations, include_self=True)
@@ -65,32 +64,32 @@ def artworks_list(request):
                 year = int(query_date_from)
                 q_objects.add(Q(date_year_from__gte=year), Q.AND)
             except ValueError as err:
-                queryset_list = []
                 print(err)
+                return []
         if query_date_to:
             try:
                 year = int(query_date_to)
                 q_objects.add(Q(date_year_to__lte=year), Q.AND)
             except ValueError as err:
-                queryset_list = []
                 print(err)
-
+                return []
         if query_artwork_title:
             title_contains = (Q(title__icontains=query_artwork_title) |
-                              Q(title_english__icontains=query_artwork_title))
+                            Q(title_english__icontains=query_artwork_title))
             title_starts_with = (Q(title__istartswith=query_artwork_title) |
-                                 Q(title_english__istartswith=query_artwork_title))
+                                Q(title_english__istartswith=query_artwork_title))
             # order results by startswith match. see: https://stackoverflow.com/a/48409962
-            queryset_list = queryset_list.filter(title_contains)
+            expert_list = expert_list.filter(title_contains)
             is_match = ExpressionWrapper(title_starts_with, output_field=BooleanField())
-            queryset_list = queryset_list.annotate(starts_with_title=is_match)
-            queryset_list = (queryset_list.filter(q_objects)
+            expert_list = expert_list.annotate(starts_with_title=is_match)
+            expert_list = (expert_list.filter(q_objects)
                     .order_by('-starts_with_title', 'location_of_creation'))
         else:
-            queryset_list = (queryset_list.filter(q_objects)
+            expert_list = (expert_list.filter(q_objects)
                     .order_by('title', 'location_of_creation'))
-        queryset_list = queryset_list.distinct()
-    else:
+        return expert_list.distinct()
+
+    def get_basic_queryset_list():
         if query_search:
             terms = [term.strip() for term in query_search.split()]
 
@@ -100,7 +99,7 @@ def artworks_list(request):
             def get_keywords(term):
                 return Keyword.objects.filter(Q(name__istartswith=term) | Q(name__istartswith=' ' + term))
 
-            queryset_list = (Artwork.objects.annotate(
+            basic_list = (Artwork.objects.annotate(
                 rank=Case(
                     When(Q(title__iexact=query_search), then=Value(1)),
                     When(Q(title_english__iexact=query_search), then=Value(1)),
@@ -125,9 +124,16 @@ def artworks_list(request):
                 .order_by('rank', 'title',))
         else:
             # what the user gets, when she isn't using the search at all
-            queryset_list = (Artwork.objects
+            basic_list = (Artwork.objects
                 .filter(published=True)
                 .order_by('-updated_at'))
+        return basic_list
+
+    if query_search_type == 'expert':
+        queryset_list = get_expert_queryset_list()
+        expert_search = True
+    else:
+        queryset_list = get_basic_queryset_list()
 
     paginator = Paginator(queryset_list, 40) # show 40 artworks per page
     pageNr = request.GET.get('page')
@@ -147,7 +153,7 @@ def artworks_list(request):
     context['query_date_to'] = query_date_to
     context['query_location_of_creation'] = query_location_of_creation
     context['query_location_current'] = query_location_current
-    context['expert_search'] = expertSearch
+    context['expert_search'] = expert_search
     return render(request, 'artwork/thumbnailbrowser.html', context)
 
 
