@@ -583,6 +583,7 @@ and a close button */
     display: block;
     text-decoration: none;
     line-height: 48px;
+    color: #000;
 }
 
 .thumbnail-area .navigation li a:visited {
