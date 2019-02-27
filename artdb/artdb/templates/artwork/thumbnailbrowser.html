@@ -21,7 +21,7 @@ basic and the extended search.
             <form method="GET" action="" id="search-basic">
                 <input id="search-basic-artworks-field" placeholder="{% trans 'Search Artworks' %}" name="search" value="{{ query_search|default:'' }}" autocomplete="off" role="title search" autofocus/><input type="reset" value="" class="clear-search-artwork-field"/>
             </form>
-            <div class="switch-labeled">
+            <div class="switch-labeled" title="{% trans 'Search Basic/Advanced Switch' %}">
                 <label class="switch">
                     <input id="js-search-switch" type="checkbox">
                     <span class="slider round"></span>
@@ -71,9 +71,10 @@ basic and the extended search.
 
 {% block extra_scripts %}
 <script type="text/javascript">
+var mainPath = "";
 $(document).ready(function() {
+    mainPath= "{{ FORCE_SCRIPT_NAME }}";
     var expertSearch = "{{ expert_search }}";
-    console.log(expertSearch);
     if (expertSearch == "True") {
         $("#js-search-switch").prop('checked', true);
         showExpertSearch(false);
@@ -84,7 +85,7 @@ $(document).ready(function() {
     // hide the collect artwork overlay
     hideCollectOverlay = function() {
         closeOverlay();
-        // here we do not need location.reload();
+        // here we do not need an update
         // compare: collection.html template
     };
 

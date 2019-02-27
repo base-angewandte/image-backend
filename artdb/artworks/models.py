@@ -246,7 +246,17 @@ class ArtworkCollectionMembership(OrderedModel):
             partner.save()
             return True
         return False
-        
+
+
+    def remove(self):
+        print('removing')
+        if (self.connected_with):
+            print('connected')
+            if not self.disconnect(self.connected_with):
+                print('something wrong')
+                return False
+        self.delete()
+        return True
 
     class Meta:
         ordering = ('collection', 'order')

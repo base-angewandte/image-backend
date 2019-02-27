@@ -13,14 +13,20 @@ when she double-clicks a specific artwork
     {% else %}
         <img class="image-big" src="{{artwork.image_original.thumbnail.930x768}}"/>
     {% endif %}
-    <button name="close" class="button-close" id="hideDetailOverlay" onClick="hideImageAndOverlay()"></button>
+    <div name="close" class="button-close" id="hideDetailOverlay" onClick="hideImageAndOverlay()"></div>
 </div>
 
 <div class="sidebar-attached">
     <aside class="inspector" id="detail-overlay-inspector">
         <div>
-            <button class="inspector-button">{% trans 'Collect' %}</button><button class="inspector-button">{% trans 'Edit' %}</button>
+            <button class="inspector-button">{% trans 'addtocollection' %}</button><button class="inspector-button">{% trans 'Edit' %}</button>
         </div>
         </aside>
     </aside>
 </div>
+
+<script>
+$(document).ready(function() {  
+    mainPath = '{{ FORCE_SCRIPT_NAME }}';
+});
+</script>

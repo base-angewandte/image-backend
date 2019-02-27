@@ -23,10 +23,10 @@ proper html skeleton:
         <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
         <script src="{% static '3rd-party/jquery-ui-1.12.1.custom/jquery-ui.js' %}"></script>
         <link rel="stylesheet" href="{% static '3rd-party/jquery-ui-1.12.1.custom/jquery-ui.css' %}"> 
-        <!-- django-autocomplete-light and edit view adjustments -->
         <link type="text/css" rel="stylesheet" href="{% static 'css/edit.css' %}">
         {% block extra_scripts %}
         {% endblock extra_scripts %}
+        <meta name="viewport" content="width=device-width, shrink-to-fit=yes"/>
     </head>
     <body class="show-thumbnailbrowser">
         {% get_current_language as LANGUAGE_CODE %}
@@ -57,7 +57,7 @@ proper html skeleton:
         </div>
         <div id="collect-overlay" class="overlay">
         </div>
-
+        
         <div class="not-supported">
           {{ _('This resolution is not supported.') }}
         </div>

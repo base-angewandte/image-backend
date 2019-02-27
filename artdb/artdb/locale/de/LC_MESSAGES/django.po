@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-17 19:19+0100\n"
+"POT-Creation-Date: 2019-02-24 13:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: artdb/settings.py:252
+#: artdb/settings.py:261
 msgid "German"
 msgstr "Deutsch"
 
-#: artdb/settings.py:253
+#: artdb/settings.py:262
 msgid "English"
 msgstr "Englisch"
 
@@ -56,25 +56,21 @@ msgid "NoCollections"
 msgstr "Es sind noch keine Arbeitsmappen erstellt worden."
 
 #: artdb/templates/artwork/artwork_collect_overlay.html:46
-#, fuzzy
-#| msgid "NoCollections"
 msgid "addtocollection"
-msgstr "Es sind noch keine Arbeitsmappen erstellt worden."
+msgstr "In Arbeitsmappe hinzufügen"
 
 #: artdb/templates/artwork/artwork_collect_overlay.html:46
 #: artdb/templates/artwork/artwork_detail_overlay.html:22
 msgid "Edit"
 msgstr "Editieren"
 
-#: artdb/templates/artwork/artwork_detail_overlay.html:22
-msgid "Collect"
-msgstr "In Arbeitsmappe hinzufügen"
-
 #: artdb/templates/artwork/artwork_edit_overlay.html:34
+#: artdb/templates/artwork/collection_edit_overlay.html:21
 msgid "Cancel"
 msgstr "Abbrechen"
 
 #: artdb/templates/artwork/artwork_edit_overlay.html:34
+#: artdb/templates/artwork/collection_edit_overlay.html:21
 msgid "Save"
 msgstr "Sichern"
 
@@ -95,44 +91,62 @@ msgstr "Alle Kunstwerke"
 msgid "Collections"
 msgstr "Arbeitsmappen"
 
-#: artdb/templates/artwork/collection.html:26
+#: artdb/templates/artwork/collection.html:27
 #: artdb/templates/artwork/collections_list.html:26
 msgid "All Collections"
 msgstr "Alle Arbeitsmappen"
 
-#: artdb/templates/artwork/collection.html:27
+#: artdb/templates/artwork/collection.html:28
 #: artdb/templates/artwork/collections_list.html:27
-#: artdb/templates/artwork/collections_list.html:54
+#: artdb/templates/artwork/collections_list.html:49
 msgid "My Collections"
 msgstr "Meine Arbeitsmappen"
 
-#: artdb/templates/artwork/collection.html:48
+#: artdb/templates/artwork/collection.html:35
+#: artdb/templates/artwork/collections_list.html:34
+#: artdb/templates/artwork/collections_list.html:63
+msgid "Unnamed Editor"
+msgstr "Namenloser Editor"
+
+#: artdb/templates/artwork/collection.html:44
+msgid "Edit Collection"
+msgstr "Arbeitsmappe editieren"
+
+#: artdb/templates/artwork/collection.html:47
 msgid "Download PowerPoint"
 msgstr "PowerPoint herunterladen"
 
-#: artdb/templates/artwork/collection.html:49
+#: artdb/templates/artwork/collection.html:48
 msgid "Close"
 msgstr "Schliessen"
 
-#: artdb/templates/artwork/collection.html:49
+#: artdb/templates/artwork/collection.html:48
 msgid "show/hide download options"
 msgstr "Download-Möglichkeiten zeigen/verstecken"
 
-#: artdb/templates/artwork/collection.html:50
+#: artdb/templates/artwork/collection.html:49
 #, fuzzy
 #| msgid "Download PowerPoint"
 msgid "Download PowerPoint German"
 msgstr "PowerPoint Deutsch herunterladen"
 
-#: artdb/templates/artwork/collection.html:51
+#: artdb/templates/artwork/collection.html:50
 #, fuzzy
 #| msgid "Download PowerPoint"
 msgid "Download PowerPoint English"
 msgstr "PowerPoint Englisch herunterladen"
 
+#: artdb/templates/artwork/collection_edit_overlay.html:36
+msgid "Delete Collection"
+msgstr "Arbeitsmappe löschen"
+
 #: artdb/templates/artwork/thumbnailbrowser.html:22
 msgid "Search Artworks"
 msgstr "Suche"
+
+#: artdb/templates/artwork/thumbnailbrowser.html:24
+msgid "Search Basic/Advanced Switch"
+msgstr "Suche einfach/erweitert wechseln"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:28
 msgid "Expert"
@@ -171,86 +185,63 @@ msgstr "Standort"
 msgid "Keywords"
 msgstr "Schlagworte"
 
-#: artdb/templates/base.html:62
+#: artdb/templates/base.html:61
 msgid "This resolution is not supported."
 msgstr "Diese Auflösung wird nicht unterstützt."
 
-#: artworks/forms.py:54 artworks/models.py:79
 msgid "Artists"
 msgstr "Künstler_in"
 
-#: artworks/models.py:16 artworks/models.py:45 artworks/models.py:59
-msgid "Name"
-msgstr ""
-
-#: artworks/models.py:17 artworks/models.py:60
 msgid "Synonyms"
 msgstr "Synonyme"
 
-#: artworks/models.py:76
 msgid "Original Image"
 msgstr "Original Bild"
 
-#: artworks/models.py:78
 msgid "Title, English"
 msgstr "Titel, englisch"
 
-#: artworks/models.py:80
 msgid "Date"
 msgstr "Datierung"
 
-#: artworks/models.py:83
 msgid "Material/Technique"
 msgstr "Material/Technik"
 
-#: artworks/models.py:84
 msgid "Dimensions"
 msgstr "Format"
 
-#: artworks/models.py:85
 msgid "Descriptions"
 msgstr "Anmerkungen"
 
-#: artworks/models.py:86
 msgid "Credits"
 msgstr "Abbildungsnachweis"
 
-#: artworks/models.py:87 artworks/models.py:160
 msgid "Created at"
 msgstr "Erstellt"
 
-#: artworks/models.py:88 artworks/models.py:161
 msgid "Updated at"
 msgstr "Aktualisiert"
 
-#: artworks/models.py:90
 msgid "Place of Production"
 msgstr "Entstehungsort"
 
-#: artworks/models.py:91
 msgid "Location"
 msgstr "Standort"
 
-#: artworks/models.py:92
 msgid "Checked"
 msgstr "Geprüft"
 
-#: artworks/models.py:93
 msgid "Published"
 msgstr "Veröffentlicht"
 
-#: artworks/models.py:158
 msgid "User"
 msgstr "Benutzer_in"
 
-#: artworks/models.py:159
 msgid "Artworks"
 msgstr "Kunstwerke"
 
-#: artworks/models.py:174
 msgid "Folder"
 msgstr "Arbeitsmappe"
 
-#: artworks/models.py:175
 msgid "Artwork"
 msgstr "Kunstwerk"

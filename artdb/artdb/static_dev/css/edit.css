@@ -1,13 +1,25 @@
+/* django-autocomplete-light and edit view adjustments */
+
 .sidebar-attached .confirmationarea {
     background-color: var(--mid-grey-1-color);
     padding: 16px 16px 10px 16px;
+}
+
+.sidebar-attached .dangerarea {
+    background-color: var(--dark-grey-1-color);
+    padding: 16px;
+    margin-top: 32px;
+}
+
+.sidebar-attached .dangerarea button {
+    width: 100%;
 }
 
 .sidebar-attached .metadataarea {
     width: var(--edit-overlay-formwidth);
     background-color: var(--dark-grey-1-color);
     text-align: left;
-    padding: 16px 16px 16px 16px;
+    padding: 16px;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
 }
@@ -214,17 +226,16 @@
     border-radius: 8px;
 }
 
-#edit-overlay label[for="id_imageOriginal"]:focus + label[for="id_imageOriginal"]:hover {
-    background-color: red;
-}
-
 #edit-overlay .content {
     min-width: calc(1280px - var(--edit-overlay-formwidth));
 }
 
 #edit-overlay .image-big {
+    display: block;
     max-height: 590px;
     max-width: 590px;
+    height: auto;
+    width: 100%;
 }
 
 #edit-overlay label {

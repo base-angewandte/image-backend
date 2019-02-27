@@ -9,11 +9,11 @@ when she selects a specific collection of artworks
 
 <div class="content">
     <div class="center">
-        {% spaceless %}
-        <h2 class="centered">{% trans 'Add artwork to your collections' %}</h2>
-        <form method="POST" action="" id="addCollectionForm">
-            <input type="hidden" name="artworkid" value="{{artwork.id}}">
-            <table class="collections-list">
+    {% spaceless %}
+    <h2 class="centered">{% trans 'Add artwork to your collections' %}</h2>
+    <form method="POST" action="" id="addCollectionForm">
+        <input type="hidden" name="artworkid" value="{{artwork.id}}">
+        <table class="collections-list">
             <tr class="addCollection">
                 <td><input placeholder="{% trans 'New folder title' %}" name="{% trans 'title' %}" autocomplete="off" role="new collection" autofocus/></td>
                 <td class="collectButton"><input type="submit" class="addCollection addCollectionButton" value="{% trans 'add' %}"/></td>
@@ -29,14 +29,14 @@ when she selects a specific collection of artworks
             </tr>
             {% endfor %}
             {% else %}
-                <tr>
-                    <td colspan=2>{% trans 'NoCollections' %}</td>
+                <tr class="addCollection">
+                    <td colspan=2 class="nocollections">{% trans 'NoCollections' %}</td>
                 </tr>
             {% endif %}
         </table>
     </form>
     {% endspaceless %}
-    <button name="close" class="button-close"  onClick="hideCollectOverlay()"></button>
+    <div name="close" class="button-close" onClick="hideCollectOverlay()"></div>
     </div>
 </div>
     
@@ -50,12 +50,13 @@ when she selects a specific collection of artworks
 
 <script>
 $(document).ready(function() {  
+    mainPath = '{{ FORCE_SCRIPT_NAME }}';
 
     $(".removeFromCollection").on('click', function (e) {
         e.preventDefault();
         var artworkID = e.currentTarget.dataset['artworkid'];
         var collectionID = e.currentTarget.dataset['collectionid'];
-        var url = '{{ FORCE_SCRIPT_NAME }}/artwork/' + artworkID + '/collect_overlay.html';
+        var url = mainPath + '/artwork/' + artworkID + '/collect_overlay/';
         $.ajax({
             type: 'POST',
             url: url,
@@ -76,10 +77,9 @@ $(document).ready(function() {
 
     $(".addToCollection").on('click', function (e) {
         e.preventDefault();
-        console.log('add to Collection');
         var artworkID = e.currentTarget.dataset['artworkid'];
         var collectionID = e.currentTarget.dataset['collectionid'];
-        var url = '{{ FORCE_SCRIPT_NAME }}/artwork/' + artworkID + '/collect_overlay.html';
+        var url = mainPath + '/artwork/' + artworkID + '/collect_overlay/';
         $.ajax({
             type: 'POST',
             url: url,
@@ -101,7 +101,7 @@ $(document).ready(function() {
     $("#addCollectionForm").on('submit', function (e) {
         e.preventDefault();
         var data = $(this).serializeArray();
-        var url = '{{ FORCE_SCRIPT_NAME }}/artwork/' + data[0]['value'] + '/collect_overlay.html';
+        var url = mainPath + '/artwork/' + data[0]['value'] + '/collect_overlay/';
         $.ajax({
             type: 'POST',
             url: url,

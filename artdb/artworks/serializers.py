@@ -28,7 +28,7 @@ class ArtworkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Artwork
-        fields = ('title', 'title_english', 'artists', 'location_of_creation', 'location_current', 'date', 'material', 'dimensions', 'keywords', 'credits', 'checked','published')
+        fields = ('title', 'title_english', 'artists', 'location_of_creation', 'location_current', 'date', 'material', 'dimensions', 'keywords', 'description', 'credits', 'checked','published')
 
 
 class ThumbnailSerializer(serializers.ModelSerializer):

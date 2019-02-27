@@ -9,7 +9,7 @@ when she clicks the EDIT button in the inspector
 ---------------------------------------------------------
 {% endcomment %}
 
-<form method="POST" enctype="multipart/form-data" class="editform" action="{{ FORCE_SCRIPT_NAME }}{% url 'artwork-edit' id %}">
+<form method="POST" enctype="multipart/form-data" class="editform" action="{% url 'artwork-edit' id %}">
 {% csrf_token %}
 <div class="content">
     <div class="image-wrapperA">
@@ -31,7 +31,7 @@ when she clicks the EDIT button in the inspector
 
 <div class="sidebar-attached">
     <div class="confirmationarea">
-        <button name="cancel" class="inspector-button cancel js-close-edit-overlay" onclick="hideImageAndOverlay(); return false;">{% trans 'Cancel' %}</button><button class="inspector-button confirm" type="submit">{% trans 'Save' %}</button>
+        <div name="cancel" class="inspector-button cancel js-close-edit-overlay" onclick="hideImageAndOverlay(); return false;">{% trans 'Cancel' %}</div><button class="inspector-button confirm" type="submit">{% trans 'Save' %}</button>
     </div>
     {% spaceless %}
     <div class="metadataarea">

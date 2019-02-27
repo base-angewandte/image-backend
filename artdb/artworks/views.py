@@ -3,7 +3,7 @@ from io import BytesIO
 from functools import reduce
 import operator
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, ExpressionWrapper, BooleanField, Case, Value, IntegerField, When
 from django.conf import settings
@@ -24,7 +24,6 @@ from artworks.models import *
 from artworks.forms import *
 from artworks.serializers import ArtworkSerializer, CollectionSerializer
 
-
 @login_required
 def artworks_list(request):
     """
@@ -41,19 +40,18 @@ def artworks_list(request):
     query_location_current = request.GET.get('location_current')
     q_objects = Q()
     context = {}
-    expertSearch = False
+    expert_search = False
 
-    if query_search_type == 'expert':
-        expertSearch = True
-        querysetList = Artwork.objects.filter(published=True)
+    def get_expert_queryset_list():
+        expert_list = Artwork.objects.filter(published=True)
         if query_location_of_creation:
-            q_objects.add(Q(location_of_creation__name__icontains=query_location_of_creation), Q.AND)
+            locations = Location.objects.filter(name__istartswith=query_location_of_creation)
+            locations_plus_descendants = Location.objects.get_queryset_descendants(locations, include_self=True)
+            q_objects.add(Q(location_of_creation__in=locations_plus_descendants), Q.AND)
         if query_location_current:
-            q_objects.add(Q(location_current__name__icontains=query_location_current), Q.AND)
-        if query_date_from:
-            q_objects.add(Q(date_year_from__gte=int(query_date_from)), Q.AND)
-        if query_date_to:
-            q_objects.add(Q(date_year_to__lte=int(query_date_to)), Q.AND)
+            locations = Location.objects.filter(name__istartswith=query_location_current)
+            locations_plus_descendants = Location.objects.get_queryset_descendants(locations, include_self=True)
+            q_objects.add(Q(location_current__in=locations_plus_descendants), Q.AND)
         if query_artist_name:
             artists = Artist.objects.filter(name__icontains=query_artist_name)
             synonyms = Artist.objects.filter(synonyms__icontains=query_artist_name)
@@ -61,18 +59,37 @@ def artworks_list(request):
         if query_keyword:
             keywords = Keyword.objects.filter(name__icontains=query_keyword)
             q_objects.add(Q(keywords__in=keywords), Q.AND)
-
+        if query_date_from:
+            try:
+                year = int(query_date_from)
+                q_objects.add(Q(date_year_from__gte=year), Q.AND)
+            except ValueError as err:
+                print(err)
+                return []
+        if query_date_to:
+            try:
+                year = int(query_date_to)
+                q_objects.add(Q(date_year_to__lte=year), Q.AND)
+            except ValueError as err:
+                print(err)
+                return []
         if query_artwork_title:
+            title_contains = (Q(title__icontains=query_artwork_title) |
+                            Q(title_english__icontains=query_artwork_title))
+            title_starts_with = (Q(title__istartswith=query_artwork_title) |
+                                Q(title_english__istartswith=query_artwork_title))
             # order results by startswith match. see: https://stackoverflow.com/a/48409962
-            querysetList = querysetList.filter(title__icontains=query_artwork_title)
-            expression = Q(title__startswith=query_artwork_title)
-            is_match = ExpressionWrapper(expression, output_field=BooleanField())
-            querysetList = querysetList.annotate(myfield=is_match)
+            expert_list = expert_list.filter(title_contains)
+            is_match = ExpressionWrapper(title_starts_with, output_field=BooleanField())
+            expert_list = expert_list.annotate(starts_with_title=is_match)
+            expert_list = (expert_list.filter(q_objects)
+                    .order_by('-starts_with_title', 'location_of_creation'))
+        else:
+            expert_list = (expert_list.filter(q_objects)
+                    .order_by('title', 'location_of_creation'))
+        return expert_list.distinct()
 
-        querysetList = (querysetList.filter(q_objects)
-                .order_by('title', 'location_of_creation')
-                .distinct())
-    else:
+    def get_basic_queryset_list():
         if query_search:
             terms = [term.strip() for term in query_search.split()]
 
@@ -82,14 +99,22 @@ def artworks_list(request):
             def get_keywords(term):
                 return Keyword.objects.filter(Q(name__istartswith=term) | Q(name__istartswith=' ' + term))
 
-            querysetList = (Artwork.objects.annotate(
+            basic_list = (Artwork.objects.annotate(
                 rank=Case(
-                    When(reduce(operator.or_, (Q(title__istartswith=term) for term in terms)), then=Value(2)),
-                    When(reduce(operator.or_, (Q(title__icontains=' ' + term) for term in terms)), then=Value(3)),
-                    When(reduce(operator.or_, (Q(title__icontains=term) for term in terms)), then=Value(6)),
-                    When(reduce(operator.or_, (Q(artists__in=get_artists(term)) for term in terms)), then=Value(1)),
-                    When(reduce(operator.or_, (Q(location_of_creation__name__istartswith=term) for term in terms)), then=Value(4)),
-                    When(reduce(operator.or_, (Q(keywords__in=get_keywords(term)) for term in terms)), then=Value(5)),
+                    When(Q(title__iexact=query_search), then=Value(1)),
+                    When(Q(title_english__iexact=query_search), then=Value(1)),
+                    When(Q(artists__in=get_artists(query_search)), then=Value(2)),
+                    When(Q(title__istartswith=query_search), then=Value(3)),
+                    When(Q(title_english__istartswith=query_search), then=Value(3)),
+                    When(reduce(operator.or_, (Q(artists__in=get_artists(term)) for term in terms)), then=Value(4)),
+                    When(reduce(operator.or_, (Q(title__istartswith=term) for term in terms)), then=Value(5)),
+                    When(reduce(operator.or_, (Q(title_english__istartswith=term) for term in terms)), then=Value(5)),
+                    When(reduce(operator.or_, (Q(title__icontains=' ' + term) for term in terms)), then=Value(6)),
+                    When(reduce(operator.or_, (Q(title_english__icontains=' ' + term) for term in terms)), then=Value(6)),
+                    When(reduce(operator.or_, (Q(title__icontains=term) for term in terms)), then=Value(7)),
+                    When(reduce(operator.or_, (Q(title_english__icontains=term) for term in terms)), then=Value(7)),
+                    When(reduce(operator.or_, (Q(location_of_creation__name__istartswith=term) for term in terms)), then=Value(10)),
+                    When(reduce(operator.or_, (Q(keywords__in=get_keywords(term)) for term in terms)), then=Value(11)),
                     default=Value(99),
                     output_field=IntegerField(),
                 ))
@@ -99,11 +124,18 @@ def artworks_list(request):
                 .order_by('rank', 'title',))
         else:
             # what the user gets, when she isn't using the search at all
-            querysetList = (Artwork.objects
+            basic_list = (Artwork.objects
                 .filter(published=True)
                 .order_by('-updated_at'))
+        return basic_list
 
-    paginator = Paginator(querysetList, 40) # show 40 artworks per page
+    if query_search_type == 'expert':
+        queryset_list = get_expert_queryset_list()
+        expert_search = True
+    else:
+        queryset_list = get_basic_queryset_list()
+
+    paginator = Paginator(queryset_list, 40) # show 40 artworks per page
     pageNr = request.GET.get('page')
     try:
         artworks = paginator.get_page(pageNr)
@@ -121,7 +153,7 @@ def artworks_list(request):
     context['query_date_to'] = query_date_to
     context['query_location_of_creation'] = query_location_of_creation
     context['query_location_current'] = query_location_current
-    context['expert_search'] = expertSearch
+    context['expert_search'] = expert_search
     return render(request, 'artwork/thumbnailbrowser.html', context)
 
 
@@ -161,13 +193,13 @@ def artwork_edit(request, id):
         form = ArtworkForm(request.POST, request.FILES, instance=artwork)
         if form.is_valid():
             updated_artwork = form.save(commit=False)
-            # TODO: artwork.user = request.user
             updated_artwork.updated_at = datetime.now()
             updated_artwork.save()
             return HttpResponse("<script>window.location=document.referrer;</script>")
+    # TODO: render error message correctly
     return render(request, 'artwork/artwork_edit_overlay.html', context)
 
-    
+
 @login_required
 def artwork_collect(request, id):
     """
@@ -200,7 +232,7 @@ def artwork_collect(request, id):
                     ArtworkCollectionMembership.objects.create(collection=col, artwork=artwork)
                     return JsonResponse({'action': 'added'})
                 if (request.POST['action'] == 'remove'):
-                    ArtworkCollectionMembership.objects.filter(collection=col, artwork=artwork).delete()
+                    ArtworkCollectionMembership.objects.get(collection=col, artwork=artwork).remove()
                     return JsonResponse({'action': 'removed'})
         return JsonResponse({'action': 'collection error'})
 
@@ -208,14 +240,14 @@ def artwork_collect(request, id):
 @login_required
 def collection(request, id=None):
     """
-    Render all artwork thumbnails of a single collection.
+    GET: Render all artwork thumbnails of a single collection.
+    POST: move artworks within collection; connect or disconnect them
     """
     if request.method == 'GET':
         col = ArtworkCollection.objects.get(id=id)
         context = {}
         context['title']  = col.title
         context['id']  = col.id
-        context['created_by_id'] = col.user.id
         context['created_by_username'] = col.user.get_username()
         context['created_by_fullname'] = col.user.get_full_name()
         context['created_by_userid'] = col.user.id
@@ -227,30 +259,69 @@ def collection(request, id=None):
         # users can only manipulate their own collections via this view
         col = ArtworkCollection.objects.get(id=id)
         if (request.user.id == col.user.id):
-            if 'membership-id' in request.POST:
-                membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'])
-                if not membership:
-                    return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not find artwork membership'})
-                    # move artwork left
-                if (request.POST['action'] == 'left'):
-                    membership.move_left()
-                    return JsonResponse({'message': 'moved left'})
-                    # move artwork right
-                if (request.POST['action'] == 'right'):
-                    membership.move_right()
-                    return JsonResponse({'message': 'moved right'})
-                return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not manipulate artwork membership'})
+            if ((request.POST['action'] == 'left') | (request.POST['action'] == 'right')):
+                if 'membership-id' in request.POST:
+                    membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'])
+                    if not membership:
+                        return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not find artwork membership'})
+                        # move artwork left
+                    if (request.POST['action'] == 'left'):
+                        membership.move_left()
+                        return JsonResponse({'message': 'moved left'})
+                        # move artwork right
+                    if (request.POST['action'] == 'right'):
+                        membership.move_right()
+                        return JsonResponse({'message': 'moved right'})
+                    return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not manipulate artwork membership'})
             else:
-                leftMember = ArtworkCollectionMembership.objects.get(id=request.POST['member-left'])
-                rightMember = ArtworkCollectionMembership.objects.get(id=request.POST['member-right'])
+                left_member = ArtworkCollectionMembership.objects.get(id=request.POST['member-left'])
+                right_member = ArtworkCollectionMembership.objects.get(id=request.POST['member-right'])
                 if (request.POST['action'] == 'connect'):
-                    if leftMember.connect(rightMember):
+                    if left_member.connect(right_member):
                         return JsonResponse({'message': 'connected'})
                 if (request.POST['action'] == 'disconnect'):
-                    if leftMember.disconnect(rightMember):
+                    if left_member.disconnect(right_member):
                         return JsonResponse({'message': 'disconnected'})
         else:
             return JsonResponse(status=403, data={'status': 'false', 'message': 'Permission needed'})
+
+
+@login_required
+def collection_edit(request, id):
+    """
+    Render an overlay showing the editable fields of a collection.
+    """
+    collection = ArtworkCollection.objects.get(id=id)
+    if (request.user.id is not collection.user.id):
+        # users can only manipulate their own collections via this view
+        return HttpResponseForbidden()
+    context = {}
+    context['form'] = ArtworkCollectionForm(instance=collection)
+    context['collection'] = collection
+    if request.method == "POST":
+        form = ArtworkCollectionForm(request.POST, instance=collection)
+        if form.is_valid():
+            form.save()
+            return redirect('collection', id=id)
+    # TODO: render error message correctly
+    return render(request, 'artwork/collection_edit_overlay.html', context)
+
+
+@login_required
+def collection_delete(request, id):
+    """
+    Delete a collection.
+    """
+    if request.method == "POST":
+        collection = ArtworkCollection.objects.get(id=id)
+        if (request.user.id is collection.user.id):
+            # users can only manipulate their own collections via this view
+            collection.delete()
+            return redirect('collections-list')
+        else:
+            return HttpResponseForbidden()
+    else:
+        return redirect('collection', id=id)
 
 
 @login_required
@@ -264,7 +335,7 @@ def collection_json(request, id=None):
 
 
 @login_required
-def collections_list(request, id=None):
+def collections_list(request):
     """
     Render a list of all collections.
     """
@@ -285,7 +356,7 @@ class ArtistAutocomplete(autocomplete.Select2QuerySetView):
         # return Artist.objects.none()
         qs = Artist.objects.all().order_by('name')
         if self.q:
-            return qs.filter(name__icontains=self.q)
+            return qs.filter(name__istartswith=self.q)
         else:
             return Artist.objects.none()
 
@@ -303,8 +374,9 @@ class ArtworkAutocomplete(autocomplete.Select2QuerySetView):
             # order results by startswith match. see: https://stackoverflow.com/a/48409962
             expression = Q(title__istartswith=self.q) | Q(title__icontains=' ' + self.q)
             is_match = ExpressionWrapper(expression, output_field=BooleanField())
-            qs = qs.annotate(myfield=is_match)
-            qs = qs.order_by('-myfield')[:4]
+            qs = qs.annotate(title_starts_with=is_match)
+            qs = qs.distinct('title', 'title_starts_with')
+            qs = qs.order_by('-title_starts_with', 'title')[:4]
             return qs
         else:
             return Artwork.objects.none()
