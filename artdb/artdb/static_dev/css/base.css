@@ -576,17 +576,13 @@ and a close button */
 }
 
 .thumbnail-area .navigation li.selected {
-    border-bottom: 5px solid var(--base-color);
+    border-bottom: 4px solid var(--base-color);
 }
 
 .thumbnail-area .navigation li a {
     display: block;
-    text-align: center;
     text-decoration: none;
-    color: #000;
-    width: 100%;
-    height: 100%;
-    padding: 16px;
+    line-height: 48px;
 }
 
 .thumbnail-area .navigation li a:visited {
