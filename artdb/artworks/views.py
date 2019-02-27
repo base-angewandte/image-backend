@@ -351,9 +351,6 @@ class ArtistAutocomplete(autocomplete.Select2QuerySetView):
     Return dal suggestions for the artist input field.
     """
     def get_queryset(self):
-        # TODO: Don't forget to filter out results depending on the visitor
-        # if not self.request.user.is_authenticated():
-        # return Artist.objects.none()
         qs = Artist.objects.all().order_by('name')
         if self.q:
             return qs.filter(name__istartswith=self.q)
