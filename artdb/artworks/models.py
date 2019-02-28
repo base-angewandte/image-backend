@@ -161,7 +161,7 @@ class ArtworkCollection(models.Model):
     updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now=True)
 
     def __str__(self):
-        return '{0} by {1}'.format(self.title, self.user.get_username())
+        return '{0} by {1}'.format(self.title, self.user.get_full_name())
         
     def size(self):
         return self.artworks.count()
