@@ -551,7 +551,7 @@ and a close button */
 .thumbnail-navbar {
     width: 100%;
     background-color: var(--light-grey-4-color);
-    /*border-bottom: 1px solid #F0F0F0;*/
+    border-bottom: 1px solid #F0F0F0;
     padding: 18px;
 }
 
