@@ -152,7 +152,7 @@ def delete_renditions_on_change(sender, update_fields, instance, **kwargs):
 
 class ArtworkCollection(models.Model):
     """
-    Specific users can create collections of artworks.
+    Specific users can create their own collections of artworks.
     """
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     user = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
@@ -171,6 +171,11 @@ class ArtworkCollection(models.Model):
 
 
 class ArtworkCollectionMembership(OrderedModel):
+    """
+    Users can create collections of artworks and put them into a
+    specific order (moved left and right). They can also connect two
+    artworks, so they appear on one single page when exported as a powerpoint file.
+    """
     collection = models.ForeignKey(ArtworkCollection, verbose_name=_('Folder'), on_delete=models.CASCADE)
     artwork = models.ForeignKey(Artwork, verbose_name=_('Artwork'), on_delete=models.CASCADE)
     order_with_respect_to = 'collection'

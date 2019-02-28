@@ -53,9 +53,9 @@ def artworks_list(request):
             locations_plus_descendants = Location.objects.get_queryset_descendants(locations, include_self=True)
             q_objects.add(Q(location_current__in=locations_plus_descendants), Q.AND)
         if query_artist_name:
-            artists = Artist.objects.filter(name__icontains=query_artist_name)
-            synonyms = Artist.objects.filter(synonyms__icontains=query_artist_name)
-            q_objects.add((Q(artists__in=artists) | Q(artists__in=synonyms)), Q.AND)
+            terms = [term.strip() for term in query_artist_name.split()]
+            for term in terms:
+                q_objects.add((Q(artists__name__icontains=term) | Q(artists__synonyms__icontains=term)), Q.AND)
         if query_keyword:
             keywords = Keyword.objects.filter(name__icontains=query_keyword)
             q_objects.add(Q(keywords__in=keywords), Q.AND)
@@ -91,7 +91,6 @@ def artworks_list(request):
 
     def get_basic_queryset_list():
         if query_search:
-            terms = [term.strip() for term in query_search.split()]
 
             def get_artists(term):
                 return Artist.objects.filter(Q(name__istartswith=term) | Q(name__icontains=' ' + term))
@@ -99,6 +98,7 @@ def artworks_list(request):
             def get_keywords(term):
                 return Keyword.objects.filter(Q(name__istartswith=term) | Q(name__istartswith=' ' + term))
 
+            terms = [term.strip() for term in query_search.split()]
             basic_list = (Artwork.objects.annotate(
                 rank=Case(
                     When(Q(title__iexact=query_search), then=Value(1)),
@@ -126,7 +126,7 @@ def artworks_list(request):
             # what the user gets, when she isn't using the search at all
             basic_list = (Artwork.objects
                 .filter(published=True)
-                .order_by('-updated_at'))
+                .order_by('-updated_at', 'title'))
         return basic_list
 
     if query_search_type == 'expert':
