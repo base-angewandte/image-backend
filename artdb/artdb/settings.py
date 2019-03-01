@@ -377,6 +377,7 @@ CACHES = {
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 SESSION_COOKIE_NAME = 'sessionid_{}'.format(PROJECT_NAME)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 CSRF_COOKIE_NAME = 'csrftoken_{}'.format(PROJECT_NAME)
 
