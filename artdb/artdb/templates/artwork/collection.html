@@ -119,7 +119,6 @@ $(document).ready(function() {
     $('.thumbnail-area').on('click', '.connector', function (e) {
         e.stopPropagation();
         var url = `${mainPath}/collection/${collectionID}/`;
-        console.log('click registered');
         $.ajax({
             type: 'POST',
             url: url,
