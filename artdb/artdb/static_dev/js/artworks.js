@@ -38,13 +38,15 @@ $(document).ready(function() {
             if (elInspector.classList.contains('editable')) {
                 elDetails.appendChild(createEl('button', ['inspector-button','button-edit'], gettext('Edit'), url));
             };
-            if (selectedThumbnail.dataset.membershipid) {
-                var leftButton = createEl('button', ['inspector-button','button-move-left'], '', url);
-                leftButton.dataset.action = 'move';
-                var rightButton = createEl('button', ['inspector-button','button-move-right'], '', url);
-                rightButton.dataset.action = 'move';
-                elDetails.appendChild(leftButton);
-                elDetails.appendChild(rightButton);
+            if ($('#thumbnails').hasClass('editable')) {
+                if (selectedThumbnail.dataset.membershipid) {
+                    var leftButton = createEl('button', ['inspector-button','button-move-left'], '', url);
+                    leftButton.dataset.action = 'move';
+                    var rightButton = createEl('button', ['inspector-button','button-move-right'], '', url);
+                    rightButton.dataset.action = 'move';
+                    elDetails.appendChild(leftButton);
+                    elDetails.appendChild(rightButton);
+                };
             };
             // build all the elements and append them to the DOM 
             $.each( data, function( key, val ) {
