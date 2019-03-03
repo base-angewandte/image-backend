@@ -67,14 +67,14 @@ def artworks_list(request):
                 year = int(query_date_from)
                 q_objects.add(Q(date_year_from__gte=year), Q.AND)
             except ValueError as err:
-                print(err)
+                logging.error(err)
                 return []
         if query_date_to:
             try:
                 year = int(query_date_to)
                 q_objects.add(Q(date_year_to__lte=year), Q.AND)
             except ValueError as err:
-                print(err)
+                logging.error(err)
                 return []
         if query_artwork_title:
             title_contains = (Q(title__icontains=query_artwork_title) |
