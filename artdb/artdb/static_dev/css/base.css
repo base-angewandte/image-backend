@@ -536,6 +536,12 @@ and a close button */
 }
 
 #thumbnails .slide-for-two-artworks .connector {
+    display: none;
+}
+
+
+#thumbnails.editable .slide-for-two-artworks .connector {
+    display: block;
     position: absolute;
     width: 34px;
     height: 248px;

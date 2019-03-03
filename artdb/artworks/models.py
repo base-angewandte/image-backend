@@ -1,4 +1,5 @@
 import os
+import logging
 from django.db import models
 from django.db.models.functions import Upper
 from django.contrib.auth.models import User
@@ -8,6 +9,8 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from versatileimagefield.fields import VersatileImageField
 from mptt.models import MPTTModel, TreeForeignKey
 from ordered_model.models import OrderedModel
+
+logger = logging.getLogger(__name__)
 
 class Artist(models.Model):
     """
@@ -161,7 +164,7 @@ class ArtworkCollection(models.Model):
     updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now=True)
 
     def __str__(self):
-        return '{0} by {1}'.format(self.title, self.user.get_username())
+        return '{0} by {1}'.format(self.title, self.user.get_full_name())
         
     def size(self):
         return self.artworks.count()
@@ -240,28 +243,31 @@ class ArtworkCollectionMembership(OrderedModel):
             self.save()
             partner.save()
             return True
+        logger.error("Could not disconnect artwork membership %s with %s", self, partner)
         return False
 
 
     def connect(self, partner):
         if (self.connected_with == None) and (partner.connected_with == None):
-            self.connected_with = partner
-            partner.connected_with = self
-            self.save()
-            partner.save()
+            if (self.next() == partner) or (self.previous() == partner):
+                self.connected_with = partner
+                partner.connected_with = self
+                self.save()
+                partner.save()
             return True
+        logger.error("Could not connect artwork membership %s with %s", self, partner)
         return False
 
 
     def remove(self):
-        print('removing')
         if (self.connected_with):
-            print('connected')
             if not self.disconnect(self.connected_with):
-                print('something wrong')
+                logger.error("Could not remove artwork membership %s because I coould not disconnect it", self)
                 return False
-        self.delete()
-        return True
+        if self.delete() > 0:
+            logger.error("Could not delete artwork membership %s", self)
+            return True
+        return False
 
     class Meta:
         ordering = ('collection', 'order')

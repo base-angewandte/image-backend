@@ -2,6 +2,7 @@ from datetime import datetime
 from io import BytesIO
 from functools import reduce
 import operator
+import logging
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -23,6 +24,8 @@ from pptx.util import Pt
 from artworks.models import *
 from artworks.forms import *
 from artworks.serializers import ArtworkSerializer, CollectionSerializer
+
+logger = logging.getLogger(__name__)
 
 @login_required
 def artworks_list(request):
@@ -263,6 +266,7 @@ def collection(request, id=None):
                 if 'membership-id' in request.POST:
                     membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'])
                     if not membership:
+                        logger.warning("Could not find artwork membership: %s", request.POST['membership-id'])
                         return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not find artwork membership'})
                         # move artwork left
                     if (request.POST['action'] == 'left'):
@@ -272,7 +276,8 @@ def collection(request, id=None):
                     if (request.POST['action'] == 'right'):
                         membership.move_right()
                         return JsonResponse({'message': 'moved right'})
-                    return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not manipulate artwork membership'})
+                    logger.warning("Could not move artwork membership: %s", request.POST['membership-id'])
+                    return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not move artwork membership'})
             else:
                 left_member = ArtworkCollectionMembership.objects.get(id=request.POST['member-left'])
                 right_member = ArtworkCollectionMembership.objects.get(id=request.POST['member-right'])
@@ -282,6 +287,8 @@ def collection(request, id=None):
                 if (request.POST['action'] == 'disconnect'):
                     if left_member.disconnect(right_member):
                         return JsonResponse({'message': 'disconnected'})
+                logger.warning("Could not do action '%s' on artwork membership '%s'", request.POST['action'], request.POST['membership-id'])
+                return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not connect/disconnect artwork membership'})
         else:
             return JsonResponse(status=403, data={'status': 'false', 'message': 'Permission needed'})
 
