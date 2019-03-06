@@ -67,6 +67,7 @@ MANAGERS = ADMINS
 SUPERUSERS = (
     '***REMOVED***',  # Philipp Mayer
     '***REMOVED***',  # Armin Wagner
+    '***REMOVED***',  # Astrid Poyer
 )
 
 # Application definition
