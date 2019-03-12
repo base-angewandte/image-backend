@@ -274,3 +274,11 @@ class ArtworkCollectionMembership(OrderedModel):
 
     class Meta:
         ordering = ('collection', 'order')
+
+
+# Monkey patch of String representation of User
+def string_representation(self):
+    return self.get_full_name() or self.username
+
+
+User.add_to_class("__str__", string_representation)

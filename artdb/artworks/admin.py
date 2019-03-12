@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib.auth.models import User
 from django.utils.html import format_html
 from django.forms import TextInput, Textarea
 from mptt.admin import MPTTModelAdmin
@@ -45,24 +44,6 @@ class ArtworkCollectionAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
     ordering = ('-created_at',)
     search_fields = ['title']
     inlines = (ArtworkCollectionMembershipInline,)
-
-    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        field = super(ArtworkCollectionAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-        if db_field.related_model == User:
-            field.label_from_instance = self.get_user_label
-        return field
-
-    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
-        field = super(ArtworkCollectionAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
-        if db_field.related_model == User:
-            field.label_from_instance = self.get_user_label
-        return field
-
-    def get_user_label(self, user):
-        name = user.get_full_name()
-        username = user.username
-
-        return '{} ({})'.format(username, name) if name and name != username else username
 
 
 class ArtistAdmin(admin.ModelAdmin):
