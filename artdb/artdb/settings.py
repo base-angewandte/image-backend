@@ -64,12 +64,6 @@ ADMINS = getaddresses([env('DJANGO_ADMINS', default='Philipp Mayer <philipp.maye
 
 MANAGERS = ADMINS
 
-SUPERUSERS = (
-    '***REMOVED***',  # Philipp Mayer
-    '***REMOVED***',  # Armin Wagner
-    '***REMOVED***',  # Astrid Poyer
-)
-
 # Application definition
 
 INSTALLED_APPS = [

@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Group
 from django.db.models import Q
 from django.dispatch import receiver
 
@@ -11,21 +11,22 @@ def process_user_attributes(sender, user, created, attributes, *args, **kwargs):
     if not user or not attributes:
         return
 
-    if user.username in settings.SUPERUSERS:
+    permissions = attributes.get('permissions')
+    permissions = permissions.split(',') if permissions else []
+
+    user.is_staff = False
+    user.is_superuser = False
+
+    if 'administer_image' in permissions:
         user.is_staff = True
         user.is_superuser = True
+
+    if 'edit_image' in permissions:
+        user.is_staff = True
+
+        editor_group = Group.objects.get(name='editor')
+        user.groups.add(editor_group)
     else:
-        user.is_superuser = False
-
-        permissions = attributes.get('permissions')
-
-        # TODO
-        if permissions and 'edit_image' in permissions.split(','):
-            user.is_staff = True
-            # p = Permission.objects.filter().exclude()
-            # user.user_permissions.set(p)
-        else:
-            user.is_staff = False
-            # user.user_permissions.clear()
+        user.groups.clear()
 
     user.save()
