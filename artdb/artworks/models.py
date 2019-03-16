@@ -262,12 +262,10 @@ class ArtworkCollectionMembership(OrderedModel):
     def remove(self):
         if (self.connected_with):
             if not self.disconnect(self.connected_with):
-                logger.error("Could not remove artwork membership %s because I coould not disconnect it", self)
+                logger.error("Could not remove artwork membership %s because I could not disconnect it", self)
                 return False
-        if self.delete() > 0:
-            logger.error("Could not delete artwork membership %s", self)
-            return True
-        return False
+        self.delete()
+        return True
 
     class Meta:
         ordering = ('collection', 'order')
