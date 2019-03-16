@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.contrib.auth.models import Permission
 from django.db.models import Q
 from django.dispatch import receiver
 
@@ -16,6 +17,10 @@ def process_user_attributes(sender, user, created, attributes, *args, **kwargs):
 
     user.is_staff = False
     user.is_superuser = False
+
+    # everyone gets the user permission to download pptx files
+    permission_to_download = Permission.objects.get(codename='can_download_pptx')
+    user.user_permissions.add(permission_to_download)
 
     if 'administer_image' in permissions:
         user.is_staff = True
