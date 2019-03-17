@@ -90,14 +90,14 @@ def artworks_list(request):
                 year = int(query_date_from)
                 q_objects.add(Q(date_year_from__gte=year), Q.AND)
             except ValueError as err:
-                print(err)
+                logger.error(err)
                 return []
         if query_date_to:
             try:
                 year = int(query_date_to)
                 q_objects.add(Q(date_year_to__lte=year), Q.AND)
             except ValueError as err:
-                print(err)
+                logger.error(err)
                 return []
         if query_artwork_title:
             title_contains = (Q(title__icontains=query_artwork_title) |
@@ -225,7 +225,6 @@ def artwork_edit(request, id):
             updated_artwork.updated_at = datetime.now()
             updated_artwork.save()
             return HttpResponse("<script>window.location=document.referrer;</script>")
-    # TODO: render error message correctly
     return render(request, 'artwork/artwork_edit_overlay.html', context)
 
 
@@ -357,7 +356,6 @@ def collection_edit(request, id):
         if form.is_valid():
             form.save()
             return redirect('collection', id=id)
-    # TODO: render error message correctly
     return render(request, 'artwork/collection_edit_overlay.html', context)
 
 
@@ -473,7 +471,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
         slide = prs.slides.add_slide(blank_slide_layout)
         fill = slide.background.fill
         fill.solid()
-        fill.fore_color.rgb = RGBColor(0, 0, 0)
+        fill.fore_color.rgb = RGBColor(30, 30, 30)
         return slide
 
     def add_description(slide, description, width, left):
@@ -492,15 +490,18 @@ def collection_download_as_pptx(request, id=None, language='de'):
         font.size = Pt(30)
 
     def add_slide_with_one_picture(artwork, padding):
-        img_path = artwork.image_original.path
+        img_relative_path = artwork.image_original.thumbnail['1881x933'].name
+        img_path = os.path.join(settings.MEDIA_ROOT, img_relative_path)
         slide = get_new_slide()
         add_picture_to_slide(slide, img_path, padding, 'center')
-        width = prs.slide_width - (padding * 2)
-        add_description(slide, artwork.get_short_description(language), width, padding)
+        picture_width = prs.slide_width - (padding * 2)
+        add_description(slide, artwork.get_short_description(language), picture_width, padding)
 
     def add_slide_with_two_pictures(artwork_left, artwork_right, padding):
-        img_path_left = artwork_left.image_original.path        
-        img_path_right = artwork_right.image_original.path
+        img_relative_path_left = artwork_left.image_original.thumbnail['576x933'].name
+        img_path_left = os.path.join(settings.MEDIA_ROOT, img_relative_path_left)
+        img_relative_path_right = artwork_right.image_original.thumbnail['576x933'].name
+        img_path_right = os.path.join(settings.MEDIA_ROOT, img_relative_path_right)
         slide = get_new_slide()
         add_picture_to_slide(slide, img_path_left, padding, 'left')
         add_picture_to_slide(slide, img_path_right, padding, 'right')
@@ -514,19 +515,22 @@ def collection_download_as_pptx(request, id=None, language='de'):
         image_width = pic.image.size[0]
         image_height = pic.image.size[1]
         aspect_ratio = image_width / image_height
-
+        
         # calculate width and height
         if (position == 'center'):
             picture_max_width = int(prs.slide_width - (padding * 2))
-            if (image_height > image_width):
+            space_aspect_ratio = picture_max_width / picture_max_height
+            if (aspect_ratio < space_aspect_ratio):
                 pic.height = picture_max_height
                 pic.width = int(picture_max_height * aspect_ratio)
             else:
-                pic.height = picture_max_height
-                pic.width = int(picture_max_height * aspect_ratio)
+                pic.width = picture_max_width
+                pic.height = int(picture_max_width / aspect_ratio)
+                pic.top = padding + int((picture_max_height - pic.height) / 2)
         else:
             picture_max_width = int((prs.slide_width - (padding * 2) - distance_between)/2)
-            if (image_height > image_width):
+            space_aspect_ratio = picture_max_width / picture_max_height
+            if (aspect_ratio < space_aspect_ratio):
                 pic.height = picture_max_height
                 pic.width = int(picture_max_height * aspect_ratio)
             else:
@@ -542,7 +546,6 @@ def collection_download_as_pptx(request, id=None, language='de'):
                 pic.left = int(padding)
             else:
                 pic.left = padding + int((picture_max_width - pic.width)/2)
-            # pic.left = int(padding + (pic.width / 2))
         if (position == 'right'):
             if (image_height < image_width):
                 pic.left = padding + picture_max_width + distance_between
