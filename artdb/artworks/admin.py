@@ -10,9 +10,24 @@ class ArtworkCollectionMembershipInline(OrderedTabularInline):
     model = ArtworkCollectionMembership
     autocomplete_fields = ['artwork']
     extra = 0
-    fields = ('artwork', 'connected_with', 'order', 'move_up_down_links',)
+    fields = ('artwork', )
     readonly_fields = ('order', 'move_up_down_links',)
     ordering = ('order',)
+
+
+class CollectionListFilter(admin.SimpleListFilter):
+    title = 'folder'
+    parameter_name = 'collection'
+
+    def lookups(self, request, model_admin):
+        users_collections = ArtworkCollection.objects.filter(user=request.user)
+        return [(c.id, c.title) for c in users_collections]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(artworkcollection__id=self.value())
+        else:
+            return queryset
 
 
 class ArtworkAdmin(admin.ModelAdmin):
@@ -26,7 +41,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         models.CharField: {'widget': TextInput(attrs={'size':'80'})},
         models.TextField: {'widget': Textarea(attrs={'rows':2, 'cols':80})},
     }
-    list_filter = ('published', 'checked', 'created_at', 'updated_at')
+    list_filter = ('published', 'checked', CollectionListFilter, 'created_at', 'updated_at')
 
     class Media:
         js = ['js/artwork_form.js']
@@ -67,3 +82,5 @@ admin.site.register(Artist, ArtistAdmin)
 admin.site.register(Artwork, ArtworkAdmin)
 admin.site.register(Keyword, KeywordAdmin)
 admin.site.register(Location, LocationAdmin)
+
+
