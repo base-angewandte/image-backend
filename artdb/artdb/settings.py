@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     # need to be before django.contrib.admin and grapelli
     'dal',
     'dal_select2',
+    'dal_admin_filters',
 
 
     'django.contrib.admin',
