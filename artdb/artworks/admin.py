@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.db import models
 from django.forms import TextInput, Textarea
 from django.utils.html import format_html
+from django.utils.translation import ugettext_lazy as _
 from mptt.admin import MPTTModelAdmin
 from ordered_model.admin import OrderedTabularInline, OrderedInlineModelAdminMixin
 
@@ -35,7 +36,7 @@ class CollectionListFilter(admin.SimpleListFilter):
 
 class ArtworkAdmin(admin.ModelAdmin):
     form = ArtworkAdminForm
-    list_display = ('title', 'checked', 'published', 'created_at', 'updated_at')
+    list_display = ('title', 'get_artists', 'checked', 'published', 'created_at', 'updated_at')
     ordering = ('-created_at',)
     search_fields = ['title']
     fields = (
@@ -68,6 +69,11 @@ class ArtworkAdmin(admin.ModelAdmin):
 
     class Media:
         js = ['js/artwork_form.js']
+
+    def get_artists(self, obj):
+        return '\n'.join([a.name for a in obj.artists.all()])
+
+    get_artists.short_description = _('Artists')
 
     def thumbnail_image(self, obj):
         if obj.image_original:
