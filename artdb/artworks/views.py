@@ -197,10 +197,11 @@ def artwork_detail_overlay(request, id=None):
     """
     Render an overlay showing a large version of the image and the artwork's details.
     """
-    artwork =  get_object_or_404(Artwork, id=id)
-    context = {}
-    context['artwork'] = artwork
-    context['is_staff'] = request.user.is_staff
+    artwork = get_object_or_404(Artwork, id=id)
+    context = {
+        'artwork': artwork,
+        'is_staff': request.user.is_staff,
+    }
     return render(request, 'artwork/artwork_detail_overlay.html', context)
 
 
@@ -210,10 +211,6 @@ def artwork_edit(request, id):
     Render an overlay showing the editable fields of an artwork.
     """
     artwork = get_object_or_404(Artwork, id=id)
-    context = {}
-    context['form'] = ArtworkForm(instance=artwork)
-    context['id'] = artwork.id
-    context['image_original'] = artwork.image_original
     if request.method == "POST":
         form = ArtworkForm(request.POST, request.FILES, instance=artwork)
         if form.is_valid():
@@ -221,6 +218,11 @@ def artwork_edit(request, id):
             updated_artwork.updated_at = datetime.now()
             updated_artwork.save()
             return HttpResponse("<script>window.location=document.referrer;</script>")
+    context = {
+        'form': ArtworkForm(instance=artwork),
+        'id': artwork.id,
+        'image_original': artwork.image_original,
+    }
     return render(request, 'artwork/artwork_edit_overlay.html', context)
 
 
@@ -288,15 +290,16 @@ def collection(request, id=None):
     """
     if request.method == 'GET':
         col = get_object_or_404(ArtworkCollection, id=id)
-        context = {}
-        context['title']  = col.title
-        context['id']  = col.id
-        context['created_by_username'] = col.user.get_username()
-        context['created_by_fullname'] = col.user.get_full_name()
-        context['created_by_userid'] = col.user.id
-        context['memberships'] = col.artworkcollectionmembership_set.all()
-        context['collections'] = ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user)
-        context['my_collections'] = ArtworkCollection.objects.filter(user=request.user)
+        context = {
+            'title': col.title,
+            'id': col.id,
+            'created_by_username': col.user.get_username(),
+            'created_by_fullname': col.user.get_full_name(),
+            'created_by_userid': col.user.id,
+            'memberships': col.artworkcollectionmembership_set.all(),
+            'collections': ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user),
+            'my_collections': ArtworkCollection.objects.filter(user=request.user),
+        }
         return render(request, 'artwork/collection.html', context)
     if request.method == 'POST':
         # users can only manipulate their own collections via this view
@@ -362,14 +365,15 @@ def collection_edit(request, id):
     if request.user.id is not collection.user.id:
         # users can only manipulate their own collections via this view
         return HttpResponseForbidden()
-    context = {}
-    context['form'] = ArtworkCollectionForm(instance=collection)
-    context['collection'] = collection
     if request.method == "POST":
         form = ArtworkCollectionForm(request.POST, instance=collection)
         if form.is_valid():
             form.save()
             return redirect('collection', id=id)
+    context = {
+        'form': ArtworkCollectionForm(instance=collection),
+        'collection': collection,
+    }
     return render(request, 'artwork/collection_edit_overlay.html', context)
 
 
@@ -411,9 +415,10 @@ def collections_list(request):
     """
     Render a list of all collections.
     """
-    context = {}
-    context['collections'] = ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user)
-    context['my_collections'] = ArtworkCollection.objects.filter(user=request.user)
+    context = {
+        'collections': ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user),
+        'my_collections': ArtworkCollection.objects.filter(user=request.user),
+    }
     return render(request, 'artwork/collections_list.html', context)
 
 
