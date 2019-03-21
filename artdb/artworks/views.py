@@ -101,18 +101,16 @@ def artworks_list(request):
                 return []
         if query_artwork_title:
             title_contains = (Q(title__icontains=query_artwork_title) |
-                            Q(title_english__icontains=query_artwork_title))
+                              Q(title_english__icontains=query_artwork_title))
             title_starts_with = (Q(title__istartswith=query_artwork_title) |
-                                Q(title_english__istartswith=query_artwork_title))
+                                 Q(title_english__istartswith=query_artwork_title))
             # order results by startswith match. see: https://stackoverflow.com/a/48409962
             expert_list = expert_list.filter(title_contains)
             is_match = ExpressionWrapper(title_starts_with, output_field=BooleanField())
             expert_list = expert_list.annotate(starts_with_title=is_match)
-            expert_list = (expert_list.filter(q_objects)
-                    .order_by('-starts_with_title', 'location_of_creation'))
+            expert_list = expert_list.filter(q_objects).order_by('-starts_with_title', 'location_of_creation')
         else:
-            expert_list = (expert_list.filter(q_objects)
-                    .order_by('title', 'location_of_creation'))
+            expert_list = expert_list.filter(q_objects).order_by('title', 'location_of_creation')
         return expert_list.distinct()
 
     def get_basic_queryset_list():
@@ -150,9 +148,7 @@ def artworks_list(request):
                 .order_by('rank', 'title',))
         else:
             # what the user gets, when she isn't using the search at all
-            basic_list = (Artwork.objects
-                .filter(published=True)
-                .order_by('-updated_at', 'title'))
+            basic_list = Artwork.objects.filter(published=True).order_by('-updated_at', 'title')
         return basic_list
 
     if query_search_type == 'expert':
@@ -161,10 +157,10 @@ def artworks_list(request):
     else:
         queryset_list = get_basic_queryset_list()
 
-    paginator = Paginator(queryset_list, 40) # show 40 artworks per page
-    pageNr = request.GET.get('page')
+    paginator = Paginator(queryset_list, 40)  # show 40 artworks per page
+    page_nr = request.GET.get('page')
     try:
-        artworks = paginator.get_page(pageNr)
+        artworks = paginator.get_page(page_nr)
     except PageNotAnInteger:
         artworks = paginator.page(1)
     except EmptyPage:
@@ -246,9 +242,9 @@ def artwork_collect(request, id):
             artwork = get_object_or_APIException(Artwork, id=request.POST['artwork-id'])
         except APIException:
             return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not get artwork'})
-        if (request.POST['action'] == 'addCollection'):
+        if request.POST['action'] == 'addCollection':
             col_title = request.POST['collection-title']
-            if (col_title):
+            if col_title:
                 try:
                     u = get_object_or_APIException(User, id=request.user.id)
                     newcol = ArtworkCollection.objects.create(title=col_title, user=u)
@@ -264,20 +260,23 @@ def artwork_collect(request, id):
             except APIException:
                 return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not get collection'})
             # users can only manipulate their own collections via this view
-            if (request.user == col.user):
-                if (request.POST['action'] == 'add'):
+            if request.user == col.user:
+                if request.POST['action'] == 'add':
                     try:
                         ArtworkCollectionMembership.objects.create(collection=col, artwork=artwork)
                     except APIException:
                         return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not add artwork to collection'})
                     return JsonResponse({'action': 'added'})
-                if (request.POST['action'] == 'remove'):
+                if request.POST['action'] == 'remove':
                     try:
                         artworkColMem = get_object_or_APIException(ArtworkCollectionMembership, artwork=artwork)
                         artworkColMem.remove()
                         return JsonResponse({'action': 'removed'})
                     except APIException:
-                        return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not remove artwork from collection'})
+                        return JsonResponse(
+                            data={'status': 'false', 'message': 'Could not remove artwork from collection'},
+                            status=500,
+                        )
         return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not manipulate collection'})
 
 
@@ -305,38 +304,53 @@ def collection(request, id=None):
             col = get_object_or_APIException(ArtworkCollection, id=id)
         except APIException:
             return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not find artwork collection'})
-        if (request.user.id != col.user.id):
+        if request.user.id != col.user.id:
             return JsonResponse(status=403, data={'status': 'false', 'message': 'Permission needed'})
-        if ((request.POST['action'] == 'left') or (request.POST['action'] == 'right')):
+        if request.POST['action'] == 'left' or request.POST['action'] == 'right':
             if 'membership-id' in request.POST:
                 try:
                     membership = get_object_or_APIException(ArtworkCollectionMembership, id=request.POST['membership-id'], collection=col)
                     # move artwork left
-                    if (request.POST['action'] == 'left'):
+                    if request.POST['action'] == 'left':
                         membership.move_left()
                         return JsonResponse({'message': 'moved left'})
                     # move artwork right
-                    if (request.POST['action'] == 'right'):
+                    if request.POST['action'] == 'right':
                         membership.move_right()
                         return JsonResponse({'message': 'moved right'})
                 except APIException:
                     logger.error("Could not move artwork membership: %s", request.POST['membership-id'])
             return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not move artwork membership'})
-        elif ((request.POST['action'] == 'connect') or (request.POST['action'] == 'disconnect')):
+        elif request.POST['action'] == 'connect' or request.POST['action'] == 'disconnect':
             # user wants to connect or disconnect the artwork
             try:
-                left_member = get_object_or_APIException(ArtworkCollectionMembership, id=request.POST['member-left'], collection=col)
-                right_member = get_object_or_APIException(ArtworkCollectionMembership, id=request.POST['member-right'], collection=col)
-                if (request.POST['action'] == 'connect'):
+                left_member = get_object_or_APIException(
+                    ArtworkCollectionMembership,
+                    id=request.POST['member-left'],
+                    collection=col,
+                )
+                right_member = get_object_or_APIException(
+                    ArtworkCollectionMembership,
+                    id=request.POST['member-right'],
+                    collection=col,
+                )
+                if request.POST['action'] == 'connect':
                     if left_member.connect(right_member):
                         return JsonResponse({'message': 'connected'})
-                if (request.POST['action'] == 'disconnect'):
+                if request.POST['action'] == 'disconnect':
                     if left_member.disconnect(right_member):
                         return JsonResponse({'message': 'disconnected'})
             except APIException:
-                logger.error("Could not do action '%s' on artwork membership '%s'", request.POST['action'], request.POST['membership-id'])
-            return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not connect/disconnect artwork membership'})
-        return JsonResponse(status=404, data={'status': 'false', 'message': 'Invalid post action'})
+                logger.error(
+                    "Could not do action '%s' on artwork membership '%s'",
+                    request.POST['action'],
+                    request.POST['membership-id'],
+                )
+            return JsonResponse(
+                data={'status': 'false', 'message': 'Could not connect/disconnect artwork membership'},
+                status=500,
+            )
+        return JsonResponse(data={'status': 'false', 'message': 'Invalid post action'}, status=404)
 
 
 @login_required
@@ -345,7 +359,7 @@ def collection_edit(request, id):
     Render an overlay showing the editable fields of a collection.
     """
     collection = get_object_or_404(ArtworkCollection, id=id)
-    if (request.user.id is not collection.user.id):
+    if request.user.id is not collection.user.id:
         # users can only manipulate their own collections via this view
         return HttpResponseForbidden()
     context = {}
@@ -367,7 +381,7 @@ def collection_delete(request, id):
     if request.method == "POST":
         try:
             collection = get_object_or_APIException(ArtworkCollection, id=id)
-            if (request.user.id is collection.user.id):
+            if request.user.id is collection.user.id:
                 # users can only manipulate their own collections via this view
                 collection.delete()
                 return redirect('collections-list')
@@ -517,10 +531,10 @@ def collection_download_as_pptx(request, id=None, language='de'):
         aspect_ratio = image_width / image_height
         
         # calculate width and height
-        if (position == 'center'):
+        if position == 'center':
             picture_max_width = int(prs.slide_width - (padding * 2))
             space_aspect_ratio = picture_max_width / picture_max_height
-            if (aspect_ratio < space_aspect_ratio):
+            if aspect_ratio < space_aspect_ratio:
                 pic.height = picture_max_height
                 pic.width = int(picture_max_height * aspect_ratio)
             else:
@@ -530,7 +544,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
         else:
             picture_max_width = int((prs.slide_width - (padding * 2) - distance_between)/2)
             space_aspect_ratio = picture_max_width / picture_max_height
-            if (aspect_ratio < space_aspect_ratio):
+            if aspect_ratio < space_aspect_ratio:
                 pic.height = picture_max_height
                 pic.width = int(picture_max_height * aspect_ratio)
             else:
@@ -539,24 +553,23 @@ def collection_download_as_pptx(request, id=None, language='de'):
                 pic.top = padding + int((picture_max_height - pic.height) / 2)
 
         # position the image left/right
-        if (position == 'center'):
+        if position == 'center':
             pic.left = int((prs.slide_width - pic.width) / 2)
-        if (position == 'left'):
-            if (image_height < image_width):
+        if position == 'left':
+            if image_height < image_width:
                 pic.left = int(padding)
             else:
                 pic.left = padding + int((picture_max_width - pic.width)/2)
-        if (position == 'right'):
-            if (image_height < image_width):
+        if position == 'right':
+            if image_height < image_width:
                 pic.left = padding + picture_max_width + distance_between
             else:
                 pic.left = padding + picture_max_width + distance_between + int((picture_max_width - pic.width)/2)
 
-
     # define the presentation dimensions
     prs = Presentation()
-    prs.slide_width = 24384000  # taken from Keynote 16:9 pptx
-    prs.slide_height = 13716000 # taken from Keynote 16:9 pptx
+    prs.slide_width = 24384000   # taken from Keynote 16:9 pptx
+    prs.slide_height = 13716000  # taken from Keynote 16:9 pptx
     padding = int(prs.slide_width / 100)
     textbox_height = prs.slide_height / 10
     picture_max_height = int(prs.slide_height - (padding * 2) - textbox_height)
@@ -572,7 +585,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
     connected_member = None
     for membership in memberships:
         if membership.connected_with:
-            if not (connected_member):
+            if not connected_member:
                 connected_member = membership
             else:
                 add_slide_with_two_pictures(connected_member.artwork, membership.artwork, padding)
@@ -583,7 +596,10 @@ def collection_download_as_pptx(request, id=None, language='de'):
     output = BytesIO()
     prs.save(output)
     output.seek(0)
-    response = HttpResponse(output.read(), content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation')
+    response = HttpResponse(
+        output.read(),
+        content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    )
     response['Content-Disposition'] = 'attachment; filename="' + slugify(col.title) + '.pptx"'
     output.close()
 
