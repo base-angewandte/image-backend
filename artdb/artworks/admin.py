@@ -2,7 +2,7 @@ from dal_admin_filters import AutocompleteFilter
 from django.contrib import admin
 from django.db import models
 from django.forms import TextInput, Textarea
-from django.utils.html import format_html
+from django.utils.html import format_html, escape
 from django.utils.translation import ugettext_lazy as _
 from mptt.admin import MPTTModelAdmin
 from ordered_model.admin import OrderedTabularInline, OrderedInlineModelAdminMixin
@@ -78,7 +78,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         js = ['js/artwork_form.js']
 
     def get_artists(self, obj):
-        return '\n'.join([a.name for a in obj.artists.all()])
+        return format_html('<br>'.join([escape(a.name) for a in obj.artists.all()]))
 
     get_artists.short_description = _('Artists')
 
