@@ -422,6 +422,22 @@ def collections_list(request):
     return render(request, 'artwork/collections_list.html', context)
 
 
+class ArtworkArtistAutocomplete(autocomplete.Select2QuerySetView):
+    """
+    Return dal suggestions for the artist filter.
+    """
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Artist.objects.none()
+
+        qs = Artist.objects.all().order_by('name')
+
+        if self.q:
+            return qs.filter(Q(name__unaccent__icontains=self.q) | Q(synonyms__unaccent__icontains=self.q))
+
+        return qs
+
+
 @method_decorator(login_required, name='dispatch')
 class ArtistAutocomplete(autocomplete.Select2QuerySetView):
     """
