@@ -1,31 +1,31 @@
-from datetime import datetime
-from io import BytesIO
-from functools import reduce
-import operator
 import logging
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
+import operator
+import os
+from datetime import datetime
+from functools import reduce
+from io import BytesIO
+
+from dal import autocomplete
+from django.conf import settings
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, ExpressionWrapper, BooleanField, Case, Value, IntegerField, When
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required, permission_required
-from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext as _
-from django.template.defaultfilters import slugify
-from django.db.models.functions import Upper
+from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.shortcuts import _get_queryset
-from dal import autocomplete
-from rest_framework.response import Response
-from rest_framework.exceptions import APIException
+from django.shortcuts import render, get_object_or_404, redirect
+from django.template.defaultfilters import slugify
+from django.utils.decorators import method_decorator
 from pptx import Presentation
-from pptx.dml.color import RGBColor 
-from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE
+from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.text import MSO_ANCHOR
 from pptx.util import Pt
-from artworks.models import *
-from artworks.forms import *
-from artworks.serializers import ArtworkSerializer, CollectionSerializer
+from rest_framework.exceptions import APIException
+
+from .forms import ArtworkForm, ArtworkCollectionForm
+from .models import Artwork, Location, Keyword, Artist, ArtworkCollection, ArtworkCollectionMembership
+from .serializers import ArtworkSerializer, CollectionSerializer
 
 logger = logging.getLogger(__name__)
 
