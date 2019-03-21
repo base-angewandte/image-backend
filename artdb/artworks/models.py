@@ -1,6 +1,7 @@
 import os
 import logging
 from django.db import models
+from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.db.models.functions import Upper
 from django.contrib.auth.models import User
 from django.dispatch import receiver
@@ -277,3 +278,6 @@ def string_representation(self):
 
 
 User.add_to_class("__str__", string_representation)
+
+# Monkey patch ManyToManyDescriptor
+ManyToManyDescriptor.get_queryset = lambda self: self.rel.model.objects.get_queryset()
