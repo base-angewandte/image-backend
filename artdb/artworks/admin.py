@@ -1,3 +1,4 @@
+from dal_admin_filters import AutocompleteFilter
 from django.contrib import admin
 from django.db import models
 from django.forms import TextInput, Textarea
@@ -17,6 +18,12 @@ class ArtworkCollectionMembershipInline(OrderedTabularInline):
     fields = ('artwork', )
     readonly_fields = ('order', 'move_up_down_links',)
     ordering = ('order',)
+
+
+class ArtistFilter(AutocompleteFilter):
+    title = _('Artist')
+    field_name = 'artists'
+    autocomplete_url = 'artwork-artist-autocomplete'
 
 
 class CollectionListFilter(admin.SimpleListFilter):
@@ -65,7 +72,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         models.CharField: {'widget': TextInput(attrs={'size': '80'})},
         models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 80})},
     }
-    list_filter = ('published', 'checked', CollectionListFilter, 'created_at', 'updated_at')
+    list_filter = (ArtistFilter, 'published', 'checked', CollectionListFilter, 'created_at', 'updated_at')
 
     class Media:
         js = ['js/artwork_form.js']
