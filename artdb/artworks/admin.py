@@ -1,10 +1,12 @@
 from django.contrib import admin
-from django.utils.html import format_html
+from django.db import models
 from django.forms import TextInput, Textarea
+from django.utils.html import format_html
 from mptt.admin import MPTTModelAdmin
-from artworks.models import *
-from artworks.forms import ArtworkForm, ArtworkAdminForm
 from ordered_model.admin import OrderedTabularInline, OrderedInlineModelAdminMixin
+
+from .forms import ArtworkAdminForm
+from .models import ArtworkCollectionMembership, ArtworkCollection, Artist, Artwork, Keyword, Location
 
 
 class ArtworkCollectionMembershipInline(OrderedTabularInline):
