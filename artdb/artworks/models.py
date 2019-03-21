@@ -95,6 +95,9 @@ class Artwork(models.Model):
     checked = models.BooleanField(verbose_name=_('Checked'), default=False)
     published = models.BooleanField(verbose_name=_('Published'), default=False)  
 
+    class Meta:
+        ordering = [Upper('title'), ]
+
     def __str__(self):
         return self.title
 
@@ -109,9 +112,6 @@ class Artwork(models.Model):
         parts = [artists, title_in_language, self.date]
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
-
-    class Meta:
-        ordering = [Upper('title'), ]
 
 
 @receiver(models.signals.post_save, sender=Artwork)
