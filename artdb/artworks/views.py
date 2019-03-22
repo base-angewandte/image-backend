@@ -17,7 +17,6 @@ from django.db.models.functions import Upper
 from django.shortcuts import _get_queryset
 from dal import autocomplete
 from rest_framework.response import Response
-from rest_framework.exceptions import APIException
 from pptx import Presentation
 from pptx.dml.color import RGBColor 
 from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE
@@ -28,26 +27,6 @@ from artworks.forms import *
 from artworks.serializers import ArtworkSerializer, CollectionSerializer
 
 logger = logging.getLogger(__name__)
-
-
-def get_object_or_APIException(klass, *args, **kwargs):
-    """
-    Similar to get_object_or_404, but raises APIException.
-    """
-    queryset = _get_queryset(klass)
-    if not hasattr(queryset, 'get'):
-        klass__name = klass.__name__ if isinstance(klass, type) else klass.__class__.__name__
-        raise ValueError(
-            "First argument to get_object_or_APIException() must be a Model, Manager, "
-            "or QuerySet, not '%s'." % klass__name
-        )
-    try:
-        return queryset.get(*args, **kwargs)
-    except queryset.model.DoesNotExist:
-        klass__name = klass.__name__ if isinstance(klass, type) else klass.__class__.__name__
-        message = 'Could not find %s %s' % (klass__name, kwargs)
-        logger.error(message)
-        raise APIException(message)
 
 
 @login_required
@@ -189,8 +168,9 @@ def details(request, id=None):
     Return artwork details in json format.
     """
     try:
-        artwork = get_object_or_APIException(Artwork, id=id)
-    except APIException:
+        artwork = Artwork.objects.get(id=id)
+    except Artwork.DoesNotExist:
+        logger.warning("Could not find artwork: %s", id)
         return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not get artwork details'})
     serializer = ArtworkSerializer(artwork)
     return JsonResponse(serializer.data)
@@ -243,40 +223,41 @@ def artwork_collect(request, id):
         return render(request, 'artwork/artwork_collect_overlay.html', context)
     if request.method == 'POST':
         try:
-            artwork = get_object_or_APIException(Artwork, id=request.POST['artwork-id'])
-        except APIException:
-            return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not get artwork'})
+            artwork = Artwork.objects.get(id=request.POST['artwork-id'])
+        except Artwork.DoesNotExist:
+            logger.warning("Could not find artwork membership: %s", request.POST['artwork-id'])
+            return JsonResponse(status=404, data={'status': 'false', 'message': 'Artwork does not exist'})
         if (request.POST['action'] == 'addCollection'):
             col_title = request.POST['collection-title']
             if (col_title):
                 try:
-                    u = get_object_or_APIException(User, id=request.user.id)
+                    u = User.objects.get(id=request.user.id)
                     newcol = ArtworkCollection.objects.create(title=col_title, user=u)
                     ArtworkCollectionMembership.objects.create(collection=newcol, artwork=artwork)
                     return JsonResponse({'action': 'reload'})
-                except APIException:
-                    return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not get user'})
+                except User.DoesNotExist:
+                    logger.warning('Could not find user: %s', request.user.id)
+                    return JsonResponse(status=404, data={'status': 'false', 'message': 'User does not exist'})
             else:
                 return JsonResponse({'error': 'collection title missing'}, status=500)
         else:
             try:
-                col = get_object_or_APIException(ArtworkCollection, id=request.POST['collection-id'])
-            except APIException:
-                return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not get collection'})
+                col = ArtworkCollection.objects.get(id=request.POST['collection-id'])
+            except ArtworkCollection.DoesNotExist:
+                logger.warning('Could not find artwork collection: %s', request.POST['collection-id'])
+                return JsonResponse(status=404, data={'status': 'false', 'message': 'Collection does not exist'})
             # users can only manipulate their own collections via this view
             if (request.user == col.user):
                 if (request.POST['action'] == 'add'):
-                    try:
-                        ArtworkCollectionMembership.objects.create(collection=col, artwork=artwork)
-                    except APIException:
-                        return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not add artwork to collection'})
+                    ArtworkCollectionMembership.objects.create(collection=col, artwork=artwork)
                     return JsonResponse({'action': 'added'})
                 if (request.POST['action'] == 'remove'):
                     try:
-                        artworkColMem = get_object_or_APIException(ArtworkCollectionMembership, artwork=artwork)
+                        artworkColMem = ArtworkCollectionMembership.objects.get(artwork=artwork)
                         artworkColMem.remove()
                         return JsonResponse({'action': 'removed'})
-                    except APIException:
+                    except ArtworkCollectionMembership.DoesNotExist:
+                        logger.warning('Could not remove artwork from collection')
                         return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not remove artwork from collection'})
         return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not manipulate collection'})
 
@@ -302,15 +283,16 @@ def collection(request, id=None):
     if request.method == 'POST':
         # users can only manipulate their own collections via this view
         try:
-            col = get_object_or_APIException(ArtworkCollection, id=id)
-        except APIException:
+            col = ArtworkCollection.objects.get(id=id)
+        except ArtworkCollection.DoesNotExist:
+            logger.warning('Could not find artwork collection: %s', id)
             return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not find artwork collection'})
         if (request.user.id != col.user.id):
             return JsonResponse(status=403, data={'status': 'false', 'message': 'Permission needed'})
         if ((request.POST['action'] == 'left') or (request.POST['action'] == 'right')):
             if 'membership-id' in request.POST:
                 try:
-                    membership = get_object_or_APIException(ArtworkCollectionMembership, id=request.POST['membership-id'], collection=col)
+                    membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'], collection=col)
                     # move artwork left
                     if (request.POST['action'] == 'left'):
                         membership.move_left()
@@ -319,22 +301,22 @@ def collection(request, id=None):
                     if (request.POST['action'] == 'right'):
                         membership.move_right()
                         return JsonResponse({'message': 'moved right'})
-                except APIException:
-                    logger.error("Could not move artwork membership: %s", request.POST['membership-id'])
+                except ArtworkCollectionMembership.DoesNotExist:
+                    logger.warning("Could not get artwork membership: %s", request.POST['membership-id'])
             return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not move artwork membership'})
         elif ((request.POST['action'] == 'connect') or (request.POST['action'] == 'disconnect')):
             # user wants to connect or disconnect the artwork
             try:
-                left_member = get_object_or_APIException(ArtworkCollectionMembership, id=request.POST['member-left'], collection=col)
-                right_member = get_object_or_APIException(ArtworkCollectionMembership, id=request.POST['member-right'], collection=col)
+                left_member = ArtworkCollectionMembership.objects.get(id=request.POST['member-left'], collection=col)
+                right_member = ArtworkCollectionMembership.objects.get(id=request.POST['member-right'], collection=col)
                 if (request.POST['action'] == 'connect'):
                     if left_member.connect(right_member):
                         return JsonResponse({'message': 'connected'})
                 if (request.POST['action'] == 'disconnect'):
                     if left_member.disconnect(right_member):
                         return JsonResponse({'message': 'disconnected'})
-            except APIException:
-                logger.error("Could not do action '%s' on artwork membership '%s'", request.POST['action'], request.POST['membership-id'])
+            except ArtworkCollectionMembership.DoesNotExist:
+                logger.warning("Could not do action '%s' on artwork membership '%s'", request.POST['action'], request.POST['membership-id'])
             return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not connect/disconnect artwork membership'})
         return JsonResponse(status=404, data={'status': 'false', 'message': 'Invalid post action'})
 
@@ -366,14 +348,15 @@ def collection_delete(request, id):
     """
     if request.method == "POST":
         try:
-            collection = get_object_or_APIException(ArtworkCollection, id=id)
+            collection = ArtworkCollection.objects.get(id=id)
             if (request.user.id is collection.user.id):
                 # users can only manipulate their own collections via this view
                 collection.delete()
                 return redirect('collections-list')
             else:
+                logger.warning("Could not get artwork collection: %s", id)
                 return JsonResponse(status=403, data={'status': 'false', 'message': 'Permission needed'})
-        except APIException:
+        except ArtworkCollection.DoesNotExist:
             return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not delete collection'})
     else:
         return redirect('collection', id=id)
@@ -385,8 +368,9 @@ def collection_json(request, id=None):
     Return collection data in json format.
     """
     try:
-        col = get_object_or_APIException(ArtworkCollection, id=id)
-    except APIException:
+        col = ArtworkCollection.objects.get(id=id)
+    except ArtworkCollection.DoesNotExist:
+        logger.warning("Could not get artwork collection: %s", id)
         return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not get collection'})
     serializer = CollectionSerializer(col)
     return JsonResponse(serializer.data)
@@ -563,9 +547,9 @@ def collection_download_as_pptx(request, id=None, language='de'):
     distance_between = padding * 2
 
     try:
-        col = get_object_or_APIException(ArtworkCollection, id=id)
-    except APIException:
-        logger.error('Could not create powerpoint file. Collection missing.')
+        col = ArtworkCollection.objects.get(id=id)
+    except ArtworkCollection.DoesNotExist:
+        logger.log('Could not create powerpoint file. Collection missing.')
         return
 
     memberships = col.artworkcollectionmembership_set.all()
