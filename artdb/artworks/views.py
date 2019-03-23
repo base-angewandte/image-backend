@@ -204,6 +204,7 @@ def artwork_edit(request, id):
             updated_artwork = form.save(commit=False)
             updated_artwork.updated_at = datetime.now()
             updated_artwork.save()
+            form.save_m2m()
             return HttpResponse("<script>window.location=document.referrer;</script>")
     return render(request, 'artwork/artwork_edit_overlay.html', context)
 
@@ -395,7 +396,7 @@ class ArtistAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = Artist.objects.all().order_by('name')
         if self.q:
-            return qs.filter(name__istartswith=self.q)
+            return qs.filter(Q(name__istartswith=self.q) | Q(name__icontains=' ' + self.q) | Q(synonyms__istartswith=self.q) | Q(synonyms__icontains=' ' + self.q))
         else:
             return Artist.objects.none()
 
@@ -549,7 +550,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
     try:
         col = ArtworkCollection.objects.get(id=id)
     except ArtworkCollection.DoesNotExist:
-        logger.log('Could not create powerpoint file. Collection missing.')
+        logger.warning('Could not create powerpoint file. Collection missing.')
         return
 
     memberships = col.artworkcollectionmembership_set.all()

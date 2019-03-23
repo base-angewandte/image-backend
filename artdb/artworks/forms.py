@@ -9,9 +9,6 @@ from artworks.models import Artwork, Artist, Keyword, ArtworkCollection
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 class ArtworkForm(forms.ModelForm):
-    # TODO: localization
-    # https://docs.djangoproject.com/en/2.0/topics/forms/modelforms/
-  
     image_original = forms.ImageField(label_suffix='', label='Upload', widget=forms.FileInput, required=False)
     image_original.widget.attrs.update({'class': 'imageselector'})
 
