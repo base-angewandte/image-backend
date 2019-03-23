@@ -1,30 +1,30 @@
-from datetime import datetime
-from io import BytesIO
-from functools import reduce
-import operator
 import logging
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
+import operator
+import os
+from datetime import datetime
+from functools import reduce
+from io import BytesIO
+
+from dal import autocomplete
+from django.conf import settings
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, ExpressionWrapper, BooleanField, Case, Value, IntegerField, When
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required, permission_required
-from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext as _
+from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
+from django.shortcuts import render, get_object_or_404, redirect, _get_queryset
 from django.template.defaultfilters import slugify
-from django.db.models.functions import Upper
-from django.shortcuts import _get_queryset
-from dal import autocomplete
-from rest_framework.response import Response
+from django.utils.decorators import method_decorator
 from pptx import Presentation
-from pptx.dml.color import RGBColor 
-from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE
+from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.text import MSO_ANCHOR
 from pptx.util import Pt
-from artworks.models import *
-from artworks.forms import *
-from artworks.serializers import ArtworkSerializer, CollectionSerializer
+from rest_framework.exceptions import APIException
+
+from .forms import ArtworkForm, ArtworkCollectionForm
+from .models import Artwork, Location, Keyword, Artist, ArtworkCollection, ArtworkCollectionMembership
+from .serializers import ArtworkSerializer, CollectionSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -80,18 +80,16 @@ def artworks_list(request):
                 return []
         if query_artwork_title:
             title_contains = (Q(title__icontains=query_artwork_title) |
-                            Q(title_english__icontains=query_artwork_title))
+                              Q(title_english__icontains=query_artwork_title))
             title_starts_with = (Q(title__istartswith=query_artwork_title) |
-                                Q(title_english__istartswith=query_artwork_title))
+                                 Q(title_english__istartswith=query_artwork_title))
             # order results by startswith match. see: https://stackoverflow.com/a/48409962
             expert_list = expert_list.filter(title_contains)
             is_match = ExpressionWrapper(title_starts_with, output_field=BooleanField())
             expert_list = expert_list.annotate(starts_with_title=is_match)
-            expert_list = (expert_list.filter(q_objects)
-                    .order_by('-starts_with_title', 'location_of_creation'))
+            expert_list = expert_list.filter(q_objects).order_by('-starts_with_title', 'location_of_creation')
         else:
-            expert_list = (expert_list.filter(q_objects)
-                    .order_by('title', 'location_of_creation'))
+            expert_list = expert_list.filter(q_objects).order_by('title', 'location_of_creation')
         return expert_list.distinct()
 
     def get_basic_queryset_list():
@@ -129,9 +127,7 @@ def artworks_list(request):
                 .order_by('rank', 'title',))
         else:
             # what the user gets, when she isn't using the search at all
-            basic_list = (Artwork.objects
-                .filter(published=True)
-                .order_by('-updated_at', 'title'))
+            basic_list = Artwork.objects.filter(published=True).order_by('-updated_at', 'title')
         return basic_list
 
     if query_search_type == 'expert':
@@ -140,10 +136,10 @@ def artworks_list(request):
     else:
         queryset_list = get_basic_queryset_list()
 
-    paginator = Paginator(queryset_list, 40) # show 40 artworks per page
-    pageNr = request.GET.get('page')
+    paginator = Paginator(queryset_list, 40)  # show 40 artworks per page
+    page_nr = request.GET.get('page')
     try:
-        artworks = paginator.get_page(pageNr)
+        artworks = paginator.get_page(page_nr)
     except PageNotAnInteger:
         artworks = paginator.page(1)
     except EmptyPage:
@@ -181,10 +177,11 @@ def artwork_detail_overlay(request, id=None):
     """
     Render an overlay showing a large version of the image and the artwork's details.
     """
-    artwork =  get_object_or_404(Artwork, id=id)
-    context = {}
-    context['artwork'] = artwork
-    context['is_staff'] = request.user.is_staff
+    artwork = get_object_or_404(Artwork, id=id)
+    context = {
+        'artwork': artwork,
+        'is_staff': request.user.is_staff,
+    }
     return render(request, 'artwork/artwork_detail_overlay.html', context)
 
 
@@ -194,10 +191,6 @@ def artwork_edit(request, id):
     Render an overlay showing the editable fields of an artwork.
     """
     artwork = get_object_or_404(Artwork, id=id)
-    context = {}
-    context['form'] = ArtworkForm(instance=artwork)
-    context['id'] = artwork.id
-    context['image_original'] = artwork.image_original
     if request.method == "POST":
         form = ArtworkForm(request.POST, request.FILES, instance=artwork)
         if form.is_valid():
@@ -206,6 +199,11 @@ def artwork_edit(request, id):
             updated_artwork.save()
             form.save_m2m()
             return HttpResponse("<script>window.location=document.referrer;</script>")
+    context = {
+        'form': ArtworkForm(instance=artwork),
+        'id': artwork.id,
+        'image_original': artwork.image_original,
+    }
     return render(request, 'artwork/artwork_edit_overlay.html', context)
 
 
@@ -230,7 +228,7 @@ def artwork_collect(request, id):
             return JsonResponse(status=404, data={'status': 'false', 'message': 'Artwork does not exist'})
         if (request.POST['action'] == 'addCollection'):
             col_title = request.POST['collection-title']
-            if (col_title):
+            if col_title:
                 try:
                     u = User.objects.get(id=request.user.id)
                     newcol = ArtworkCollection.objects.create(title=col_title, user=u)
@@ -252,7 +250,7 @@ def artwork_collect(request, id):
                 if (request.POST['action'] == 'add'):
                     ArtworkCollectionMembership.objects.create(collection=col, artwork=artwork)
                     return JsonResponse({'action': 'added'})
-                if (request.POST['action'] == 'remove'):
+                if request.POST['action'] == 'remove':
                     try:
                         artworkColMem = ArtworkCollectionMembership.objects.get(artwork=artwork)
                         artworkColMem.remove()
@@ -271,15 +269,16 @@ def collection(request, id=None):
     """
     if request.method == 'GET':
         col = get_object_or_404(ArtworkCollection, id=id)
-        context = {}
-        context['title']  = col.title
-        context['id']  = col.id
-        context['created_by_username'] = col.user.get_username()
-        context['created_by_fullname'] = col.user.get_full_name()
-        context['created_by_userid'] = col.user.id
-        context['memberships'] = col.artworkcollectionmembership_set.all()
-        context['collections'] = ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user)
-        context['my_collections'] = ArtworkCollection.objects.filter(user=request.user)
+        context = {
+            'title': col.title,
+            'id': col.id,
+            'created_by_username': col.user.get_username(),
+            'created_by_fullname': col.user.get_full_name(),
+            'created_by_userid': col.user.id,
+            'memberships': col.artworkcollectionmembership_set.all(),
+            'collections': ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user),
+            'my_collections': ArtworkCollection.objects.filter(user=request.user),
+        }
         return render(request, 'artwork/collection.html', context)
     if request.method == 'POST':
         # users can only manipulate their own collections via this view
@@ -288,24 +287,24 @@ def collection(request, id=None):
         except ArtworkCollection.DoesNotExist:
             logger.warning('Could not find artwork collection: %s', id)
             return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not find artwork collection'})
-        if (request.user.id != col.user.id):
+        if request.user.id != col.user.id:
             return JsonResponse(status=403, data={'status': 'false', 'message': 'Permission needed'})
-        if ((request.POST['action'] == 'left') or (request.POST['action'] == 'right')):
+        if request.POST['action'] == 'left' or request.POST['action'] == 'right':
             if 'membership-id' in request.POST:
                 try:
                     membership = ArtworkCollectionMembership.objects.get(id=request.POST['membership-id'], collection=col)
                     # move artwork left
-                    if (request.POST['action'] == 'left'):
+                    if request.POST['action'] == 'left':
                         membership.move_left()
                         return JsonResponse({'message': 'moved left'})
                     # move artwork right
-                    if (request.POST['action'] == 'right'):
+                    if request.POST['action'] == 'right':
                         membership.move_right()
                         return JsonResponse({'message': 'moved right'})
                 except ArtworkCollectionMembership.DoesNotExist:
                     logger.warning("Could not get artwork membership: %s", request.POST['membership-id'])
             return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not move artwork membership'})
-        elif ((request.POST['action'] == 'connect') or (request.POST['action'] == 'disconnect')):
+        elif request.POST['action'] == 'connect' or request.POST['action'] == 'disconnect':
             # user wants to connect or disconnect the artwork
             try:
                 left_member = ArtworkCollectionMembership.objects.get(id=request.POST['member-left'], collection=col)
@@ -313,7 +312,7 @@ def collection(request, id=None):
                 if (request.POST['action'] == 'connect'):
                     if left_member.connect(right_member):
                         return JsonResponse({'message': 'connected'})
-                if (request.POST['action'] == 'disconnect'):
+                if request.POST['action'] == 'disconnect':
                     if left_member.disconnect(right_member):
                         return JsonResponse({'message': 'disconnected'})
             except ArtworkCollectionMembership.DoesNotExist:
@@ -328,17 +327,18 @@ def collection_edit(request, id):
     Render an overlay showing the editable fields of a collection.
     """
     collection = get_object_or_404(ArtworkCollection, id=id)
-    if (request.user.id is not collection.user.id):
+    if request.user.id is not collection.user.id:
         # users can only manipulate their own collections via this view
         return HttpResponseForbidden()
-    context = {}
-    context['form'] = ArtworkCollectionForm(instance=collection)
-    context['collection'] = collection
     if request.method == "POST":
         form = ArtworkCollectionForm(request.POST, instance=collection)
         if form.is_valid():
             form.save()
             return redirect('collection', id=id)
+    context = {
+        'form': ArtworkCollectionForm(instance=collection),
+        'collection': collection,
+    }
     return render(request, 'artwork/collection_edit_overlay.html', context)
 
 
@@ -382,10 +382,27 @@ def collections_list(request):
     """
     Render a list of all collections.
     """
-    context = {}
-    context['collections'] = ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user)
-    context['my_collections'] = ArtworkCollection.objects.filter(user=request.user)
+    context = {
+        'collections': ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user),
+        'my_collections': ArtworkCollection.objects.filter(user=request.user),
+    }
     return render(request, 'artwork/collections_list.html', context)
+
+
+class ArtworkArtistAutocomplete(autocomplete.Select2QuerySetView):
+    """
+    Return dal suggestions for the artist filter.
+    """
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Artist.objects.none()
+
+        qs = Artist.objects.all().order_by('name')
+
+        if self.q:
+            return qs.filter(Q(name__unaccent__icontains=self.q) | Q(synonyms__unaccent__icontains=self.q))
+
+        return qs
 
 
 @method_decorator(login_required, name='dispatch')
@@ -502,10 +519,10 @@ def collection_download_as_pptx(request, id=None, language='de'):
         aspect_ratio = image_width / image_height
         
         # calculate width and height
-        if (position == 'center'):
+        if position == 'center':
             picture_max_width = int(prs.slide_width - (padding * 2))
             space_aspect_ratio = picture_max_width / picture_max_height
-            if (aspect_ratio < space_aspect_ratio):
+            if aspect_ratio < space_aspect_ratio:
                 pic.height = picture_max_height
                 pic.width = int(picture_max_height * aspect_ratio)
             else:
@@ -515,7 +532,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
         else:
             picture_max_width = int((prs.slide_width - (padding * 2) - distance_between)/2)
             space_aspect_ratio = picture_max_width / picture_max_height
-            if (aspect_ratio < space_aspect_ratio):
+            if aspect_ratio < space_aspect_ratio:
                 pic.height = picture_max_height
                 pic.width = int(picture_max_height * aspect_ratio)
             else:
@@ -524,24 +541,23 @@ def collection_download_as_pptx(request, id=None, language='de'):
                 pic.top = padding + int((picture_max_height - pic.height) / 2)
 
         # position the image left/right
-        if (position == 'center'):
+        if position == 'center':
             pic.left = int((prs.slide_width - pic.width) / 2)
-        if (position == 'left'):
-            if (image_height < image_width):
+        if position == 'left':
+            if image_height < image_width:
                 pic.left = int(padding)
             else:
                 pic.left = padding + int((picture_max_width - pic.width)/2)
-        if (position == 'right'):
-            if (image_height < image_width):
+        if position == 'right':
+            if image_height < image_width:
                 pic.left = padding + picture_max_width + distance_between
             else:
                 pic.left = padding + picture_max_width + distance_between + int((picture_max_width - pic.width)/2)
 
-
     # define the presentation dimensions
     prs = Presentation()
-    prs.slide_width = 24384000  # taken from Keynote 16:9 pptx
-    prs.slide_height = 13716000 # taken from Keynote 16:9 pptx
+    prs.slide_width = 24384000   # taken from Keynote 16:9 pptx
+    prs.slide_height = 13716000  # taken from Keynote 16:9 pptx
     padding = int(prs.slide_width / 100)
     textbox_height = prs.slide_height / 10
     picture_max_height = int(prs.slide_height - (padding * 2) - textbox_height)
@@ -557,7 +573,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
     connected_member = None
     for membership in memberships:
         if membership.connected_with:
-            if not (connected_member):
+            if not connected_member:
                 connected_member = membership
             else:
                 add_slide_with_two_pictures(connected_member.artwork, membership.artwork, padding)
@@ -568,7 +584,10 @@ def collection_download_as_pptx(request, id=None, language='de'):
     output = BytesIO()
     prs.save(output)
     output.seek(0)
-    response = HttpResponse(output.read(), content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation')
+    response = HttpResponse(
+        output.read(),
+        content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    )
     response['Content-Disposition'] = 'attachment; filename="' + slugify(col.title) + '.pptx"'
     output.close()
 

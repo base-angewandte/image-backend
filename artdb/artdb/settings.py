@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     # need to be before django.contrib.admin and grapelli
     'dal',
     'dal_select2',
+    'dal_admin_filters',
 
 
     'django.contrib.admin',
@@ -78,6 +79,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
 
     # Third-party apps
     'rest_framework',

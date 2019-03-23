@@ -1,6 +1,7 @@
 import os
 import logging
 from django.db import models
+from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.db.models.functions import Upper
 from django.contrib.auth.models import User
 from django.dispatch import receiver
@@ -95,6 +96,9 @@ class Artwork(models.Model):
     checked = models.BooleanField(verbose_name=_('Checked'), default=False)
     published = models.BooleanField(verbose_name=_('Published'), default=False)  
 
+    class Meta:
+        ordering = [Upper('title'), ]
+
     def __str__(self):
         return self.title
 
@@ -109,9 +113,6 @@ class Artwork(models.Model):
         parts = [artists, title_in_language, self.date]
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
-
-    class Meta:
-        ordering = [Upper('title'), ]
 
 
 @receiver(models.signals.post_save, sender=Artwork)
@@ -277,3 +278,6 @@ def string_representation(self):
 
 
 User.add_to_class("__str__", string_representation)
+
+# Monkey patch ManyToManyDescriptor
+ManyToManyDescriptor.get_queryset = lambda self: self.rel.model.objects.get_queryset()
