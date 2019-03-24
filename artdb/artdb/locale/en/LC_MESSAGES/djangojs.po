@@ -22,6 +22,9 @@ msgstr ""
 msgid "addtocollection"
 msgstr "Add to Folder"
 
+msgid "removefromcollection"
+msgstr "Remove from Folder"
+
 #: artdb/static_dev/js/artworks.js:39
 msgid "Edit"
 msgstr ""
