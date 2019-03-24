@@ -19,6 +19,7 @@ from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR
+from pptx.enum.dml import MSO_THEME_COLOR
 from pptx.util import Pt
 from rest_framework.exceptions import APIException
 
@@ -473,7 +474,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
         slide = prs.slides.add_slide(blank_slide_layout)
         fill = slide.background.fill
         fill.solid()
-        fill.fore_color.rgb = RGBColor(30, 30, 30)
+        fill.fore_color.rgb = RGBColor(128, 128, 128)
         return slide
 
     def add_description(slide, description, width, left):
@@ -489,7 +490,9 @@ def collection_download_as_pptx(request, id=None, language='de'):
         run = p.add_run()
         run.text = description
         font = run.font
-        font.size = Pt(30)
+        font.size = Pt(36)
+        font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+
 
     def add_slide_with_one_picture(artwork, padding):
         img_relative_path = artwork.image_original.thumbnail['1881x933'].name
