@@ -1,15 +1,16 @@
-import os
 import logging
+import os
+
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.db.models.functions import Upper
-from django.contrib.auth.models import User
 from django.dispatch import receiver
-from django.conf import settings
-from django.utils.translation import ugettext, ugettext_lazy as _
-from versatileimagefield.fields import VersatileImageField
+from django.utils.translation import ugettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 from ordered_model.models import OrderedModel
+from versatileimagefield.fields import VersatileImageField
 
 logger = logging.getLogger(__name__)
 
