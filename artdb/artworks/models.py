@@ -25,6 +25,8 @@ class Artist(models.Model):
 
     class Meta:
         ordering = ['name']
+        verbose_name = _('Artist')
+        verbose_name_plural = _('Artists')
 
     def __str__(self):
         return self.name
@@ -50,6 +52,9 @@ class Keyword(MPTTModel):
     name = models.CharField(verbose_name=_('Name'), max_length=255, unique=True)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
 
+    class Meta:
+        verbose_name = _('Keyword')
+        verbose_name_plural = _('Keywords')
 
     class MPTTMeta:
         order_insertion_by = ['name']
@@ -66,6 +71,9 @@ class Location(MPTTModel):
     synonyms = models.CharField(verbose_name=_('Synonyms'), max_length=255, blank=True)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
 
+    class Meta:
+        verbose_name = _('Location')
+        verbose_name_plural = _('Locations')
 
     class MPTTMeta:
         order_insertion_by = ['name']
@@ -126,6 +134,8 @@ class Artwork(models.Model):
 
     class Meta:
         ordering = [Upper('title'), ]
+        verbose_name = _('Artwork')
+        verbose_name_plural = _('Artworks')
 
     def __str__(self):
         return self.title
@@ -200,6 +210,8 @@ class ArtworkCollection(models.Model):
     
     class Meta:
         permissions = (('can_download_pptx', 'Can download as PowerPoint file'),)
+        verbose_name = _('Folder')
+        verbose_name_plural = _('Folders')
 
 
 class ArtworkCollectionMembership(OrderedModel):
@@ -212,6 +224,10 @@ class ArtworkCollectionMembership(OrderedModel):
     artwork = models.ForeignKey(Artwork, verbose_name=_('Artwork'), on_delete=models.CASCADE)
     order_with_respect_to = 'collection'
     connected_with = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = _('Folder Membership')
+        verbose_name_plural = _('Folder Memberships')
 
     def move_left(self):
         # did the user click a single one or a connected one?
