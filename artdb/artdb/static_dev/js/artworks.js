@@ -34,11 +34,13 @@ $(document).ready(function() {
         const jsonUrl = url + '.json';
         $.getJSON(jsonUrl, function(data) {
             var elDetails = document.createElement('div');
-            if (elInspector.classList.contains('editable')) {
+            if ($('#thumbnails').hasClass('editable')) {
                 elDetails.appendChild(createEl('button', ['inspector-button', 'button-collect'], gettext('removefromcollection'), url));
-                elDetails.appendChild(createEl('button', ['inspector-button','button-edit'], gettext('Edit'), url));
             } else {
                 elDetails.appendChild(createEl('button', ['inspector-button', 'button-collect'], gettext('addtocollection'), url));
+            }
+            if (elInspector.classList.contains('editable')) {
+                elDetails.appendChild(createEl('button', ['inspector-button','button-edit'], gettext('Edit'), url));
             }
             if ($('#thumbnails').hasClass('editable')) {
                 if (selectedThumbnail.dataset.membershipid) {
