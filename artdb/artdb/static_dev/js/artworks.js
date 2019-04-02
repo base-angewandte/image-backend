@@ -75,6 +75,7 @@ $(document).ready(function() {
                         for (var i = 0; i < val.length; i++) {
                             elVal = createEl('div', ['value','tag'], val[i].name);
                             elVal.dataset.keyword = val[i].name;
+                            elVal.alt = val[i].name;
                             elEntry.appendChild(elVal);
                         }
                         break;

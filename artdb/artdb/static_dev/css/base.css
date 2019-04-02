@@ -333,24 +333,21 @@ and a close button */
 
 .inspector .value.tag {
     display: inline-block;
-    padding: 0 8px 0 8px;
+    padding: 0 2px 0 2px;
     margin-right: 8px;
-    margin-bottom: 2px;
-    background-color: #31576C;
-    border-color: #35627A;
-    border-radius: 20px;
-    height: 14px;
+    margin-bottom: 4px;
+    background-color: var(--base-second-color);
     line-height: 14px;
     font-size: 14px;
     color: #fff;
     font-weight: 400;
-    overflow-wrap: normal;
+
 }
 
 .inspector .value.tag:hover,
 .inspector .value.tag:focus,
 .inspector .value.tag:active {
-    background-color: #366B88;
+    background-color: var(--base-color);
 }
 
 .inspector-button {
