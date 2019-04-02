@@ -334,7 +334,7 @@ and a close button */
 .inspector .value.tag {
     display: inline-block;
     padding: 0 2px 0 2px;
-    margin-right: 8px;
+    margin-right: 4px;
     margin-bottom: 4px;
     background-color: var(--base-second-color);
     line-height: 14px;
