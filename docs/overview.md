@@ -15,9 +15,9 @@ The following list of criteria and features was assembled:
 In summer 2018 and external developer-designer (the author) was hired to plan out and implement a corresponding system.
 
 ## System Components
-The implemented system is based on **django** ([version 2.0.6](https://docs.djangoproject.com/en/2.0/) at the time of writing) - an open source Python web framework. Django already found use by the internal development team of the Angewandte when they built the **Base Recherche**. Using the same framework -- so the idea -- should smooth the post-launch handover and later maintenance.
+The implemented system is based on **django** ([version 2.0.6](https://docs.djangoproject.com/en/2.0/) at the time of writing) - an open source Python web framework. Django already found use by the internal development team of the Angewandte when they build the **Base Recherche**. Using the same framework -- so the idea -- should make the post-launch handover and later maintenance easier.
 
-The django web app is called *artdb*. It is **dockerized** and it connects to a **PostgreSQL** database.
+The django web app is internally called *artdb*. It is **dockerized** and it connects to a **PostgreSQL** database.
 
 ## Django Models
 An **artwork** is basically just an image with some addtional data (title, material, etc.). An artwork can be associated with one or more **artists**, **keywords** and **locations**.
@@ -25,12 +25,12 @@ Users can **collect** artworks. They can create **collections**. They can add ar
 Users can export a collection in the form of a pptx file. If the user wants to show two artworks on one single powerpoint slide, she can *connect* two artworks inside the collection.
 
 ## Static and dynamic pages
-The django web app is mainly serving rather static pages, which are defined by the following templates (and a few additional ones):
+The django web app is mainly serving rather static pages, which are defined by the following templates (and a few smaller supporting ones):
 * `/artdb/templates/base.html` - the basic page skeleton
 * `/artdb/templates/artwork/thumbnailbrowser.html` - the main page showing thumbnails
 * `/artdb/templates/artwork/collections_list.html` - a listing of collections
 
-Apart from those pages, there are several **overlays**. These overlays are not served as stand-alone pages. Instead they are loaded via javascript and put inside empty divs defined in the ``base.html``. When an overlay gets shown, the content *beneath* is removed via css (`display: none`). When the user closes the overlay, the content beneath appears again. No reload necessary.
+Apart from those pages, there are several **overlays**. These overlays are not served as stand-alone pages. Instead they are loaded via javascript and put inside empty divs defined in the `base.html` template. When an overlay gets shown, the content *beneath* is removed via css (`display: none`). When the user closes the overlay, the content beneath appears again. No reload necessary.
 
 **A webframework/library such as Angular or React was not used.** The empty divs are filled by simply loading static overlay templates via **jQuery**.
 * `artwork_detail_overlay.html` gets loaded when the user clicks twice on an artwork’s thumbnail.
