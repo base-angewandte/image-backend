@@ -10,8 +10,8 @@ Welcome to base Image's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   overview
    install
-   dev_guide
 
 
 .. Indices and tables
