@@ -57,4 +57,4 @@ Thumbnails and images shown in the detail view are created on demand. Please not
 <https://github.com/burke-software/django-mass-edit> - Allows to edit multiple records at once via the admin interface.
 
 ### django-autocomplete-light
-<https://github.com/yourlabs/django-autocomplete-light> - Provides autocomplete functionaloty for various input and selection fields.
+<https://github.com/yourlabs/django-autocomplete-light> - Provides autocomplete functionality for various input and selection fields.
