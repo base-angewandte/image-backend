@@ -48,10 +48,10 @@ Some templates also bring their own javascript to provide additional template sp
 Thumbnails and images shown in the detail view are created on demand. Please note: all images, the original uploaded ones as well as the renditions, are stored in a specific file structure. This file structure was adopted from EasyDB and is defined in `/artdb/artworks/models.py` (see: `get_path_to_original_file()` and `move_uploaded_image()`).
 
 ### django-mptt
-<https://github.com/django-mptt/django-mptt> - Utilities for implementing a modified pre-order traversal tree in django. This one is used to implement the hierarchical structure needed for **locations** (Holland->Amsterdam->Galerie Monet). It is also used to preserve the hierarchical structure of the **keywords** (potentially useful later on).
+<https://github.com/django-mptt/django-mptt> - Utilities for implementing a modified pre-order traversal tree in django. This package is used to implement the hierarchical structure needed for **locations** (Holland->Amsterdam->Galerie Monet). It is also used to preserve the hierarchical structure of the **keywords** (potentially useful later on).
 
 ### django-ordered-model
-<https://github.com/bfirsh/django-ordered-model> - This one makes **collections** orderable.
+<https://github.com/bfirsh/django-ordered-model> - This package makes **collections** orderable.
 
 ### django-mass-edit
 <https://github.com/burke-software/django-mass-edit> - Allows to edit multiple records at once via the admin interface.
