@@ -25,7 +25,7 @@ Users can **collect** artworks. They can create **collections**. They can add ar
 Users can export a collection in the form of a pptx file. If the user wants to show two artworks on one single powerpoint slide, she can *connect* two artworks inside the collection.
 
 ## Static and dynamic pages
-The django web app is mainly serving rather static pages, which are defined by the following templates (and a few smaller supporting ones):
+The django web app is mainly serving relatively static pages, which are defined by the following templates (and a few smaller supporting ones):
 * `/artdb/templates/base.html` - the basic page skeleton
 * `/artdb/templates/artwork/thumbnailbrowser.html` - the main page showing thumbnails
 * `/artdb/templates/artwork/collections_list.html` - a listing of collections
@@ -40,22 +40,21 @@ Apart from those pages, there are several **overlays**. These overlays are not s
 
 Most javascript functions are defined in the following file: `/artdb/static_dev/js/artworks.js`. This file defines, among other things, a relatively complex function called *updateInspector()*. The inspector -- the dark sidebar on the right -- gets updated whenever the user selects an artwork by clicking on it once. Instead of reloading the whole static page, only the inspector gets updated via javascript. The necessary data is provided via JSON (see: <https://base.uni-ak.ac.at/image/artwork/17014.json>)
 
-Some templates also bring their own javascript to provide additional template specific functionalities. `collection.html` uses a rather large function called *updateSlides()*. The user is able to move and connect artworks. Instead of reloading the whole static page whenever a change happens, only the data of the collection gets reloaded (see: <https://base.uni-ak.ac.at/image/collection/1.json>). Then all the thumbnails get constructed anew.
+Some templates also bring their own javascript to provide additional template specific functionalities. `collection.html` uses a rather large function called `updateSlides()`. The user is able to move and connect artworks. Instead of reloading the whole static page whenever a change happens, only the data of the collection gets reloaded (see: <https://base.uni-ak.ac.at/image/collection/1.json>). Then all the thumbnails get constructed anew.
 
 ## Notable Third Party Django Packages
-### versatileimagefield
+### django-versatileimagefield
 <https://github.com/respondcreate/django-versatileimagefield> - Replacement of Django's ImageField that allows to create new image versions (renditions) from the one assigned to the field.
-This one is used to create the thumbnails and images shown in the detail view -- on demand. Please note: all images, the original uploaded ones as well as the renditions, are stored in a specific file structure.
-This file structure was adopted from EasyDB and is defined in `/artdb/artworks/models.py` (see: `get_path_to_original_file()` and `move_uploaded_image()`).
+Thumbnails and images shown in the detail view are created on demand. Please note: all images, the original uploaded ones as well as the renditions, are stored in a specific file structure. This file structure was adopted from EasyDB and is defined in `/artdb/artworks/models.py` (see: `get_path_to_original_file()` and `move_uploaded_image()`).
 
 ### django-mptt
 <https://github.com/django-mptt/django-mptt> - Utilities for implementing a modified pre-order traversal tree in django. This one is used to implement the hierarchical structure needed for **locations** (Holland->Amsterdam->Galerie Monet). It is also used to preserve the hierarchical structure of the **keywords** (potentially useful later on).
 
 ### django-ordered-model
-<https://github.com/bfirsh/django-ordered-model> - This one is used make the **collections** orderable.
+<https://github.com/bfirsh/django-ordered-model> - This one makes **collections** orderable.
 
 ### django-mass-edit
 <https://github.com/burke-software/django-mass-edit> - Allows to edit multiple records at once via the admin interface.
 
 ### django-autocomplete-light
-<https://github.com/yourlabs/django-autocomplete-light> - Provides autocomplete for various input and selection fields.
+<https://github.com/yourlabs/django-autocomplete-light> - Provides autocomplete functionaloty for various input and selection fields.
