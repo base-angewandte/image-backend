@@ -495,7 +495,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
 
 
     def add_slide_with_one_picture(artwork, padding):
-        img_relative_path = artwork.image_original.thumbnail['1881x933'].name
+        img_relative_path = artwork.image_original.thumbnail['1880x933'].name # 1920-20-20 = 1880
         img_path = os.path.join(settings.MEDIA_ROOT, img_relative_path)
         slide = get_new_slide()
         add_picture_to_slide(slide, img_path, padding, 'center')
@@ -503,9 +503,9 @@ def collection_download_as_pptx(request, id=None, language='de'):
         add_description(slide, artwork.get_short_description(language), picture_width, padding)
 
     def add_slide_with_two_pictures(artwork_left, artwork_right, padding):
-        img_relative_path_left = artwork_left.image_original.thumbnail['576x933'].name
+        img_relative_path_left = artwork_left.image_original.thumbnail['920x933'].name # (1920/2)-20-20 = 920
         img_path_left = os.path.join(settings.MEDIA_ROOT, img_relative_path_left)
-        img_relative_path_right = artwork_right.image_original.thumbnail['576x933'].name
+        img_relative_path_right = artwork_right.image_original.thumbnail['920x933'].name
         img_path_right = os.path.join(settings.MEDIA_ROOT, img_relative_path_right)
         slide = get_new_slide()
         add_picture_to_slide(slide, img_path_left, padding, 'left')
@@ -561,7 +561,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
     prs = Presentation()
     prs.slide_width = 24384000   # taken from Keynote 16:9 pptx
     prs.slide_height = 13716000  # taken from Keynote 16:9 pptx
-    padding = int(prs.slide_width / 100)
+    padding = int(prs.slide_width / 96) # full HD: 1920px/96 = 20px  
     textbox_height = prs.slide_height / 10
     picture_max_height = int(prs.slide_height - (padding * 2) - textbox_height)
     distance_between = padding * 2
