@@ -975,22 +975,26 @@ and a close button */
 
 .btn-download-pptx-german {
     background: white url(download_pptx_german.svg) no-repeat center center;
+    background-size: auto 29px;
 }
 
 .btn-download-pptx-german:hover,
 .btn-download-pptx-german:focus,
 .btn-download-pptx-german:active {
     background: white url(download_pptx_german_active.svg) no-repeat center center;
+    background-size: auto 29px;
 }
 
 .btn-download-pptx-english {
     background: white url(download_pptx_english.svg) no-repeat center center;
+    background-size: auto 29px;
 }
 
 .btn-download-pptx-english:hover,
 .btn-download-pptx-english:focus,
 .btn-download-pptx-english:active {
     background: white url(download_pptx_english_active.svg) no-repeat center center;
+    background-size: auto 29px;
 }
 
 
@@ -1294,7 +1298,7 @@ table.collections-list input {
         transition: none;
     }
     #collection-selector-button {
-        width: calc(100vw - 780px);
+        width: calc(100vw - 740px);
     }
 
 }
@@ -1316,6 +1320,9 @@ table.collections-list input {
     }
     .sidebar-detached {
         display: none;
+    }
+    .btn-show-all-details.shown {
+        display: none !important;
     }
     .overlay {
         min-width: 100%;
@@ -1340,6 +1347,9 @@ table.collections-list input {
         max-width: none;
         min-width: none;
     }
+}
+
+@media (max-width: 610px) {
     .search-topbar,
     #collection-nav {
         display: block;
@@ -1347,9 +1357,63 @@ table.collections-list input {
         margin-top: 16px;
     }
     .switch-labeled {
-        display: inline-block;
-        vertical-align: top;
-        float: none;
+        display: block;
+        float: right;
+        margin-top: -60px;
+    }
+    .search-topbar {
+        margin-top: 16px;
+    }
+    #search-basic.fadeout {
+        display: none;
+    }
+    .overlay .content {
+        display: block;
+        height: auto;
+        padding: 55px 0 0 0;
+    }
+    .sidebar-attached {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+    .inspector-button {
+        width: 100%;
+    }
+    .inspector .value {
+        max-width: 100%;
+    }
+    .overlay .button-close {
+        right: 18px;
+    }
+    #collect-overlay {
+        display: block;
+    }
+    #addCollectionForm {
+        padding-bottom: 55px;
+    }
+    h2.centered {
+        width: auto;
+    }
+    #collection-selector-button {
+        display: none;
+    }
+    .sidebar-attached .metadataarea {
+        width: 100% !important;
+    }
+    .sidebar-attached .inspector-button.cancel,
+    .sidebar-attached .inspector-button.confirm {
+        width: calc(50% - 8px);
+    }
+    #edit-overlay {
+        background-color: var(--dark-grey-1-color);
+        top: var(--topbar-wrapper-height);
+    }
+    #edit-overlay .content {
+        display: none;
+    }
+    #edit-overlay form {
+        display: block;
     }
 }
 
