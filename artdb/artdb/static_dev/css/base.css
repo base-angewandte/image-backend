@@ -182,6 +182,7 @@ and a close button */
     width: 26px;
     height: 26px;
     border: 0;
+    background-color: #fff;
 }
 
 .overlay .button-close:hover,
@@ -232,7 +233,7 @@ and a close button */
 /* thumbnailbrowser */
 #thumbnailbrowser {
     height: calc(100vh - var(--topbar-wrapper-height) - var(--footer-wrapper-height));
-    width: 100vw;
+    width: 100%;
     background-color: var(--light-bg-color);
     padding: 0 var(--sidebar-width) 0 0;
 }
@@ -1368,3 +1369,4 @@ table.collections-list input {
     padding: 32px 16px 32px 16px;
     text-align: center;
 }
+
