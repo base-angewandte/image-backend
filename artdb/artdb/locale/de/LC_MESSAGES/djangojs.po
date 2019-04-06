@@ -75,3 +75,6 @@ msgstr "Titel, englisch"
 
 msgid "published"
 msgstr "veröffentlicht"
+
+msgid "Show more"
+msgstr "Mehr anzeigen"

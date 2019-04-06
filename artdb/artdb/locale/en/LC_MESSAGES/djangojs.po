@@ -55,3 +55,6 @@ msgstr "Comments"
 
 msgid "material"
 msgstr "Material/Technique"
+
+msgid "Show more"
+msgstr ""

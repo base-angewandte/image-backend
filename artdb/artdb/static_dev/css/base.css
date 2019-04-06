@@ -209,7 +209,7 @@ and a close button */
     display: table-cell;
     width: var(--sidebar-width);
     height: calc(100% - var(--topbar-height));
-    margin-left: calc(100vw - var(--sidebar-width));
+    margin-left: calc(100% - var(--sidebar-width));
     background-color: var(--dark-grey-1-color);
     padding: 32px 16px 16px 16px;
     -moz-osx-font-smoothing: grayscale;
@@ -377,24 +377,25 @@ and a close button */
     width: 97px;
 }
 
-.inspector-button.button-move-left {
-    background: var(--mid-grey-2-color) url(arrow_big_left.svg) no-repeat center;
-}
-
 .inspector-button.button-move-right {
     float: right;
-    background: var(--mid-grey-2-color) url(arrow_big_right.svg) no-repeat center;
+    background: var(--mid-grey-2-color) url('/static/css/arrow_big_right.svg') no-repeat center;
+}
+
+.inspector-button.button-move-left {
+    background: var(--mid-grey-2-color) url('/static/css/arrow_big_left.svg') no-repeat center;
 }
 
 .inspector-button.button-move-left:hover,
 .inspector-button.button-move-left:focus,
-.inspector-button.button-move-left:active {
+.inspector-button.button-move-left:active,
+.inspector-button.button-move-right:hover,
+.inspector-button.button-move-right:focus,
+.inspector-button.button-move-right:active,
+.btn-show-all-details:hover,
+.btn-show-all-details:focus,
+.btn-show-all-details:active {
     background-color: var(--mid-grey-3-color);
-}
-
-.inspector-button.button-move-right {
-    float: right;
-    background: var(--mid-grey-2-color) url(arrow_big_right.svg) no-repeat center;
 }
 
 .inspector-button.button-move-right:hover,
@@ -418,6 +419,22 @@ and a close button */
 .show-detail-overlay .inspector-button.button-move-left,
 .show-detail-overlay .inspector-button.button-move-right {
     visibility: hidden;
+}
+
+.btn-show-all-details {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: 28px;
+    line-height: 28px;
+    margin: 0;
+    background-color: #212121;
+    display: none;
+}
+
+.btn-show-all-details.shown {
+    display: block;
 }
 
 .artwork-details {
