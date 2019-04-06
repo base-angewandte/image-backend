@@ -379,11 +379,11 @@ and a close button */
 
 .inspector-button.button-move-right {
     float: right;
-    background: var(--mid-grey-2-color) url('/static/css/arrow_big_right.svg') no-repeat center;
+    background: var(--mid-grey-2-color) url('image/static/css/arrow_big_right.svg') no-repeat center;
 }
 
 .inspector-button.button-move-left {
-    background: var(--mid-grey-2-color) url('/static/css/arrow_big_left.svg') no-repeat center;
+    background: var(--mid-grey-2-color) url('image/static/css/arrow_big_left.svg') no-repeat center;
 }
 
 .inspector-button.button-move-left:hover,
