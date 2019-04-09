@@ -144,7 +144,6 @@ workenv
 
 media
 fixtures
-migration
 
 artdb/assets/
 dockerdata/
