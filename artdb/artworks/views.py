@@ -253,7 +253,7 @@ def artwork_collect(request, id):
                     return JsonResponse({'action': 'added'})
                 if request.POST['action'] == 'remove':
                     try:
-                        artworkColMem = ArtworkCollectionMembership.objects.get(artwork=artwork)
+                        artworkColMem = ArtworkCollectionMembership.objects.get(collection=col, artwork=artwork)
                         artworkColMem.remove()
                         return JsonResponse({'action': 'removed'})
                     except ArtworkCollectionMembership.DoesNotExist:
