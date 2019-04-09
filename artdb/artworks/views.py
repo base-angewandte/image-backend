@@ -61,7 +61,7 @@ def artworks_list(request):
         if query_artist_name:
             terms = [term.strip() for term in query_artist_name.split()]
             for term in terms:
-                q_objects.add((Q(artists__name__icontains=term) | Q(artists__synonyms__icontains=term)), Q.AND)
+                q_objects.add((Q(artists__name__unaccent__icontains=term) | Q(artists__synonyms__unaccent__icontains=term)), Q.AND)
         if query_keyword:
             keywords = Keyword.objects.filter(name__icontains=query_keyword)
             q_objects.add(Q(keywords__in=keywords), Q.AND)
