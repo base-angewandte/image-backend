@@ -97,7 +97,7 @@ def artworks_list(request):
         if query_search:
 
             def get_artists(term):
-                return Artist.objects.filter(Q(name__istartswith=term) | Q(name__icontains=' ' + term))
+                return Artist.objects.filter(Q(name__unaccent__istartswith=term) | Q(name__unaccent__icontains=' ' + term))
 
             def get_keywords(term):
                 return Keyword.objects.filter(Q(name__istartswith=term) | Q(name__istartswith=' ' + term))
@@ -414,7 +414,7 @@ class ArtistAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = Artist.objects.all().order_by('name')
         if self.q:
-            return qs.filter(Q(name__istartswith=self.q) | Q(name__icontains=' ' + self.q) | Q(synonyms__istartswith=self.q) | Q(synonyms__icontains=' ' + self.q))
+            return qs.filter(Q(name__unaccent__istartswith=self.q) | Q(name__unaccent__icontains=' ' + self.q) | Q(synonyms__unaccent__istartswith=self.q) | Q(synonyms__unaccent__icontains=' ' + self.q))
         else:
             return Artist.objects.none()
 
