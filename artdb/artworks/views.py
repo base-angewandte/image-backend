@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.exceptions import MultipleObjectsReturned
 from django.db.models import Q, ExpressionWrapper, BooleanField, Case, Value, IntegerField, When
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect, _get_queryset
@@ -249,7 +250,7 @@ def artwork_collect(request, id):
             # users can only manipulate their own collections via this view
             if (request.user == col.user):
                 if (request.POST['action'] == 'add'):
-                    ArtworkCollectionMembership.objects.create(collection=col, artwork=artwork)
+                    ArtworkCollectionMembership.objects.get_or_create(collection=col, artwork=artwork)
                     return JsonResponse({'action': 'added'})
                 if request.POST['action'] == 'remove':
                     try:
@@ -259,6 +260,9 @@ def artwork_collect(request, id):
                     except ArtworkCollectionMembership.DoesNotExist:
                         logger.warning('Could not remove artwork from collection')
                         return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not remove artwork from collection'})
+                    except MultipleObjectsReturned:
+                        logger.warning("Duplicate ArtworkCollectionMemberships. Could not remove artwork '%s' from collection '%s'", artwork, col)
+                        return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not remove artwork from collection'})                   
         return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not manipulate collection'})
 
 

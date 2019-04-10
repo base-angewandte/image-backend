@@ -112,7 +112,7 @@ $(document).ready(function() {
                 }
                 elDetails.appendChild(elEntry);
             }); 
-            var elShowAllDetailsButton = createEl('div', ['inspector-button','btn-show-all-details'], gettext('Show more'));
+            var elShowAllDetailsButton = createEl('button', ['inspector-button','btn-show-all-details'], gettext('Show more'));
             elDetails.appendChild(elShowAllDetailsButton);
             elInspector.replaceChild(elDetails, elInspector.getElementsByTagName('div')[0]);
             elCurrentInspector = elInspector;

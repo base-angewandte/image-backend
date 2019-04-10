@@ -182,7 +182,7 @@ and a close button */
     width: 26px;
     height: 26px;
     border: 0;
-    background-color: #fff;
+    background-color: var(--light-bg-color);
 }
 
 .overlay .button-close:hover,
