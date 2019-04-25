@@ -281,7 +281,7 @@ def collection(request, id=None):
             'created_by_fullname': col.user.get_full_name(),
             'created_by_userid': col.user.id,
             'memberships': col.artworkcollectionmembership_set.all(),
-            'collections': ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user),
+            #'collections': ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user),
             'my_collections': ArtworkCollection.objects.filter(user=request.user),
         }
         return render(request, 'artwork/collection.html', context)
@@ -388,7 +388,7 @@ def collections_list(request):
     Render a list of all collections.
     """
     context = {
-        'collections': ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user),
+        #'collections': ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user),
         'my_collections': ArtworkCollection.objects.filter(user=request.user),
     }
     return render(request, 'artwork/collections_list.html', context)
