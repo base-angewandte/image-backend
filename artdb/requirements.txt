@@ -47,5 +47,6 @@ six==1.11.0
 sqlparse==0.2.4           # via django, django-debug-toolbar
 typed-ast==1.1.0
 urllib3==1.23             # via requests
+whitenoise==4.1.2
 wrapt==1.10.11
 xlsxwriter==1.1.2         # via python-pptx
