@@ -273,8 +273,10 @@ def artwork_collect(request, id):
                             data={'status': 'false', 'message': 'Could not remove artwork from collection'}
                         )
                     except MultipleObjectsReturned:
-                        logger.warning("Duplicate ArtworkCollectionMemberships. Could not remove artwork '%s' from collection '%s'", artwork, col)
-                        return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not remove artwork from collection'})                   
+                        logger.warning('Duplicate ArtworkCollectionMemberships. Removing them all.')
+                        artwork_col_mem = ArtworkCollectionMembership.objects.filter(collection=col, artwork=artwork)
+                        artwork_col_mem.remove()
+                        return JsonResponse({'action': 'removed'})
         return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not manipulate collection'})
 
 
