@@ -133,6 +133,7 @@ $(document).ready(function() {
     // show/hide the "show all details" button
     function updateShowAllDetailsButton() {
         if (selectedThumbnail === null) return;
+        if (!$('body').hasClass(thumbnailClassName)) return;
         var sidebar = $('.sidebar-detached')[0];
         if (sidebar === undefined) return;
         var difference = sidebar.clientHeight - elCurrentInspector.clientHeight;
