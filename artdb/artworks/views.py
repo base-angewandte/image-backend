@@ -13,7 +13,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.exceptions import MultipleObjectsReturned
 from django.db.models import Q, ExpressionWrapper, BooleanField, Case, Value, IntegerField, When
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
-from django.shortcuts import render, get_object_or_404, redirect, _get_queryset
+from django.shortcuts import render, get_object_or_404, redirect
 from django.template.defaultfilters import slugify
 from django.utils.decorators import method_decorator
 from pptx import Presentation
@@ -22,7 +22,6 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR
 from pptx.enum.dml import MSO_THEME_COLOR
 from pptx.util import Pt
-from rest_framework.exceptions import APIException
 
 from .forms import ArtworkForm, ArtworkCollectionForm
 from .models import Artwork, Location, Keyword, Artist, ArtworkCollection, ArtworkCollectionMembership
