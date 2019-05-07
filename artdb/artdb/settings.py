@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     # need to be before django.contrib.admin and grapelli
     'dal',
     'dal_select2',
+    'dal_admin_filters',
 
 
     'django.contrib.admin',
@@ -78,6 +79,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
 
     # Third-party apps
     'rest_framework',
@@ -284,7 +286,7 @@ VERSATILEIMAGEFIELD_SETTINGS = {
     'cache_length': 2592000,
     # The save quality of modified JPEG images. More info here:
     # https://pillow.readthedocs.io/en/latest/handbook/image-file-formats.html#jpeg
-    'jpeg_resize_quality': 82,
+    'jpeg_resize_quality': 92,
     # Whether or not to create new images on-the-fly. Set this to `False` for
     # speedy performance but don't forget to 'pre-warm' to ensure they're
     # created and available at the appropriate URL.

@@ -10,7 +10,6 @@ $(document).ready(function() {
     const collectClassName = 'show-collect-overlay';
     var bSmallTopbar = false;
 
-
     // ---------------------------------------------------------
     // Update the Inspector
     // load artwork data (JSON) and show it in the sidebar
@@ -34,10 +33,14 @@ $(document).ready(function() {
         const jsonUrl = url + '.json';
         $.getJSON(jsonUrl, function(data) {
             var elDetails = document.createElement('div');
-            elDetails.appendChild(createEl('button', ['inspector-button', 'button-collect'], gettext('addtocollection'), url));
+            if ($('#thumbnails').hasClass('editable')) {
+                elDetails.appendChild(createEl('button', ['inspector-button', 'button-collect'], gettext('removefromcollection'), url));
+            } else {
+                elDetails.appendChild(createEl('button', ['inspector-button', 'button-collect'], gettext('addtocollection'), url));
+            }
             if (elInspector.classList.contains('editable')) {
                 elDetails.appendChild(createEl('button', ['inspector-button','button-edit'], gettext('Edit'), url));
-            };
+            }
             if ($('#thumbnails').hasClass('editable')) {
                 if (selectedThumbnail.dataset.membershipid) {
                     var leftButton = createEl('button', ['inspector-button','button-move-left'], '', url);
@@ -71,6 +74,7 @@ $(document).ready(function() {
                         for (var i = 0; i < val.length; i++) {
                             elVal = createEl('div', ['value','tag'], val[i].name);
                             elVal.dataset.keyword = val[i].name;
+                            elVal.alt = val[i].name;
                             elEntry.appendChild(elVal);
                         }
                         break;
@@ -108,18 +112,34 @@ $(document).ready(function() {
                 }
                 elDetails.appendChild(elEntry);
             }); 
+            var elShowAllDetailsButton = createEl('button', ['inspector-button','btn-show-all-details'], gettext('Show more'));
+            elDetails.appendChild(elShowAllDetailsButton);
             elInspector.replaceChild(elDetails, elInspector.getElementsByTagName('div')[0]);
             elCurrentInspector = elInspector;
+            updateShowAllDetailsButton();
         });
     }
 
-    // copy the content from one inspector to another
+    // copy the content from one inspector to another.
     // this avoids unnecessary reloads
     function copyInspectorDetails(elNewInspector) {
         if (elCurrentInspector) {
             elCurrentDetails = elCurrentInspector.getElementsByTagName('div')[0].cloneNode(true);
             elNewInspector.replaceChild(elCurrentDetails, elNewInspector.getElementsByTagName('div')[0]);
             elCurrentInspector = elNewInspector;
+        }
+    }
+
+    // show/hide the "show all details" button
+    function updateShowAllDetailsButton() {
+        if (selectedThumbnail === null) return;
+        var sidebar = $('.sidebar-detached')[0];
+        if (sidebar === undefined) return;
+        var difference = sidebar.clientHeight - elCurrentInspector.clientHeight;
+        if (difference < 28) {
+            $('.btn-show-all-details').addClass('shown');
+        } else {
+            $('.btn-show-all-details').removeClass('shown');
         }
     }
 
@@ -137,6 +157,7 @@ $(document).ready(function() {
         }
         document.body.className = thumbnailClassName;
         window.scrollTo(0,thumbnailbrowserScrollPosition);
+        updateShowAllDetailsButton();
     }
 
     // show a specific overlay
@@ -147,6 +168,7 @@ $(document).ready(function() {
             thumbnailbrowserScrollPosition = $(window).scrollTop();
             document.body.className = classNameToAdd;
             window.scrollTo(0, 0);
+            $('.btn-show-all-details').removeClass('shown');
         } else {
             // an overlay is already shown
             // close the current overlay before showing the new one
@@ -236,8 +258,9 @@ $(document).ready(function() {
     // event listeners
     // ---------------------------------------------------
 
-    window.addEventListener('scroll', throttle(handleScroll, 30));
-    
+    window.addEventListener('scroll', throttle(handleScroll));
+    window.addEventListener('resize', throttle(updateShowAllDetailsButton));
+
     // the page consists of a sidebar and a main view
     // per default, clickable thumbnails are shown
     $('.thumbnail-area').on('click', '.thumbnail', function (e) {
@@ -289,24 +312,7 @@ $(document).ready(function() {
     });
 
     $("body").on('click', function (e) {
-        if (e.target.classList.contains('thumbnail')) {
-            const selectClass = 'selected';
-            var clickedThumbnail = e.currentTarget;
-            if ($(clickedThumbnail).hasClass(selectClass)) {
-                // Clicking a thumbnail twice, shows the detail overlay
-                showDetailOverlay(clickedThumbnail.dataset.url);
-            } else {
-                // Clicking a thumbnail once, selects it and shows the details
-                // in the inspector.
-                if (selectedThumbnail !== null) {
-                    $(selectedThumbnail).removeClass(selectClass);
-                }
-                selectedThumbnail = clickedThumbnail;
-                $(selectedThumbnail).addClass(selectClass);
-                elInspector = document.getElementById('thumbnailbrowser-inspector');
-                updateInspector(elInspector);
-            }
-        } else if (e.target.classList.contains('tag')) {
+        if (e.target.classList.contains('tag')) {
             function getParameters(s) {
                 s = s.trim();
                 s = s.replace(/\s+/g, "+");
@@ -339,7 +345,9 @@ $(document).ready(function() {
             moveArtwork(selectedThumbnail, 'left');
         } else if ($(e.target).hasClass('button-move-right')) {
             moveArtwork(selectedThumbnail, 'right');
-        }
+        } else if ($(e.target).hasClass('btn-show-all-details')) {
+            showDetailOverlay(selectedThumbnail.dataset.url);
+        };
     });
 
 

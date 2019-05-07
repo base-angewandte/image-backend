@@ -182,6 +182,7 @@ and a close button */
     width: 26px;
     height: 26px;
     border: 0;
+    background-color: var(--light-bg-color);
 }
 
 .overlay .button-close:hover,
@@ -209,7 +210,7 @@ and a close button */
     display: table-cell;
     width: var(--sidebar-width);
     height: calc(100% - var(--topbar-height));
-    margin-left: calc(100vw - var(--sidebar-width));
+    margin-left: calc(100% - var(--sidebar-width));
     background-color: var(--dark-grey-1-color);
     padding: 32px 16px 16px 16px;
     -moz-osx-font-smoothing: grayscale;
@@ -232,7 +233,7 @@ and a close button */
 /* thumbnailbrowser */
 #thumbnailbrowser {
     height: calc(100vh - var(--topbar-wrapper-height) - var(--footer-wrapper-height));
-    width: 100vw;
+    width: 100%;
     background-color: var(--light-bg-color);
     padding: 0 var(--sidebar-width) 0 0;
 }
@@ -333,24 +334,21 @@ and a close button */
 
 .inspector .value.tag {
     display: inline-block;
-    padding: 0 8px 0 8px;
-    margin-right: 8px;
-    margin-bottom: 2px;
-    background-color: #31576C;
-    border-color: #35627A;
-    border-radius: 20px;
-    height: 14px;
+    padding: 0 2px 0 2px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    background-color: var(--base-second-color);
     line-height: 14px;
     font-size: 14px;
     color: #fff;
     font-weight: 400;
-    overflow-wrap: normal;
+
 }
 
 .inspector .value.tag:hover,
 .inspector .value.tag:focus,
 .inspector .value.tag:active {
-    background-color: #366B88;
+    background-color: var(--base-color);
 }
 
 .inspector-button {
@@ -363,7 +361,7 @@ and a close button */
     color: #fff;
     text-transform: uppercase;
     font-family: 'Source Sans Pro', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 38px;
     vertical-align: bottom;
     text-align: center;
@@ -380,24 +378,25 @@ and a close button */
     width: 97px;
 }
 
-.inspector-button.button-move-left {
-    background: var(--mid-grey-2-color) url(arrow_big_left.svg) no-repeat center;
-}
-
 .inspector-button.button-move-right {
     float: right;
-    background: var(--mid-grey-2-color) url(arrow_big_right.svg) no-repeat center;
+    background: var(--mid-grey-2-color) url('/image/static/css/arrow_big_right.svg') no-repeat center;
+}
+
+.inspector-button.button-move-left {
+    background: var(--mid-grey-2-color) url('/image/static/css/arrow_big_left.svg') no-repeat center;
 }
 
 .inspector-button.button-move-left:hover,
 .inspector-button.button-move-left:focus,
-.inspector-button.button-move-left:active {
+.inspector-button.button-move-left:active,
+.inspector-button.button-move-right:hover,
+.inspector-button.button-move-right:focus,
+.inspector-button.button-move-right:active,
+.btn-show-all-details:hover,
+.btn-show-all-details:focus,
+.btn-show-all-details:active {
     background-color: var(--mid-grey-3-color);
-}
-
-.inspector-button.button-move-right {
-    float: right;
-    background: var(--mid-grey-2-color) url(arrow_big_right.svg) no-repeat center;
 }
 
 .inspector-button.button-move-right:hover,
@@ -421,6 +420,22 @@ and a close button */
 .show-detail-overlay .inspector-button.button-move-left,
 .show-detail-overlay .inspector-button.button-move-right {
     visibility: hidden;
+}
+
+.btn-show-all-details {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: 28px;
+    line-height: 28px;
+    margin: 0;
+    background-color: #212121;
+    display: none;
+}
+
+.btn-show-all-details.shown {
+    display: block;
 }
 
 .artwork-details {
@@ -960,22 +975,26 @@ and a close button */
 
 .btn-download-pptx-german {
     background: white url(download_pptx_german.svg) no-repeat center center;
+    background-size: auto 29px;
 }
 
 .btn-download-pptx-german:hover,
 .btn-download-pptx-german:focus,
 .btn-download-pptx-german:active {
     background: white url(download_pptx_german_active.svg) no-repeat center center;
+    background-size: auto 29px;
 }
 
 .btn-download-pptx-english {
     background: white url(download_pptx_english.svg) no-repeat center center;
+    background-size: auto 29px;
 }
 
 .btn-download-pptx-english:hover,
 .btn-download-pptx-english:focus,
 .btn-download-pptx-english:active {
     background: white url(download_pptx_english_active.svg) no-repeat center center;
+    background-size: auto 29px;
 }
 
 
@@ -1279,7 +1298,7 @@ table.collections-list input {
         transition: none;
     }
     #collection-selector-button {
-        width: calc(100vw - 780px);
+        width: calc(100vw - 740px);
     }
 
 }
@@ -1301,6 +1320,9 @@ table.collections-list input {
     }
     .sidebar-detached {
         display: none;
+    }
+    .btn-show-all-details.shown {
+        display: none !important;
     }
     .overlay {
         min-width: 100%;
@@ -1325,6 +1347,9 @@ table.collections-list input {
         max-width: none;
         min-width: none;
     }
+}
+
+@media (max-width: 610px) {
     .search-topbar,
     #collection-nav {
         display: block;
@@ -1332,9 +1357,63 @@ table.collections-list input {
         margin-top: 16px;
     }
     .switch-labeled {
-        display: inline-block;
-        vertical-align: top;
-        float: none;
+        display: block;
+        float: right;
+        margin-top: -60px;
+    }
+    .search-topbar {
+        margin-top: 16px;
+    }
+    #search-basic.fadeout {
+        display: none;
+    }
+    .overlay .content {
+        display: block;
+        height: auto;
+        padding: 55px 0 0 0;
+    }
+    .sidebar-attached {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+    .inspector-button {
+        width: 100%;
+    }
+    .inspector .value {
+        max-width: 100%;
+    }
+    .overlay .button-close {
+        right: 18px;
+    }
+    #collect-overlay {
+        display: block;
+    }
+    #addCollectionForm {
+        padding-bottom: 55px;
+    }
+    h2.centered {
+        width: auto;
+    }
+    #collection-selector-button {
+        display: none;
+    }
+    .sidebar-attached .metadataarea {
+        width: 100% !important;
+    }
+    .sidebar-attached .inspector-button.cancel,
+    .sidebar-attached .inspector-button.confirm {
+        width: calc(50% - 8px);
+    }
+    #edit-overlay {
+        background-color: var(--dark-grey-1-color);
+        top: var(--topbar-wrapper-height);
+    }
+    #edit-overlay .content {
+        display: none;
+    }
+    #edit-overlay form {
+        display: block;
     }
 }
 
@@ -1354,3 +1433,4 @@ table.collections-list input {
     padding: 32px 16px 32px 16px;
     text-align: center;
 }
+

@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-24 13:27+0100\n"
+"POT-Creation-Date: 2019-03-25 11:40+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: artdb/settings.py:261
+#: artdb/settings.py:258
 msgid "German"
 msgstr ""
 
-#: artdb/settings.py:262
+#: artdb/settings.py:259
 msgid "English"
 msgstr ""
 
@@ -56,7 +55,7 @@ msgid "NoCollections"
 msgstr "There are no folders yet."
 
 #: artdb/templates/artwork/artwork_collect_overlay.html:46
-#, fuzzy
+#: artdb/templates/artwork/artwork_detail_overlay.html:22
 msgid "addtocollection"
 msgstr "Add to Folder"
 
@@ -76,7 +75,7 @@ msgid "Save"
 msgstr ""
 
 #: artdb/templates/artwork/artwork_thumbnails.html:31
-#: artdb/templates/artwork/collection.html:61
+#: artdb/templates/artwork/collection.html:65
 msgid "NoArtworks"
 msgstr "No artworks found."
 
@@ -110,8 +109,6 @@ msgid "Unnamed Editor"
 msgstr ""
 
 #: artdb/templates/artwork/collection.html:44
-#, fuzzy
-#| msgid "Collections"
 msgid "Edit Collection"
 msgstr "Edit Folder"
 
@@ -151,26 +148,27 @@ msgstr ""
 msgid "Expert"
 msgstr "Adv. Search"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:37
+#: artdb/templates/artwork/thumbnailbrowser.html:37 artworks/models.py:99
+#: artworks/models.py:200
 msgid "Title"
 msgstr "Title"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:38
+#: artdb/templates/artwork/thumbnailbrowser.html:38 artworks/models.py:29
 msgid "Artist"
 msgstr ""
 
-#: artdb/templates/artwork/thumbnailbrowser.html:42
+#: artdb/templates/artwork/thumbnailbrowser.html:42 artworks/models.py:108
 msgid "Date From"
-msgstr "Date From"
+msgstr ""
 
 #: artdb/templates/artwork/thumbnailbrowser.html:42
 #: artdb/templates/artwork/thumbnailbrowser.html:45
 msgid "YYYY"
 msgstr ""
 
-#: artdb/templates/artwork/thumbnailbrowser.html:45
+#: artdb/templates/artwork/thumbnailbrowser.html:45 artworks/models.py:109
 msgid "Date To"
-msgstr "Date To"
+msgstr ""
 
 #: artdb/templates/artwork/thumbnailbrowser.html:48
 msgid "Location_of_creation"
@@ -180,13 +178,116 @@ msgstr "Place of Production"
 msgid "Location_current"
 msgstr "Location"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:55
+#: artdb/templates/artwork/thumbnailbrowser.html:55 artworks/forms.py:44
+#: artworks/forms.py:59 artworks/models.py:58 artworks/models.py:116
 msgid "Keywords"
 msgstr ""
 
-#: artdb/templates/base.html:61
+#: artdb/templates/base.html:62
 msgid "This resolution is not supported."
 msgstr ""
 
+#: artworks/admin.py:24 artworks/models.py:57
+msgid "Keyword"
+msgstr ""
+
+#: artworks/admin.py:83 artworks/forms.py:51 artworks/forms.py:60
+#: artworks/models.py:30 artworks/models.py:101
+msgid "Artists"
+msgstr ""
+
+#: artworks/apps.py:7
+msgid "Image Content"
+msgstr ""
+
+#: artworks/models.py:22 artworks/models.py:53 artworks/models.py:71
+msgid "Name"
+msgstr ""
+
+#: artworks/models.py:23 artworks/models.py:72
+msgid "Synonyms"
+msgstr ""
+
+#: artworks/models.py:76 artworks/models.py:127
+msgid "Location"
+msgstr ""
+
+#: artworks/models.py:77
+msgid "Locations"
+msgstr ""
+
+#: artworks/models.py:93
+msgid "Original Image"
+msgstr ""
+
+#: artworks/models.py:100
+msgid "Title, English"
+msgstr ""
+
+#: artworks/models.py:103
+msgid "Date"
+msgstr ""
+
+#: artworks/models.py:110
+msgid "Material/Technique"
+msgstr ""
+
+#: artworks/models.py:111
+msgid "Dimensions"
+msgstr ""
+
+#: artworks/models.py:112
 msgid "Descriptions"
 msgstr "Comments"
+
+#: artworks/models.py:113
+msgid "Credits"
+msgstr ""
+
+#: artworks/models.py:114 artworks/models.py:203
+msgid "Created at"
+msgstr ""
+
+#: artworks/models.py:115 artworks/models.py:204
+msgid "Updated at"
+msgstr ""
+
+#: artworks/models.py:119
+msgid "Place of Production"
+msgstr ""
+
+#: artworks/models.py:133
+msgid "Checked"
+msgstr ""
+
+#: artworks/models.py:134
+msgid "Published"
+msgstr ""
+
+#: artworks/models.py:138 artworks/models.py:225
+msgid "Artwork"
+msgstr ""
+
+#: artworks/models.py:139 artworks/models.py:202
+msgid "Artworks"
+msgstr ""
+
+#: artworks/models.py:201
+msgid "User"
+msgstr ""
+
+#: artworks/models.py:214 artworks/models.py:224
+msgid "Folder"
+msgstr ""
+
+#: artworks/models.py:215
+msgid "Folders"
+msgstr ""
+
+#: artworks/models.py:230
+msgid "Folder Membership"
+msgstr ""
+
+#: artworks/models.py:231
+msgid "Folder Memberships"
+msgstr ""

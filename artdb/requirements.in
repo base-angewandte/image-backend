@@ -3,6 +3,7 @@
 # to update all packages run 'pip-compile --upgrade'
 
 astroid==2.0
+dal-admin-filters==0.3.3
 Django==2.0.6
 django-appconf==1.0.2
 django-autocomplete-light==3.3.2

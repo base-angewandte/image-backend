@@ -24,12 +24,16 @@ It also renders all thumbnails dynamically via javascript.
         <div id="collection-nav">
             <form method="GET" action="select-collection">
                 <select name="collection-selector" id="collection-selector">
+                    {% comment %}
                     <option value="">{% trans 'All Collections' %}</option>
                     <optgroup label="{% trans 'My Collections' %}">
+                    {% endcomment %}
                     {% for collection in my_collections %}
                         <option value="{{collection.id}}"{% if collection.id == id %} selected {% endif %}>{{collection.title}}</option>
                     {% endfor %}
+                    {% comment %}
                     </optgroup>
+                    {% endcomment %}
                     {% regroup collections|dictsort:"user.get_full_name" by user.get_full_name as grouped_collections %}
                     {% for collection_user in grouped_collections %}
                         <optgroup label="{% if collection_user.grouper %}{{ collection_user.grouper }}{% else %}{% trans 'Unnamed Editor' %}{% endif %}">

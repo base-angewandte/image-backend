@@ -1,16 +1,19 @@
-import os
 import logging
-from django.db import models
-from django.db.models.functions import Upper
-from django.contrib.auth.models import User
-from django.dispatch import receiver
+import os
+
 from django.conf import settings
-from django.utils.translation import ugettext, ugettext_lazy as _
-from versatileimagefield.fields import VersatileImageField
+from django.contrib.auth.models import User
+from django.db import models
+from django.db.models.fields.related_descriptors import ManyToManyDescriptor
+from django.db.models.functions import Upper
+from django.dispatch import receiver
+from django.utils.translation import ugettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 from ordered_model.models import OrderedModel
+from versatileimagefield.fields import VersatileImageField
 
 logger = logging.getLogger(__name__)
+
 
 class Artist(models.Model):
     """
@@ -18,11 +21,13 @@ class Artist(models.Model):
     """
     name = models.CharField(verbose_name=_('Name'), max_length=255, null=False)
     synonyms = models.CharField(verbose_name=_('Synonyms'), max_length=255, null=False, blank=True)
-    created_at = models.DateTimeField(auto_now_add = True)
-    updated_at = models.DateTimeField(auto_now = True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
 
     class Meta:
         ordering = ['name']
+        verbose_name = _('Artist')
+        verbose_name_plural = _('Artists')
 
     def __str__(self):
         return self.name
@@ -48,11 +53,15 @@ class Keyword(MPTTModel):
     name = models.CharField(verbose_name=_('Name'), max_length=255, unique=True)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
 
-    def __str__(self):
-        return self.name
+    class Meta:
+        verbose_name = _('Keyword')
+        verbose_name_plural = _('Keywords')
 
     class MPTTMeta:
         order_insertion_by = ['name']
+
+    def __str__(self):
+        return self.name
 
 
 class Location(MPTTModel):
@@ -63,11 +72,15 @@ class Location(MPTTModel):
     synonyms = models.CharField(verbose_name=_('Synonyms'), max_length=255, blank=True)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
 
-    def __str__(self):
-        return self.name
+    class Meta:
+        verbose_name = _('Location')
+        verbose_name_plural = _('Locations')
 
     class MPTTMeta:
         order_insertion_by = ['name']
+
+    def __str__(self):
+        return self.name
 
 
 class Artwork(models.Model):
@@ -76,24 +89,54 @@ class Artwork(models.Model):
     """
     # VersatileImageField allows to create resized versions of the
     # image (renditions) on demand
-    image_original = VersatileImageField(verbose_name=_('Original Image'), max_length = 127, null=False, blank=True, upload_to=get_path_to_original_file)
+    image_original = VersatileImageField(
+        verbose_name=_('Original Image'),
+        max_length=127,
+        null=False,
+        blank=True,
+        upload_to=get_path_to_original_file,
+    )
     title = models.CharField(verbose_name=_('Title'), max_length=255, blank=True)
     title_english = models.CharField(verbose_name=_('Title, English'), max_length=255, blank=True)
     artists = models.ManyToManyField(Artist, verbose_name=_('Artists'), blank=True)
-    date = models.CharField(verbose_name=_('Date'), max_length=319, blank=True, help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende/Anfang 14. Jh., 5.3.1799, ca./um/vor/nach 1700')
+    date = models.CharField(
+        verbose_name=_('Date'),
+        max_length=319,
+        blank=True,
+        help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende/Anfang 14. Jh., 5.3.1799, ca./um/vor/nach 1700',
+    )
     date_year_from = models.IntegerField(verbose_name=_('Date From'), null=True, blank=True)
     date_year_to = models.IntegerField(verbose_name=_('Date To'), null=True, blank=True)
     material = models.TextField(verbose_name=_('Material/Technique'), null=True, blank=True)
     dimensions = models.CharField(verbose_name=_('Dimensions'), max_length=255, blank=True)
     description = models.TextField(verbose_name=_('Descriptions'), blank=True)
     credits = models.TextField(verbose_name=_('Credits'), blank=True)
-    created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add = True)
-    updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now = True, null=True)
+    created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now=True, null=True)
     keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'), blank=True)
-    location_of_creation = TreeForeignKey(Location, verbose_name=_('Place of Production'), blank=True, null=True, on_delete=models.SET_NULL, related_name='artworks_created_here')
-    location_current = TreeForeignKey(Location, verbose_name=_('Location'), blank=True, null=True, on_delete=models.SET_NULL, related_name='artworks_currently_located_here')
+    location_of_creation = TreeForeignKey(
+        Location,
+        verbose_name=_('Place of Production'),
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='artworks_created_here',
+    )
+    location_current = TreeForeignKey(
+        Location,
+        verbose_name=_('Location'),
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='artworks_currently_located_here',
+    )
     checked = models.BooleanField(verbose_name=_('Checked'), default=False)
     published = models.BooleanField(verbose_name=_('Published'), default=False)  
+
+    class Meta:
+        ordering = [Upper('title'), ]
+        verbose_name = _('Artwork')
+        verbose_name_plural = _('Artworks')
 
     def __str__(self):
         return self.title
@@ -109,9 +152,6 @@ class Artwork(models.Model):
         parts = [artists, title_in_language, self.date]
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
-
-    class Meta:
-        ordering = [Upper('title'), ]
 
 
 @receiver(models.signals.post_save, sender=Artwork)
@@ -171,6 +211,8 @@ class ArtworkCollection(models.Model):
     
     class Meta:
         permissions = (('can_download_pptx', 'Can download as PowerPoint file'),)
+        verbose_name = _('Folder')
+        verbose_name_plural = _('Folders')
 
 
 class ArtworkCollectionMembership(OrderedModel):
@@ -184,10 +226,14 @@ class ArtworkCollectionMembership(OrderedModel):
     order_with_respect_to = 'collection'
     connected_with = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
 
+    class Meta:
+        verbose_name = _('Folder Membership')
+        verbose_name_plural = _('Folder Memberships')
+
     def move_left(self):
         # did the user click a single one or a connected one?
         if self.connected_with:
-            if (self.connected_with == self.previous()):
+            if self.connected_with == self.previous():
                 # right side
                 left_side = self.previous()
                 right_side = self
@@ -209,11 +255,10 @@ class ArtworkCollectionMembership(OrderedModel):
             if right_side:
                 right_side.up()
 
-
     def move_right(self):
         # did the user click a single one or a connected one?
         if self.connected_with:
-            if (self.connected_with == self.previous()):
+            if self.connected_with == self.previous():
                 # right side
                 left_side = self.previous()
                 right_side = self
@@ -235,9 +280,8 @@ class ArtworkCollectionMembership(OrderedModel):
             if left_side:
                 left_side.down()
 
-
     def disconnect(self, partner):
-        if (self.connected_with == partner) and (self == partner.connected_with):
+        if self.connected_with == partner and self == partner.connected_with:
             self.connected_with = None
             partner.connected_with = None
             self.save()
@@ -246,10 +290,9 @@ class ArtworkCollectionMembership(OrderedModel):
         logger.error("Could not disconnect artwork membership %s with %s", self, partner)
         return False
 
-
     def connect(self, partner):
-        if (self.connected_with == None) and (partner.connected_with == None):
-            if (self.next() == partner) or (self.previous() == partner):
+        if self.connected_with is None and partner.connected_with is None:
+            if self.next() == partner or self.previous() == partner:
                 self.connected_with = partner
                 partner.connected_with = self
                 self.save()
@@ -258,19 +301,13 @@ class ArtworkCollectionMembership(OrderedModel):
         logger.error("Could not connect artwork membership %s with %s", self, partner)
         return False
 
-
     def remove(self):
-        if (self.connected_with):
+        if self.connected_with:
             if not self.disconnect(self.connected_with):
-                logger.error("Could not remove artwork membership %s because I coould not disconnect it", self)
+                logger.error("Could not remove artwork membership %s because I could not disconnect it", self)
                 return False
-        try:
-            self.delete()
-        except:
-            logger.error("Could not delete artwork membership %s", self)
-            return False
+        self.delete()
         return True
-
 
     class Meta:
         ordering = ('collection', 'order')
@@ -282,3 +319,6 @@ def string_representation(self):
 
 
 User.add_to_class("__str__", string_representation)
+
+# Monkey patch ManyToManyDescriptor
+ManyToManyDescriptor.get_queryset = lambda self: self.rel.model.objects.get_queryset()

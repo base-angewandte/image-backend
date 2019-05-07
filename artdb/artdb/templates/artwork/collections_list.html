@@ -19,6 +19,7 @@ select menu.
                 <li><a href="{% url 'artworks-list' %}">{% trans 'All Artworks' %}</a></li><li class="selected"><a href="{% url 'collections-list' %}">{% trans 'Collections' %}</a></li>
             </ol>
         </nav>
+        {% comment %}
         <div id="collection-nav">
         {% if collections or my_collections %}
             <form method="GET" action="">
@@ -41,6 +42,7 @@ select menu.
             </form>
         {% endif %}
         </div>
+        {% endcomment %}
     </div>
 
     <div class="list">

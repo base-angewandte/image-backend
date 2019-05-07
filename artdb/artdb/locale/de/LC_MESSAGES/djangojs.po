@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-24 13:27+0100\n"
+"POT-Creation-Date: 2019-03-25 11:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,27 +17,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: artdb/static_dev/js/artworks.js:37
-msgid "addtocollection"
-msgstr "In Arbeitsmappe hinzufügen"
+#: artdb/static_dev/js/artworks.js:38
+msgid "removefromcollection"
+msgstr "Von Arbeitsmappe entfernen"
 
 #: artdb/static_dev/js/artworks.js:39
 msgid "Edit"
 msgstr "Editieren"
 
-#: artdb/static_dev/js/artworks.js:57
+#: artdb/static_dev/js/artworks.js:41
+msgid "addtocollection"
+msgstr "In Arbeitsmappe hinzufügen"
+
+#: artdb/static_dev/js/artworks.js:61
 msgid "Artist"
 msgstr "Künstler_in"
 
-#: artdb/static_dev/js/artworks.js:67
+#: artdb/static_dev/js/artworks.js:71
 msgid "Keywords"
 msgstr "Schlagworte"
 
-#: artdb/static_dev/js/artworks.js:77
+#: artdb/static_dev/js/artworks.js:81
 msgid "location_of_creation"
 msgstr "Entstehungsort"
 
-#: artdb/static_dev/js/artworks.js:85
+#: artdb/static_dev/js/artworks.js:89
 msgid "location_current"
 msgstr "Standort"
 
@@ -72,3 +75,6 @@ msgstr "Titel, englisch"
 
 msgid "published"
 msgstr "veröffentlicht"
+
+msgid "Show more"
+msgstr "Mehr anzeigen"
