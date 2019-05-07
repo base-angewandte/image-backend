@@ -5,7 +5,9 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 astroid==2.0
+brotlipy==0.7.0
 certifi==2018.8.24        # via requests
+cffi==1.12.3              # via brotlipy
 chardet==3.0.4            # via requests
 click==7.0                # via pip-tools
 dal-admin-filters==0.3.3
@@ -36,6 +38,7 @@ pillow==5.1.0
 pip-tools==3.1.0
 psutil==5.4.7             # via rainbow-saddle
 psycopg2-binary==2.7.5
+pycparser==2.19           # via cffi
 pylint==2.0.0
 python-cas==1.4.0         # via django-cas-ng
 python-pptx==0.6.16
