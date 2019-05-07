@@ -266,8 +266,6 @@ LOCALE_PATHS = (
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
-
 STATICFILES_DIRS = (
     # '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'static')), os.sep),
     os.path.join(BASE_DIR, 'artdb', 'static_dev'),
