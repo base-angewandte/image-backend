@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-25 11:40+0100\n"
+"POT-Creation-Date: 2019-05-07 15:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: artdb/settings.py:258
+#: artdb/settings.py:259
 msgid "German"
 msgstr ""
 
-#: artdb/settings.py:259
+#: artdb/settings.py:260
 msgid "English"
 msgstr ""
 
@@ -75,7 +75,7 @@ msgid "Save"
 msgstr ""
 
 #: artdb/templates/artwork/artwork_thumbnails.html:31
-#: artdb/templates/artwork/collection.html:65
+#: artdb/templates/artwork/collection.html:71
 msgid "NoArtworks"
 msgstr "No artworks found."
 
@@ -91,50 +91,42 @@ msgstr ""
 msgid "Collections"
 msgstr "Folders"
 
-#: artdb/templates/artwork/collection.html:27
-#: artdb/templates/artwork/collections_list.html:26
-msgid "All Collections"
-msgstr "All Folders"
-
-#: artdb/templates/artwork/collection.html:28
-#: artdb/templates/artwork/collections_list.html:27
-#: artdb/templates/artwork/collections_list.html:49
-msgid "My Collections"
-msgstr "My Folders"
-
-#: artdb/templates/artwork/collection.html:35
-#: artdb/templates/artwork/collections_list.html:34
-#: artdb/templates/artwork/collections_list.html:63
+#: artdb/templates/artwork/collection.html:41
+#: artdb/templates/artwork/collections_list.html:66
 msgid "Unnamed Editor"
 msgstr ""
 
-#: artdb/templates/artwork/collection.html:44
+#: artdb/templates/artwork/collection.html:50
 msgid "Edit Collection"
 msgstr "Edit Folder"
 
-#: artdb/templates/artwork/collection.html:47
+#: artdb/templates/artwork/collection.html:53
 msgid "Download PowerPoint"
 msgstr ""
 
-#: artdb/templates/artwork/collection.html:48
+#: artdb/templates/artwork/collection.html:54
 msgid "Close"
 msgstr ""
 
-#: artdb/templates/artwork/collection.html:48
+#: artdb/templates/artwork/collection.html:54
 msgid "show/hide download options"
 msgstr ""
 
-#: artdb/templates/artwork/collection.html:49
+#: artdb/templates/artwork/collection.html:55
 msgid "Download PowerPoint German"
 msgstr ""
 
-#: artdb/templates/artwork/collection.html:50
+#: artdb/templates/artwork/collection.html:56
 msgid "Download PowerPoint English"
 msgstr ""
 
 #: artdb/templates/artwork/collection_edit_overlay.html:36
 msgid "Delete Collection"
 msgstr "Delete Folder"
+
+#: artdb/templates/artwork/collections_list.html:52
+msgid "My Collections"
+msgstr "My Folders"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:22
 msgid "Search Artworks"
@@ -153,7 +145,8 @@ msgstr "Adv. Search"
 msgid "Title"
 msgstr "Title"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:38 artworks/models.py:29
+#: artdb/templates/artwork/thumbnailbrowser.html:38 artworks/admin.py:24
+#: artworks/models.py:29
 msgid "Artist"
 msgstr ""
 
@@ -187,8 +180,8 @@ msgstr ""
 msgid "This resolution is not supported."
 msgstr ""
 
-#: artworks/admin.py:24 artworks/models.py:57
-msgid "Keyword"
+#: artworks/admin.py:30 artworks/models.py:214 artworks/models.py:224
+msgid "Folder"
 msgstr ""
 
 #: artworks/admin.py:83 artworks/forms.py:51 artworks/forms.py:60
@@ -196,7 +189,7 @@ msgstr ""
 msgid "Artists"
 msgstr ""
 
-#: artworks/apps.py:7
+#: artworks/apps.py:32
 msgid "Image Content"
 msgstr ""
 
@@ -206,6 +199,10 @@ msgstr ""
 
 #: artworks/models.py:23 artworks/models.py:72
 msgid "Synonyms"
+msgstr ""
+
+#: artworks/models.py:57
+msgid "Keyword"
 msgstr ""
 
 #: artworks/models.py:76 artworks/models.py:127
@@ -276,10 +273,6 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#: artworks/models.py:214 artworks/models.py:224
-msgid "Folder"
-msgstr ""
-
 #: artworks/models.py:215
 msgid "Folders"
 msgstr ""
@@ -291,3 +284,6 @@ msgstr ""
 #: artworks/models.py:231
 msgid "Folder Memberships"
 msgstr ""
+
+#~ msgid "All Collections"
+#~ msgstr "All Folders"

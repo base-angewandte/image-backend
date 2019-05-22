@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-25 11:40+0100\n"
+"POT-Creation-Date: 2019-05-07 15:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: artdb/settings.py:258
+#: artdb/settings.py:259
 msgid "German"
 msgstr "Deutsch"
 
-#: artdb/settings.py:259
+#: artdb/settings.py:260
 msgid "English"
 msgstr "Englisch"
 
@@ -75,7 +75,7 @@ msgid "Save"
 msgstr "Sichern"
 
 #: artdb/templates/artwork/artwork_thumbnails.html:31
-#: artdb/templates/artwork/collection.html:65
+#: artdb/templates/artwork/collection.html:71
 msgid "NoArtworks"
 msgstr "Keine Werke gefunden."
 
@@ -91,50 +91,42 @@ msgstr "Alle Kunstwerke"
 msgid "Collections"
 msgstr "Arbeitsmappen"
 
-#: artdb/templates/artwork/collection.html:27
-#: artdb/templates/artwork/collections_list.html:26
-msgid "All Collections"
-msgstr "Alle Arbeitsmappen"
-
-#: artdb/templates/artwork/collection.html:28
-#: artdb/templates/artwork/collections_list.html:27
-#: artdb/templates/artwork/collections_list.html:49
-msgid "My Collections"
-msgstr "Meine Arbeitsmappen"
-
-#: artdb/templates/artwork/collection.html:35
-#: artdb/templates/artwork/collections_list.html:34
-#: artdb/templates/artwork/collections_list.html:63
+#: artdb/templates/artwork/collection.html:41
+#: artdb/templates/artwork/collections_list.html:66
 msgid "Unnamed Editor"
 msgstr "Namenloser Editor"
 
-#: artdb/templates/artwork/collection.html:44
+#: artdb/templates/artwork/collection.html:50
 msgid "Edit Collection"
 msgstr "Arbeitsmappe editieren"
 
-#: artdb/templates/artwork/collection.html:47
+#: artdb/templates/artwork/collection.html:53
 msgid "Download PowerPoint"
 msgstr "PowerPoint herunterladen"
 
-#: artdb/templates/artwork/collection.html:48
+#: artdb/templates/artwork/collection.html:54
 msgid "Close"
 msgstr "Schliessen"
 
-#: artdb/templates/artwork/collection.html:48
+#: artdb/templates/artwork/collection.html:54
 msgid "show/hide download options"
 msgstr "Download-Möglichkeiten zeigen/verstecken"
 
-#: artdb/templates/artwork/collection.html:49
+#: artdb/templates/artwork/collection.html:55
 msgid "Download PowerPoint German"
 msgstr "PowerPoint Deutsch herunterladen"
 
-#: artdb/templates/artwork/collection.html:50
+#: artdb/templates/artwork/collection.html:56
 msgid "Download PowerPoint English"
 msgstr "PowerPoint Englisch herunterladen"
 
 #: artdb/templates/artwork/collection_edit_overlay.html:36
 msgid "Delete Collection"
 msgstr "Arbeitsmappe löschen"
+
+#: artdb/templates/artwork/collections_list.html:52
+msgid "My Collections"
+msgstr "Meine Arbeitsmappen"
 
 #: artdb/templates/artwork/thumbnailbrowser.html:22
 msgid "Search Artworks"
@@ -153,7 +145,8 @@ msgstr "Erw. Suche"
 msgid "Title"
 msgstr "Titel"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:38 artworks/models.py:29
+#: artdb/templates/artwork/thumbnailbrowser.html:38 artworks/admin.py:24
+#: artworks/models.py:29
 msgid "Artist"
 msgstr "Künstler_in"
 
@@ -187,16 +180,16 @@ msgstr "Schlagworte"
 msgid "This resolution is not supported."
 msgstr "Diese Auflösung wird nicht unterstützt."
 
-#: artworks/admin.py:24 artworks/models.py:57
-msgid "Keyword"
-msgstr "Schlagwort"
+#: artworks/admin.py:30 artworks/models.py:214 artworks/models.py:224
+msgid "Folder"
+msgstr "Arbeitsmappe"
 
 #: artworks/admin.py:83 artworks/forms.py:51 artworks/forms.py:60
 #: artworks/models.py:30 artworks/models.py:101
 msgid "Artists"
 msgstr "Künstler_in"
 
-#: artworks/apps.py:7
+#: artworks/apps.py:32
 msgid "Image Content"
 msgstr "Image Daten"
 
@@ -207,6 +200,10 @@ msgstr ""
 #: artworks/models.py:23 artworks/models.py:72
 msgid "Synonyms"
 msgstr "Synonyme"
+
+#: artworks/models.py:57
+msgid "Keyword"
+msgstr "Schlagwort"
 
 #: artworks/models.py:76 artworks/models.py:127
 msgid "Location"
@@ -276,10 +273,6 @@ msgstr "Kunstwerke"
 msgid "User"
 msgstr "Benutzer_in"
 
-#: artworks/models.py:214 artworks/models.py:224
-msgid "Folder"
-msgstr "Arbeitsmappe"
-
 #: artworks/models.py:215
 msgid "Folders"
 msgstr "Arbeitsmappen"
@@ -291,3 +284,6 @@ msgstr "Arbeitsmappenzugehörigkeit"
 #: artworks/models.py:231
 msgid "Folder Memberships"
 msgstr "Arbeitsmappenzugehörigkeiten"
+
+#~ msgid "All Collections"
+#~ msgstr "Alle Arbeitsmappen"

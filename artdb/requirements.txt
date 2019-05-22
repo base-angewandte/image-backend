@@ -5,6 +5,7 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 astroid==2.0
+brotli==1.0.7             # via whitenoise
 certifi==2018.8.24        # via requests
 chardet==3.0.4            # via requests
 click==7.0                # via pip-tools
@@ -23,7 +24,7 @@ django-ordered-model==3.1.1
 django-redis==4.9.0
 django-rest-framework==0.1.0
 django-versatileimagefield==1.10
-django==2.0.6
+django==2.2.1
 djangorestframework==3.8.2  # via django-rest-framework
 gunicorn==19.9.0
 idna==2.7                 # via requests
@@ -44,8 +45,9 @@ rainbow-saddle==0.4.0
 redis==2.10.6             # via django-redis
 requests==2.19.1
 six==1.11.0
-sqlparse==0.2.4           # via django-debug-toolbar
+sqlparse==0.2.4           # via django, django-debug-toolbar
 typed-ast==1.1.0
 urllib3==1.23             # via requests
+whitenoise[brotli]==4.1.2
 wrapt==1.10.11
 xlsxwriter==1.1.2         # via python-pptx

@@ -27,7 +27,7 @@ class ArtistFilter(AutocompleteFilter):
 
 
 class CollectionListFilter(admin.SimpleListFilter):
-    title = 'folder'
+    title = _('Folder')
     parameter_name = 'collection'
 
     def lookups(self, request, model_admin):
