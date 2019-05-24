@@ -328,10 +328,12 @@ LOGGING = {
         },
         'file': {
             'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
+            'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
             'filename': os.path.join(LOG_DIR, 'application.log'),
             'maxBytes': 1024*1024*5,  # 5 MB
-            'backupCount': 100,
+            'backupCount': 1000,
+            'use_gzip': True,
+            'delay': True,
             'formatter': 'verbose',
         },
         'mail_admins': {
