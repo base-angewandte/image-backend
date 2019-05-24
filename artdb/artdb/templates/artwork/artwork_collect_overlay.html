@@ -102,23 +102,25 @@ $(document).ready(function() {
         e.preventDefault();
         var data = $(this).serializeArray();
         var url = mainPath + '/artwork/' + data[0]['value'] + '/collect_overlay/';
-        $.ajax({
+        if (data[1]['value'] !== '') {
+          $.ajax({
             type: 'POST',
             url: url,
             data: {
-                'csrfmiddlewaretoken': '{{ csrf_token }}',
-                'artwork-id': data[0]['value'],
-                'collection-title': data[1]['value'],
-                'action': 'addCollection'
+              'csrfmiddlewaretoken': '{{ csrf_token }}',
+              'artwork-id': data[0]['value'],
+              'collection-title': data[1]['value'],
+              'action': 'addCollection'
             },
-            success: function(message) {
-                updateCollectOverlay(url);
+            success: function (message) {
+              updateCollectOverlay(url);
             },
-            error: function(error) {
-                console.log(error);
+            error: function (error) {
+              console.log(error);
             },
             async: true,
-        })
+          })
+        }
     });
 });
 </script>
