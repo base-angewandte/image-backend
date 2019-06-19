@@ -44,7 +44,16 @@ proper html skeleton:
             {% endblock thumbnailbrowser %}
             <section class="sidebar-detached">
                 <aside class="inspector{% if perms.artworks.change_artwork %} editable{% endif %}" id="thumbnailbrowser-inspector">
-                <div></div>
+                <div>
+                    <div id="inspector-audio-box">
+                        <p class="audio-text">Paul Jets - Image</p>
+                        <audio id="sidebar-audio" controls aria-label="Paul Jets - Image" title="Paul Jets - Image">
+                            <source src="{% static 'song/Pauls%20Jets%20-%20Image.mp3' %}" type="audio/mpeg">
+                            Your browser does not support the audio tag.
+                        </audio>
+                        <p class="audio-text">&copy stej sluap</p>
+                    </div>
+                </div>
                 </aside>
             </section>
         </div>
