@@ -47,8 +47,10 @@ proper html skeleton:
                     <div>
                         <div id="inspector-audio-box">
                             <p class="audio-text">Paul Jets - Image</p>
-                            <audio class="sidebar-audio" controls preload="metadata" aria-label="Paul Jets - Image" title="Paul Jets - Image">
+                            <audio class="sidebar-audio" controls preload="auto" aria-label="Paul Jets - Image" title="Paul Jets - Image">
                                 <source src="{% static 'song/Pauls%20Jets%20-%20Image.mp3' %}" type="audio/mpeg">
+                                <source src="{% static 'song/Pauls%20Jets%20-%20Image.ogg' %}" type="audio/ogg">
+                                <source src="{% static 'song/Pauls%20Jets%20-%20Image.wav' %}" type="audio/wav">
                                 Your browser does not support the audio tag.
                             </audio>
                             <p class="audio-text">&copy; stej sluap</p>
