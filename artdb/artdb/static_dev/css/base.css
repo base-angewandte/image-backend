@@ -356,7 +356,7 @@ and a close button */
     text-align: center;
 }
 
-.inspector #sidebar-audio {
+.inspector .sidebar-audio {
     width: 92%;
     display: block;
     margin: 9px auto 4px;
