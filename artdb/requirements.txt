@@ -9,6 +9,7 @@ brotli==1.0.7             # via whitenoise
 certifi==2018.8.24        # via requests
 chardet==3.0.4            # via requests
 click==7.0                # via pip-tools
+concurrent-log-handler==0.9.16
 dal-admin-filters==0.3.3
 django-appconf==1.0.2
 django-autocomplete-light==3.3.2
@@ -35,6 +36,7 @@ mccabe==0.6.1
 pilkit==2.0
 pillow==5.1.0
 pip-tools==3.1.0
+portalocker==1.4.0        # via concurrent-log-handler
 psutil==5.4.7             # via rainbow-saddle
 psycopg2-binary==2.7.5
 pylint==2.0.0

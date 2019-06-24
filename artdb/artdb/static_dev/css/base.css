@@ -351,6 +351,23 @@ and a close button */
     background-color: var(--base-color);
 }
 
+#inspector-audio-box {
+    color: #fff;
+    text-align: center;
+}
+
+.inspector .sidebar-audio {
+    width: 95%;
+    display: block;
+    margin: 9px auto 4px;
+    overflow: hidden;
+}
+
+.inspector .audio-text {
+    width: 100%;
+    display: block;
+}
+
 .inspector-button {
     display: inline-block;
     width: 200px;
@@ -472,7 +489,7 @@ and a close button */
 
 .picture-thumbnail {
     display: block;
-    margin: 0 auto 8 auto;
+    margin: 0 auto 8px auto;
 }
 
 .picture-thumbnail-missing {
@@ -1036,7 +1053,7 @@ table.collections-list td {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    width: calc(100%-32px);
+    width: calc(100% - 32px);
 }
 
 table.collections-list td:last-child {
@@ -1237,7 +1254,7 @@ table.collections-list input {
 
 .ui-menu .ui-menu-item,
 .ui-menu .ui-menu-item div {
-    width: calc(100% +1px);
+    width: calc(100% + 1px);
     font-size: 14px;
 }
 
@@ -1345,7 +1362,7 @@ table.collections-list input {
     }
     #topbar .wrapper {
         max-width: none;
-        min-width: none;
+        min-width: auto;
     }
 }
 
