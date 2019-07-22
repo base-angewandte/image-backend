@@ -1031,6 +1031,10 @@ table.collections-list tr.addCollection {
     background-color: var(--light-grey-4-color);
 }
 
+table.collections-list tr.tableheader th {
+    width: 288px;
+}
+
 table.collections-list tr {
     box-shadow: 0 0 3px 0 rgba(0,0,0,.05);
 }
@@ -1053,7 +1057,7 @@ table.collections-list td {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    width: calc(100% - 32px);
+    width: 214px;
 }
 
 table.collections-list td:last-child {

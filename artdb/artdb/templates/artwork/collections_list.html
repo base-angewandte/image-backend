@@ -48,7 +48,7 @@ select menu.
     <div class="list">
         <table id="js-collections-select-list" class="collections-list">
         {% if my_collections %}
-            <tr class="tableheader"><th colspan="2">{% trans 'My Collections' %}</th></tr>
+            <tr class="tableheader"><th>{% trans 'My Collections' %}</th></tr>
             {% for collection in my_collections %}
                 <tr class="collection" data-collectionid="{{collection.id}}"><td>{{collection.title}}</td>
                 <td>{{collection.size}}</td>
@@ -58,7 +58,7 @@ select menu.
         {% if collections %}
             {% regroup collections|dictsort:"user.get_full_name" by user.get_full_name as grouped_collections %}
             {% for collection_user in grouped_collections %}
-                    <tr class="tableheader"><th colspan="2">
+                    <tr class="tableheader"><th>
                     {% if collection_user.grouper %}
                         {{ collection_user.grouper }}
                     {% else %}
