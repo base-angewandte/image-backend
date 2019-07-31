@@ -13,7 +13,7 @@ def process_user_attributes(sender, user, created, attributes, *args, **kwargs):
         return
 
     permissions = attributes.get('permissions')
-    permissions = permissions.split(',') if permissions else []
+    permissions = permissions if permissions else []
 
     user.is_staff = False
     user.is_superuser = False

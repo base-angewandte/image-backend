@@ -10,3 +10,9 @@ register = template.Library()
 def csv_to_json(value, arg=','):
     value = value.split(arg) if value else []
     return mark_safe(json.dumps(value))
+
+
+@register.filter(name='json')
+def json_dumps(value):
+    value = value if value else []
+    return mark_safe(json.dumps(value))

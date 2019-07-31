@@ -24,7 +24,7 @@
     <script type="text/javascript">
       var bh=document.getElementsByTagName("base-header")[0];
       bh.active='image-editing';
-      bh.profile={% if user.is_authenticated %}{name:"{{ user.get_full_name }}",permissions:{{ request.session.attributes.permissions|csv_to_json }}}{% else %}null{% endif %};
+      bh.profile={% if user.is_authenticated %}{name:"{{ user.get_full_name }}",permissions:{{ request.session.attributes.permissions|json }}}{% else %}null{% endif %};
       var bf=document.getElementsByTagName('base-footer')[0];
       bh.urls=bf.urls={login:"{% url 'cas_ng_login' %}",logout:"{% url 'cas_ng_logout' %}",postUrl:"{% url 'set_language' %}"};
     </script>
