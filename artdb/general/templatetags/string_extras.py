@@ -1,7 +1,10 @@
 import json
+import logging
 
 from django import template
 from django.utils.safestring import mark_safe
+
+logger = logging.getLogger(__name__)
 
 register = template.Library()
 
@@ -15,4 +18,8 @@ def csv_to_json(value, arg=','):
 @register.filter(name='json')
 def json_dumps(value):
     value = value if value else []
+    # temporary fix
+    if isinstance(value, str):
+        logger.error('permissions is string')
+        value = value.split(',')
     return mark_safe(json.dumps(value))
