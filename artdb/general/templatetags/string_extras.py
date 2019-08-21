@@ -20,6 +20,6 @@ def json_dumps(value):
     value = value if value else []
     # temporary fix
     if isinstance(value, str):
-        logger.error('permissions is string')
+        logger.warning('permissions is string')
         value = value.split(',')
     return mark_safe(json.dumps(value))
