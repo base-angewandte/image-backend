@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-07 15:07+0200\n"
+"POT-Creation-Date: 2020-05-06 01:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,8 +26,8 @@ msgid "English"
 msgstr "Englisch"
 
 #: artdb/templates/admin/base_site.html:5 artdb/urls.py:33 artdb/urls.py:34
-msgid "Image Editing"
-msgstr "Image Redaktion"
+msgid "Image Admin"
+msgstr ""
 
 #: artdb/templates/artwork/artwork_collect_overlay.html:13
 msgid "Add artwork to your collections"
@@ -176,7 +176,7 @@ msgstr "Standort"
 msgid "Keywords"
 msgstr "Schlagworte"
 
-#: artdb/templates/base.html:62
+#: artdb/templates/base.html:72
 msgid "This resolution is not supported."
 msgstr "Diese Auflösung wird nicht unterstützt."
 

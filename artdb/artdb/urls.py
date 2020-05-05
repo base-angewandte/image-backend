@@ -30,8 +30,8 @@ js_info_dict = {
 }
 
 admin.site.login = login_required(admin.site.login)
-admin.site.index_title = _('Image Editing')
-admin.site.site_header = _('Image Editing')
+admin.site.index_title = _('Image Admin')
+admin.site.site_header = _('Image Admin')
 
 urlpatterns = [
     path('', include('artworks.urls')),

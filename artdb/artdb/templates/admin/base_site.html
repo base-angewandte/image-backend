@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load string_extras %}
 
-{% block title %}{{ _('Image Editing') }} | base Angewandte{%  endblock %}
+{% block title %}{{ _('Image Admin') }} | base Angewandte{%  endblock %}
 
 {% block extrastyle %}
   <style type="text/css">body{background-color:#f0f0f0;}#content{background-color:#fff;}#content-related{background-color:transparent;}#container{box-sizing:border-box;margin:0 auto;max-width:1400px;min-width:305px;padding:76px 8px 8px;position:relative;}@media only screen and (min-width:640px){#container{padding:92px 16px 16px;}}#header{background:none;height:10px;padding:0}</style>
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="{{ BASE_HEADER }}"></script>
     <script type="text/javascript">
       var bh=document.getElementsByTagName("base-header")[0];
-      bh.active='image-editing';
+      bh.active='image-admin';
       bh.profile={% if user.is_authenticated %}{name:"{{ user.get_full_name }}",permissions:{{ request.session.attributes.permissions|json }}}{% else %}null{% endif %};
       var bf=document.getElementsByTagName('base-footer')[0];
       bh.urls=bf.urls={login:"{% url 'cas_ng_login' %}",logout:"{% url 'cas_ng_logout' %}",postUrl:"{% url 'set_language' %}"};
