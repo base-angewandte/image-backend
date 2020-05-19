@@ -27,7 +27,7 @@ msgstr "Englisch"
 
 #: artdb/templates/admin/base_site.html:5 artdb/urls.py:33 artdb/urls.py:34
 msgid "Image Admin"
-msgstr ""
+msgstr "Image Redaktion"
 
 #: artdb/templates/artwork/artwork_collect_overlay.html:13
 msgid "Add artwork to your collections"
