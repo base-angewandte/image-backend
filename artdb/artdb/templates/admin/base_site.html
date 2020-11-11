@@ -1,6 +1,5 @@
 {% extends "admin/base.html" %}
 {% load i18n %}
-{% load string_extras %}
 
 {% block title %}{{ _('Image Admin') }} | base Angewandte{%  endblock %}
 
@@ -10,7 +9,7 @@
 
 {% block branding %}
   {% if not form.username and not form.password %}
-    <base-header lang="{{ LANGUAGE_CODE }}" post-lang="true" post-csrf="{{ csrf_token }}"></base-header>
+    {% include 'base_header/base_header.html' %}
   {% endif %}
 {% endblock %}
 
@@ -19,14 +18,7 @@
 
 {% block footer %}
   {% if not form.username and not form.password %}
-    <base-footer lang="{{ LANGUAGE_CODE }}" logged-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" post-lang="true" post-csrf="{{ csrf_token }}"></base-footer>
-    <script type="text/javascript" src="{{ BASE_HEADER }}"></script>
-    <script type="text/javascript">
-      var bh=document.getElementsByTagName("base-header")[0];
-      bh.active='image-admin';
-      bh.profile={% if user.is_authenticated %}{name:"{{ user.get_full_name }}",permissions:{{ request.session.attributes.permissions|json }}}{% else %}null{% endif %};
-      var bf=document.getElementsByTagName('base-footer')[0];
-      bh.urls=bf.urls={login:"{% url 'cas_ng_login' %}",logout:"{% url 'cas_ng_logout' %}",postUrl:"{% url 'set_language' %}"};
-    </script>
+    {% include 'base_header/base_footer.html' %}
+    {% include 'base_header/base_header_script.html' with active='image-admin' %}
   {% endif %}
 {% endblock %}
