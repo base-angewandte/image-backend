@@ -13,13 +13,3 @@ register = template.Library()
 def csv_to_json(value, arg=','):
     value = value.split(arg) if value else []
     return mark_safe(json.dumps(value))
-
-
-@register.filter(name='json')
-def json_dumps(value):
-    value = value if value else []
-    # temporary fix
-    if isinstance(value, str):
-        logger.warning('permissions is string')
-        value = value.split(',')
-    return mark_safe(json.dumps(value))
