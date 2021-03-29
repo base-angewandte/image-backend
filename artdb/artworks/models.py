@@ -40,10 +40,25 @@ def get_path_to_original_file(instance, filename):
     Example: artwork.pk==16320, filename=='example.jpg'
     filename = 'artworks/imageOriginal/16000/16320/example.jpg'
     """
-    if instance.pk:
-        directory = (instance.pk // 1000) * 1000
-        return 'artworks/imageOriginal/{0}/{1}/{2}'.format(directory, instance.pk, filename)
-    return filename
+
+    # get_path_to_original_file
+    relative_path = filename
+    if instance:
+        if instance.pk:
+            directory = (instance.pk // 1000) * 1000
+            relative_path = 'artworks/imageOriginal/{0}/{1}/{2}'.format(directory, instance.pk, filename)
+
+    absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+
+    # move_uploaded_image
+    imagefile = instance.image_original
+    if not filename:
+        return
+    if not os.path.exists(absolute_path):
+        os.makedirs(os.path.dirname(absolute_path), exist_ok=True)
+    os.rename(imagefile.path, absolute_path)
+
+    return relative_path
 
 
 class Keyword(MPTTModel):
@@ -91,7 +106,7 @@ class Artwork(models.Model):
     # image (renditions) on demand
     image_original = VersatileImageField(
         verbose_name=_('Original Image'),
-        max_length=127,
+        max_length=255,
         null=False,
         blank=True,
         upload_to=get_path_to_original_file,
@@ -152,26 +167,6 @@ class Artwork(models.Model):
         parts = [artists, title_in_language, self.date]
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
-
-
-@receiver(models.signals.post_save, sender=Artwork)
-def move_uploaded_image(sender, instance, created, **kwargs):
-    """
-    Move the uploaded image after an Artwork instance has been created.  
-    """
-    imagefile = instance.image_original
-    old_name = imagefile.name
-    relative_path = get_path_to_original_file(instance, old_name)
-    absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)
-    if created:
-        if not old_name:
-            return
-        if not os.path.exists(absolute_path):
-            os.makedirs(os.path.dirname(absolute_path), exist_ok = True)
-        # move the uploaded image
-        os.rename(imagefile.path, absolute_path)
-        imagefile.name = relative_path
-        instance.save()
 
 
 @receiver(models.signals.post_delete, sender=Artwork)
