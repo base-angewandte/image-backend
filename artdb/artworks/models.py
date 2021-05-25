@@ -160,7 +160,6 @@ def move_uploaded_image(sender, instance, created, **kwargs):
     """
     Move the uploaded image after an Artwork instance has been created.
     """
-    # todo ensure that in the post_save function the path never exceeds 255.
     imagefile = instance.image_original
     old_name = imagefile.name
     relative_path = get_path_to_original_file(instance, old_name)
