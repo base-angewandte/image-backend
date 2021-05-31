@@ -173,7 +173,7 @@ def move_uploaded_image(sender, instance, created, **kwargs):
         os.rename(imagefile.path, absolute_path)
         imagefile.name = relative_path
         if len(imagefile.name) > 255:
-            imagefile.name = imagefile.name[:255]
+            imagefile.name = instance.image_original.storage.get_available_name(imagefile.name, max_length=255)
         instance.save()
 
 
