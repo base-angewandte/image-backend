@@ -132,7 +132,7 @@ class Artwork(models.Model):
         related_name='artworks_currently_located_here',
     )
     checked = models.BooleanField(verbose_name=_('Checked'), default=False)
-    published = models.BooleanField(verbose_name=_('Published'), default=False)  
+    published = models.BooleanField(verbose_name=_('Published'), default=False)
 
     class Meta:
         ordering = [Upper('title'), ]
@@ -208,10 +208,10 @@ class ArtworkCollection(models.Model):
 
     def __str__(self):
         return '{0} by {1}'.format(self.title, self.user.get_full_name())
-        
+
     def size(self):
         return self.artworks.count()
-    
+
     class Meta:
         permissions = (('can_download_pptx', 'Can download as PowerPoint file'),)
         verbose_name = _('Folder')
@@ -247,7 +247,7 @@ class ArtworkCollectionMembership(OrderedModel):
         else:
             left_side = self
             right_side = None
-           
+
         if left_side.previous():
             if left_side.previous().connected_with:
                 # the left_side is connected. let's move twice
@@ -272,7 +272,7 @@ class ArtworkCollectionMembership(OrderedModel):
         else:
             left_side = None
             right_side = self
-           
+
         if right_side.next():
             if right_side.next().connected_with:
                 # the rightSide is connected. let's move twice
