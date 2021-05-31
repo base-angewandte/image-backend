@@ -160,19 +160,23 @@ def move_uploaded_image(sender, instance, created, **kwargs):
     """
     Move the uploaded image after an Artwork instance has been created.
     """
-    imagefile = instance.image_original
-    old_name = imagefile.name
-    relative_path = instance.image_original.storage.get_available_name(
-        get_path_to_original_file(instance, old_name), max_length=255
-    )
-    absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)
     if created:
+        imagefile = instance.image_original
+        old_name = imagefile.name
+        relative_path = instance.image_original.storage.get_available_name(
+            get_path_to_original_file(instance, old_name), max_length=255
+        )
+        absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+
         if not old_name:
             return
+
         if not os.path.exists(absolute_path):
             os.makedirs(os.path.dirname(absolute_path), exist_ok=True)
+
         # move the uploaded image
         os.rename(imagefile.path, absolute_path)
+        
         imagefile.name = relative_path
         instance.save()
 
