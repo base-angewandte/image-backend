@@ -176,7 +176,7 @@ def move_uploaded_image(sender, instance, created, **kwargs):
 
         # move the uploaded image
         os.rename(imagefile.path, absolute_path)
-        
+
         imagefile.name = relative_path
         instance.save()
 
