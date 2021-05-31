@@ -164,7 +164,8 @@ def move_uploaded_image(sender, instance, created, **kwargs):
         imagefile = instance.image_original
         old_name = imagefile.name
         relative_path = instance.image_original.storage.get_available_name(
-            get_path_to_original_file(instance, old_name), max_length=255
+            get_path_to_original_file(instance, old_name),
+            max_length=sender._meta.get_field('image_original').max_length,
         )
         absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)
 
