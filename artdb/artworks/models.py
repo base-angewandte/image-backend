@@ -162,7 +162,9 @@ def move_uploaded_image(sender, instance, created, **kwargs):
     """
     imagefile = instance.image_original
     old_name = imagefile.name
-    relative_path = get_path_to_original_file(instance, old_name)
+    relative_path = instance.image_original.storage.get_available_name(
+        get_path_to_original_file(instance, old_name), max_length=255
+    )
     absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)
     if created:
         if not old_name:
@@ -172,8 +174,6 @@ def move_uploaded_image(sender, instance, created, **kwargs):
         # move the uploaded image
         os.rename(imagefile.path, absolute_path)
         imagefile.name = relative_path
-        if len(imagefile.name) > 255:
-            imagefile.name = instance.image_original.storage.get_available_name(imagefile.name, max_length=255)
         instance.save()
 
 
