@@ -95,6 +95,7 @@ class ArtworkCollectionAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
     ordering = ('-created_at',)
     search_fields = ['title']
     inlines = (ArtworkCollectionMembershipInline,)
+    autocomplete_fields = ('user',)
 
 
 class ArtistAdmin(admin.ModelAdmin):
