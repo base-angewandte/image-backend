@@ -68,6 +68,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'updated_at',
     )
     readonly_fields = ('created_at', 'updated_at', 'thumbnail_image')
+    autocomplete_fields = ('location_of_creation', 'location_current')
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'size': '80'})},
         models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 80})},
@@ -95,7 +96,7 @@ class ArtworkCollectionAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
     ordering = ('-created_at',)
     search_fields = ['title']
     inlines = (ArtworkCollectionMembershipInline,)
-    autocomplete_fields = ('user', 'location_of_creation', 'location_current')
+    autocomplete_fields = ('user',)
 
 
 class ArtistAdmin(admin.ModelAdmin):
