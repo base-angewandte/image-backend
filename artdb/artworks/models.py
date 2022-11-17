@@ -81,7 +81,13 @@ class Location(MPTTModel):
         order_insertion_by = ['name']
 
     def __str__(self):
-        return self.name
+        try:
+            ancestors = self.get_ancestors(include_self=True)
+            ancestors = [i.name for i in ancestors]
+        except:
+            ancestors = [self.name]
+
+        return ' > '.join(ancestors[:len(ancestors) + 1])
 
 
 class Artwork(models.Model):

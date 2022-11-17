@@ -4,7 +4,7 @@ from django.db import models
 from django.forms import TextInput, Textarea
 from django.utils.html import format_html, escape
 from django.utils.translation import ugettext_lazy as _
-from mptt.admin import MPTTModelAdmin
+from mptt.admin import MPTTModelAdmin, TreeRelatedFieldListFilter
 from ordered_model.admin import OrderedTabularInline, OrderedInlineModelAdminMixin
 
 from .forms import ArtworkAdminForm
@@ -112,7 +112,8 @@ class KeywordAdmin(MPTTModelAdmin):
 
 
 class LocationAdmin(MPTTModelAdmin):
-    search_fields = ['name']
+    search_fields = ['location_parent']
+    list_display = ('name',)
 
 
 admin.site.register(ArtworkCollection, ArtworkCollectionAdmin)
