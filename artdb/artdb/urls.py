@@ -35,6 +35,7 @@ admin.site.site_header = _('Image Admin')
 
 urlpatterns = [
     path('', include('artworks.urls')),
+    path('api/', include('api.urls')),
 
     path('editing/', admin.site.urls),
     path('editing/', include('massadmin.urls')),

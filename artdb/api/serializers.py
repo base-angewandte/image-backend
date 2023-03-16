@@ -3,7 +3,6 @@ from artworks.models import Artwork, Artist, Keyword, Location, ArtworkCollectio
 from versatileimagefield.serializers import VersatileImageFieldSerializer
 from rest_framework import serializers
 
-
 class LocationSerializer(serializers.ModelSerializer):    
     class Meta:
         model = Location
@@ -51,7 +50,7 @@ class MembershipSerializer(serializers.ModelSerializer):
         fields = ('id', 'connected_with', 'artwork')
 
 
-class CollectionSerializer(serializers.ModelSerializer):
+class AlbumSerializer(serializers.ModelSerializer):
     # members = MembershipSerializer(source='artworkcollectionmembership_set',read_only=True, many=True)
     # name = serializers.CharField(required=False)
     # shared_info = serializers.CharField(required=False)

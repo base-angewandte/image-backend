@@ -14,37 +14,40 @@ urlpatterns = [
 
     # Artworks
     path('artworks/', views.ArtworksViewSet.as_view({
-        'get': 'list'}), name='artworks'),
+        'get': 'list',}), name='artworks'),
+        # 'post': 'search_artworks'}), name='artworks'),  # todo update
     path('artworks/<item_id>/', views.ArtworksViewSet.as_view({'get': 'retrieve'}), name='artwork'),
+    path('artworks-search/', views.ArtworksViewSet.as_view({
+        'get': 'search_artworks'}), name='search_artworks'),
 
     # ArtworkCollections
     ## todo Folders are renamed to Albums?
-    path('folders/', views.ArtworksCollectionViewSet.as_view({
+    path('folders/', views.AlbumViewSet.as_view({
         'get': 'list_folders',
-        'post': 'create_folder',  # todo or         Create Folder /workbooks/{id}?
+        'post': 'create_folder',  # todo or         Create Folder /albums/{id}?
     }), name='folders'),
-    path('workbooks/', views.ArtworksCollectionViewSet.as_view({
-        'get': 'list_workbooks', # per user
-    }), name='workbooks'),
-    path('workbooks/<workbook_id>/', views.ArtworksCollectionViewSet.as_view({
-            'get': 'retrieve_workbook',  # retrieve
-            'patch': 'update_workbook',
-            'delete': 'delete_workbook',
+    path('albums/', views.AlbumViewSet.as_view({
+        'get': 'list_albums', # per user
+    }), name='albums'),
+    path('albums/<album_id>/', views.AlbumViewSet.as_view({
+            'get': 'retrieve_album',  # retrieve
+            'patch': 'update_album',
+            'delete': 'delete_album',
         }), name='slides'),
 
-    path('workbooks/<workbook_id>/slides/', views.ArtworksCollectionViewSet.as_view({
-            'get': 'retrieve_slides_per_workbook',
+    path('albums/<album_id>/slides/', views.AlbumViewSet.as_view({
+            'get': 'retrieve_slides_per_album',
             'post': 'edit_slides'}), name='slides'),
 
     # As it was: separate endpoints
     #
-    # path('workbooks/<workbook_id>/slides/reorder_artworks', views.ArtworksCollectionViewSet.as_view({
+    # path('albums/<album_id>/slides/reorder_artworks', views.ArtworksCollectionViewSet.as_view({
     #         'put': 'reorder_artworks_within_slide'}), name='reorder_artworks_in_slides'),
     #
-    # path('workbooks/<workbook_id>/slides/separate_slides', views.ArtworksCollectionViewSet.as_view({
+    # path('albums/<album_id>/slides/separate_slides', views.ArtworksCollectionViewSet.as_view({
     #     'put': 'separate_slides',}), name='separate_slides'),
     #
-    # path('workbooks/<workbook_id>/slides/reorder_slides', views.ArtworksCollectionViewSet.as_view({
+    # path('albums/<album_id>/slides/reorder_slides', views.ArtworksCollectionViewSet.as_view({
     #     'put': 'reorder_slides'}), name='reorder_slides'),
 
 ###############

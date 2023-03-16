@@ -1,3 +1,4 @@
+import logging
 import json
 from json import JSONDecodeError
 from django.contrib.auth.models import User
@@ -11,7 +12,9 @@ from drf_spectacular.utils import (
 OpenApiExample
 )
 import json
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.db.models import Q, ExpressionWrapper, BooleanField
 
 from rest_framework import mixins, status, viewsets
 # from rest_framework.exceptions import PermissionDenied
@@ -45,9 +48,11 @@ from .serializers import (
     ArtworkSerializer,
 ThumbnailSerializer,
 MembershipSerializer,
-CollectionSerializer,
+AlbumSerializer,
 
 )
+
+logger = logging.getLogger(__name__)
 
 
 class ArtworksViewSet(viewsets.GenericViewSet):
@@ -96,23 +101,154 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         serializer = ArtworkSerializer(artwork)
         return Response(serializer.data)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='limit',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+            ),
+            OpenApiParameter(
+                name='offset',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+            ),
+            OpenApiParameter(
+                name='title',
+                type=OpenApiTypes.STR,
+                required=False,
+                description='',
+            ),
+            OpenApiParameter(
+                name='artist',
+                type=OpenApiTypes.STR,
+                required=False,
+                description='',
+            ),
+            OpenApiParameter(
+                name='keyword',
+                type=OpenApiTypes.STR,
+                required=False,
+                description='',
+            ),
+            OpenApiParameter(
+                name='date_year_from',   # date_from or date_year_from?
+                type=OpenApiTypes.DATETIME,
+                required=False,
+                description='',
+            ),
+            OpenApiParameter(
+                name='date_year_to',   # date_to or date_year_to?
+                type=OpenApiTypes.DATETIME,
+                required=False,
+                description='',
+            ),
+            OpenApiParameter(
+                name='origin',
+                type=OpenApiTypes.STR,
+                required=False,
+                description='',
+            ),
+            OpenApiParameter(
+                name='location',
+                type=OpenApiTypes.STR,
+                required=False,
+                description='',
+            ),
+        ],
+        methods=['GET'],
+        request=serializer_class,
+        responses={
+            200: OpenApiResponse(description='OK'),
+            403: OpenApiResponse(description='Access not allowed'),
+            404: OpenApiResponse(description='Not found'),
+        },
+    )
+    def search_artworks(self, request, item_id=None):
+        # TODO still:
+        # Default (latest?) artworks on initial page load (could this be part of search?) - LIST /albums
+        # include pagination
+        # also exclude param with list with ids of artworks
+        # start with GET - if we run into limits --> might need to add /search  POST after all
 
-class ArtworksCollectionViewSet(viewsets.ViewSet):
+        limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
+        offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
+
+        results = Artwork.objects.all()
+        artwork_title = request.GET.get('title')
+        artist_name = request.GET.get('artist')
+        keyword = request.GET.get('keyword')
+        date_from = request.GET.get('date_from')
+        date_to = request.GET.get('date_to')
+        location_of_creation = request.GET.get('origin')  # origin
+        location_current = request.GET.get('location')  # location
+        q_objects = Q()
+
+        if location_of_creation:
+            locations = Location.objects.filter(name__istartswith=location_of_creation)
+            q_objects.add(Q(location_of_creation__in=locations), Q.AND)
+        if location_current:
+            locations = Location.objects.filter(name__istartswith=location_current)
+            q_objects.add(Q(location_current__in=locations), Q.AND)
+        if artist_name:
+            terms = [term.strip() for term in artist_name.split()]
+            for term in terms:
+                q_objects.add(
+                    (Q(artists__name__unaccent__icontains=term) | Q(artists__synonyms__unaccent__icontains=term)),
+                    Q.AND,
+                )
+        if keyword:
+            keywords = Keyword.objects.filter(name__icontains=keyword)
+            q_objects.add(Q(keywords__in=keywords), Q.AND)
+        if date_from:
+            try:
+                year = int(date_from)
+                q_objects.add(Q(date_year_from__gte=year), Q.AND)
+            except ValueError as err:
+                logger.error(err)
+                return []
+        if date_to:
+            try:
+                year = int(date_to)
+                q_objects.add(Q(date_year_to__lte=year), Q.AND)
+            except ValueError as err:
+                logger.error(err)
+                return []
+        if artwork_title:
+            q_objects.add(Q(title__icontains=artwork_title) |
+                              Q(title_english__icontains=artwork_title), Q.AND)
+
+        results = results.distinct().filter(q_objects)
+
+        end = offset + limit if offset and limit else None
+        results = results[offset:end]
+
+        serializer = ArtworkSerializer(results, many=True)
+
+        return Response({
+            'total_results': results.count(),
+            'data': serializer.data
+        })
+
+
+class AlbumViewSet(viewsets.ViewSet):
     """
     list_folders:
-    List of all the users workbooks /folders (in anticipation that there will be folders later)
+    List of all the users albums /folders (in anticipation that there will be folders later)
 
-    list_workbooks:
-    GET all the users workbooks. #todo define
+    list_albums:
+    GET all the users albums. #todo define
 
-    retrieve_workbook:
-    GET /workbooks/{id}
+    retrieve_album:
+    GET /albums/{id}
 
-    retrieve_slides_per_workbook:
-    GET /workbooks/{id}/slides LIST (GET) endpoint   # todo??
+    retrieve_slides_per_album:
+    GET /albums/{id}/slides LIST (GET) endpoint   # todo??
 
     edit_slides:
-    POST /workbooks/{id}/slides
+    POST /albums/{id}/slides
     Reorder Slides
     Separate_slides
     Reorder artworks within slides
@@ -120,17 +256,17 @@ class ArtworksCollectionViewSet(viewsets.ViewSet):
     create_folder:
     POST
 
-    update_workbook:
+    update_album:
     PATCH
 
-    delete_workbook:
+    delete_album:
     DELETE
 
 
 
     """
 
-    serializer_class = CollectionSerializer
+    serializer_class = AlbumSerializer
     queryset = ArtworkCollection.objects.all()
     parser_classes = (FormParser, MultiPartParser)
     filter_backends = (DjangoFilterBackend,)
@@ -146,7 +282,7 @@ class ArtworksCollectionViewSet(viewsets.ViewSet):
     )
     def list_folders(self, request, *args, **kwargs):
         '''
-        List of all the users workbooks /folders (in anticipation that there will be folders later)
+        List of all the users albums /folders (in anticipation that there will be folders later)
         '''
         dummy_data = [{
             'title': 'Some title',
@@ -156,23 +292,32 @@ class ArtworksCollectionViewSet(viewsets.ViewSet):
             'thumbnail': 'https://www.thumbnail.com'
         }]
         # WIP todo
-        serializer = CollectionSerializer(self.queryset, many=True)
+        # also todo  LIMIT & SORTING PARAMS
+        serializer = AlbumSerializer(self.queryset, many=True)
         return Response(dummy_data)
 
     @extend_schema(
         request=serializer_class,
+        parameters=[OpenApiParameter(
+            name='limit',
+            type=OpenApiTypes.INT,
+            required=False,
+            description='',
+        )],
         responses={
             200: OpenApiResponse(description='OK'),
             403: OpenApiResponse(description='Access not allowed'),
             404: OpenApiResponse(description='Not found'),
         },
     )
-    def list_workbooks(self, request, *args, **kwargs):
+    def list_albums(self, request, *args, **kwargs):
         '''
-        List of all Workbooks (used for getting latest Workbooks) /workbooks
+        List of all Albums (used for getting latest Albums) /albums
         '''
-        serializer = CollectionSerializer(self.queryset, many=True)
-        return Response(serializer.data)
+        limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
+        serializer = AlbumSerializer(self.queryset, many=True)
+        data = serializer.data[0:limit]
+        return Response(data)
 
     @extend_schema(
         request=serializer_class,
@@ -182,32 +327,38 @@ class ArtworksCollectionViewSet(viewsets.ViewSet):
             404: OpenApiResponse(description='Not found'),
         },
     )
-    def retrieve_workbook(self, request, workbook_id=None):   # TODO update
+    def retrieve_album(self, request, album_id=None):   # TODO update
         '''
-        List of Works (Slides) in a specific Workbook /workbooks/{id}
+        List of Works (Slides) in a specific Album /albums/{id}
         '''
         dummy_data = [{
-            'title': 'Some workbook title',
+            'title': 'Some album title',
             'ID': 1231,
             'shared_info': 'Some shared info',
+            'thumbnail_url': 'http://thumbnails.url',
             'slides': ['SlideObj1', 'SlideObj2'],
         }]
+        # Title
+        # Id
+        # Shared (more shared info?)
+        # Number of Works in Album
+        # thumbnail URL
         # todo 2 update serializer once the model is set
 
         # todo 3
         # - Search works (but only limited results compared to general search - limited to title and artist?)
         # (just have additional param fields in /search  route to indicate which fields should be searched ? -->
-        # use /artworks but also need info on is it part of workbook already
+        # use /artworks but also need info on is it part of album already
 
-        # - Download workbook with slides  - usually needs to take more detailed settings like language,
-        # which entry details to include) /workbook/{id}/download ? definite in version version: language,
+        # - Download album with slides  - usually needs to take more detailed settings like language,
+        # which entry details to include) /album/{id}/download ? definite in version version: language,
         # file type + image metadata (title, artist - current status)
         try:
-            workbook = ArtworkCollection.objects.get(pk=workbook_id)
-        except Artwork.DoesNotExist or ValueError:
-            return Response(_('Workbook does not exist'), status=status.HTTP_404_NOT_FOUND)
+            album = ArtworkCollection.objects.get(pk=album_id)
+        except ArtworkCollection.DoesNotExist or ValueError:
+            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-        serializer = ArtworkSerializer(workbook)
+        serializer = AlbumSerializer(album)
         return Response(serializer.data)
 
     @extend_schema(
@@ -218,9 +369,9 @@ class ArtworksCollectionViewSet(viewsets.ViewSet):
             404: OpenApiResponse(description='Not found'),
         },
     )
-    def retrieve_slides_per_workbook(self, request, workbook_id=None):
+    def retrieve_slides_per_album(self, request, album_id=None):
         '''
-        /workbooks/{id}/slides LIST (GET) endpoint returns:
+        /albums/{id}/slides LIST (GET) endpoint returns:
         '''
         # TODO note: works but with dummy data
         dummy_data = [{
@@ -249,7 +400,7 @@ class ArtworksCollectionViewSet(viewsets.ViewSet):
                 name='id list',
                 type=OpenApiTypes.OBJECT,
                 required=False,
-                description='Desired order or arrangement of slides within workbook, and/or workbooks within slides',
+                description='Desired order or arrangement of slides within album, and/or albums within slides',
             ),
         ],
         examples=[
@@ -261,9 +412,12 @@ class ArtworksCollectionViewSet(viewsets.ViewSet):
             200: OpenApiTypes.OBJECT,
         }
     )
+    # TODO
+    # response = serializers.ListSerializer(child=AutocompleteItemSerializer()),
+    # or similar to make sure
     def edit_slides(self, request, *args, **kwargs):
         '''
-        /workbooks/{id}/slides
+        /albums/{id}/slides
         Reorder Slides
         Separate_slides
         Reorder artworks within slides
@@ -313,7 +467,7 @@ class ArtworksCollectionViewSet(viewsets.ViewSet):
     # )
     # def separate_slides(self, request, *args, **kwargs):
     #     '''
-    #     Separate Slides /workbooks/{id}/slides
+    #     Separate Slides /albums/{id}/slides
     #     '''
     #     # todo
     #     return Response(
@@ -327,13 +481,13 @@ class ArtworksCollectionViewSet(viewsets.ViewSet):
     #             name='slides_id_order',
     #             type=OpenApiTypes.STR,
     #             required=False,
-    #             description='Desired order of slides within workbook',
+    #             description='Desired order of slides within album',
     #         ),
     #     ],
     # )
     # def reorder_slides(self, request, *args, **kwargs):
     #     '''
-    #     Reorder Slides /workbooks/{id}/slides
+    #     Reorder Slides /albums/{id}/slides
     #     '''
     #     # todo
     #     # Use same approach as reorder_artworks_within_slides (?)
@@ -365,7 +519,7 @@ class ArtworksCollectionViewSet(viewsets.ViewSet):
     #         return Response(dummy_data)
     #     except:
     #         return Response(
-    #             _('Could not reorder slides within workbook'), status=status.HTTP_404_NOT_FOUND
+    #             _('Could not reorder slides within album'), status=status.HTTP_404_NOT_FOUND
     #         )
 
     # @extend_schema(
@@ -375,14 +529,14 @@ class ArtworksCollectionViewSet(viewsets.ViewSet):
     #             name='artworks_id_order',
     #             type=OpenApiTypes.STR,
     #             required=True,
-    #             description='Workbook ids order within slide',
+    #             description='Album ids order within slide',
     #         ),
     #     ],
     # )
     # def reorder_artworks_within_slide(self, request, *args, **kwargs):
     #     # slide_id=None, artworks_id_order=None
     #     '''
-    #     Reorder artworks within a slide /workbooks/{id}/slides
+    #     Reorder artworks within a slide /albums/{id}/slides
     #     '''
     #     # todo
     #     # slides will be implemented in the model as JSON field ([[]])
@@ -477,7 +631,7 @@ class ArtworksCollectionViewSet(viewsets.ViewSet):
     )
     def create_folder(self, request, *args, **kwargs):
         '''
-        Create Folder /workbooks/{id}
+        Create Folder /albums/{id}
         '''
         # todo
         # Create folder with given data
@@ -495,43 +649,51 @@ class ArtworksCollectionViewSet(viewsets.ViewSet):
         )
 
     @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='update_album',
+                type=OpenApiTypes.OBJECT,
+                required=False,
+                description='',
+            ),
+        ],
         methods=['PATCH']
     )
-    def update_workbook(self, request, partial=False, workbook_id=None, *args, **kwargs):
+    def update_album(self, request, partial=False, album_id=None, *args, **kwargs):
         # TODO patch vs post
         '''
-        Update Workbook /workbooks/{id}
+        Update Album /albums/{id}
         '''
         try:
-            workbook = ArtworkCollection.objects.get(pk=workbook_id)
-            serializer = CollectionSerializer(data=request.data)
+            album = ArtworkCollection.objects.get(pk=album_id)
+            serializer = AlbumSerializer(data=request.data)
 
             if serializer.is_valid():
                 if serializer.validated_data:
-                    workbook.__dict__.update(serializer.validated_data)
-                    workbook.save()
+                    album.__dict__.update(serializer.validated_data)
+                    album.save()
                     return Response(serializer.data)
 
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQ)
 
         except ArtworkCollection.DoesNotExist:
-            return Response(_('Workbook does not exist '), status=status.HTTP_404_NOT_FOUND)
+            return Response(_('Album does not exist '), status=status.HTTP_404_NOT_FOUND)
 
     @extend_schema(
         methods=['DELETE'],
     )
-    def delete_workbook(self, request, workbook_id=None, *args, **kwargs):
+    def delete_album(self, request, album_id=None, *args, **kwargs):
         '''
-        Delete Workbook /workbooks/{id}
+        Delete Album /albums/{id}
         '''
         try:
-            workbook = ArtworkCollection.objects.get(pk=workbook_id)
-            workbook.delete()
+            album = ArtworkCollection.objects.get(pk=album_id)
+            album.delete()
         except ArtworkCollection.DoesNotExist or ValueError:
-            return Response(_('Workbook does not exist'), status=status.HTTP_404_NOT_FOUND)
+            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-    # todo from Shared INFO / workbook
-    # part of workbook model as a many
+    # todo from Shared INFO / album
+    # part of album model as a many
 
 
 class UserViewSet(viewsets.GenericViewSet):
@@ -542,13 +704,22 @@ class UserViewSet(viewsets.GenericViewSet):
         tags=['user'],
     )
     def retrieve(self, request, *args, **kwargs):
+        return Response({
+            'id': 'username1',
+            "first_name": "Hellor",
+            "last_name": "World",
+            'email': 'u@u.com',
+            "is_staff": False,
+            "is_active": True,
+        })
+
         try:
-            dummy_data = {
+            data = {
                 'uuid': request.user.username,
                 'name': request.user.get_full_name(),
                 'email': request.user.email,
             }
-            return Response(dummy_data)
+            return Response(data)
         except AttributeError:
             return Response(
                 _('User does not exist or is not logged in.'), status=status.HTTP_404_NOT_FOUND

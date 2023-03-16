@@ -1,1 +1,1 @@
-default_app_config = 'autosuggest.apps.AutosuggestConfig'
+default_app_config = 'autocomplete.apps.AutocompleteConfig'

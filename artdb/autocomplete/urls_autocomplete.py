@@ -3,24 +3,35 @@ from django.urls import re_path
 
 from . import views
 
+## DUMMY
+# TODO complete
+
+# SOURCES = {
+#     # 'contributors': CONTRIBUTORS,  # GND, VIAF
+#     'expertise': {
+#         'search': 'core.skosmos.get_skills',
+#     },
+# 'artworks': {
+#         'search': 'core.skosmos.get_skills',
+#     },
+#     'workbooks': {
+#         'search': 'core.skosmos.get_skills',
+#     }
+# }
+
+# Dummy below
+
+
 # NOTE: fieldname must be present in ACTIVE_SOURCES for this to work
+from .views import SOURCES
+
 urlpatterns = [
     re_path(
-        r'^(?P<fieldname>({}))/$'.format('|'.join(settings.ACTIVE_SOURCES.keys())),
-        views.lookup_view,
-        name='lookup_all',
-    ),
-    re_path(
-        r'^(?P<fieldname>({}))/(?P<searchstr>(.*))/$'.format(
-            '|'.join(settings.ACTIVE_SOURCES.keys())
-        ),
-        views.lookup_view_search,
+        # r'^(?P<type>({}))/(?P<searchstr>(.*))/$'.format(
+        #     '|'.join(SOURCES)
+        # ),
+        r'^(?P<type_param>(.*))/(?P<searchstr>(.*))/$',
+        views.autocomplete_search,
         name='lookup',
-    ),
-    # Autosuggest for users
-    re_path(
-        r'^(?P<user>(.*))/$',
-        views.autosuggest_user,
-        name='autosuggest_user',
     ),
 ]

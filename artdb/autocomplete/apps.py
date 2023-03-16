@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class AutosuggestConfig(AppConfig):
-    name = 'autosuggest'
+class AutocompleteConfig(AppConfig):
+    name = 'autocomplete'
