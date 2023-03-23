@@ -21,7 +21,9 @@ from urllib.parse import urlparse
 import environ
 import requests
 from django.urls import reverse_lazy
-from django.utils.translation import ugettext_lazy as _
+# from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
+
 
 env = environ.Env()
 env.read_env()
@@ -54,6 +56,14 @@ DOCKER = env.bool('DOCKER', default=True)
 
 SITE_URL = env.str('SITE_URL')
 
+# Https settings
+if SITE_URL.startswith('https'):
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    SECURE_SSL_REDIRECT = False
+    SECURE_HSTS_SECONDS = 31536000
+
+
 FORCE_SCRIPT_NAME = env.str('FORCE_SCRIPT_NAME', default='/image')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[urlparse(SITE_URL).hostname])
@@ -68,7 +78,7 @@ MANAGERS = ADMINS
 
 INSTALLED_APPS = [
     # need to be before django.contrib.admin and grapelli
-    'dal',
+    # 'dal',
     'dal_select2',
     'dal_admin_filters',
 
@@ -93,7 +103,25 @@ INSTALLED_APPS = [
     # Project apps
     'general',
     'artworks',
+
+    # API
+    'api',
+    'drf_spectacular'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+        'TITLE': 'Image+ API',
+        'DESCRIPTION': '',
+        'VERSION': '1.0.0',
+        'SERVE_INCLUDE_SCHEMA': False,
+                'COMPONENT_SPLIT_REQUEST': True
+        # OTHER SETTINGS
+    }
+
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -225,7 +253,6 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -387,3 +414,4 @@ CSRF_COOKIE_NAME = 'csrftoken_{}'.format('image')
 BASE_HEADER_SITE_URL = env.str('BASE_HEADER_SITE_URL', SITE_URL)
 BASE_HEADER_JSON = '{}bs/base-header.json'.format(BASE_HEADER_SITE_URL)
 BASE_HEADER = '{}{}'.format(BASE_HEADER_SITE_URL, requests.get(BASE_HEADER_JSON).json()['latest'])
+
