@@ -112,7 +112,7 @@ class KeywordAdmin(MPTTModelAdmin):
 
 
 class LocationAdmin(MPTTModelAdmin):
-    search_fields = ['name']
+    search_fields = ['name', 'parent__name', 'parent__parent__name']
 
 
 admin.site.register(ArtworkCollection, ArtworkCollectionAdmin)
