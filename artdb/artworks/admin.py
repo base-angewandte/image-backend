@@ -111,8 +111,10 @@ class KeywordAdmin(MPTTModelAdmin):
     search_fields = ['name']
 
 
+SEARCH_LEVELS = 5
+
 class LocationAdmin(MPTTModelAdmin):
-    search_fields = ['name', 'parent__name', 'parent__parent__name']
+    search_fields = ['parent__'*i+'name' for i in range(SEARCH_LEVELS)]
 
 
 admin.site.register(ArtworkCollection, ArtworkCollectionAdmin)
