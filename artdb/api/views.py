@@ -377,7 +377,6 @@ class AlbumViewSet(viewsets.ViewSet):
         }
     )
 
-
     def edit_slides(self, request, *args, **kwargs):
         '''
         /albums/{id}/slides
@@ -385,10 +384,6 @@ class AlbumViewSet(viewsets.ViewSet):
         Separate_slides
         Reorder artworks within slides
         '''
-
-        # TODO
-        # response = serializers.ListSerializer(child=AutocompleteItemSerializer()),
-        # or similar to make sure
 
         try:
             # Pass an object with a new order or arrangement
@@ -469,12 +464,12 @@ class AlbumViewSet(viewsets.ViewSet):
         Update Album /albums/{id}
         '''
         # todo Alter Shared Info
-        # Rename Album / albums (done)
-        # Alter Shared info
-        # part of album model as a many to many relationship with an additional property for the type of right
-        # (read or write; could be extended later).
-        # in the API response then there is also just a list for the permissions
-        # with dicts/objects containing the user id, name and the type of right (read or write)
+        #   Rename Album / albums (done)
+        #   Alter Shared info
+        #       part of album model as a many to many relationship with an additional property for the type of right
+        #       (read or write; could be extended later).
+        #   in the API response then there is also just a list for the permissions
+        #   with dicts/objects containing the user id, name and the type of right (read or write)
 
         try:
             album = ArtworkCollection.objects.get(pk=album_id)

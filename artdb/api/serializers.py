@@ -1,32 +1,6 @@
 from artworks.models import Artwork, Artist, Keyword, Location, ArtworkCollection, ArtworkCollectionMembership
 from versatileimagefield.serializers import VersatileImageFieldSerializer
 from rest_framework import serializers
-from django.core.exceptions import ValidationError
-import json
-import jsonschema
-from jsonschema import validate
-
-from django.utils.translation import gettext_lazy as _
-
-
-def validate_json_field(value, schema):
-    try:
-        if not isinstance(value, list):
-            value = [value]
-
-        for v in value:
-            validate(v, schema)
-    except jsonschema.exceptions.ValidationError as e:
-        raise ValidationError(_(f'Well-formed but invalid JSON: {e}')) from e
-    except json.decoder.JSONDecodeError as e:
-        raise ValidationError(_(f'Poorly-formed text, not JSON: {e}')) from e
-    except TypeError as e:
-        raise ValidationError(f'Invalid characters: {e}') from e
-
-    if len(value) > len({json.dumps(d, sort_keys=True) for d in value}):
-        raise ValidationError(_('Data contains duplicate entries'))
-
-    return value
 
 
 class LocationSerializer(serializers.ModelSerializer):
