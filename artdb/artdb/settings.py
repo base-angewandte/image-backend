@@ -58,9 +58,9 @@ SITE_URL = env.str('SITE_URL')
 
 # Https settings
 if SITE_URL.startswith('https'):
-    CSRF_COOKIE_SECURE = False
-    SESSION_COOKIE_SECURE = False
-    SECURE_SSL_REDIRECT = False
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000
 
 

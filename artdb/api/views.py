@@ -1,7 +1,4 @@
 import logging
-import json
-from json import JSONDecodeError
-from django.contrib.auth.models import User
 
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
@@ -9,46 +6,30 @@ from drf_spectacular.utils import (
     OpenApiResponse,
     OpenApiTypes,
     extend_schema,
-OpenApiExample
+    OpenApiExample
 )
-import json
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from django.db.models import Q, ExpressionWrapper, BooleanField
 
 from rest_framework import mixins, status, viewsets
-# from rest_framework.exceptions import PermissionDenied
-# from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
 from rest_framework.parsers import FileUploadParser, FormParser, MultiPartParser
-# from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-# from rest_framework_api_key.models import APIKey
-# from rest_framework_api_key.permissions import HasAPIKey
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from artworks.models import (
     Artist,
     Keyword,
-Location,
-Artwork,
-ArtworkCollection,
-ArtworkCollectionMembership,
-
+    Location,
+    Artwork,
+    ArtworkCollection,
+    ArtworkCollectionMembership,
 
 )
 
 from .serializers import (
-    LocationSerializer,
-    ArtistSerializer,
-    KeywordSerializer,
     ArtworkSerializer,
-ThumbnailSerializer,
-MembershipSerializer,
-AlbumSerializer,
+    AlbumSerializer,
 
 )
 
@@ -56,7 +37,6 @@ logger = logging.getLogger(__name__)
 
 
 class ArtworksViewSet(viewsets.GenericViewSet):
-
     """
     list:
     GET all artworks.
@@ -134,13 +114,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 description='',
             ),
             OpenApiParameter(
-                name='date_year_from',   # date_from or date_year_from?
+                name='date_year_from',
                 type=OpenApiTypes.DATETIME,
                 required=False,
                 description='',
             ),
             OpenApiParameter(
-                name='date_year_to',   # date_to or date_year_to?
+                name='date_year_to',
                 type=OpenApiTypes.DATETIME,
                 required=False,
                 description='',
@@ -167,7 +147,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def search_artworks(self, request, item_id=None):
-        # TODO still:
+        # TODO:
         # Default (latest?) artworks on initial page load (could this be part of search?) - LIST /albums
         # include pagination
         # also exclude param with list with ids of artworks
@@ -218,7 +198,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 return []
         if artwork_title:
             q_objects.add(Q(title__icontains=artwork_title) |
-                              Q(title_english__icontains=artwork_title), Q.AND)
+                          Q(title_english__icontains=artwork_title), Q.AND)
 
         results = results.distinct().filter(q_objects)
 
@@ -327,28 +307,12 @@ class AlbumViewSet(viewsets.ViewSet):
             404: OpenApiResponse(description='Not found'),
         },
     )
-    def retrieve_album(self, request, album_id=None):   # TODO update
+    def retrieve_album(self, request, album_id=None):  # TODO update
         '''
         List of Works (Slides) in a specific Album /albums/{id}
         '''
-        dummy_data = [{
-            'title': 'Some album title',
-            'ID': 1231,
-            'shared_info': 'Some shared info',
-            'thumbnail_url': 'http://thumbnails.url',
-            'slides': ['SlideObj1', 'SlideObj2'],
-        }]
-        # Title
-        # Id
-        # Shared (more shared info?)
-        # Number of Works in Album
-        # thumbnail URL
-        # todo 2 update serializer once the model is set
 
         # todo 3
-        # - Search works (but only limited results compared to general search - limited to title and artist?)
-        # (just have additional param fields in /search  route to indicate which fields should be searched ? -->
-        # use /artworks but also need info on is it part of album already
 
         # - Download album with slides  - usually needs to take more detailed settings like language,
         # which entry details to include) /album/{id}/download ? definite in version version: language,
@@ -406,15 +370,14 @@ class AlbumViewSet(viewsets.ViewSet):
         examples=[
             OpenApiExample(
                 name='id list',
-                value=[[{ 'id': 'abc1' }, { 'id': 'xyz2' }], [{ 'id': 'fgh23' }], [{ 'id': 'jk54' }]]
+                value=[[{'id': 'abc1'}, {'id': 'xyz2'}], [{'id': 'fgh23'}], [{'id': 'jk54'}]]
             )],
         responses={
             200: OpenApiTypes.OBJECT,
         }
     )
-    # TODO
-    # response = serializers.ListSerializer(child=AutocompleteItemSerializer()),
-    # or similar to make sure
+
+
     def edit_slides(self, request, *args, **kwargs):
         '''
         /albums/{id}/slides
@@ -423,14 +386,14 @@ class AlbumViewSet(viewsets.ViewSet):
         Reorder artworks within slides
         '''
 
-        # Todo
-        # how to submit reorder request? array of order or complete objects? --> just send ids (response: complete object with flag nested info)
+        # TODO
+        # response = serializers.ListSerializer(child=AutocompleteItemSerializer()),
+        # or similar to make sure
 
         try:
             # Pass an object with a new order or arrangement
-
-
             # order by pk given
+
             dummy_data = [{
                 'title': 'Some slides title 1',
                 'artist': 'Joe Jonas',
@@ -438,13 +401,13 @@ class AlbumViewSet(viewsets.ViewSet):
                 'quick_info': 'Some quick info',
                 # query flag nested info?
             },
-            {
-                'title': 'Some slides title 2',
-                'artist': 'Joe Ponas',
-                'image': 'https://www.thumbnail.com/imageid234',
-                'quick_info': 'Some quick info',
-                # query flag nested info?
-            }]
+                {
+                    'title': 'Some slides title 2',
+                    'artist': 'Joe Ponas',
+                    'image': 'https://www.thumbnail.com/imageid234',
+                    'quick_info': 'Some quick info',
+                    # query flag nested info?
+                }]
 
             # data = {key: i for i, key in enumerate(artworks_id_order)}
 
@@ -453,155 +416,6 @@ class AlbumViewSet(viewsets.ViewSet):
             return Response(
                 _('Could not edit slides'), status=status.HTTP_404_NOT_FOUND
             )
-    #
-    # @extend_schema(
-    #     methods=['PUT'],
-    #     parameters=[
-    #         OpenApiParameter(
-    #             name='',
-    #             type=OpenApiTypes.STR,
-    #             required=False,
-    #             description='',
-    #         ),
-    #     ],
-    # )
-    # def separate_slides(self, request, *args, **kwargs):
-    #     '''
-    #     Separate Slides /albums/{id}/slides
-    #     '''
-    #     # todo
-    #     return Response(
-    #         _('No'), status=status.HTTP_404_NOT_FOUND
-    #     )
-    #
-    # @extend_schema(
-    #     methods=['PUT'],
-    #     parameters=[
-    #         OpenApiParameter(
-    #             name='slides_id_order',
-    #             type=OpenApiTypes.STR,
-    #             required=False,
-    #             description='Desired order of slides within album',
-    #         ),
-    #     ],
-    # )
-    # def reorder_slides(self, request, *args, **kwargs):
-    #     '''
-    #     Reorder Slides /albums/{id}/slides
-    #     '''
-    #     # todo
-    #     # Use same approach as reorder_artworks_within_slides (?)
-    #
-    #     try:
-    #         # Find current order of slides ids
-    #         # Get suggested order
-    #         # make sure it is the right data type
-    #         # Match the two according to the suggested order
-    #
-    #         # order by pk given
-    #         dummy_data = [{
-    #         'title': 'Some slides title 1',
-    #         'artist': 'Joe Jonas',
-    #         'image': 'https://www.thumbnail.com/imageid234',
-    #         'quick_info': 'Some quick info',
-    #         # query flag nested info?
-    #         },
-    #         {
-    #         'title': 'Some slides title 2',
-    #         'artist': 'Joe Ponas',
-    #         'image': 'https://www.thumbnail.com/imageid234',
-    #         'quick_info': 'Some quick info',
-    #         # query flag nested info?
-    #         }]
-    #
-    #         # data = {key: i for i, key in enumerate(artworks_id_order)}
-    #
-    #         return Response(dummy_data)
-    #     except:
-    #         return Response(
-    #             _('Could not reorder slides within album'), status=status.HTTP_404_NOT_FOUND
-    #         )
-
-    # @extend_schema(
-    #     methods=['PUT'],
-    #     parameters=[
-    #         OpenApiParameter(
-    #             name='artworks_id_order',
-    #             type=OpenApiTypes.STR,
-    #             required=True,
-    #             description='Album ids order within slide',
-    #         ),
-    #     ],
-    # )
-    # def reorder_artworks_within_slide(self, request, *args, **kwargs):
-    #     # slide_id=None, artworks_id_order=None
-    #     '''
-    #     Reorder artworks within a slide /albums/{id}/slides
-    #     '''
-    #     # todo
-    #     # slides will be implemented in the model as JSON field ([[]])
-    #     # how to submit reorder request? array of order or complete objects?
-    #     # --> just send ids (response complete object with flag nested info)
-    #     try:
-    #         # Find current order of artwork ids
-    #         # Get suggested order
-    #         # make sure it is the right data type
-    #         # Match the two according to the suggested order
-    #
-    #         # order by pk given
-    #         dummy_data = [
-    #             {
-    #                 "title": "",
-    #                 "title_english": "",
-    #                 "artists": [],
-    #                 "location_of_creation": {
-    #                     "id": 15,
-    #                     "name": "Loc C.a"
-    #                 },
-    #                 "location_current": {
-    #                     "id": 11,
-    #                     "name": "Location A.a.a"
-    #                 },
-    #                 "date": "",
-    #                 "material": "",
-    #                 "dimensions": "",
-    #                 "keywords": [],
-    #                 "description": "",
-    #                 "credits": "",
-    #                 "checked": False,
-    #                 "published": False
-    #             },
-    #             {
-    #                 "title": "",
-    #                 "title_english": "",
-    #                 "artists": [],
-    #                 "location_of_creation": {
-    #                     "id": 15,
-    #                     "name": "Loc C.a"
-    #                 },
-    #                 "location_current": {
-    #                     "id": 11,
-    #                     "name": "Location A.a.a"
-    #                 },
-    #                 "date": "",
-    #                 "material": "",
-    #                 "dimensions": "",
-    #                 "keywords": [],
-    #                 "description": "",
-    #                 "credits": "",
-    #                 "checked": False,
-    #                 "published": False
-    #             },
-    #
-    #         ]
-    #
-    #         # data = {key: i for i, key in enumerate(artworks_id_order)}
-    #
-    #         return Response(dummy_data)
-    #     except:
-    #         return Response(
-    #             _('Could not reorder artworks within slide'), status=status.HTTP_404_NOT_FOUND
-    #         )
 
     @extend_schema(
         methods=['POST'],
@@ -615,16 +429,16 @@ class AlbumViewSet(viewsets.ViewSet):
         ],
         examples=[
             OpenApiExample(
-            name='create_folder',
-            value=[{
-            'title': 'Some title',
-            'ID': 1111,
-            'shared_info': 'Some shared info',
-            '# of works': 89,
-            'thumbnail': 'https://www.thumbnail.com'
-        }
-            ],
-        )],
+                name='create_folder',
+                value=[{
+                    'title': 'Some title',
+                    'ID': 1111,
+                    'shared_info': 'Some shared info',
+                    '# of works': 89,
+                    'thumbnail': 'https://www.thumbnail.com'
+                }
+                ],
+            )],
         responses={
             200: OpenApiTypes.OBJECT
         }
@@ -648,33 +462,26 @@ class AlbumViewSet(viewsets.ViewSet):
             _('User preferences do not exist'), status=status.HTTP_404_NOT_FOUND
         )
 
-    @extend_schema(
-        parameters=[
-            OpenApiParameter(
-                name='update_album',
-                type=OpenApiTypes.OBJECT,
-                required=False,
-                description='',
-            ),
-        ],
-        methods=['PATCH']
-    )
-    def update_album(self, request, partial=False, album_id=None, *args, **kwargs):
-        # TODO patch vs post
+
+    def update_album(self, request, partial=True, album_id=None, *args, **kwargs):
+        # todo take a look at UserPreferencesDataSerializer if nothing else works
         '''
         Update Album /albums/{id}
         '''
+        # todo Alter Shared Info
+        # Rename Album / albums (done)
+        # Alter Shared info
+        # part of album model as a many to many relationship with an additional property for the type of right
+        # (read or write; could be extended later).
+        # in the API response then there is also just a list for the permissions
+        # with dicts/objects containing the user id, name and the type of right (read or write)
+
         try:
             album = ArtworkCollection.objects.get(pk=album_id)
-            serializer = AlbumSerializer(data=request.data)
-
-            if serializer.is_valid():
-                if serializer.validated_data:
-                    album.__dict__.update(serializer.validated_data)
-                    album.save()
-                    return Response(serializer.data)
-
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQ)
+            album.title = request.data.get('album_title')
+            album.save()
+            serializer = AlbumSerializer(album)
+            return Response(serializer.data)
 
         except ArtworkCollection.DoesNotExist:
             return Response(_('Album does not exist '), status=status.HTTP_404_NOT_FOUND)

@@ -20,8 +20,7 @@ urlpatterns = [
     path('artworks-search/', views.ArtworksViewSet.as_view({
         'get': 'search_artworks'}), name='search_artworks'),
 
-    # ArtworkCollections
-    ## todo Folders are renamed to Albums?
+    # Albums
     path('folders/', views.AlbumViewSet.as_view({
         'get': 'list_folders',
         'post': 'create_folder',  # todo or         Create Folder /albums/{id}?
@@ -39,19 +38,6 @@ urlpatterns = [
             'get': 'retrieve_slides_per_album',
             'post': 'edit_slides'}), name='slides'),
 
-    # As it was: separate endpoints
-    #
-    # path('albums/<album_id>/slides/reorder_artworks', views.ArtworksCollectionViewSet.as_view({
-    #         'put': 'reorder_artworks_within_slide'}), name='reorder_artworks_in_slides'),
-    #
-    # path('albums/<album_id>/slides/separate_slides', views.ArtworksCollectionViewSet.as_view({
-    #     'put': 'separate_slides',}), name='separate_slides'),
-    #
-    # path('albums/<album_id>/slides/reorder_slides', views.ArtworksCollectionViewSet.as_view({
-    #     'put': 'reorder_slides'}), name='reorder_slides'),
-
-###############
-
     path('autocomplete/', include('autocomplete.urls')),
     path('schema/openapi3.yaml', SpectacularAPIView.as_view(), name='schema'),
     path('schema/openapi3.json', SpectacularJSONAPIView.as_view(), name='schema'),
@@ -60,5 +46,3 @@ urlpatterns = [
         name='swagger-ui',
     ),
 ]
-
-# urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
