@@ -24,7 +24,7 @@
     vi ./artdb/artdb/.env
     ```
 
-* Install latest python 3.7 and create virtualenv e.g. via `pyenv` and `pyenv-virtualenv`
+* Install latest python 3.8 and create virtualenv e.g. via `pyenv` and `pyenv-virtualenv`
 
 * Install pip-tools and requirements in your virtualenv:
 
