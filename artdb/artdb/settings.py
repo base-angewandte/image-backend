@@ -67,12 +67,11 @@ MANAGERS = ADMINS
 # Application definition
 
 INSTALLED_APPS = [
-    # need to be before django.contrib.admin and grapelli
+    # dal hast to be loaded before django.contrib.admin
     'dal',
     'dal_select2',
     'dal_admin_filters',
-
-
+    # Django main components
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -80,7 +79,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
-
     # Third-party apps
     'rest_framework',
     'versatileimagefield',
@@ -89,7 +87,6 @@ INSTALLED_APPS = [
     'mptt',
     'massadmin',
     'ordered_model',
-
     # Project apps
     'general',
     'artworks',
