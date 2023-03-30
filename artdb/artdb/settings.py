@@ -219,7 +219,7 @@ DATABASES = {
         'USER': os.environ.get('POSTGRES_USER', 'django_{}'.format(PROJECT_NAME)),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password_{}'.format(PROJECT_NAME)),
         'HOST': '{}-postgres'.format(PROJECT_NAME) if DOCKER else 'localhost',
-        'PORT': '5432',
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
     }
 }
 
@@ -365,7 +365,10 @@ LOGGING = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://{}:6379/0'.format('{}-redis'.format(PROJECT_NAME) if DOCKER else 'localhost'),
+        'LOCATION': 'redis://{}:{}/0'.format(
+            f'{PROJECT_NAME}-redis' if DOCKER else 'localhost',
+            os.environ.get('REDIS_PORT', '6379')
+        ),
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
