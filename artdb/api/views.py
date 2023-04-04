@@ -29,7 +29,7 @@ from artworks.models import (
 
 from .serializers import (
     ArtworkSerializer,
-    AlbumSerializer,
+    AlbumSerializer, SlidesSerializer,
 
 )
 
@@ -54,15 +54,48 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         request=serializer_class,
+        parameters=[
+            OpenApiParameter(
+                name='limit',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+            ),
+            OpenApiParameter(
+                name='offset',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+            )
+        ],
         responses={
             200: OpenApiResponse(description='OK'),
             403: OpenApiResponse(description='Access not allowed'),
             404: OpenApiResponse(description='Not found'),
         },
     )
-    def list(self, request, *args, **kwargs):
+    def list_artworks(self, request, *args, **kwargs):
+        limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
+        offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
+
         serializer = ArtworkSerializer(self.queryset, many=True)
-        return Response(serializer.data)
+        results = serializer.data
+
+        limit = limit if limit != 0 else None
+
+        if offset and limit:
+            end = offset + limit
+
+        elif limit and not offset:
+            end = limit
+
+        else:
+            end = None
+
+        results = results[offset:end]
+
+        return Response(results)
+
 
     @extend_schema(
         request=serializer_class,
@@ -72,7 +105,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             404: OpenApiResponse(description='Not found'),
         },
     )
-    def retrieve(self, request, item_id=None):
+    def retrieve_artwork(self, request, item_id=None):
         try:
             artwork = Artwork.objects.get(pk=item_id)
         except Artwork.DoesNotExist:
@@ -254,6 +287,20 @@ class AlbumViewSet(viewsets.ViewSet):
 
     @extend_schema(
         request=serializer_class,
+        parameters=[
+            OpenApiParameter(
+                name='limit',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+            ),
+            OpenApiParameter(
+                name='offset',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+            )
+        ],
         responses={
             200: OpenApiResponse(description='OK'),
             403: OpenApiResponse(description='Access not allowed'),
@@ -264,26 +311,64 @@ class AlbumViewSet(viewsets.ViewSet):
         '''
         List of all the users albums /folders (in anticipation that there will be folders later)
         '''
+
+        limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
+        offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
+
+        # TODO:
+        # serializer = AlbumSerializer(self.queryset, many=True)
+        # results = serializer.data
+
+
         dummy_data = [{
             'title': 'Some title',
             'ID': 1111,
             'shared_info': 'Some shared info',
             '# of works': 89,
             'thumbnail': 'https://www.thumbnail.com'
-        }]
-        # WIP todo
-        # also todo  LIMIT & SORTING PARAMS
+        },
+            {
+                'title': 'Some title2',
+                'ID': 2222,
+                'shared_info': 'Some shared info2',
+                '# of works': 56,
+                'thumbnail': 'https://www.thumbnail.com'
+            }
+        ]
+        # TODO
         serializer = AlbumSerializer(self.queryset, many=True)
-        return Response(dummy_data)
+
+        limit = limit if limit != 0 else None
+
+        if offset and limit:
+            end = offset + limit
+
+        elif limit and not offset:
+            end = limit
+
+        else:
+            end = None
+
+        results = dummy_data[offset:end]
+
+        return Response(results)
 
     @extend_schema(
         request=serializer_class,
-        parameters=[OpenApiParameter(
-            name='limit',
-            type=OpenApiTypes.INT,
-            required=False,
-            description='',
-        )],
+        parameters=[
+            OpenApiParameter(
+                name='limit',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+            ),
+            OpenApiParameter(
+                name='offset',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+            )
+        ],
         responses={
             200: OpenApiResponse(description='OK'),
             403: OpenApiResponse(description='Access not allowed'),
@@ -295,9 +380,25 @@ class AlbumViewSet(viewsets.ViewSet):
         List of all Albums (used for getting latest Albums) /albums
         '''
         limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
+        offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
+
         serializer = AlbumSerializer(self.queryset, many=True)
-        data = serializer.data[0:limit]
-        return Response(data)
+        results = serializer.data
+
+        limit = limit if limit != 0 else None
+
+        if offset and limit:
+            end = offset + limit
+
+        elif limit and not offset:
+            end = limit
+
+        else:
+            end = None
+
+        results = results[offset:end]
+
+        return Response(results)
 
     @extend_schema(
         request=serializer_class,
@@ -337,7 +438,7 @@ class AlbumViewSet(viewsets.ViewSet):
         '''
         /albums/{id}/slides LIST (GET) endpoint returns:
         '''
-        # TODO note: works but with dummy data
+        # TODO update after model
         dummy_data = [{
             'title': 'Some slides title 1',
             'artist': 'Joe Jonas',
@@ -353,7 +454,7 @@ class AlbumViewSet(viewsets.ViewSet):
                 # query flag nested info?
             }
         ]
-        # todo 2 update serializer once the model is set
+        # TODO update serializer
         serializer = ArtworkSerializer(self.queryset, many=True)
         return Response(dummy_data)
 
@@ -365,18 +466,18 @@ class AlbumViewSet(viewsets.ViewSet):
                 type=OpenApiTypes.OBJECT,
                 required=False,
                 description='Desired order or arrangement of slides within album, and/or albums within slides',
+                examples=[
+                    OpenApiExample(
+                        name='id_list',
+                        value=[[{'id': 'abc1'}, {'id': 'xyz2'}], [{'id': 'fgh23'}], [{'id': 'jk54'}]]
+                    )]
+
             ),
         ],
-        examples=[
-            OpenApiExample(
-                name='id list',
-                value=[[{'id': 'abc1'}, {'id': 'xyz2'}], [{'id': 'fgh23'}], [{'id': 'jk54'}]]
-            )],
         responses={
-            200: OpenApiTypes.OBJECT,
+            200: SlidesSerializer,
         }
     )
-
     def edit_slides(self, request, *args, **kwargs):
         '''
         /albums/{id}/slides
@@ -386,27 +487,15 @@ class AlbumViewSet(viewsets.ViewSet):
         '''
 
         try:
-            # Pass an object with a new order or arrangement
-            # order by pk given
+            # TODO
+            #   Pass an object with a new order or arrangement
+            #   order by pk given or separate
+            album = ArtworkCollection.objects.get(id=request.data.get('album_id'))
+            print(album)
+            serializer = SlidesSerializer(album)  # TODO will be SlideSerializer
+            print(serializer.data)
 
-            dummy_data = [{
-                'title': 'Some slides title 1',
-                'artist': 'Joe Jonas',
-                'image': 'https://www.thumbnail.com/imageid234',
-                'quick_info': 'Some quick info',
-                # query flag nested info?
-            },
-                {
-                    'title': 'Some slides title 2',
-                    'artist': 'Joe Ponas',
-                    'image': 'https://www.thumbnail.com/imageid234',
-                    'quick_info': 'Some quick info',
-                    # query flag nested info?
-                }]
-
-            # data = {key: i for i, key in enumerate(artworks_id_order)}
-
-            return Response(_('OK'), status=status.HTTP_200_OK)
+            return Response(_('Slides edited'))
         except:
             return Response(
                 _('Could not edit slides'), status=status.HTTP_404_NOT_FOUND
@@ -420,20 +509,19 @@ class AlbumViewSet(viewsets.ViewSet):
                 type=OpenApiTypes.OBJECT,
                 required=False,
                 description='',
+                examples=[
+                    OpenApiExample(
+                        name='create_folder',
+                        value=[{
+                            'title': 'Some title',
+                            'ID': 1111,
+                            'shared_info': 'Some shared info',
+                            '# of works': 89,
+                            'thumbnail': 'https://www.thumbnail.com'
+                        }],
+                    )],
             ),
         ],
-        examples=[
-            OpenApiExample(
-                name='create_folder',
-                value=[{
-                    'title': 'Some title',
-                    'ID': 1111,
-                    'shared_info': 'Some shared info',
-                    '# of works': 89,
-                    'thumbnail': 'https://www.thumbnail.com'
-                }
-                ],
-            )],
         responses={
             200: OpenApiTypes.OBJECT
         }
@@ -453,19 +541,18 @@ class AlbumViewSet(viewsets.ViewSet):
             'thumbnail': 'https://www.thumbnail.com'
         }
         return Response(dummy_data)
-        return Response(
-            _('User preferences do not exist'), status=status.HTTP_404_NOT_FOUND
-        )
 
-
+    @extend_schema(
+        methods=['PATCH'],
+        responses={
+            200: AlbumSerializer,
+        }
+    )
     def update_album(self, request, partial=True, album_id=None, *args, **kwargs):
-        # todo take a look at UserPreferencesDataSerializer if nothing else works
         '''
         Update Album /albums/{id}
         '''
-        # todo Alter Shared Info
-        #   Rename Album / albums (done)
-        #   Alter Shared info
+        # TODO Alter Shared info
         #       part of album model as a many to many relationship with an additional property for the type of right
         #       (read or write; could be extended later).
         #   in the API response then there is also just a list for the permissions
@@ -473,7 +560,8 @@ class AlbumViewSet(viewsets.ViewSet):
 
         try:
             album = ArtworkCollection.objects.get(pk=album_id)
-            album.title = request.data.get('album_title')
+            album.title = request.data.get('title')
+            album.shared_info = request.data.get('shared_info')  # TODO: to change after shared_info implemented
             album.save()
             serializer = AlbumSerializer(album)
             return Response(serializer.data)
@@ -491,15 +579,13 @@ class AlbumViewSet(viewsets.ViewSet):
         try:
             album = ArtworkCollection.objects.get(pk=album_id)
             album.delete()
+            return Response(_(f'Album {album.title} was deleted'))
         except ArtworkCollection.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-    # todo from Shared INFO / album
-    # part of album model as a many
-
 
 class UserViewSet(viewsets.GenericViewSet):
-    # todo update. and user for artworks, etc
+    # TODO update. and user for artworks, etc
     # serializer_class = UserSerializer
 
     @extend_schema(

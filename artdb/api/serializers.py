@@ -56,10 +56,18 @@ class UpdatedAlbumField(serializers.JSONField):
 
 
 class AlbumSerializer(serializers.ModelSerializer):
-    album_title = serializers.CharField(required=False)
     shared_info = serializers.CharField(required=False)
 
     class Meta:
         model = ArtworkCollection
-        fields = ('album_title', 'shared_info')
+        fields = '__all__'
         depth = 1
+
+
+class SlidesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ArtworkCollection  # TODO: will be Slides
+        fields = '__all__'
+        depth = 1
+

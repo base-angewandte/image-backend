@@ -14,9 +14,8 @@ urlpatterns = [
 
     # Artworks
     path('artworks/', views.ArtworksViewSet.as_view({
-        'get': 'list',}), name='artworks'),
-        # 'post': 'search_artworks'}), name='artworks'),  # todo update
-    path('artworks/<item_id>/', views.ArtworksViewSet.as_view({'get': 'retrieve'}), name='artwork'),
+        'get': 'list_artworks',}), name='artworks'),
+    path('artworks/<item_id>/', views.ArtworksViewSet.as_view({'get': 'retrieve_artwork'}), name='artwork'),
     path('artworks-search/', views.ArtworksViewSet.as_view({
         'get': 'search_artworks'}), name='search_artworks'),
 
@@ -44,5 +43,5 @@ urlpatterns = [
     path('schema/swagger-ui',
         SpectacularSwaggerView.as_view(url_name='schema'),
         name='swagger-ui',
-    ),
+    )
 ]
