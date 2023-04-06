@@ -29,7 +29,7 @@ from artworks.models import (
 
 from .serializers import (
     ArtworkSerializer,
-    AlbumSerializer, SlidesSerializer,
+    AlbumSerializer, SlidesSerializer, UpdateAlbumSerializer,
 
 )
 
@@ -279,14 +279,13 @@ class AlbumViewSet(viewsets.ViewSet):
 
     """
 
-    serializer_class = AlbumSerializer
     queryset = ArtworkCollection.objects.all()
     parser_classes = (FormParser, MultiPartParser)
     filter_backends = (DjangoFilterBackend,)
     UserModel = get_user_model()
 
     @extend_schema(
-        request=serializer_class,
+        request=AlbumSerializer,
         parameters=[
             OpenApiParameter(
                 name='limit',
@@ -354,7 +353,7 @@ class AlbumViewSet(viewsets.ViewSet):
         return Response(results)
 
     @extend_schema(
-        request=serializer_class,
+        request=AlbumSerializer,
         parameters=[
             OpenApiParameter(
                 name='limit',
@@ -401,7 +400,7 @@ class AlbumViewSet(viewsets.ViewSet):
         return Response(results)
 
     @extend_schema(
-        request=serializer_class,
+        request=AlbumSerializer,
         responses={
             200: OpenApiResponse(description='OK'),
             403: OpenApiResponse(description='Access not allowed'),
@@ -427,7 +426,8 @@ class AlbumViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     @extend_schema(
-        request=serializer_class,
+        # TODO
+        # request=SlidesSerializer,
         responses={
             200: OpenApiResponse(description='OK'),
             403: OpenApiResponse(description='Access not allowed'),
@@ -459,6 +459,8 @@ class AlbumViewSet(viewsets.ViewSet):
         return Response(dummy_data)
 
     @extend_schema(
+        # TODO
+        # request=SlidesSerializer,
         methods=['POST'],
         parameters=[
             OpenApiParameter(
@@ -543,6 +545,7 @@ class AlbumViewSet(viewsets.ViewSet):
         return Response(dummy_data)
 
     @extend_schema(
+        request=UpdateAlbumSerializer,
         methods=['PATCH'],
         responses={
             200: AlbumSerializer,

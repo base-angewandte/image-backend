@@ -51,11 +51,15 @@ class MembershipSerializer(serializers.ModelSerializer):
         fields = ('id', 'connected_with', 'artwork')
 
 
-class UpdatedAlbumField(serializers.JSONField):
-    pass
-
-
 class AlbumSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ArtworkCollection
+        fields = '__all__'
+        depth = 1
+
+
+class UpdateAlbumSerializer(AlbumSerializer):
     shared_info = serializers.CharField(required=False)
 
     class Meta:
