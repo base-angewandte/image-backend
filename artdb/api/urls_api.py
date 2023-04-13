@@ -18,12 +18,12 @@ urlpatterns = [
     path('artworks/<item_id>/', views.ArtworksViewSet.as_view({'get': 'retrieve_artwork'}), name='artwork'),
     path('artworks-search/', views.ArtworksViewSet.as_view({
         'get': 'search_artworks'}), name='search_artworks'),
-
-    # Albums
+    # Folders
     path('folders/', views.AlbumViewSet.as_view({
         'get': 'list_folders',
         'post': 'create_folder',  # todo or         Create Folder /albums/{id}?
     }), name='folders'),
+    # Albums
     path('albums/', views.AlbumViewSet.as_view({
         'get': 'list_albums', # per user
     }), name='albums'),
