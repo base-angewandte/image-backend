@@ -4,7 +4,7 @@ from django.forms import ModelMultipleChoiceField
 from django.utils.encoding import smart_text
 from django.utils.translation import gettext_lazy as _
 from dal import autocomplete
-from artworks.models import Artwork, Artist, Keyword, ArtworkCollection
+from artworks.models import Artwork, Artist, Keyword, Album
 # https://gist.github.com/tdsymonds/abdcb395f172a016ed785f59043749e3
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
@@ -61,7 +61,7 @@ class ArtworkAdminForm(forms.ModelForm):
         }
 
 
-class ArtworkCollectionForm(forms.ModelForm):  
+class AlbumForm(forms.ModelForm):
     class Meta:
-        model = ArtworkCollection
+        model = Album
         exclude = ['id', 'created_at', 'updated_at', 'user', 'artworks']

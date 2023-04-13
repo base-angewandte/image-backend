@@ -22,14 +22,14 @@ from artworks.models import (
     Keyword,
     Location,
     Artwork,
-    ArtworkCollection,
-    ArtworkCollectionMembership,
+    Album,
+    AlbumMembership,
 
 )
 
 from .serializers import (
     ArtworkSerializer,
-    AlbumSerializer, SlidesSerializer,
+    AlbumSerializer, SlidesSerializer, UpdateAlbumSerializer,
 
 )
 
@@ -279,14 +279,13 @@ class AlbumViewSet(viewsets.ViewSet):
 
     """
 
-    serializer_class = AlbumSerializer
-    queryset = ArtworkCollection.objects.all()
+    queryset = Album.objects.all()
     parser_classes = (FormParser, MultiPartParser)
     filter_backends = (DjangoFilterBackend,)
     UserModel = get_user_model()
 
     @extend_schema(
-        request=serializer_class,
+        request=AlbumSerializer,
         parameters=[
             OpenApiParameter(
                 name='limit',
@@ -354,7 +353,7 @@ class AlbumViewSet(viewsets.ViewSet):
         return Response(results)
 
     @extend_schema(
-        request=serializer_class,
+        request=AlbumSerializer,
         parameters=[
             OpenApiParameter(
                 name='limit',
@@ -401,7 +400,7 @@ class AlbumViewSet(viewsets.ViewSet):
         return Response(results)
 
     @extend_schema(
-        request=serializer_class,
+        request=AlbumSerializer,
         responses={
             200: OpenApiResponse(description='OK'),
             403: OpenApiResponse(description='Access not allowed'),
@@ -419,15 +418,16 @@ class AlbumViewSet(viewsets.ViewSet):
         # which entry details to include) /album/{id}/download ? definite in version version: language,
         # file type + image metadata (title, artist - current status)
         try:
-            album = ArtworkCollection.objects.get(pk=album_id)
-        except ArtworkCollection.DoesNotExist or ValueError:
+            album = Album.objects.get(pk=album_id)
+        except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
         serializer = AlbumSerializer(album)
         return Response(serializer.data)
 
     @extend_schema(
-        request=serializer_class,
+        # TODO
+        # request=SlidesSerializer,
         responses={
             200: OpenApiResponse(description='OK'),
             403: OpenApiResponse(description='Access not allowed'),
@@ -459,6 +459,8 @@ class AlbumViewSet(viewsets.ViewSet):
         return Response(dummy_data)
 
     @extend_schema(
+        # TODO
+        # request=SlidesSerializer,
         methods=['POST'],
         parameters=[
             OpenApiParameter(
@@ -490,7 +492,7 @@ class AlbumViewSet(viewsets.ViewSet):
             # TODO
             #   Pass an object with a new order or arrangement
             #   order by pk given or separate
-            album = ArtworkCollection.objects.get(id=request.data.get('album_id'))
+            album = Album.objects.get(id=request.data.get('album_id'))
             print(album)
             serializer = SlidesSerializer(album)  # TODO will be SlideSerializer
             print(serializer.data)
@@ -543,6 +545,7 @@ class AlbumViewSet(viewsets.ViewSet):
         return Response(dummy_data)
 
     @extend_schema(
+        request=UpdateAlbumSerializer,
         methods=['PATCH'],
         responses={
             200: AlbumSerializer,
@@ -559,14 +562,14 @@ class AlbumViewSet(viewsets.ViewSet):
         #   with dicts/objects containing the user id, name and the type of right (read or write)
 
         try:
-            album = ArtworkCollection.objects.get(pk=album_id)
+            album = Album.objects.get(pk=album_id)
             album.title = request.data.get('title')
             album.shared_info = request.data.get('shared_info')  # TODO: to change after shared_info implemented
             album.save()
             serializer = AlbumSerializer(album)
             return Response(serializer.data)
 
-        except ArtworkCollection.DoesNotExist:
+        except Album.DoesNotExist:
             return Response(_('Album does not exist '), status=status.HTTP_404_NOT_FOUND)
 
     @extend_schema(
@@ -577,10 +580,10 @@ class AlbumViewSet(viewsets.ViewSet):
         Delete Album /albums/{id}
         '''
         try:
-            album = ArtworkCollection.objects.get(pk=album_id)
+            album = Album.objects.get(pk=album_id)
             album.delete()
             return Response(_(f'Album {album.title} was deleted'))
-        except ArtworkCollection.DoesNotExist or ValueError:
+        except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
 

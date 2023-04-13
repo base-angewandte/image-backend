@@ -8,11 +8,11 @@ from mptt.admin import MPTTModelAdmin
 from ordered_model.admin import OrderedTabularInline, OrderedInlineModelAdminMixin
 
 from .forms import ArtworkAdminForm
-from .models import ArtworkCollectionMembership, ArtworkCollection, Artist, Artwork, Keyword, Location
+from .models import AlbumMembership, Album, Artist, Artwork, Keyword, Location
 
 
-class ArtworkCollectionMembershipInline(OrderedTabularInline):
-    model = ArtworkCollectionMembership
+class AlbumMembershipInline(OrderedTabularInline):
+    model = AlbumMembership
     autocomplete_fields = ['artwork']
     extra = 0
     fields = ('artwork', )
@@ -31,12 +31,12 @@ class CollectionListFilter(admin.SimpleListFilter):
     parameter_name = 'collection'
 
     def lookups(self, request, model_admin):
-        users_collections = ArtworkCollection.objects.filter(user=request.user)
+        users_collections = Album.objects.filter(user=request.user)
         return [(c.id, c.title) for c in users_collections]
 
     def queryset(self, request, queryset):
         if self.value():
-            return queryset.filter(artworkcollection__id=self.value())
+            return queryset.filter(Album__id=self.value())
         else:
             return queryset
 
@@ -90,12 +90,12 @@ class ArtworkAdmin(admin.ModelAdmin):
             return format_html('none')
 
 
-class ArtworkCollectionAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
+class AlbumAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_at')
     list_display = ('title', 'created_at', 'updated_at')
     ordering = ('-created_at',)
     search_fields = ['title']
-    inlines = (ArtworkCollectionMembershipInline,)
+    inlines = (AlbumMembershipInline,)
     autocomplete_fields = ('user',)
 
 
@@ -115,7 +115,7 @@ class LocationAdmin(MPTTModelAdmin):
     search_fields = ['name']
 
 
-admin.site.register(ArtworkCollection, ArtworkCollectionAdmin)
+admin.site.register(Album, AlbumAdmin)
 admin.site.register(Artist, ArtistAdmin)
 admin.site.register(Artwork, ArtworkAdmin)
 admin.site.register(Keyword, KeywordAdmin)

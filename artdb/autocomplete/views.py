@@ -5,9 +5,8 @@ from rest_framework.response import Response
 
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from artworks.models import ArtworkCollection, Artwork, Artist, Keyword, Location
+from artworks.models import Album, Artwork, Artist, Keyword, Location
 
-from api.serializers import LocationSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +20,26 @@ SOURCES = [
     'origin',
     'location',
 ]
+
+type_parameter = OpenApiParameter(
+    name='type_parameter',
+    type=OpenApiTypes.STR,
+    required=True,
+    enum=SOURCES,
+)
+
+limit = OpenApiParameter(
+    name='limit',
+    type=OpenApiTypes.INT,
+    required=False,
+    description='',
+)
+
+user = OpenApiParameter(
+    name='user',
+    type=OpenApiTypes.STR,
+    required=True,
+)
 
 
 def autocomplete_user(request, searchstr=''):
@@ -41,61 +60,37 @@ def autocomplete_user(request, searchstr=''):
         )
     return r
 
-
-type_parameter = OpenApiParameter(
-    name='type_parameter',
-    type=OpenApiTypes.STR,
-    required=True,
-    location=OpenApiParameter.QUERY,
-    enum=SOURCES,
-)
-
-limit = OpenApiParameter(
-    name='limit',
-    type=OpenApiTypes.INT,
-    required=False,
-    description='',
-)
-
-user = OpenApiParameter(
-    name='user',
-    type=OpenApiTypes.STR,
-    required=True,
-)
-
-
 @extend_schema(
     tags=['autocomplete'],
-    parameters=[limit],  # TODO type_parameter?, type?
+    parameters=[limit, type_parameter],
     operation_id='autocomplete_v1_lookup',
 )
 @api_view(['GET'])
-def autocomplete_search(request, type_param='', searchstr='', *args, **kwargs):
+def autocomplete_search(request, searchstr='', *args, **kwargs):
     limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
-    # TODO:
-    #  type_parameter = int(request.GET.get('type_parameter')) if request.GET.get('type_parameter') else None
+    type_parameter = request.GET.get('type_parameter')
 
     items = []
     TYPES = {
         'artworks': {},
         'users': autocomplete_user(request, searchstr),
-        'albums': ArtworkCollection.objects.filter(title__icontains=searchstr),
+        'albums': Album.objects.filter(title__icontains=searchstr),
         'title': Artwork.objects.filter(title__icontains=searchstr),  # meaning title of artworks
         'artist': Artist.objects.filter(name__icontains=searchstr),
         'keywords': Keyword.objects.filter(name__icontains=searchstr),
-        # TODO fix lookups for locations
         'origin': Location.objects.filter(name__icontains=searchstr),
         'location': Location.objects.filter(name__icontains=searchstr)
     }
 
-    data = TYPES[type_param].values()
-
-    if type_param in 'users':
+    if type_parameter in 'users':
+        data = TYPES[type_parameter]
         if limit and data:
-            data = data[0:limit]
+            data = TYPES[type_parameter][0:limit]
         return Response(data)
 
-    if type_param in 'artworks':
+    data = TYPES[type_parameter].values()
+
+    if type_parameter in 'artworks':
         data = [{
             'title': [data_item for data_item in TYPES['title'].values()],
             'artist': [data_item for data_item in TYPES['artist'].values()],
@@ -103,6 +98,7 @@ def autocomplete_search(request, type_param='', searchstr='', *args, **kwargs):
             'origin': [data_item for data_item in TYPES['origin'].values()],
             'location': [data_item for data_item in TYPES['location'].values()],
         }]
+        data = data[0:limit]
         return Response(data)
 
     for data_item in data:
@@ -118,6 +114,4 @@ def autocomplete_search(request, type_param='', searchstr='', *args, **kwargs):
     if limit and items:
         items = items[0:limit]
 
-    # TODO: update serializer
-    serializer = LocationSerializer(items, many=True)
     return Response(items, status=200)

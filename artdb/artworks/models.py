@@ -207,13 +207,13 @@ def delete_renditions_on_change(sender, update_fields, instance, **kwargs):
         old_artwork.image_original.delete_all_created_images()
 
 
-class ArtworkCollection(models.Model):
+class Album(models.Model):
     """
     Specific users can create their own collections of artworks.
     """
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     user = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
-    artworks = models.ManyToManyField(Artwork, verbose_name=_('Artworks'), through='ArtworkCollectionMembership')
+    artworks = models.ManyToManyField(Artwork, verbose_name=_('Artworks'), through='AlbumMembership')
     created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now=True)
 
@@ -229,13 +229,13 @@ class ArtworkCollection(models.Model):
         verbose_name_plural = _('Folders')
 
 
-class ArtworkCollectionMembership(OrderedModel):
+class AlbumMembership(OrderedModel):
     """
     Users can create collections of artworks and put them into a
     specific order (moved left and right). They can also connect two
     artworks, so they appear on one single page when exported as a powerpoint file.
     """
-    collection = models.ForeignKey(ArtworkCollection, verbose_name=_('Folder'), on_delete=models.CASCADE)
+    collection = models.ForeignKey(Album, verbose_name=_('Folder'), on_delete=models.CASCADE)
     artwork = models.ForeignKey(Artwork, verbose_name=_('Artwork'), on_delete=models.CASCADE)
     order_with_respect_to = 'collection'
     connected_with = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)

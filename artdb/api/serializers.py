@@ -1,4 +1,4 @@
-from artworks.models import Artwork, Artist, Keyword, Location, ArtworkCollection, ArtworkCollectionMembership
+from artworks.models import Artwork, Artist, Keyword, Location, Album, AlbumMembership
 from versatileimagefield.serializers import VersatileImageFieldSerializer
 from rest_framework import serializers
 
@@ -47,19 +47,23 @@ class MembershipSerializer(serializers.ModelSerializer):
     artwork = ThumbnailSerializer(read_only=True, many=False)
 
     class Meta:
-        model = ArtworkCollectionMembership
+        model = AlbumMembership
         fields = ('id', 'connected_with', 'artwork')
 
 
-class UpdatedAlbumField(serializers.JSONField):
-    pass
-
-
 class AlbumSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Album
+        fields = '__all__'
+        depth = 1
+
+
+class UpdateAlbumSerializer(AlbumSerializer):
     shared_info = serializers.CharField(required=False)
 
     class Meta:
-        model = ArtworkCollection
+        model = Album
         fields = '__all__'
         depth = 1
 
@@ -67,7 +71,7 @@ class AlbumSerializer(serializers.ModelSerializer):
 class SlidesSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = ArtworkCollection  # TODO: will be Slides
+        model = Album  # TODO: will be Slides
         fields = '__all__'
         depth = 1
 

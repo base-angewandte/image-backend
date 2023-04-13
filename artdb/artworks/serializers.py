@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from artworks.models import Artwork, Artist, Keyword, Location, ArtworkCollection, ArtworkCollectionMembership
+from artworks.models import Artwork, Artist, Keyword, Location, Album, AlbumMembership
 from versatileimagefield.serializers import VersatileImageFieldSerializer
 
 class LocationSerializer(serializers.ModelSerializer):    
@@ -45,14 +45,14 @@ class MembershipSerializer(serializers.ModelSerializer):
     artwork = ThumbnailSerializer(read_only=True, many=False)
 
     class Meta:
-        model = ArtworkCollectionMembership
+        model = AlbumMembership
         fields = ('id', 'connected_with', 'artwork')
 
 
 class CollectionSerializer(serializers.ModelSerializer):
-    members = MembershipSerializer(source='artworkcollectionmembership_set',read_only=True, many=True)
+    members = MembershipSerializer(source='Albummembership_set',read_only=True, many=True)
 
     class Meta:
-        model = ArtworkCollection
+        model = Album
         fields = ('title', 'members')
         depth = 1

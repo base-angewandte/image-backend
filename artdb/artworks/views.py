@@ -23,8 +23,8 @@ from pptx.enum.text import MSO_ANCHOR
 from pptx.enum.dml import MSO_THEME_COLOR
 from pptx.util import Pt
 
-from .forms import ArtworkForm, ArtworkCollectionForm
-from .models import Artwork, Location, Keyword, Artist, ArtworkCollection, ArtworkCollectionMembership
+from .forms import ArtworkForm, AlbumForm
+from .models import Artwork, Location, Keyword, Artist, Album, AlbumMembership
 from .serializers import ArtworkSerializer, CollectionSerializer
 
 logger = logging.getLogger(__name__)
@@ -226,7 +226,7 @@ def artwork_collect(request, id):
     if request.method == 'GET':
         artwork = get_object_or_404(Artwork, id=id)
         context = {}
-        qs = ArtworkCollection.objects.all()
+        qs = Album.objects.all()
         collections = qs.filter(user=request.user).order_by('-created_at')
         context['collections'] = collections
         context['artwork'] = artwork
@@ -242,8 +242,8 @@ def artwork_collect(request, id):
             if col_title:
                 try:
                     u = User.objects.get(id=request.user.id)
-                    newcol = ArtworkCollection.objects.create(title=col_title, user=u)
-                    ArtworkCollectionMembership.objects.create(collection=newcol, artwork=artwork)
+                    newcol = Album.objects.create(title=col_title, user=u)
+                    AlbumMembership.objects.create(collection=newcol, artwork=artwork)
                     return JsonResponse({'action': 'reload'})
                 except User.DoesNotExist:
                     logger.warning('Could not find user: %s', request.user.id)
@@ -252,29 +252,29 @@ def artwork_collect(request, id):
                 return JsonResponse({'error': 'collection title missing'}, status=500)
         else:
             try:
-                col = ArtworkCollection.objects.get(id=request.POST['collection-id'])
-            except ArtworkCollection.DoesNotExist:
+                col = Album.objects.get(id=request.POST['collection-id'])
+            except Album.DoesNotExist:
                 logger.warning('Could not find artwork collection: %s', request.POST['collection-id'])
                 return JsonResponse(status=404, data={'status': 'false', 'message': 'Collection does not exist'})
             # users can only manipulate their own collections via this view
             if request.user == col.user:
                 if request.POST['action'] == 'add':
-                    ArtworkCollectionMembership.objects.get_or_create(collection=col, artwork=artwork)
+                    AlbumMembership.objects.get_or_create(collection=col, artwork=artwork)
                     return JsonResponse({'action': 'added'})
                 if request.POST['action'] == 'remove':
                     try:
-                        artwork_col_mem = ArtworkCollectionMembership.objects.get(collection=col, artwork=artwork)
+                        artwork_col_mem = AlbumMembership.objects.get(collection=col, artwork=artwork)
                         artwork_col_mem.remove()
                         return JsonResponse({'action': 'removed'})
-                    except ArtworkCollectionMembership.DoesNotExist:
+                    except AlbumMembership.DoesNotExist:
                         logger.warning('Could not remove artwork from collection')
                         return JsonResponse(
                             status=500,
                             data={'status': 'false', 'message': 'Could not remove artwork from collection'}
                         )
                     except MultipleObjectsReturned:
-                        logger.warning('Duplicate ArtworkCollectionMemberships. Removing them all.')
-                        artwork_col_mem = ArtworkCollectionMembership.objects.filter(collection=col, artwork=artwork)
+                        logger.warning('Duplicate AlbumMemberships. Removing them all.')
+                        artwork_col_mem = AlbumMembership.objects.filter(collection=col, artwork=artwork)
                         artwork_col_mem.remove()
                         return JsonResponse({'action': 'removed'})
         return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not manipulate collection'})
@@ -287,23 +287,23 @@ def collection(request, id=None):
     POST: move artworks within collection; connect or disconnect them
     """
     if request.method == 'GET':
-        col = get_object_or_404(ArtworkCollection, id=id)
+        col = get_object_or_404(Album, id=id)
         context = {
             'title': col.title,
             'id': col.id,
             'created_by_username': col.user.get_username(),
             'created_by_fullname': col.user.get_full_name(),
             'created_by_userid': col.user.id,
-            'memberships': col.artworkcollectionmembership_set.all(),
-            # 'collections': ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user),
-            'my_collections': ArtworkCollection.objects.filter(user=request.user),
+            'memberships': col.Albummembership_set.all(),
+            # 'collections': Album.objects.filter(user__groups__name='editor').exclude(user=request.user),
+            'my_collections': Album.objects.filter(user=request.user),
         }
         return render(request, 'artwork/collection.html', context)
     if request.method == 'POST':
         # users can only manipulate their own collections via this view
         try:
-            col = ArtworkCollection.objects.get(id=id)
-        except ArtworkCollection.DoesNotExist:
+            col = Album.objects.get(id=id)
+        except Album.DoesNotExist:
             logger.warning('Could not find artwork collection: %s', id)
             return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not find artwork collection'})
         if request.user.id != col.user.id:
@@ -311,7 +311,7 @@ def collection(request, id=None):
         if request.POST['action'] == 'left' or request.POST['action'] == 'right':
             if 'membership-id' in request.POST:
                 try:
-                    membership = ArtworkCollectionMembership.objects.get(
+                    membership = AlbumMembership.objects.get(
                         id=request.POST['membership-id'],
                         collection=col
                     )
@@ -323,21 +323,21 @@ def collection(request, id=None):
                     if request.POST['action'] == 'right':
                         membership.move_right()
                         return JsonResponse({'message': 'moved right'})
-                except ArtworkCollectionMembership.DoesNotExist:
+                except AlbumMembership.DoesNotExist:
                     logger.warning("Could not get artwork membership: %s", request.POST['membership-id'])
             return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not move artwork membership'})
         elif request.POST['action'] == 'connect' or request.POST['action'] == 'disconnect':
             # user wants to connect or disconnect the artwork
             try:
-                left_member = ArtworkCollectionMembership.objects.get(id=request.POST['member-left'], collection=col)
-                right_member = ArtworkCollectionMembership.objects.get(id=request.POST['member-right'], collection=col)
+                left_member = AlbumMembership.objects.get(id=request.POST['member-left'], collection=col)
+                right_member = AlbumMembership.objects.get(id=request.POST['member-right'], collection=col)
                 if request.POST['action'] == 'connect':
                     if left_member.connect(right_member):
                         return JsonResponse({'message': 'connected'})
                 if request.POST['action'] == 'disconnect':
                     if left_member.disconnect(right_member):
                         return JsonResponse({'message': 'disconnected'})
-            except ArtworkCollectionMembership.DoesNotExist:
+            except AlbumMembership.DoesNotExist:
                 logger.warning(
                     "Could not do action '%s' on artwork membership '%s'",
                     request.POST['action'],
@@ -355,17 +355,17 @@ def collection_edit(request, id):
     """
     Render an overlay showing the editable fields of a collection.
     """
-    artwork_collection = get_object_or_404(ArtworkCollection, id=id)
+    artwork_collection = get_object_or_404(Album, id=id)
     if request.user.id is not artwork_collection.user.id:
         # users can only manipulate their own collections via this view
         return HttpResponseForbidden()
     if request.method == "POST":
-        form = ArtworkCollectionForm(request.POST, instance=artwork_collection)
+        form = AlbumForm(request.POST, instance=artwork_collection)
         if form.is_valid():
             form.save()
             return redirect('collection', id=id)
     context = {
-        'form': ArtworkCollectionForm(instance=artwork_collection),
+        'form': AlbumForm(instance=artwork_collection),
         'collection': artwork_collection,
     }
     return render(request, 'artwork/collection_edit_overlay.html', context)
@@ -378,7 +378,7 @@ def collection_delete(request, id):
     """
     if request.method == "POST":
         try:
-            artwork_collection = ArtworkCollection.objects.get(id=id)
+            artwork_collection = Album.objects.get(id=id)
             if request.user.id is artwork_collection.user.id:
                 # users can only manipulate their own collections via this view
                 artwork_collection.delete()
@@ -386,7 +386,7 @@ def collection_delete(request, id):
             else:
                 logger.warning("Could not get artwork collection: %s", id)
                 return JsonResponse(status=403, data={'status': 'false', 'message': 'Permission needed'})
-        except ArtworkCollection.DoesNotExist:
+        except Album.DoesNotExist:
             return JsonResponse(status=500, data={'status': 'false', 'message': 'Could not delete collection'})
     else:
         return redirect('collection', id=id)
@@ -398,8 +398,8 @@ def collection_json(request, id=None):
     Return collection data in json format.
     """
     try:
-        col = ArtworkCollection.objects.get(id=id)
-    except ArtworkCollection.DoesNotExist:
+        col = Album.objects.get(id=id)
+    except Album.DoesNotExist:
         logger.warning("Could not get artwork collection: %s", id)
         return JsonResponse(status=404, data={'status': 'false', 'message': 'Could not get collection'})
     serializer = CollectionSerializer(col)
@@ -412,8 +412,8 @@ def collections_list(request):
     Render a list of all collections.
     """
     context = {
-        # 'collections': ArtworkCollection.objects.filter(user__groups__name='editor').exclude(user=request.user),
-        'my_collections': ArtworkCollection.objects.filter(user=request.user),
+        # 'collections': Album.objects.filter(user__groups__name='editor').exclude(user=request.user),
+        'my_collections': Album.objects.filter(user=request.user),
     }
     return render(request, 'artwork/collections_list.html', context)
 
@@ -599,12 +599,12 @@ def collection_download_as_pptx(request, id=None, language='de'):
     distance_between = prs_padding * 2
 
     try:
-        col = ArtworkCollection.objects.get(id=id)
-    except ArtworkCollection.DoesNotExist:
+        col = Album.objects.get(id=id)
+    except Album.DoesNotExist:
         logger.warning('Could not create powerpoint file. Collection missing.')
         return
 
-    memberships = col.artworkcollectionmembership_set.all()
+    memberships = col.Albummembership_set.all()
     connected_member = None
     for membership in memberships:
         if membership.connected_with:
