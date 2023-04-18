@@ -77,12 +77,11 @@ MANAGERS = ADMINS
 # Application definition
 
 INSTALLED_APPS = [
-    # need to be before django.contrib.admin and grapelli
-    # 'dal',
+    # dal hast to be loaded before django.contrib.admin
+    'dal',
     'dal_select2',
     'dal_admin_filters',
-
-
+    # Django main components
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -90,7 +89,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
-
     # Third-party apps
     'rest_framework',
     'versatileimagefield',
@@ -99,7 +97,6 @@ INSTALLED_APPS = [
     'mptt',
     'massadmin',
     'ordered_model',
-
     # Project apps
     'general',
     'artworks',
@@ -250,7 +247,7 @@ DATABASES = {
         'USER': os.environ.get('POSTGRES_USER', 'django_{}'.format(PROJECT_NAME)),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password_{}'.format(PROJECT_NAME)),
         'HOST': '{}-postgres'.format(PROJECT_NAME) if DOCKER else 'localhost',
-        'PORT': '5432',
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
     }
 }
 
@@ -395,7 +392,10 @@ LOGGING = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://{}:6379/0'.format('{}-redis'.format(PROJECT_NAME) if DOCKER else 'localhost'),
+        'LOCATION': 'redis://{}:{}/0'.format(
+            f'{PROJECT_NAME}-redis' if DOCKER else 'localhost',
+            os.environ.get('REDIS_PORT', '6379')
+        ),
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
