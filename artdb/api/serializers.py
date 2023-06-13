@@ -1,6 +1,32 @@
 from artworks.models import Artwork, Artist, Keyword, Location, Album, AlbumMembership
 from versatileimagefield.serializers import VersatileImageFieldSerializer
 from rest_framework import serializers
+from django.core.exceptions import ValidationError
+import jsonschema
+from jsonschema import validate
+import json
+from drf_spectacular.utils import extend_schema_field
+from django.utils.translation import gettext_lazy as _
+
+
+def validate_json_field(value, schema):
+    try:
+        if not isinstance(value, list):
+            value = [value]
+
+        for v in value:
+            validate(v, schema)
+    except jsonschema.exceptions.ValidationError as e:
+        raise ValidationError(_(f'Well-formed but invalid JSON: {e}')) from e
+    except json.decoder.JSONDecodeError as e:
+        raise ValidationError(_(f'Poorly-formed text, not JSON: {e}')) from e
+    except TypeError as e:
+        raise ValidationError(f'Invalid characters: {e}') from e
+
+    if len(value) > len({json.dumps(d, sort_keys=True) for d in value}):
+        raise ValidationError(_('Data contains duplicate entries'))
+
+    return value
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -52,7 +78,6 @@ class MembershipSerializer(serializers.ModelSerializer):
 
 
 class AlbumSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Album
         fields = '__all__'
@@ -68,10 +93,49 @@ class UpdateAlbumSerializer(AlbumSerializer):
         depth = 1
 
 
+@extend_schema_field(
+    component_name='slides',
+    field={
+        'type': 'array',
+        'items': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'id': {'type': 'string'},
+                },
+            }
+        }
+    }
+)
+class SlidesField(serializers.JSONField):
+    pass
+
+
 class SlidesSerializer(serializers.ModelSerializer):
+    slides = SlidesField(
+        label=_('Slides'),
+        required=False,
+        allow_null=True,
+        default=[[]],
+    )
+
+    def validate_slides(self, value):
+        schema = {
+            'type': 'array',
+            'items': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                        'id': {'type': 'string'},
+                    },
+                }
+            }
+        }
+        return validate_json_field(value, schema)
 
     class Meta:
-        model = Album  # TODO: will be Slides
-        fields = '__all__'
+        model = Album
+        fields = ('slides',)
         depth = 1
-

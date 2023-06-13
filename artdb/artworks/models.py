@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 from ordered_model.models import OrderedModel
 from versatileimagefield.fields import VersatileImageField
+from django.contrib.postgres.fields import JSONField
 
 logger = logging.getLogger(__name__)
 
@@ -216,6 +217,7 @@ class Album(models.Model):
     artworks = models.ManyToManyField(Artwork, verbose_name=_('Artworks'), through='AlbumMembership')
     created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now=True)
+    slides = JSONField(verbose_name=_('Slides'), blank=True, null=True)
 
     def __str__(self):
         return '{0} by {1}'.format(self.title, self.user.get_full_name())

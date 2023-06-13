@@ -1,4 +1,5 @@
 import logging
+import json
 
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
@@ -43,6 +44,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     retrieve:
     GET specific artwork.
+
+    search_artworks:
+    GET artworks according to search parameters.
 
     """
 
@@ -235,7 +239,15 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         results = results.distinct().filter(q_objects)
 
-        end = offset + limit if offset and limit else None
+        if offset and limit:
+            end = offset + limit
+
+        elif limit and not offset:
+            end = limit
+
+        else:
+            end = None
+
         results = results[offset:end]
 
         serializer = ArtworkSerializer(results, many=True)
@@ -252,10 +264,10 @@ class AlbumViewSet(viewsets.ViewSet):
     List of all the users albums /folders (in anticipation that there will be folders later)
 
     list_albums:
-    GET all the users albums. #todo define
+    GET all the users albums.
 
     retrieve_album:
-    GET /albums/{id}
+    GET specific album.
 
     retrieve_slides_per_album:
     GET /albums/{id}/slides LIST (GET) endpoint   # todo??
@@ -270,10 +282,10 @@ class AlbumViewSet(viewsets.ViewSet):
     POST
 
     update_album:
-    PATCH
+    PATCH specific album and album’s fields
 
     delete_album:
-    DELETE
+    DELETE specific album
 
 
 
@@ -438,49 +450,25 @@ class AlbumViewSet(viewsets.ViewSet):
         '''
         /albums/{id}/slides LIST (GET) endpoint returns:
         '''
-        # TODO update after model
-        dummy_data = [{
-            'title': 'Some slides title 1',
-            'artist': 'Joe Jonas',
-            'image': 'https://www.thumbnail.com/imageid234',
-            'quick_info': 'Some quick info',
-            # query flag nested info?
-        },
-            {
-                'title': 'Some slides title 2',
-                'artist': 'Joe Jonas',
-                'image': 'https://www.thumbnail.com/imageid234',
-                'quick_info': 'Some quick info',
-                # query flag nested info?
-            }
-        ]
-        # TODO update serializer
-        serializer = ArtworkSerializer(self.queryset, many=True)
-        return Response(dummy_data)
+
+        try:
+            album = Album.objects.get(pk=album_id)
+        except Album.DoesNotExist or ValueError:
+            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+
+        serializer = AlbumSerializer(album)
+        results = serializer.data
+        return Response(results.get('slides'))
 
     @extend_schema(
-        # TODO
-        # request=SlidesSerializer,
         methods=['POST'],
-        parameters=[
-            OpenApiParameter(
-                name='id list',
-                type=OpenApiTypes.OBJECT,
-                required=False,
-                description='Desired order or arrangement of slides within album, and/or albums within slides',
-                examples=[
-                    OpenApiExample(
-                        name='id_list',
-                        value=[[{'id': 'abc1'}, {'id': 'xyz2'}], [{'id': 'fgh23'}], [{'id': 'jk54'}]]
-                    )]
-
-            ),
-        ],
+        request=SlidesSerializer,
         responses={
-            200: SlidesSerializer,
-        }
+            200: OpenApiResponse(description='OK'),
+            403: OpenApiResponse(description='Access not allowed'),
+            404: OpenApiResponse(description='Not found'),}
     )
-    def edit_slides(self, request, *args, **kwargs):
+    def edit_slides(self, request, album_id=None, slides=None, *args, **kwargs):
         '''
         /albums/{id}/slides
         Reorder Slides
@@ -488,17 +476,26 @@ class AlbumViewSet(viewsets.ViewSet):
         Reorder artworks within slides
         '''
 
+        # Todo, note: currently accepted i.e.: [[{'id': 'abc1'}, {'id': 'xyz2'}], [{'id': 'fgh23'}], [{'id': 'jk54'}]]
+
         try:
-            # TODO
+            # TODO see https://stackoverflow.com/questions/39491420/python-jsonexpecting-property-name-enclosed-in-double-quotes
+            #   in order to retrieve slides (e.g. value=[[{'id': 'abc1'}, {'id': 'xyz2'}], [{'id': 'fgh23'}], [{'id': 'jk54'}]])
+            #
             #   Pass an object with a new order or arrangement
             #   order by pk given or separate
-            album = Album.objects.get(id=request.data.get('album_id'))
-            print(album)
-            serializer = SlidesSerializer(album)  # TODO will be SlideSerializer
-            print(serializer.data)
-
-            return Response(_('Slides edited'))
-        except:
+            #   update Album
+            #   OR
+            #   as it is only a field, just save the field (ask what is expected as return value)!
+            album = Album.objects.get(pk=album_id)
+            serializer = SlidesSerializer(data=request.data)
+            serializer.is_valid()
+            if serializer.is_valid():
+                print(serializer.data)
+                if serializer.validated_data:
+                    return Response(_('Slides edited'))
+            print("invalid")
+        except TypeError: # todo update
             return Response(
                 _('Could not edit slides'), status=status.HTTP_404_NOT_FOUND
             )
