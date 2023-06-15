@@ -1,6 +1,6 @@
 import logging
-import json
-
+from django.core.exceptions import ValidationError
+import jsonschema
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -543,6 +543,11 @@ class AlbumViewSet(viewsets.ViewSet):
 
     @extend_schema(
         request=UpdateAlbumSerializer,
+        examples=[
+            OpenApiExample(
+                name='slides',
+                value=[[{'id': 'abc1'}, {'id': 'xyz2'}], [{'id': 'fgh23'}], [{'id': 'jk54'}]],
+            )],
         methods=['PATCH'],
         responses={
             200: AlbumSerializer,
@@ -562,8 +567,15 @@ class AlbumViewSet(viewsets.ViewSet):
             album = Album.objects.get(pk=album_id)
             album.title = request.data.get('title')
             album.shared_info = request.data.get('shared_info')  # TODO: to change after shared_info implemented
-            album.save()
+
+            slides_serializer = SlidesSerializer(data=request.data)
+
+            if not slides_serializer.is_valid():
+                return Response(_('Slides format incorrect'), status=status.HTTP_404_NOT_FOUND)
+
             serializer = AlbumSerializer(album)
+            album.slides = slides_serializer.data.get('slides')
+            album.save()
             return Response(serializer.data)
 
         except Album.DoesNotExist:
@@ -586,21 +598,11 @@ class AlbumViewSet(viewsets.ViewSet):
 
 class UserViewSet(viewsets.GenericViewSet):
     # TODO update. and user for artworks, etc
-    # serializer_class = UserSerializer
 
     @extend_schema(
         tags=['user'],
     )
     def retrieve(self, request, *args, **kwargs):
-        return Response({
-            'id': 'username1',
-            "first_name": "Hellor",
-            "last_name": "World",
-            'email': 'u@u.com',
-            "is_staff": False,
-            "is_active": True,
-        })
-
         try:
             data = {
                 'uuid': request.user.username,

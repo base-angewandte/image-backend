@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 import jsonschema
 from jsonschema import validate
 import json
-from drf_spectacular.utils import extend_schema_field
 from django.utils.translation import gettext_lazy as _
 
 
@@ -13,7 +12,6 @@ def validate_json_field(value, schema):
     try:
         if not isinstance(value, list):
             value = [value]
-
         for v in value:
             validate(v, schema)
     except jsonschema.exceptions.ValidationError as e:
@@ -84,7 +82,7 @@ class AlbumSerializer(serializers.ModelSerializer):
         depth = 1
 
 
-class UpdateAlbumSerializer(AlbumSerializer):
+class UpdateAlbumSerializer(serializers.ModelSerializer):
     shared_info = serializers.CharField(required=False)
 
     class Meta:
@@ -93,21 +91,6 @@ class UpdateAlbumSerializer(AlbumSerializer):
         depth = 1
 
 
-@extend_schema_field(
-    component_name='slides',
-    field={
-        'type': 'array',
-        'items': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'id': {'type': 'string'},
-                },
-            }
-        }
-    }
-)
 class SlidesField(serializers.JSONField):
     pass
 
@@ -124,13 +107,10 @@ class SlidesSerializer(serializers.ModelSerializer):
         schema = {
             'type': 'array',
             'items': {
-                'type': 'array',
-                'items': {
-                    'type': 'object',
-                    'properties': {
-                        'id': {'type': 'string'},
-                    },
-                }
+                'type': 'object',
+                'properties': {
+                    'id': {'type': 'string'},
+                },
             }
         }
         return validate_json_field(value, schema)
