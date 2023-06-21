@@ -491,10 +491,8 @@ class AlbumViewSet(viewsets.ViewSet):
             serializer = SlidesSerializer(data=request.data)
             serializer.is_valid()
             if serializer.is_valid():
-                print(serializer.data)
                 if serializer.validated_data:
                     return Response(_('Slides edited'))
-            print("invalid")
         except TypeError: # todo update
             return Response(
                 _('Could not edit slides'), status=status.HTTP_404_NOT_FOUND
