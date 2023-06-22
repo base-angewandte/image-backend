@@ -119,6 +119,18 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         return Response(serializer.data)
 
     @extend_schema(
+        request=serializer_class,
+        responses={
+            200: OpenApiResponse(description='OK'),
+            403: OpenApiResponse(description='Access not allowed'),
+            404: OpenApiResponse(description='Not found'),
+        },
+    )
+    def list_search_filters(self):
+        # list all filters for search endpoint
+        return Response(_('OK'))
+
+    @extend_schema(
         parameters=[
             OpenApiParameter(
                 name='limit',
@@ -184,7 +196,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def search_artworks(self, request, item_id=None):
-        # TODO:
+        # TODO, if necessary, post test by FE:
         # Default (latest?) artworks on initial page load (could this be part of search?) - LIST /albums
         # include pagination
         # also exclude param with list with ids of artworks
@@ -438,8 +450,6 @@ class AlbumViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     @extend_schema(
-        # TODO
-        # request=SlidesSerializer,
         responses={
             200: OpenApiResponse(description='OK'),
             403: OpenApiResponse(description='Access not allowed'),
@@ -463,8 +473,13 @@ class AlbumViewSet(viewsets.ViewSet):
     @extend_schema(
         methods=['POST'],
         request=SlidesSerializer,
+        examples=[
+            OpenApiExample(
+                name='slides',
+                value=[[{'id': 'abc1'}, {'id': 'xyz2'}], [{'id': 'fgh23'}], [{'id': 'jk54'}]],
+            )],
         responses={
-            200: OpenApiResponse(description='OK'),
+            200: AlbumSerializer,
             403: OpenApiResponse(description='Access not allowed'),
             404: OpenApiResponse(description='Not found'),}
     )
@@ -476,24 +491,19 @@ class AlbumViewSet(viewsets.ViewSet):
         Reorder artworks within slides
         '''
 
-        # Todo, note: currently accepted i.e.: [[{'id': 'abc1'}, {'id': 'xyz2'}], [{'id': 'fgh23'}], [{'id': 'jk54'}]]
-
         try:
-            # TODO see https://stackoverflow.com/questions/39491420/python-jsonexpecting-property-name-enclosed-in-double-quotes
-            #   in order to retrieve slides (e.g. value=[[{'id': 'abc1'}, {'id': 'xyz2'}], [{'id': 'fgh23'}], [{'id': 'jk54'}]])
-            #
-            #   Pass an object with a new order or arrangement
-            #   order by pk given or separate
-            #   update Album
-            #   OR
-            #   as it is only a field, just save the field (ask what is expected as return value)!
             album = Album.objects.get(pk=album_id)
-            serializer = SlidesSerializer(data=request.data)
-            serializer.is_valid()
-            if serializer.is_valid():
-                if serializer.validated_data:
-                    return Response(_('Slides edited'))
-        except TypeError: # todo update
+            slides_serializer = SlidesSerializer(data=request.data)
+
+            if not slides_serializer.is_valid():
+                return Response(_('Slides format incorrect'), status=status.HTTP_404_NOT_FOUND)
+
+            serializer = AlbumSerializer(album)
+            album.slides = slides_serializer.data.get('slides')
+            album.save()
+            return Response(serializer.data)
+
+        except TypeError:
             return Response(
                 _('Could not edit slides'), status=status.HTTP_404_NOT_FOUND
             )
@@ -560,6 +570,7 @@ class AlbumViewSet(viewsets.ViewSet):
         #       (read or write; could be extended later).
         #   in the API response then there is also just a list for the permissions
         #   with dicts/objects containing the user id, name and the type of right (read or write)
+        # TODO do we update slides too, or is that only managed through edit_slides?
 
         try:
             album = Album.objects.get(pk=album_id)
