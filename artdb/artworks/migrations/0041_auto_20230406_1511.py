@@ -49,7 +49,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Folder',
                 'verbose_name_plural': 'Folders',
-                'permissions': (('can_download_pptx', 'Can download as PowerPoint file'),),
             },
         ),
         migrations.RunPython(code=copy_albums, reverse_code=copy_albums_reverse),
