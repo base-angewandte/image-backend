@@ -26,7 +26,6 @@ def validate_json_field(value, schema):
 
     return value
 
-
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
@@ -82,17 +81,24 @@ class AlbumSerializer(serializers.ModelSerializer):
         depth = 1
 
 
-class UpdateAlbumSerializer(serializers.ModelSerializer):
-    shared_info = serializers.CharField(required=False)
-
+class CreateAlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
-        fields = '__all__'
+        fields = ('title',)
         depth = 1
 
 
 class SlidesField(serializers.JSONField):
     pass
+
+
+class UpdateAlbumSerializer(serializers.ModelSerializer):
+    # todo: add shared_info
+
+    class Meta:
+        model = Album
+        fields = ('title', )
+        depth = 1
 
 
 class SlidesSerializer(serializers.ModelSerializer):
