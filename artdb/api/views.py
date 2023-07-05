@@ -1,6 +1,11 @@
 import logging
 from django.core.exceptions import ValidationError
 import jsonschema
+from artworks.models import User
+# todo remove, for testing purposes
+# album = Album.objects.create(title=title, user=test_user)
+# test_user = User.objects.last()
+
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -30,7 +35,7 @@ from artworks.models import (
 
 from .serializers import (
     ArtworkSerializer,
-    AlbumSerializer, SlidesSerializer, UpdateAlbumSerializer,
+    AlbumSerializer, SlidesSerializer, UpdateAlbumSerializer, CreateAlbumSerializer,
 
 )
 
@@ -47,6 +52,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     search_artworks:
     GET artworks according to search parameters.
+
+    list_search_filters:
+    GET filters for search.
 
     """
 
@@ -127,7 +135,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def list_search_filters(self):
-        # list all filters for search endpoint
+        # TODO
         return Response(_('OK'))
 
     @extend_schema(
@@ -196,11 +204,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def search_artworks(self, request, item_id=None):
-        # TODO, if necessary, post test by FE:
-        # Default (latest?) artworks on initial page load (could this be part of search?) - LIST /albums
-        # include pagination
-        # also exclude param with list with ids of artworks
-        # start with GET - if we run into limits --> might need to add /search  POST after all
+        # TODO, redo as per in notes
 
         limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
         offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
@@ -282,7 +286,10 @@ class AlbumViewSet(viewsets.ViewSet):
     GET specific album.
 
     retrieve_slides_per_album:
-    GET /albums/{id}/slides LIST (GET) endpoint   # todo??
+    GET /albums/{id}/slides LIST (GET) endpoint
+
+    create_album:
+    POST new album with given title.
 
     edit_slides:
     POST /albums/{id}/slides
@@ -338,9 +345,7 @@ class AlbumViewSet(viewsets.ViewSet):
         limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
         offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
 
-        # TODO:
-        # serializer = AlbumSerializer(self.queryset, many=True)
-        # results = serializer.data
+        # TODO: to complete when folders are relevant
 
 
         dummy_data = [{
@@ -472,6 +477,24 @@ class AlbumViewSet(viewsets.ViewSet):
 
     @extend_schema(
         methods=['POST'],
+        request=CreateAlbumSerializer, # todo fix serializers
+        responses={
+            200: AlbumSerializer
+        }
+    )
+    def create_album(self, request, *args, **kwargs):
+        '''
+        Create Album /albums/{id}
+        '''
+
+        title = request.data.get('title')
+        album = Album.objects.create(title=title, user=request.user)
+        album.save()
+        serializer = AlbumSerializer(album)
+        return Response(serializer.data)
+
+    @extend_schema(
+        methods=['POST'],
         request=SlidesSerializer,
         examples=[
             OpenApiExample(
@@ -486,8 +509,8 @@ class AlbumViewSet(viewsets.ViewSet):
     def edit_slides(self, request, album_id=None, slides=None, *args, **kwargs):
         '''
         /albums/{id}/slides
-        Reorder Slides
-        Separate_slides
+        Reorder Slides,
+        Separate_slides,
         Reorder artworks within slides
         '''
 
@@ -550,42 +573,56 @@ class AlbumViewSet(viewsets.ViewSet):
         return Response(dummy_data)
 
     @extend_schema(
+        methods=['PATCH'],
         request=UpdateAlbumSerializer,
         examples=[
             OpenApiExample(
-                name='slides',
-                value=[[{'id': 'abc1'}, {'id': 'xyz2'}], [{'id': 'fgh23'}], [{'id': 'jk54'}]],
+                name='shared_info',
+                value=[
+                    {
+                        'owner': {
+                            'id': '123abc',
+                            'name': 'Name Surname',
+                        },
+                        'shared_with': [
+                            {
+                                'id': '123xd3',
+                                'name': 'Name Surname',
+                                'permission': {
+                                    'id': 'read', # todo still confusion about this
+                                    'label': 'Read',  # # todo if it comes from the vocabulary, BE, else FE)
+                                },
+                            },
+                        ],
+                    }
+                ]
             )],
-        methods=['PATCH'],
         responses={
             200: AlbumSerializer,
-        }
+            403: OpenApiResponse(description='Access not allowed'),
+            404: OpenApiResponse(description='Not found'),
+    }
     )
     def update_album(self, request, partial=True, album_id=None, *args, **kwargs):
         '''
         Update Album /albums/{id}
         '''
         # TODO Alter Shared info
-        #       part of album model as a many to many relationship with an additional property for the type of right
-        #       (read or write; could be extended later).
-        #   in the API response then there is also just a list for the permissions
-        #   with dicts/objects containing the user id, name and the type of right (read or write)
-        # TODO do we update slides too, or is that only managed through edit_slides?
 
         try:
             album = Album.objects.get(pk=album_id)
             album.title = request.data.get('title')
-            album.shared_info = request.data.get('shared_info')  # TODO: to change after shared_info implemented
 
-            slides_serializer = SlidesSerializer(data=request.data)
+            serializer = UpdateAlbumSerializer(data=request.data)
 
-            if not slides_serializer.is_valid():
-                return Response(_('Slides format incorrect'), status=status.HTTP_404_NOT_FOUND)
+            if not serializer.is_valid():
+                return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
 
-            serializer = AlbumSerializer(album)
-            album.slides = slides_serializer.data.get('slides')
+            album_serializer = AlbumSerializer(album)
+            # Todo : adjust shared info
+            shared_info = serializer.validated_data.get('shared_info')
             album.save()
-            return Response(serializer.data)
+            return Response(album_serializer.data)
 
         except Album.DoesNotExist:
             return Response(_('Album does not exist '), status=status.HTTP_404_NOT_FOUND)
