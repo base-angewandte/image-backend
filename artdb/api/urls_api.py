@@ -10,7 +10,7 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     re_path('', include(router.urls)),
-    path('user/', views.UserViewSet.as_view({'get': 'retrieve'}), name='user'), # todo ?
+    path('user/', views.UserViewSet.as_view({'get': 'retrieve'}), name='user'),
 
     # Artworks
     path('artworks/', views.ArtworksViewSet.as_view({
@@ -19,15 +19,18 @@ urlpatterns = [
     path('artworks-search/', views.ArtworksViewSet.as_view({
         'get': 'search_artworks'}), name='search_artworks'),
     path('artworks-search-filters/', views.ArtworksViewSet.as_view({
+        'get': 'list_search_filters'}), name='list_search_filters'),
+    path('artworks-search-filters/', views.ArtworksViewSet.as_view({
         'list': 'list_search_filters'}), name='search_filters'),
     # Folders
     path('folders/', views.AlbumViewSet.as_view({
         'get': 'list_folders',
-        'post': 'create_folder',  # todo or         Create Folder /albums/{id}?
+        'post': 'create_folder',
     }), name='folders'),
     # Albums
     path('albums/', views.AlbumViewSet.as_view({
         'get': 'list_albums', # per user
+        'post': 'create_album',
     }), name='albums'),
     path('albums/<album_id>/', views.AlbumViewSet.as_view({
             'get': 'retrieve_album',  # retrieve
