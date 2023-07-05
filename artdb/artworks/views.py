@@ -294,7 +294,7 @@ def collection(request, id=None):
             'created_by_username': col.user.get_username(),
             'created_by_fullname': col.user.get_full_name(),
             'created_by_userid': col.user.id,
-            'memberships': col.Albummembership_set.all(),
+            'memberships': col.albummembership_set.all(),
             # 'collections': Album.objects.filter(user__groups__name='editor').exclude(user=request.user),
             'my_collections': Album.objects.filter(user=request.user),
         }
@@ -471,7 +471,7 @@ class ArtworkAutocomplete(autocomplete.Select2QuerySetView):
             return qs
         else:
             return Artwork.objects.none()
-            
+
     def get_result_value(self, result):
         """Return the value of a result."""
         return result.title
@@ -552,7 +552,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
         image_width = pic.image.size[0]
         image_height = pic.image.size[1]
         aspect_ratio = image_width / image_height
-        
+
         # calculate width and height
         if position == 'center':
             picture_max_width = int(prs.slide_width - (padding * 2))

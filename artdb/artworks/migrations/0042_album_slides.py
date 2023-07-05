@@ -3,6 +3,39 @@
 import django.contrib.postgres.fields.jsonb
 from django.db import migrations
 
+from artworks.models import Album
+
+
+def create_slides_content(apps, schema_editor):
+    """Generates slides content from the AlbumMembership relations"""
+    albums = Album.objects.all()
+    for album in albums:
+        slides = []
+        for member in album.albummembership_set.all():
+            # single artworks are stored represented as a list with one id
+            if not member.connected_with:
+                slides.append([member.artwork.id])
+            # connected artworks are represented as a list with two ids
+            else:
+                # in case nothing is in the slides yet, just add a first list
+                if len(slides) == 0:
+                    slides.append([member.artwork.id])
+                else:
+                    # check whether the current item is connected to the last one
+                    if slides[-1][0] == member.connected_with.artwork.id:
+                        # then add it to this sublist
+                        slides[-1].append(member.artwork.id)
+                    # otherwise just add a new list with one id
+                    else:
+                        slides.append([member.artwork.id])
+        album.slides = slides
+        album.save()
+
+
+def noop(apps, schmea_editor):
+    """Placeholder for an empty operation"""
+    pass
+
 
 class Migration(migrations.Migration):
 
@@ -16,4 +49,5 @@ class Migration(migrations.Migration):
             name='slides',
             field=django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True, verbose_name='Slides'),
         ),
+        migrations.RunPython(code=create_slides_content, reverse_code=noop),
     ]
