@@ -228,8 +228,8 @@ class Album(models.Model):
 
     class Meta:
         permissions = (('can_download_pptx', 'Can download as PowerPoint file'),)
-        verbose_name = _('Folder')
-        verbose_name_plural = _('Folders')
+        verbose_name = _('Album')
+        verbose_name_plural = _('Albums')
 
 
 class AlbumMembership(OrderedModel):
