@@ -108,7 +108,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         return Response(results)
 
-
     @extend_schema(
         request=serializer_class,
         responses={
@@ -135,67 +134,182 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def list_search_filters(self):
-        # TODO
-        return Response(_('OK'))
+        data = {
+           "title":{
+              "type":"array",
+              "items":{
+                 "type":"object",
+                 "properties":{
+                    "label":{
+                       "type":"string"
+                    },
+                    "source":{
+                       "type":"string"
+                    }
+                 }
+              },
+              "title":"Titel",
+              "x-attrs":{
+                 "field_format":"half",
+                 "field_type":"chips",
+                 "dynamic_autosuggest":True,
+                 "allow_unknown_entries":True,
+                 "source":"/autosuggest/v1/titles/",
+                 "placeholder":"Titel eintragen",
+                 "order":1
+              }
+           },
+           "artist":{
+              "type":"array",
+              "items":{
+                 "type":"object",
+                 "properties":{
+                    "label":{
+                       "type":"string"
+                    },
+                    "source":{
+                       "type":"string"
+                    }
+                 }
+              },
+              "title":"Künstler*in",
+              "x-attrs":{
+                 "field_format":"half",
+                 "field_type":"chips",
+                 "dynamic_autosuggest":True,
+                 "allow_unknown_entries":True,
+                 "source":"/autosuggest/v1/artists/",
+                 "placeholder":"Künstler*in eintragen",
+                 "order":2
+              }
+           },
+           "place_of_production":{
+              "type":"array",
+              "items":{
+                 "type":"object",
+                 "properties":{
+                    "label":{
+                       "type":"string"
+                    },
+                    "source":{
+                       "type":"string"
+                    }
+                 }
+              },
+              "title":"Entstehungsort",
+              "x-attrs":{
+                 "field_format":"half",
+                 "field_type":"chips",
+                 "dynamic_autosuggest":True,
+                 "allow_unknown_entries":True,
+                 "source":"/autosuggest/v1/locations/",
+                 "placeholder":"Entstehungsort eintragen",
+                 "order":3
+              }
+           },
+           "current_location":{
+              "type":"array",
+              "items":{
+                 "type":"object",
+                 "properties":{
+                    "label":{
+                       "type":"string"
+                    },
+                    "source":{
+                       "type":"string"
+                    }
+                 }
+              },
+              "title":"Standort",
+              "x-attrs":{
+                 "field_format":"half",
+                 "field_type":"chips",
+                 "dynamic_autosuggest":True,
+                 "allow_unknown_entries":True,
+                 "source":"/autosuggest/v1/locations/",
+                 "placeholder":"Standort eintragen",
+                 "order":4
+              }
+           },
+           "keywords":{
+              "type":"array",
+              "items":{
+                 "type":"object",
+                 "properties":{
+                    "label":{
+                       "type":"string"
+                    },
+                    "source":{
+                       "type":"string"
+                    }
+                 }
+              },
+              "title":"Schlagwort",
+              "x-attrs":{
+                 "placeholder":"Schlagwort eintragen",
+                 "order":5,
+                 "field_format":"full",
+                 "field_type":"chips",
+                 "allow_unknown_entries":False,
+                 "dynamic_autosuggest":True,
+                 "source":"/autosuggest/v1/keywords/"
+              }
+           },
+           "date":{
+              "type":"object",
+              "properties":{
+                 "date_from":{
+                    "type":"string"
+                 },
+                 "date_to":{
+                    "type":"string"
+                 }
+              },
+              "title":"Datierung von, bis",
+              "additionalProperties":False,
+              "pattern":"^\\d{4}(-(0[1-9]|1[0-2]))?(-(0[1-9]|[12]\\d|3[01]))?$",
+              "x-attrs":{
+                 "field_format":"full",
+                 "field_type":"date",
+                 "date_format":"day",
+                 "placeholder":{
+                    "date":"Datum eintragen"
+                 },
+                 "order":6
+              }
+           }
+        }
+
+        return Response(data)
 
     @extend_schema(
+        methods=['POST'],
         parameters=[
             OpenApiParameter(
-                name='limit',
-                type=OpenApiTypes.INT,
+                name='search_data',
+                type=OpenApiTypes.OBJECT,
                 required=False,
                 description='',
-            ),
-            OpenApiParameter(
-                name='offset',
-                type=OpenApiTypes.INT,
-                required=False,
-                description='',
-            ),
-            OpenApiParameter(
-                name='title',
-                type=OpenApiTypes.STR,
-                required=False,
-                description='',
-            ),
-            OpenApiParameter(
-                name='artist',
-                type=OpenApiTypes.STR,
-                required=False,
-                description='',
-            ),
-            OpenApiParameter(
-                name='keyword',
-                type=OpenApiTypes.STR,
-                required=False,
-                description='',
-            ),
-            OpenApiParameter(
-                name='date_year_from',
-                type=OpenApiTypes.DATETIME,
-                required=False,
-                description='',
-            ),
-            OpenApiParameter(
-                name='date_year_to',
-                type=OpenApiTypes.DATETIME,
-                required=False,
-                description='',
-            ),
-            OpenApiParameter(
-                name='origin',
-                type=OpenApiTypes.STR,
-                required=False,
-                description='',
-            ),
-            OpenApiParameter(
-                name='location',
-                type=OpenApiTypes.STR,
-                required=False,
-                description='',
-            ),
+                examples=[
+                    OpenApiExample(
+                        name='search_data',
+                        value=[
+                            {
+                                'exclude': ['id123', 'id345'],  # with artwork ids
+                                'q': 'search string for general search',  # the string from general search
+                                'filters':
+                                    [
+                                        {
+                                            id: 'string',
+                                            'filter_values': True
+                                            # boolean|number|string|array|object // depending on type of filter
+                                        }
+                                    ],
+                                'limit': 0,
+                                'offset': 0
+                            }])],
+            )
         ],
-        methods=['GET'],
         request=serializer_class,
         responses={
             200: OpenApiResponse(description='OK'),
@@ -203,55 +317,96 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             404: OpenApiResponse(description='Not found'),
         },
     )
-    def search_artworks(self, request, item_id=None):
+    def search(self, request, item_id=None):
         # TODO, redo as per in notes
 
-        limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
-        offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
+        serializer = ArtworkSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        limit = serializer.data.get('limit') if serializer.data.get('limit') else None
+        offset = serializer.data.get('offset') if serializer.data.get('offset') else None
+        filters = serializer.data.get('filters')
+        # todo: should type be available?
+        # type = request.data.get('type')
+        # types: title, artist, place of
+
 
         results = Artwork.objects.all()
-        artwork_title = request.GET.get('title')
-        artist_name = request.GET.get('artist')
-        keyword = request.GET.get('keyword')
-        date_from = request.GET.get('date_from')
-        date_to = request.GET.get('date_to')
-        location_of_creation = request.GET.get('origin')  # origin
-        location_current = request.GET.get('location')  # location
+        # artwork_title = request.GET.get('title')
+        # artist_name = request.GET.get('artist')
+        # keywords = request.GET.get('keywords')
+        # date_from = request.GET.get('date_from')
+        # date_to = request.GET.get('date_to')
+        # place_of_production = request.GET.get('origin')  # origin
+        # current_location = request.GET.get('location')  # location
         q_objects = Q()
 
-        if location_of_creation:
-            locations = Location.objects.filter(name__istartswith=location_of_creation)
-            q_objects.add(Q(location_of_creation__in=locations), Q.AND)
-        if location_current:
-            locations = Location.objects.filter(name__istartswith=location_current)
-            q_objects.add(Q(location_current__in=locations), Q.AND)
-        if artist_name:
-            terms = [term.strip() for term in artist_name.split()]
-            for term in terms:
-                q_objects.add(
-                    (Q(artists__name__unaccent__icontains=term) | Q(artists__synonyms__unaccent__icontains=term)),
-                    Q.AND,
+        # if location_of_creation:
+        #     locations = Location.objects.filter(name__istartswith=location_of_creation)
+        #     q_objects.add(Q(location_of_creation__in=locations), Q.AND)
+        # if location_current:
+        #     locations = Location.objects.filter(name__istartswith=location_current)
+        #     q_objects.add(Q(location_current__in=locations), Q.AND)
+        # if artist_name:
+        #     terms = [term.strip() for term in artist_name.split()]
+        #     for term in terms:
+        #         q_objects.add(
+        #             (Q(artists__name__unaccent__icontains=term) | Q(artists__synonyms__unaccent__icontains=term)),
+        #             Q.AND,
+        #         )
+        # if keyword:
+        #     keywords = Keyword.objects.filter(name__icontains=keyword)
+        #     q_objects.add(Q(keywords__in=keywords), Q.AND)
+        # if date_from:
+        #     try:
+        #         year = int(date_from)
+        #         q_objects.add(Q(date_year_from__gte=year), Q.AND)
+        #     except ValueError as err:
+        #         logger.error(err)
+        #         return []
+        # if date_to:
+        #     try:
+        #         year = int(date_to)
+        #         q_objects.add(Q(date_year_to__lte=year), Q.AND)
+        #     except ValueError as err:
+        #         logger.error(err)
+        #         return []
+        # if artwork_title:
+        #     q_objects.add(Q(title__icontains=artwork_title) |
+        #                   Q(title_english__icontains=artwork_title), Q.AND)
+
+
+        #todo: does it need filtering?*
+        results_filter = []
+
+        for i in filters:
+            if i['id'] == 'activities' or i['id'] == 'default':
+                results_filter.append(
+                    i['filter_values']
                 )
-        if keyword:
-            keywords = Keyword.objects.filter(name__icontains=keyword)
-            q_objects.add(Q(keywords__in=keywords), Q.AND)
-        if date_from:
-            try:
-                year = int(date_from)
-                q_objects.add(Q(date_year_from__gte=year), Q.AND)
-            except ValueError as err:
-                logger.error(err)
-                return []
-        if date_to:
-            try:
-                year = int(date_to)
-                q_objects.add(Q(date_year_to__lte=year), Q.AND)
-            except ValueError as err:
-                logger.error(err)
-                return []
-        if artwork_title:
-            q_objects.add(Q(title__icontains=artwork_title) |
-                          Q(title_english__icontains=artwork_title), Q.AND)
+                #* results.append(
+                #                     filter_activities(flt['filter_values'], limit, offset, lang)
+                #                 )
+            if i['id'] == 'type':
+                results_filter.append(i['filter_values'])
+            if i['id'] == 'keywords':
+                results.append(
+                    i['filter_values']
+                )
+            if i['id'] == 'current_activities':
+                results_filter.append(
+                    i['filter_values']
+                )
+            if i['id'] == 'start_page':
+                results_filter.append(
+                    i['filter_values'],
+                )
+            if i['id'] == 'date':
+                results_filter.append(i['filter_values'])
+            if i['id'] == 'daterange':
+                results_filter.append(
+                    i['filter_values']
+                )
 
         results = results.distinct().filter(q_objects)
 
@@ -268,9 +423,40 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         serializer = ArtworkSerializer(results, many=True)
 
+        # todo expected response:
+        # {
+        #   total: number, // number of total search results found
+        #   // rename?
+        #   results: object[],
+        #   [
+        #     {
+        #       title: string
+        #       artist: string,
+        #       date: string,
+        #       // array with different format urls or single url?
+        #       image_urls: string[],
+        #       // rename?
+        #       albums: object[] // a list of albums that artwork was added to
+        #         [
+        #           {
+        #             // rename?
+        #             label: string,
+        #             id: string,
+        #           }
+        #         ]
+        #       // i think that was all that should be displayed here??
+        #     },
+        #     ...
+        #   ]
+        # }
+
         return Response({
             'total_results': results.count(),
-            'data': serializer.data
+            'results': [
+
+                 }
+            ]
+            # 'data': serializer.data
         })
 
 
@@ -346,7 +532,6 @@ class AlbumViewSet(viewsets.ViewSet):
         offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
 
         # TODO: to complete when folders are relevant
-
 
         dummy_data = [{
             'title': 'Some title',
@@ -477,7 +662,7 @@ class AlbumViewSet(viewsets.ViewSet):
 
     @extend_schema(
         methods=['POST'],
-        request=CreateAlbumSerializer, # todo fix serializers
+        request=CreateAlbumSerializer,  # todo fix serializers
         responses={
             200: AlbumSerializer
         }
@@ -504,7 +689,7 @@ class AlbumViewSet(viewsets.ViewSet):
         responses={
             200: AlbumSerializer,
             403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),}
+            404: OpenApiResponse(description='Not found'), }
     )
     def edit_slides(self, request, album_id=None, slides=None, *args, **kwargs):
         '''
@@ -589,7 +774,7 @@ class AlbumViewSet(viewsets.ViewSet):
                                 'id': '123xd3',
                                 'name': 'Name Surname',
                                 'permission': {
-                                    'id': 'read', # todo still confusion about this
+                                    'id': 'read',  # todo still confusion about this
                                     'label': 'Read',  # # todo if it comes from the vocabulary, BE, else FE)
                                 },
                             },
@@ -601,7 +786,7 @@ class AlbumViewSet(viewsets.ViewSet):
             200: AlbumSerializer,
             403: OpenApiResponse(description='Access not allowed'),
             404: OpenApiResponse(description='Not found'),
-    }
+        }
     )
     def update_album(self, request, partial=True, album_id=None, *args, **kwargs):
         '''
