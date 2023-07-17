@@ -45,15 +45,46 @@ class KeywordSerializer(serializers.ModelSerializer):
 
 
 class ArtworkSerializer(serializers.ModelSerializer):
-    artists = ArtistSerializer(read_only=True, many=True)
-    keywords = KeywordSerializer(read_only=True, many=True)
-    location_of_creation = LocationSerializer(read_only=True, many=False)
-    location_current = LocationSerializer(read_only=True, many=False)
 
     class Meta:
         model = Artwork
-        fields = ('title', 'title_english', 'artists', 'location_of_creation', 'location_current', 'date', 'material',
-                  'dimensions', 'keywords', 'description', 'credits', 'checked', 'published')
+        fields = '__all__'
+
+
+class SearchRequestField(serializers.JSONField):
+    pass
+
+
+class SearchRequestSerializer(serializers.ModelSerializer):
+    search_request = SearchRequestField(
+        label=_('Search'),
+        required=False,
+        allow_null=True,
+        default=[{}],
+    )
+
+    def validate_request(self, value):
+        schema = { # todo: decide schema
+            # 'type': 'array',
+            # 'items': {
+            #     'type': 'object',
+            #     'properties': {
+            #         'id': {'type': 'string'},
+            #     },
+            # }
+        }
+        return validate_json_field(value, schema)
+
+    class Meta:
+        model = Album
+        fields = ('search_request',)
+        depth = 1
+
+
+class SearchResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Artwork
+        fields = '__all__'
 
 
 class ThumbnailSerializer(serializers.ModelSerializer):

@@ -35,7 +35,8 @@ from artworks.models import (
 
 from .serializers import (
     ArtworkSerializer,
-    AlbumSerializer, SlidesSerializer, UpdateAlbumSerializer, CreateAlbumSerializer,
+    AlbumSerializer, SlidesSerializer, UpdateAlbumSerializer, CreateAlbumSerializer, SearchRequestSerializer,
+    SearchResponseSerializer,
 
 )
 
@@ -50,7 +51,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     retrieve:
     GET specific artwork.
 
-    search_artworks:
+    search:
     GET artworks according to search parameters.
 
     list_search_filters:
@@ -133,7 +134,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             404: OpenApiResponse(description='Not found'),
         },
     )
-    def list_search_filters(self):
+    def list_search_filters(self, request, *args, **kwargs):
+        # todo: has to be dynamic
         data = {
            "title":{
               "type":"array",
@@ -284,129 +286,88 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         methods=['POST'],
-        parameters=[
-            OpenApiParameter(
+        request=SearchRequestSerializer,
+        examples=[
+            OpenApiExample(
                 name='search_data',
-                type=OpenApiTypes.OBJECT,
-                required=False,
-                description='',
-                examples=[
-                    OpenApiExample(
-                        name='search_data',
-                        value=[
-                            {
-                                'exclude': ['id123', 'id345'],  # with artwork ids
-                                'q': 'search string for general search',  # the string from general search
-                                'filters':
-                                    [
-                                        {
-                                            id: 'string',
-                                            'filter_values': True
-                                            # boolean|number|string|array|object // depending on type of filter
-                                        }
-                                    ],
-                                'limit': 0,
-                                'offset': 0
-                            }])],
+                value=[
+                    {
+                        'limit': 0,
+                        'offset': 0,
+                        'exclude': ['id123', 'id345'],  # with artwork ids
+                        'q': 'search string for general search',  # the string from general search
+                        'filters':
+                            [
+                                {
+                                    'id': 'artist',
+                                    'filter_values': 'string'
+                                    # boolean|number|string|array|object depending on type of filter
+                                }
+                            ],
+                    }
+                ]
             )
         ],
-        request=serializer_class,
         responses={
-            200: OpenApiResponse(description='OK'),
+            200: SearchResponseSerializer,
             403: OpenApiResponse(description='Access not allowed'),
             404: OpenApiResponse(description='Not found'),
         },
     )
-    def search(self, request, item_id=None):
-        # TODO, redo as per in notes
-
-        serializer = ArtworkSerializer(data=request.data)
+    def search(self, request,  *args, **kwargs):
+        serializer = SearchRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        search_req_data = serializer.data.get('search_request')[0]
 
-        limit = serializer.data.get('limit') if serializer.data.get('limit') else None
-        offset = serializer.data.get('offset') if serializer.data.get('offset') else None
-        filters = serializer.data.get('filters')
-        # todo: should type be available?
-        # type = request.data.get('type')
-        # types: title, artist, place of
+        limit = search_req_data.get('limit') if search_req_data.get('limit') else None
+        offset = search_req_data.get('offset') if search_req_data.get('offset') else None
+        filters = search_req_data.get('filters')
+        searchstr = search_req_data.get('q')
+        excluded = search_req_data.get('exclude')
 
-
-        results = Artwork.objects.all()
-        # artwork_title = request.GET.get('title')
-        # artist_name = request.GET.get('artist')
-        # keywords = request.GET.get('keywords')
-        # date_from = request.GET.get('date_from')
-        # date_to = request.GET.get('date_to')
-        # place_of_production = request.GET.get('origin')  # origin
-        # current_location = request.GET.get('location')  # location
+        results = Artwork.objects.exclude(id__in=excluded)
         q_objects = Q()
 
-        # if location_of_creation:
-        #     locations = Location.objects.filter(name__istartswith=location_of_creation)
-        #     q_objects.add(Q(location_of_creation__in=locations), Q.AND)
-        # if location_current:
-        #     locations = Location.objects.filter(name__istartswith=location_current)
-        #     q_objects.add(Q(location_current__in=locations), Q.AND)
-        # if artist_name:
-        #     terms = [term.strip() for term in artist_name.split()]
-        #     for term in terms:
-        #         q_objects.add(
-        #             (Q(artists__name__unaccent__icontains=term) | Q(artists__synonyms__unaccent__icontains=term)),
-        #             Q.AND,
-        #         )
-        # if keyword:
-        #     keywords = Keyword.objects.filter(name__icontains=keyword)
-        #     q_objects.add(Q(keywords__in=keywords), Q.AND)
-        # if date_from:
-        #     try:
-        #         year = int(date_from)
-        #         q_objects.add(Q(date_year_from__gte=year), Q.AND)
-        #     except ValueError as err:
-        #         logger.error(err)
-        #         return []
-        # if date_to:
-        #     try:
-        #         year = int(date_to)
-        #         q_objects.add(Q(date_year_to__lte=year), Q.AND)
-        #     except ValueError as err:
-        #         logger.error(err)
-        #         return []
-        # if artwork_title:
-        #     q_objects.add(Q(title__icontains=artwork_title) |
-        #                   Q(title_english__icontains=artwork_title), Q.AND)
 
-
-        #todo: does it need filtering?*
-        results_filter = []
+        # todo: filter_values, which roles does it have?
+        # todo test all filters
+        # todo adjust result filter accordingly
 
         for i in filters:
-            if i['id'] == 'activities' or i['id'] == 'default':
-                results_filter.append(
-                    i['filter_values']
-                )
-                #* results.append(
-                #                     filter_activities(flt['filter_values'], limit, offset, lang)
-                #                 )
-            if i['id'] == 'type':
-                results_filter.append(i['filter_values'])
+            if i['id'] == 'title':
+                q_objects.add(Q(title__icontains=searchstr) | Q(title_english__icontains=searchstr), Q.AND)
+            if i['id'] == 'artist':
+                terms = [term.strip() for term in searchstr.split()]
+                for term in terms:
+                    q_objects.add(
+                        (Q(artists__name__unaccent__icontains=term) | Q(artists__synonyms__unaccent__icontains=term)),
+                        Q.AND,
+                    )
+            if i['id'] == 'place_of_production':
+                locations = Location.objects.filter(name__istartswith=searchstr)
+                q_objects.add(Q(location_of_creation__in=locations), Q.AND)
+            if i['id'] == 'current_location':
+                locations = Location.objects.filter(name__istartswith=searchstr)
+                q_objects.add(Q(location_current__in=locations), Q.AND)
             if i['id'] == 'keywords':
-                results.append(
-                    i['filter_values']
-                )
-            if i['id'] == 'current_activities':
-                results_filter.append(
-                    i['filter_values']
-                )
-            if i['id'] == 'start_page':
-                results_filter.append(
-                    i['filter_values'],
-                )
-            if i['id'] == 'date':
-                results_filter.append(i['filter_values'])
-            if i['id'] == 'daterange':
-                results_filter.append(
-                    i['filter_values']
-                )
+                keywords = Keyword.objects.filter(name__icontains=searchstr)
+                q_objects.add(Q(keywords__in=keywords), Q.AND)
+            if i['id'] == 'date_from':
+                try:
+                    year = int(searchstr)
+                    q_objects.add(Q(date_year_from__gte=year), Q.AND)
+                except ValueError as err:
+                    logger.error(err)
+                    return []
+            if i['id'] == 'date_to':
+                try:
+                    year = int(searchstr)
+                    q_objects.add(Q(date_year_to__lte=year), Q.AND)
+                except ValueError as err:
+                    logger.error(err)
+                    return []
+
+        # todo else
 
         results = results.distinct().filter(q_objects)
 
@@ -421,43 +382,31 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         results = results[offset:end]
 
-        serializer = ArtworkSerializer(results, many=True)
-
-        # todo expected response:
-        # {
-        #   total: number, // number of total search results found
-        #   // rename?
-        #   results: object[],
-        #   [
-        #     {
-        #       title: string
-        #       artist: string,
-        #       date: string,
-        #       // array with different format urls or single url?
-        #       image_urls: string[],
-        #       // rename?
-        #       albums: object[] // a list of albums that artwork was added to
-        #         [
-        #           {
-        #             // rename?
-        #             label: string,
-        #             id: string,
-        #           }
-        #         ]
-        #       // i think that was all that should be displayed here??
-        #     },
-        #     ...
-        #   ]
-        # }
-
-        return Response({
-            'total_results': results.count(),
-            'results': [
-
-                 }
-            ]
-            # 'data': serializer.data
-        })
+        return Response(
+            {
+                "total": results.count(),
+                "results":
+                # all the artworks that have searchstr included in the *filter_var* only
+                    [
+                        {
+                            "title": artwork.title,
+                            'id': artwork.id,
+                            "artist": [artist.name for artist in artwork.artists.all()],
+                            "date": artwork.date,
+                            "image_urls":
+                                [],  # todo list of strings, retriever urls
+                            "albums":
+                                [
+                                    {
+                                        "label": album.title,
+                                        "id": album.id
+                                    }
+                                for album in artwork.album_set.all()
+                                ]
+                        }
+                    for artwork in results]
+            }
+        )
 
 
 class AlbumViewSet(viewsets.ViewSet):
