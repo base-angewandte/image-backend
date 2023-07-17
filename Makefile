@@ -39,3 +39,12 @@ start-dev:
 	docker-compose up -d --build \
 		artdb-redis \
 		artdb-postgres
+
+.PHONY: test-data
+test-data:
+	docker-compose exec artdb-django python manage.py loaddata artworks/fixtures/artists.json
+	docker-compose exec artdb-django python manage.py loaddata artworks/fixtures/keywords.json
+	docker-compose exec artdb-django python manage.py loaddata artworks/fixtures/locations.json
+	docker-compose exec artdb-django python manage.py loaddata artworks/fixtures/artworks.json
+	cp test-data/*.png ${MEDIA_DIR}
+	docker-compose exec -T artdb-postgres psql -U django_artdb django_artdb < test-data/set-placeholder-images.sql
