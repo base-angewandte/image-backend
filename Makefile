@@ -40,6 +40,10 @@ start-dev:
 		artdb-redis \
 		artdb-postgres
 
+.PHONY: start-dev-docker
+start-dev-docker: start  ## start docker development setup
+	docker logs -f artdb-django
+
 .PHONY: test-data
 test-data:
 	docker-compose exec artdb-django python manage.py loaddata artworks/fixtures/artists.json
