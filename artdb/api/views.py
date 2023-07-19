@@ -5,6 +5,8 @@ from artworks.models import User
 # todo remove, for testing purposes
 # album = Album.objects.create(title=title, user=test_user)
 # test_user = User.objects.last()
+from django.contrib.postgres.search import SearchVector
+
 
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
@@ -295,15 +297,26 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         'limit': 0,
                         'offset': 0,
                         'exclude': ['id123', 'id345'],  # with artwork ids
-                        'q': 'search string for general search',  # the string from general search
+                        'q': 'searchstring',  # the string from general search
                         'filters':
                             [
                                 {
                                     'id': 'artist',
-                                    'filter_values': 'string'
-                                    # boolean|number|string|array|object depending on type of filter
+                                    'filter_values': ['rubens', {'id': 'id786'}],
+                                    # format depending on type of filter, see filter list endpoint
                                 }
                             ],
+                        # in case of date_from and date_to
+                        # "filters":
+                        # [
+                        #    {
+                        #       "id":"string",
+                        #       "filter_values":"{
+                        #          "date_from":"string",
+                        #          "date_to":"string"
+                        #       }
+                        #    }
+                        # ]
                     }
                 ]
             )
@@ -322,52 +335,47 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         limit = search_req_data.get('limit') if search_req_data.get('limit') else None
         offset = search_req_data.get('offset') if search_req_data.get('offset') else None
         filters = search_req_data.get('filters')
+        filter_values = filters[0].get('filter_values') # todo adapt
         searchstr = search_req_data.get('q')
         excluded = search_req_data.get('exclude')
 
-        results = Artwork.objects.exclude(id__in=excluded)
+        results = Artwork.objects.exclude(id__in=str(excluded))
         q_objects = Q()
 
 
         # todo: filter_values, which roles does it have?
         # todo test all filters
         # todo adjust result filter accordingly
+        # todo: id should be string not int
+
 
         for i in filters:
             if i['id'] == 'title':
-                q_objects.add(Q(title__icontains=searchstr) | Q(title_english__icontains=searchstr), Q.AND)
+                q_objects = filter_title(filter_values, q_objects)
+
             if i['id'] == 'artist':
-                terms = [term.strip() for term in searchstr.split()]
-                for term in terms:
-                    q_objects.add(
-                        (Q(artists__name__unaccent__icontains=term) | Q(artists__synonyms__unaccent__icontains=term)),
-                        Q.AND,
-                    )
+                q_objects = filter_artist(filter_values, q_objects)
+
             if i['id'] == 'place_of_production':
-                locations = Location.objects.filter(name__istartswith=searchstr)
-                q_objects.add(Q(location_of_creation__in=locations), Q.AND)
+                q_objects = filter_place_of_production(filter_values, q_objects)
+
             if i['id'] == 'current_location':
-                locations = Location.objects.filter(name__istartswith=searchstr)
-                q_objects.add(Q(location_current__in=locations), Q.AND)
+                q_objects = filter_current_location(filter_values, q_objects)
+
             if i['id'] == 'keywords':
-                keywords = Keyword.objects.filter(name__icontains=searchstr)
-                q_objects.add(Q(keywords__in=keywords), Q.AND)
-            if i['id'] == 'date_from':
-                try:
-                    year = int(searchstr)
-                    q_objects.add(Q(date_year_from__gte=year), Q.AND)
-                except ValueError as err:
-                    logger.error(err)
-                    return []
-            if i['id'] == 'date_to':
-                try:
-                    year = int(searchstr)
-                    q_objects.add(Q(date_year_to__lte=year), Q.AND)
-                except ValueError as err:
-                    logger.error(err)
-                    return []
+                q_objects = filter_keywords(filter_values, q_objects)
+
+            if i['id'] == 'date':
+                q_objects = filter_date(filter_values, q_objects)
 
         # todo else
+
+        # todo test below
+        results.append(
+            Artwork.objects.annotate(search=SearchVector("title", "title_english", "artist", "materials",
+                                                         "dimensions", "description", "credits", "kewords",
+                                                         "location_of_creation", "location_current"),
+                                     ).filter(search=searchstr))
 
         results = results.distinct().filter(q_objects)
 
@@ -382,15 +390,20 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         results = results[offset:end]
 
+        # VERSION 2
+
         return Response(
             {
                 "total": results.count(),
                 "results":
-                # all the artworks that have searchstr included in the *filter_var* only
+                # version 2: artworks by 'rubens' (or '') Rubenski in the artists field AND the string 'ar' in any data field (except artworks with id excluded ids)
+                # data field: postgres fulltext search
+
+
+                # first filter , then searchstr
                     [
                         {
                             "title": artwork.title,
-                            'id': artwork.id,
                             "artist": [artist.name for artist in artwork.artists.all()],
                             "date": artwork.date,
                             "image_urls":
@@ -401,12 +414,98 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                                         "label": album.title,
                                         "id": album.id
                                     }
-                                for album in artwork.album_set.all()
+                                    for album in artwork.album_set.all()
                                 ]
                         }
-                    for artwork in results]
+                        for artwork in results]
             }
         )
+
+def filter_title(filter_values, q_objects):
+    for val in filter_values:
+        if type(val, str):
+            q_objects.add(Q(title__icontains=val) | Q(title_english__icontains=val), Q.AND)
+        if type(val, dict) and 'id' in val.keys():
+            q_objects.add(Q(id=val.get('id')), Q.AND)
+        else:
+            return Response(_('Invalid filter_value format. See example below for more information.'))
+
+    return q_objects
+
+
+def filter_artist(filter_values, q_objects):
+    for val in filter_values:
+        if type(val, str):
+            terms = [term.strip() for term in val.split()]
+            for term in terms:
+                q_objects.add(
+                    (Q(artists__name__unaccent__icontains=term) | Q(artists__synonyms__unaccent__icontains=term)),
+                    Q.AND,
+                )
+        if type(val, dict) and 'id' in val.keys():
+            q_objects.add(Q(id=val.get('id')), Q.AND)
+        else:
+            return Response(_('Invalid filter_value format. See example below for more information.'))
+
+    return q_objects
+
+
+def filter_place_of_production(filter_values, q_objects):
+    for val in filter_values:
+        if type(val, str):
+            locations = Location.objects.filter(name__icontains=val)  # todo: istartswith or icontains?
+            q_objects.add(Q(location_of_creation__in=locations), Q.AND)
+        if type(val, dict) and 'id' in val.keys():
+            q_objects.add(Q(id=val.get('id')), Q.AND)
+        else:
+            return Response(_('Invalid filter_value format. See example below for more information.'))
+
+    return q_objects
+
+
+def filter_current_location(filter_values, q_objects):
+    for val in filter_values:
+        if type(val, str):
+            locations = Location.objects.filter(name__icontains=val) # todo: istartswith or icontains?
+            q_objects.add(Q(location_current__in=locations), Q.AND)
+        if type(val, dict) and 'id' in val.keys():
+            q_objects.add(Q(id=val.get('id')), Q.AND)
+        else:
+            return Response(_('Invalid filter_value format. See example below for more information.'))
+
+    return q_objects
+
+
+def filter_keywords(filter_values, q_objects):
+    for val in filter_values:
+        if type(val, str):
+            keywords = Keyword.objects.filter(name__icontains=val)
+            q_objects.add(Q(keywords__in=keywords), Q.AND)
+        if type(val, dict) and 'id' in val.keys():
+            q_objects.add(Q(id=val.get('id')), Q.AND)
+        else:
+            return Response(_('Invalid filter_value format. See example below for more information.'))
+
+    return q_objects
+
+
+# todo special format
+def filter_date(filter_values, q_objects):
+    for val in filter_values:
+        ### todo: old:
+        if type(val, str):
+            try:
+                year = int(val)  # todo should be int or else? how many formats should be allowed? check showroom too
+                q_objects.add(Q(date_year_from__gte=year), Q.AND)
+            except ValueError as err:
+                logger.error(err)
+                return []
+
+        ### end test
+        else:
+            return Response(_('Invalid filter_value format. See example below for more information.'))
+
+    return q_objects
 
 
 class AlbumViewSet(viewsets.ViewSet):
