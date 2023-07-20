@@ -97,6 +97,7 @@ INSTALLED_APPS = [
     'mptt',
     'massadmin',
     'ordered_model',
+    'corsheaders',
     # Project apps
     'general',
     'artworks',
@@ -175,6 +176,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -409,9 +411,12 @@ SESSION_COOKIE_NAME = 'sessionid_{}'.format('image')
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 CSRF_COOKIE_NAME = 'csrftoken_{}'.format('image')
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
+
+CORS_ALLOW_CREDENTIALS = env.bool('CORS_ALLOW_CREDENTIALS', default=False)
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
 
 # base Header
 BASE_HEADER_SITE_URL = env.str('BASE_HEADER_SITE_URL', SITE_URL)
 BASE_HEADER_JSON = '{}bs/base-header.json'.format(BASE_HEADER_SITE_URL)
 BASE_HEADER = '{}{}'.format(BASE_HEADER_SITE_URL, requests.get(BASE_HEADER_JSON).json()['latest'])
-
