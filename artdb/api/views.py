@@ -10,7 +10,6 @@ from rest_framework.exceptions import ParseError
 import re
 from django.contrib.postgres.search import SearchVector
 
-
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -142,149 +141,149 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     def list_search_filters(self, request, *args, **kwargs):
         # todo: has to be dynamic
         data = {
-           "title":{
-              "type":"array",
-              "items":{
-                 "type":"object",
-                 "properties":{
-                    "label":{
-                       "type":"string"
-                    },
-                    "source":{
-                       "type":"string"
+            "title": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "label": {
+                            "type": "string"
+                        },
+                        "source": {
+                            "type": "string"
+                        }
                     }
-                 }
-              },
-              "title":"Titel",
-              "x-attrs":{
-                 "field_format":"half",
-                 "field_type":"chips",
-                 "dynamic_autosuggest":True,
-                 "allow_unknown_entries":True,
-                 "source":"/autosuggest/v1/titles/",
-                 "placeholder":"Titel eintragen",
-                 "order":1
-              }
-           },
-           "artist":{
-              "type":"array",
-              "items":{
-                 "type":"object",
-                 "properties":{
-                    "label":{
-                       "type":"string"
-                    },
-                    "source":{
-                       "type":"string"
+                },
+                "title": "Titel",
+                "x-attrs": {
+                    "field_format": "half",
+                    "field_type": "chips",
+                    "dynamic_autosuggest": True,
+                    "allow_unknown_entries": True,
+                    "source": "/autosuggest/v1/titles/",
+                    "placeholder": "Titel eintragen",
+                    "order": 1
+                }
+            },
+            "artist": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "label": {
+                            "type": "string"
+                        },
+                        "source": {
+                            "type": "string"
+                        }
                     }
-                 }
-              },
-              "title":"Künstler*in",
-              "x-attrs":{
-                 "field_format":"half",
-                 "field_type":"chips",
-                 "dynamic_autosuggest":True,
-                 "allow_unknown_entries":True,
-                 "source":"/autosuggest/v1/artists/",
-                 "placeholder":"Künstler*in eintragen",
-                 "order":2
-              }
-           },
-           "place_of_production":{
-              "type":"array",
-              "items":{
-                 "type":"object",
-                 "properties":{
-                    "label":{
-                       "type":"string"
-                    },
-                    "source":{
-                       "type":"string"
+                },
+                "title": "Künstler*in",
+                "x-attrs": {
+                    "field_format": "half",
+                    "field_type": "chips",
+                    "dynamic_autosuggest": True,
+                    "allow_unknown_entries": True,
+                    "source": "/autosuggest/v1/artists/",
+                    "placeholder": "Künstler*in eintragen",
+                    "order": 2
+                }
+            },
+            "place_of_production": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "label": {
+                            "type": "string"
+                        },
+                        "source": {
+                            "type": "string"
+                        }
                     }
-                 }
-              },
-              "title":"Entstehungsort",
-              "x-attrs":{
-                 "field_format":"half",
-                 "field_type":"chips",
-                 "dynamic_autosuggest":True,
-                 "allow_unknown_entries":True,
-                 "source":"/autosuggest/v1/locations/",
-                 "placeholder":"Entstehungsort eintragen",
-                 "order":3
-              }
-           },
-           "current_location":{
-              "type":"array",
-              "items":{
-                 "type":"object",
-                 "properties":{
-                    "label":{
-                       "type":"string"
-                    },
-                    "source":{
-                       "type":"string"
+                },
+                "title": "Entstehungsort",
+                "x-attrs": {
+                    "field_format": "half",
+                    "field_type": "chips",
+                    "dynamic_autosuggest": True,
+                    "allow_unknown_entries": True,
+                    "source": "/autosuggest/v1/locations/",
+                    "placeholder": "Entstehungsort eintragen",
+                    "order": 3
+                }
+            },
+            "current_location": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "label": {
+                            "type": "string"
+                        },
+                        "source": {
+                            "type": "string"
+                        }
                     }
-                 }
-              },
-              "title":"Standort",
-              "x-attrs":{
-                 "field_format":"half",
-                 "field_type":"chips",
-                 "dynamic_autosuggest":True,
-                 "allow_unknown_entries":True,
-                 "source":"/autosuggest/v1/locations/",
-                 "placeholder":"Standort eintragen",
-                 "order":4
-              }
-           },
-           "keywords":{
-              "type":"array",
-              "items":{
-                 "type":"object",
-                 "properties":{
-                    "label":{
-                       "type":"string"
-                    },
-                    "source":{
-                       "type":"string"
+                },
+                "title": "Standort",
+                "x-attrs": {
+                    "field_format": "half",
+                    "field_type": "chips",
+                    "dynamic_autosuggest": True,
+                    "allow_unknown_entries": True,
+                    "source": "/autosuggest/v1/locations/",
+                    "placeholder": "Standort eintragen",
+                    "order": 4
+                }
+            },
+            "keywords": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "label": {
+                            "type": "string"
+                        },
+                        "source": {
+                            "type": "string"
+                        }
                     }
-                 }
-              },
-              "title":"Schlagwort",
-              "x-attrs":{
-                 "placeholder":"Schlagwort eintragen",
-                 "order":5,
-                 "field_format":"full",
-                 "field_type":"chips",
-                 "allow_unknown_entries":False,
-                 "dynamic_autosuggest":True,
-                 "source":"/autosuggest/v1/keywords/"
-              }
-           },
-           "date":{
-              "type":"object",
-              "properties":{
-                 "date_from":{
-                    "type":"string"
-                 },
-                 "date_to":{
-                    "type":"string"
-                 }
-              },
-              "title":"Datierung von, bis",
-              "additionalProperties":False,
-              "pattern":"^\\d{4}(-(0[1-9]|1[0-2]))?(-(0[1-9]|[12]\\d|3[01]))?$",
-              "x-attrs":{
-                 "field_format":"full",
-                 "field_type":"date",
-                 "date_format":"day",
-                 "placeholder":{
-                    "date":"Datum eintragen"
-                 },
-                 "order":6
-              }
-           }
+                },
+                "title": "Schlagwort",
+                "x-attrs": {
+                    "placeholder": "Schlagwort eintragen",
+                    "order": 5,
+                    "field_format": "full",
+                    "field_type": "chips",
+                    "allow_unknown_entries": False,
+                    "dynamic_autosuggest": True,
+                    "source": "/autosuggest/v1/keywords/"
+                }
+            },
+            "date": {
+                "type": "object",
+                "properties": {
+                    "date_from": {
+                        "type": "string"
+                    },
+                    "date_to": {
+                        "type": "string"
+                    }
+                },
+                "title": "Datierung von, bis",
+                "additionalProperties": False,
+                "pattern": "^\\d{4}(-(0[1-9]|1[0-2]))?(-(0[1-9]|[12]\\d|3[01]))?$",
+                "x-attrs": {
+                    "field_format": "full",
+                    "field_type": "date",
+                    "date_format": "day",
+                    "placeholder": {
+                        "date": "Datum eintragen"
+                    },
+                    "order": 6
+                }
+            }
         }
 
         return Response(data)
@@ -309,17 +308,27 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                                     # format depending on type of filter, see filter list endpoint
                                 }
                             ],
-                        # in case of date_from and date_to
-                        # "filters":
-                        # [
-                        #    {
-                        #       "id":"string",
-                        #       "filter_values":[{
-                        #          "date_from":"string",
-                        #          "date_to":"string"
-                        #       }]
-                        #    }
-                        # ]
+                    }
+                ]
+            ),
+            OpenApiExample(
+                name='search_data_date',
+                value=[
+                    {
+                        'limit': 0,
+                        'offset': 0,
+                        'exclude': ['id123', 'id345'],  # with artwork ids
+                        'q': 'searchstring',  # the string from general search
+                        'filters':
+                            [
+                                {
+                                    "id": "string",
+                                    "filter_values": [{
+                                        "date_from": "2000",
+                                        "date_to": "2001"
+                                    }]
+                                }
+                            ],
                     }
                 ]
             )
@@ -330,7 +339,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             404: OpenApiResponse(description='Not found'),
         },
     )
-    def search(self, request,  *args, **kwargs):
+    def search(self, request, *args, **kwargs):
         serializer = SearchRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         search_req_data = serializer.data.get('search_request')[0]
@@ -338,26 +347,24 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         limit = search_req_data.get('limit') if search_req_data.get('limit') else None
         offset = search_req_data.get('offset') if search_req_data.get('offset') else None
         filters = search_req_data.get('filters')
-        filter_values = filters[0].get('filter_values') # todo adapt
+        filter_values = filters[0].get('filter_values')  # todo adapt
         searchstr = search_req_data.get('q')
         excluded = search_req_data.get('exclude')
 
-        results = Artwork.objects.exclude(id__in=str(excluded))
+        results = Artwork.objects.exclude(id__in=[str(i) for i in excluded])
         q_objects = Q()
 
-
-        # todo: filter_values, which roles does it have?
         # todo test all filters
-        # todo adjust result filter accordingly
-        # todo: id should be string not int
-
+        # todo: django.core.exceptions.FieldError:
+        #   Cannot resolve keyword 'date_from' into field. Choices are: album, albummembership,
+        #   artists, checked, created_at, credits, date, date_year_from, date_year_to,
 
         for i in filters:
             if i['id'] == 'title':
                 q_objects = filter_title(filter_values, q_objects)
 
             if i['id'] == 'artist':
-                q_objects = filter_artist(filter_values, q_objects)
+                q_objects = filter_artist(filter_values, q_objects, results)
 
             if i['id'] == 'place_of_production':
                 q_objects = filter_place_of_production(filter_values, q_objects)
@@ -371,16 +378,17 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             if i['id'] == 'date':
                 q_objects = filter_date(filter_values, q_objects)
 
-        # todo else
+        # todo validate
 
-        # todo test below
-        results.append(
-            Artwork.objects.annotate(search=SearchVector("title", "title_english", "artist", "materials",
-                                                         "dimensions", "description", "credits", "kewords",
-                                                         "location_of_creation", "location_current"),
-                                     ).filter(search=searchstr))
+        # todo search vector not working as it should
 
-        results = results.distinct().filter(q_objects)
+        results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
+                                             "dimensions", "description", "credits", "keywords",
+                                             "location_of_creation", "location_current"),
+                         ).filter(search=searchstr).distinct()
+
+
+        results = results.distinct()
 
         if offset and limit:
             end = offset + limit
@@ -393,15 +401,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         results = results[offset:end]
 
-        # VERSION 2
-
         return Response(
             {
                 "total": results.count(),
                 "results":
                 # version 2: artworks by 'rubens' (or '') Rubenski in the artists field AND the string 'ar' in any data field (except artworks with id excluded ids)
                 # data field: postgres fulltext search
-
 
                 # first filter , then searchstr
                     [
@@ -410,7 +415,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                             "artist": [artist.name for artist in artwork.artists.all()],
                             "date": artwork.date,
                             "image_urls":
-                                [],  # todo list of strings, retriever urls
+                                [artwork.image_original],  # todo list of strings, retriever urls
                             "albums":
                                 [
                                     {
@@ -424,6 +429,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             }
         )
 
+
 def filter_title(filter_values, q_objects):
     for val in filter_values:
         if isinstance(val, str):
@@ -436,7 +442,7 @@ def filter_title(filter_values, q_objects):
     return q_objects
 
 
-def filter_artist(filter_values, q_objects):
+def filter_artist(filter_values, q_objects, results):
     for val in filter_values:
         if isinstance(val, str):
             terms = [term.strip() for term in val.split()]
@@ -450,7 +456,7 @@ def filter_artist(filter_values, q_objects):
         else:
             return Response(_('Invalid filter_value format. See example below for more information.'))
 
-    return q_objects
+    return results.filter(q_objects)
 
 
 def filter_place_of_production(filter_values, q_objects):
@@ -469,7 +475,7 @@ def filter_place_of_production(filter_values, q_objects):
 def filter_current_location(filter_values, q_objects):
     for val in filter_values:
         if isinstance(val, str):
-            locations = Location.objects.filter(name__icontains=val) # todo: istartswith or icontains?
+            locations = Location.objects.filter(name__icontains=val)  # todo: istartswith or icontains?
             q_objects.add(Q(location_current__in=locations), Q.AND)
         if isinstance(val, dict) and 'id' in val.keys():
             q_objects.add(Q(id=val.get('id')), Q.AND)
@@ -494,7 +500,9 @@ def filter_keywords(filter_values, q_objects):
 
 def filter_date(filter_values, q_objects):
     ### todo ask FE:
-        # does this pattern fit? "pattern":"^\\d{4}(-(0[1-9]|1[0-2]))?(-(0[1-9]|[12]\\d|3[01]))?$",
+    # 1. does this pattern fit? "pattern":"^\\d{4}(-(0[1-9]|1[0-2]))?(-(0[1-9]|[12]\\d|3[01]))?$",
+    # 2. django.core.exceptions.FieldError:
+    #         #   Cannot resolve keyword 'date_from' into field. Choices are: album, albummembership, artists, checked, created_at, credits, date, date_year_from, date_year_to,
 
     for val in filter_values:
         if isinstance(val, dict):
@@ -504,7 +512,8 @@ def filter_date(filter_values, q_objects):
                         'Only dates of format YYYY-MM-DD can be used as date filter values',
                         400,
                     )
-            q_objects.add(Q(date_from__gte=val['date_from']) | Q(date_from__gte=val['date_to']), Q.AND)
+            q_objects.add(Q(date_from__gte=val['date_from']) | Q(date_to__gte=val['date_to']), Q.AND)
+
 
         else:
             return Response(_('Invalid filter_value format. See example below for more information.'))
