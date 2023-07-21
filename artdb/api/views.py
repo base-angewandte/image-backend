@@ -5,6 +5,9 @@ from artworks.models import User
 # todo remove, for testing purposes
 # album = Album.objects.create(title=title, user=test_user)
 # test_user = User.objects.last()
+from rest_framework.exceptions import ParseError
+
+import re
 from django.contrib.postgres.search import SearchVector
 
 
@@ -311,10 +314,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         # [
                         #    {
                         #       "id":"string",
-                        #       "filter_values":"{
+                        #       "filter_values":[{
                         #          "date_from":"string",
                         #          "date_to":"string"
-                        #       }
+                        #       }]
                         #    }
                         # ]
                     }
@@ -423,9 +426,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
 def filter_title(filter_values, q_objects):
     for val in filter_values:
-        if type(val, str):
+        if isinstance(val, str):
             q_objects.add(Q(title__icontains=val) | Q(title_english__icontains=val), Q.AND)
-        if type(val, dict) and 'id' in val.keys():
+        if isinstance(val, dict) and 'id' in val.keys():
             q_objects.add(Q(id=val.get('id')), Q.AND)
         else:
             return Response(_('Invalid filter_value format. See example below for more information.'))
@@ -435,14 +438,14 @@ def filter_title(filter_values, q_objects):
 
 def filter_artist(filter_values, q_objects):
     for val in filter_values:
-        if type(val, str):
+        if isinstance(val, str):
             terms = [term.strip() for term in val.split()]
             for term in terms:
                 q_objects.add(
                     (Q(artists__name__unaccent__icontains=term) | Q(artists__synonyms__unaccent__icontains=term)),
                     Q.AND,
                 )
-        if type(val, dict) and 'id' in val.keys():
+        if isinstance(val, dict) and 'id' in val.keys():
             q_objects.add(Q(id=val.get('id')), Q.AND)
         else:
             return Response(_('Invalid filter_value format. See example below for more information.'))
@@ -452,10 +455,10 @@ def filter_artist(filter_values, q_objects):
 
 def filter_place_of_production(filter_values, q_objects):
     for val in filter_values:
-        if type(val, str):
+        if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val)  # todo: istartswith or icontains?
             q_objects.add(Q(location_of_creation__in=locations), Q.AND)
-        if type(val, dict) and 'id' in val.keys():
+        if isinstance(val, dict) and 'id' in val.keys():
             q_objects.add(Q(id=val.get('id')), Q.AND)
         else:
             return Response(_('Invalid filter_value format. See example below for more information.'))
@@ -465,10 +468,10 @@ def filter_place_of_production(filter_values, q_objects):
 
 def filter_current_location(filter_values, q_objects):
     for val in filter_values:
-        if type(val, str):
+        if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val) # todo: istartswith or icontains?
             q_objects.add(Q(location_current__in=locations), Q.AND)
-        if type(val, dict) and 'id' in val.keys():
+        if isinstance(val, dict) and 'id' in val.keys():
             q_objects.add(Q(id=val.get('id')), Q.AND)
         else:
             return Response(_('Invalid filter_value format. See example below for more information.'))
@@ -478,10 +481,10 @@ def filter_current_location(filter_values, q_objects):
 
 def filter_keywords(filter_values, q_objects):
     for val in filter_values:
-        if type(val, str):
+        if isinstance(val, str):
             keywords = Keyword.objects.filter(name__icontains=val)
             q_objects.add(Q(keywords__in=keywords), Q.AND)
-        if type(val, dict) and 'id' in val.keys():
+        if isinstance(val, dict) and 'id' in val.keys():
             q_objects.add(Q(id=val.get('id')), Q.AND)
         else:
             return Response(_('Invalid filter_value format. See example below for more information.'))
@@ -489,19 +492,20 @@ def filter_keywords(filter_values, q_objects):
     return q_objects
 
 
-# todo special format
 def filter_date(filter_values, q_objects):
-    for val in filter_values:
-        ### todo: old:
-        if type(val, str):
-            try:
-                year = int(val)  # todo should be int or else? how many formats should be allowed? check showroom too
-                q_objects.add(Q(date_year_from__gte=year), Q.AND)
-            except ValueError as err:
-                logger.error(err)
-                return []
+    ### todo ask FE:
+        # does this pattern fit? "pattern":"^\\d{4}(-(0[1-9]|1[0-2]))?(-(0[1-9]|[12]\\d|3[01]))?$",
 
-        ### end test
+    for val in filter_values:
+        if isinstance(val, dict):
+            for date in val.values():
+                if not re.match(r'^[0-9]{4}-[0-9]{2}-[0-9]{2}$', date):
+                    raise ParseError(
+                        'Only dates of format YYYY-MM-DD can be used as date filter values',
+                        400,
+                    )
+            q_objects.add(Q(date_from__gte=val['date_from']) | Q(date_from__gte=val['date_to']), Q.AND)
+
         else:
             return Response(_('Invalid filter_value format. See example below for more information.'))
 
