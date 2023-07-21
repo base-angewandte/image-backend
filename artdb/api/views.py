@@ -1,10 +1,4 @@
 import logging
-from django.core.exceptions import ValidationError
-import jsonschema
-from artworks.models import User
-# todo remove, for testing purposes
-# album = Album.objects.create(title=title, user=test_user)
-# test_user = User.objects.last()
 from rest_framework.exceptions import ParseError
 
 import re
