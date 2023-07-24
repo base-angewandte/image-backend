@@ -8,7 +8,7 @@
 SITE_URL=https://base.uni-ak.ac.at/
 
 ## In a production deployment with other base components, this base path should
-## be set for image. For local development FORCE_SCRIPT_NAME=/ is probably best.
+## be set for image. For local development set this explicitly to an empty string.
 # FORCE_SCRIPT_NAME=/image
 
 ## The accepted HTTP Host headers, Django will serve. Defaults to urlparse(SITE_URL).hostname

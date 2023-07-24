@@ -35,6 +35,8 @@ In both cases there are some common steps to follow:
     cp ./artdb/artb/env-skel ./artdb/artdb/.env
     vi ./artdb/artdb/.env
     ```
+Take a look at the [](./configuration.md) section, for more details, if you need more
+context than the comments in the skeleton env files give you.
 
 Now, depending on which path you want to go, take one of the following two
 subsections.
@@ -62,6 +64,12 @@ subsections.
     ```
 
 ### The full developer setup
+
+> Disclaimer: make sure to explicitly set the relevant `POSTGRES_*` variables in your
+> artdb/artdb/.env file, if you have changed any of the corresponding `DB_*`
+> parameters in your .env file. This is not necessary for dockerised setups, but in your
+> local django dev server those environement variables are not assigned
+> automagically. Take a look at the [](./configuration.md) section for details.
 
 * Install the latest python 3.8 and create virtualenv e.g. via `pyenv` and `pyenv-virtualenv`.
 
