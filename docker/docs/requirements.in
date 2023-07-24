@@ -1,5 +1,5 @@
-recommonmark
-sphinx
-sphinx-rtd-theme
-markupsafe==1.1.1
-    # sphinx requires jinja2 which requires markupsafe 1.0, which uses a deprecated setuptools feature
+# compile this file with 'pip-compile requirements.in'
+myst-parser==0.17.2
+sphinx==4.5.0
+sphinx-rtd-theme==1.0.0
+sphinx-rtd-dark-mode==1.2.4
