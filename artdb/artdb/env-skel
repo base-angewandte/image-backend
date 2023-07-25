@@ -11,6 +11,11 @@ SITE_URL=https://base.uni-ak.ac.at/
 ## be set for image. For local development set this explicitly to an empty string.
 # FORCE_SCRIPT_NAME=/image
 
+## The generated OpenAPI 3.0 spec contains the URL and a description to the
+## server hosting the API. This is by default created from SITE_URL and FORCE_SCRIPT_NAME
+# OPENAPI_SERVER_URL=
+# OPENAPI_SERVER_DESCRIPTION=Image+
+
 ## The accepted HTTP Host headers, Django will serve. Defaults to urlparse(SITE_URL).hostname
 # ALLOWED_HOSTS=
 

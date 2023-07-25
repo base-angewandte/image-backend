@@ -113,6 +113,15 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Image+ API',
     'DESCRIPTION': '',
     'VERSION': '1.0.0',
+    'SERVERS': [
+        {
+            'url': env.str(
+                'OPENAPI_SERVER_URL',
+                default=f'{SITE_URL.rstrip("/")}{FORCE_SCRIPT_NAME}',
+            ),
+            'description': env.str('OPENAPI_SERVER_DESCRIPTION', default='Image+'),
+        },
+    ],
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
     # OTHER SETTINGS
