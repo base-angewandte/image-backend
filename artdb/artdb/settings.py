@@ -24,10 +24,8 @@ from django.urls import reverse_lazy
 # from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import gettext_lazy as _
 
-
 env = environ.Env()
 env.read_env()
-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -112,14 +110,13 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-        'TITLE': 'Image+ API',
-        'DESCRIPTION': '',
-        'VERSION': '1.0.0',
-        'SERVE_INCLUDE_SCHEMA': False,
-                'COMPONENT_SPLIT_REQUEST': True
-        # OTHER SETTINGS
-    }
-
+    'TITLE': 'Image+ API',
+    'DESCRIPTION': '',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    # OTHER SETTINGS
+}
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -168,7 +165,6 @@ if SITE_URL.startswith('https'):
     SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000
 
-
 X_FRAME_OPTIONS = 'DENY'
 
 MIDDLEWARE = [
@@ -203,7 +199,6 @@ if BEHIND_PROXY:
     USE_X_FORWARDED_HOST = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-
 ROOT_URLCONF = '{}.urls'.format(PROJECT_NAME)
 
 TEMPLATES = [
@@ -229,7 +224,6 @@ TEMPLATES = [
     },
 ]
 
-
 CONTEXT_SETTINGS = (
     'DEBUG',
     'BASE_HEADER',
@@ -237,7 +231,6 @@ CONTEXT_SETTINGS = (
 )
 
 WSGI_APPLICATION = '{}.wsgi.application'.format(PROJECT_NAME)
-
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
@@ -270,7 +263,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
@@ -305,7 +297,6 @@ STATIC_ROOT = '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'assets', 's
 
 MEDIA_URL = '{}/media/'.format(FORCE_SCRIPT_NAME if FORCE_SCRIPT_NAME else '')
 MEDIA_ROOT = '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'assets', 'media')), os.sep)
-
 
 # config of versatileimagefield
 # used to edit artworks
