@@ -271,7 +271,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 "x-attrs": {
                     "field_format": "full",
                     "field_type": "date",
-                    "date_format": "day",
+                    "date_format": "year",
                     "placeholder": {
                         "date": "Datum eintragen"
                     },
@@ -287,7 +287,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         request=SearchRequestSerializer,
         examples=[
             OpenApiExample(
-                name='search_data',
+                name='search with filter type title, artist, place_of_production, current_location, keywords',
                 value=[
                     {
                         'limit': 0,
@@ -298,7 +298,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                             [
                                 {
                                     'id': 'artist',
-                                    'filter_values': ['rubens', {'id': 'id786'}],
+                                    'filter_values': ['rubens', {'id': 'id786'}], # note: if artist: artist id; anything else, artwork id
                                     # format depending on type of filter, see filter list endpoint
                                 }
                             ],
@@ -306,7 +306,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 ]
             ),
             OpenApiExample(
-                name='search_data_date',
+                name='search with filter type date',
                 value=[
                     {
                         'limit': 0,
@@ -316,11 +316,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         'filters':
                             [
                                 {
-                                    "id": "string",
-                                    "filter_values": [{
+                                    "id": "date",
+                                    "filter_values": {
                                         "date_from": "2000",
                                         "date_to": "2001"
-                                    }]
+                                    }
                                 }
                             ],
                     }
@@ -355,34 +355,29 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         for i in filters:
             if i['id'] == 'title':
-                q_objects = filter_title(filter_values, q_objects)
+                results = filter_title(filter_values, q_objects, results)
 
             if i['id'] == 'artist':
-                q_objects = filter_artist(filter_values, q_objects, results)
+                results = filter_artist(filter_values, q_objects, results)
 
             if i['id'] == 'place_of_production':
-                q_objects = filter_place_of_production(filter_values, q_objects)
+                results = filter_place_of_production(filter_values, q_objects, results)
 
             if i['id'] == 'current_location':
-                q_objects = filter_current_location(filter_values, q_objects)
+                results = filter_current_location(filter_values, q_objects, results)
 
             if i['id'] == 'keywords':
-                q_objects = filter_keywords(filter_values, q_objects)
+                results = filter_keywords(filter_values, q_objects, results)
 
             if i['id'] == 'date':
-                q_objects = filter_date(filter_values, q_objects)
+                results = filter_date(filter_values, q_objects, results)
 
-        # todo validate
-
-        # todo search vector not working as it should
+        # todo: validate
 
         results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
                                              "dimensions", "description", "credits", "keywords",
                                              "location_of_creation", "location_current"),
-                         ).filter(search=searchstr).distinct()
-
-
-        results = results.distinct()
+                         ).filter(search__icontains=searchstr).distinct()
 
         if offset and limit:
             end = offset + limit
@@ -399,17 +394,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             {
                 "total": results.count(),
                 "results":
-                # version 2: artworks by 'rubens' (or '') Rubenski in the artists field AND the string 'ar' in any data field (except artworks with id excluded ids)
-                # data field: postgres fulltext search
-
-                # first filter , then searchstr
                     [
                         {
                             "title": artwork.title,
                             "artist": [artist.name for artist in artwork.artists.all()],
                             "date": artwork.date,
                             "image_urls":
-                                [artwork.image_original],  # todo list of strings, retriever urls
+                                [artwork.image_original if artwork.image_original else None],  # todo list of strings, retriever urls
                             "albums":
                                 [
                                     {
@@ -424,19 +415,26 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         )
 
 
-def filter_title(filter_values, q_objects):
+def filter_title(filter_values, q_objects, results):
+    """
+     Should filter artworks whose title include the string if given, AND the artworks with given id
+    """
     for val in filter_values:
         if isinstance(val, str):
             q_objects.add(Q(title__icontains=val) | Q(title_english__icontains=val), Q.AND)
         if isinstance(val, dict) and 'id' in val.keys():
             q_objects.add(Q(id=val.get('id')), Q.AND)
-        else:
-            return Response(_('Invalid filter_value format. See example below for more information.'))
+        if not isinstance(val, str) and not isinstance(val, dict):
+            raise ParseError('Invalid filter_value format. See example below for more information.', 400)
 
-    return q_objects
+    return results.filter(q_objects)
 
 
 def filter_artist(filter_values, q_objects, results):
+    """
+     Should filter artworks whose artist name includes the string if given, AND the artworks for artist which has
+     the given id
+    """
     for val in filter_values:
         if isinstance(val, str):
             terms = [term.strip() for term in val.split()]
@@ -446,73 +444,82 @@ def filter_artist(filter_values, q_objects, results):
                     Q.AND,
                 )
         if isinstance(val, dict) and 'id' in val.keys():
-            q_objects.add(Q(id=val.get('id')), Q.AND)
-        else:
-            return Response(_('Invalid filter_value format. See example below for more information.'))
+            q_objects.add(Q(artists__id=val.get('id')), Q.AND)
+        if not isinstance(val, str) and not isinstance(val, dict):
+            raise ParseError('Invalid filter_value format. See example below for more information.', 400)
 
     return results.filter(q_objects)
 
 
-def filter_place_of_production(filter_values, q_objects):
+def filter_place_of_production(filter_values, q_objects, results):
+    """
+     Should filter artworks whose place of production includes the string if given, AND
+     the artworks for place of production which has the given id
+    """
     for val in filter_values:
         if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val)  # todo: istartswith or icontains?
             q_objects.add(Q(location_of_creation__in=locations), Q.AND)
         if isinstance(val, dict) and 'id' in val.keys():
-            q_objects.add(Q(id=val.get('id')), Q.AND)
-        else:
-            return Response(_('Invalid filter_value format. See example below for more information.'))
+            q_objects.add(Q(location_of_creation__id=val.get('id')), Q.AND)
+        if not isinstance(val, str) and not isinstance(val, dict):
+            raise ParseError('Invalid filter_value format. See example below for more information.', 400)
 
-    return q_objects
+    return results.filter(q_objects)
 
 
-def filter_current_location(filter_values, q_objects):
+def filter_current_location(filter_values, q_objects, results):
+    """
+     Should filter artworks whose current location includes the string if given, AND
+     the artworks for current location which has the given id
+    """
     for val in filter_values:
         if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val)  # todo: istartswith or icontains?
             q_objects.add(Q(location_current__in=locations), Q.AND)
         if isinstance(val, dict) and 'id' in val.keys():
-            q_objects.add(Q(id=val.get('id')), Q.AND)
-        else:
-            return Response(_('Invalid filter_value format. See example below for more information.'))
+            q_objects.add(Q(location_current__id=val.get('id')), Q.AND)
+        if not isinstance(val, str) and not isinstance(val, dict):
+            raise ParseError('Invalid filter_value format. See example below for more information.', 400)
 
-    return q_objects
+    return results.filter(q_objects)
 
 
-def filter_keywords(filter_values, q_objects):
+def filter_keywords(filter_values, q_objects, results):
+    """
+     Should filter artworks whose keywords include the string if given, AND
+     the artworks for keyword which has the given id
+    """
     for val in filter_values:
         if isinstance(val, str):
             keywords = Keyword.objects.filter(name__icontains=val)
             q_objects.add(Q(keywords__in=keywords), Q.AND)
         if isinstance(val, dict) and 'id' in val.keys():
-            q_objects.add(Q(id=val.get('id')), Q.AND)
+            q_objects.add(Q(keywords__id=val.get('id')), Q.AND)
+        if not isinstance(val, str) and not isinstance(val, dict):
+            raise ParseError('Invalid filter_value format. See example below for more information.', 400)
+
+    return results.filter(q_objects)
+
+
+def filter_date(filter_values, q_objects, results):
+
+    if isinstance(filter_values, dict):
+
+        if re.match(r'^[12][0-9]{3}$', filter_values.get('date_from')):
+            q_objects.add(Q(date_year_from__gte=filter_values['date_from']), Q.AND)
+        elif re.match(r'^[12][0-9]{3}$', filter_values.get('date_to')):
+            q_objects.add(Q(date_year_to__lte=filter_values['date_to']), Q.AND)
         else:
-            return Response(_('Invalid filter_value format. See example below for more information.'))
+            raise ParseError(
+                'Only dates of format YYYY can be used as date filter values',
+                400,
+            )
 
-    return q_objects
+    else:
+        return Response(_('Invalid filter_value format. See example below for more information.'))
 
-
-def filter_date(filter_values, q_objects):
-    ### todo ask FE:
-    # 1. does this pattern fit? "pattern":"^\\d{4}(-(0[1-9]|1[0-2]))?(-(0[1-9]|[12]\\d|3[01]))?$",
-    # 2. django.core.exceptions.FieldError:
-    #         #   Cannot resolve keyword 'date_from' into field. Choices are: album, albummembership, artists, checked, created_at, credits, date, date_year_from, date_year_to,
-
-    for val in filter_values:
-        if isinstance(val, dict):
-            for date in val.values():
-                if not re.match(r'^[0-9]{4}-[0-9]{2}-[0-9]{2}$', date):
-                    raise ParseError(
-                        'Only dates of format YYYY-MM-DD can be used as date filter values',
-                        400,
-                    )
-            q_objects.add(Q(date_from__gte=val['date_from']) | Q(date_to__gte=val['date_to']), Q.AND)
-
-
-        else:
-            return Response(_('Invalid filter_value format. See example below for more information.'))
-
-    return q_objects
+    return results.filter(q_objects)
 
 
 class AlbumViewSet(viewsets.ViewSet):
@@ -681,7 +688,7 @@ class AlbumViewSet(viewsets.ViewSet):
         List of Works (Slides) in a specific Album /albums/{id}
         '''
 
-        # todo 3
+        # todo
 
         # - Download album with slides  - usually needs to take more detailed settings like language,
         # which entry details to include) /album/{id}/download ? definite in version version: language,
