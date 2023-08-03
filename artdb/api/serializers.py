@@ -26,6 +26,7 @@ def validate_json_field(value, schema):
 
     return value
 
+
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
@@ -45,7 +46,6 @@ class KeywordSerializer(serializers.ModelSerializer):
 
 
 class ArtworkSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Artwork
         fields = '__all__'
@@ -60,18 +60,71 @@ class SearchRequestSerializer(serializers.ModelSerializer):
         label=_('Search'),
         required=False,
         allow_null=True,
-        default=[{}],
+        default=[
+            {
+                'limit': 0,
+                'offset': 0,
+                'exclude': ['id123', 'id345'],  # with artwork ids
+                'q': 'searchstring',  # the string from general search
+                'filters':
+                    [
+                        {
+                            'id': 'artist',
+                            'filter_values': ['rubens', {'id': 'id786'}],
+                        }
+                    ],
+            }
+        ],
     )
 
-    def validate_request(self, value):
-        schema = { # todo: decide schema
-            # 'type': 'array',
-            # 'items': {
-            #     'type': 'object',
-            #     'properties': {
-            #         'id': {'type': 'string'},
-            #     },
-            # }
+    def validate_search_request(self, value):
+        schema = {
+            'type': 'object',
+            'properties': {
+                'limit': {'type': 'integer'},
+                'offset': {'type': 'integer'},
+                'exclude': {
+                    'type': 'array',
+                    'items': {'type': 'string'}
+                },
+                'q': {'type': 'string'},
+                'filters': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'object',
+                        'properties': {
+                            'id': {'type': 'string'},
+                            'filter_values': {
+                                    'oneOf': [
+                                        {
+                                            'type': 'array',
+                                            'items': {
+                                                'anyOf': [
+                                                    {'type': 'string'},
+                                                    {'type': 'object',
+                                                     'properties': {
+                                                         'id': {'type': 'string'},
+                                                     },
+                                                     }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            'type': 'object',
+                                            'properties': {
+                                                'date_from': {'type': 'string'},
+                                                'date_to': {'type': 'string'}
+                                            }
+                                        }
+                                    ]
+                            }
+
+
+
+                        }
+                    }
+                },
+            },
         }
         return validate_json_field(value, schema)
 
@@ -128,7 +181,7 @@ class UpdateAlbumSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Album
-        fields = ('title', )
+        fields = ('title',)
         depth = 1
 
 
