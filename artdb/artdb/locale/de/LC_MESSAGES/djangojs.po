@@ -78,3 +78,53 @@ msgstr "veröffentlicht"
 
 msgid "Show more"
 msgstr "Mehr anzeigen"
+
+## API
+
+#: artdb/api/views.py:151
+msgid "title"
+msgstr "Titel"
+
+#: artdb/api/views.py:158
+msgid "enter title"
+msgstr "Titel eintragen"
+
+#: artdb/api/views.py:175
+msgid "artist"
+msgstr "Künstler*in"
+
+#: artdb/api/views.py:182
+msgid "enter artist"
+msgstr "Künstler*in eintragen"
+
+#: artdb/api/views.py:199
+msgid "place of production"
+msgstr "Entstehungsort"
+
+#: artdb/api/views.py:206
+msgid "enter place of production"
+msgstr "Entstehungsort eintragen"
+
+#: artdb/api/views.py:223
+msgid "current location"
+msgstr "Standort"
+
+#: artdb/api/views.py:230
+msgid "enter current location"
+msgstr "Standort eintragen"
+
+#: artdb/api/views.py:247
+msgid "keywords"
+msgstr "Schlagwort"
+
+#: artdb/api/views.py:249
+msgid "enter keywords"
+msgstr "Schlagwort eintragen"
+
+#: artdb/api/views.py:268
+msgid "date from, to"
+msgstr "Datierung von, bis"
+
+#: artdb/api/views.py:275
+msgid "enter date"
+msgstr "Datum eintragen"

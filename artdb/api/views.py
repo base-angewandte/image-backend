@@ -133,7 +133,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def list_search_filters(self, request, *args, **kwargs):
-        # todo translations for title and placeholder
+
         data = {
             "title": {
                 "type": "array",
@@ -148,14 +148,14 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         }
                     }
                 },
-                "title": "Titel",
+                "title": "title",
                 "x-attrs": {
                     "field_format": "half",
                     "field_type": "chips",
                     "dynamic_autosuggest": True,
                     "allow_unknown_entries": True,
                     "source": "/autosuggest/v1/titles/",
-                    "placeholder": "Titel eintragen",
+                    "placeholder": "enter title",
                     "order": 1
                 }
             },
@@ -172,14 +172,14 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         }
                     }
                 },
-                "title": "Künstler*in",
+                "title": "artist",
                 "x-attrs": {
                     "field_format": "half",
                     "field_type": "chips",
                     "dynamic_autosuggest": True,
                     "allow_unknown_entries": True,
                     "source": "/autosuggest/v1/artists/",
-                    "placeholder": "Künstler*in eintragen",
+                    "placeholder": "enter artist",
                     "order": 2
                 }
             },
@@ -196,14 +196,14 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         }
                     }
                 },
-                "title": "Entstehungsort",
+                "title": "place of production",
                 "x-attrs": {
                     "field_format": "half",
                     "field_type": "chips",
                     "dynamic_autosuggest": True,
                     "allow_unknown_entries": True,
                     "source": "/autosuggest/v1/locations/",
-                    "placeholder": "Entstehungsort eintragen",
+                    "placeholder": "enter place of production",
                     "order": 3
                 }
             },
@@ -220,14 +220,14 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         }
                     }
                 },
-                "title": "Standort",
+                "title": "current location",
                 "x-attrs": {
                     "field_format": "half",
                     "field_type": "chips",
                     "dynamic_autosuggest": True,
                     "allow_unknown_entries": True,
                     "source": "/autosuggest/v1/locations/",
-                    "placeholder": "Standort eintragen",
+                    "placeholder": "enter current location",
                     "order": 4
                 }
             },
@@ -244,9 +244,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         }
                     }
                 },
-                "title": "Schlagwort",
+                "title": "keywords",
                 "x-attrs": {
-                    "placeholder": "Schlagwort eintragen",
+                    "placeholder": "enter keywords",
                     "order": 5,
                     "field_format": "full",
                     "field_type": "chips",
@@ -265,15 +265,14 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         "type": "string"
                     }
                 },
-                "title": "Datierung von, bis",
+                "title": "date from, to",
                 "additionalProperties": False,
-                "pattern": "^\\d{4}(-(0[1-9]|1[0-2]))?(-(0[1-9]|[12]\\d|3[01]))?$",
                 "x-attrs": {
                     "field_format": "full",
                     "field_type": "date",
                     "date_format": "year",
                     "placeholder": {
-                        "date": "Datum eintragen"
+                        "date": "enter date"
                     },
                     "order": 6
                 }
@@ -396,7 +395,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                             "artist": [artist.name for artist in artwork.artists.all()],
                             "date": artwork.date,
                             "image_urls":
-                                [artwork.image_original if artwork.image_original else None],  # todo list of strings, retriever urls
+                            # todo list of strings, retriever urls. Is this what is needed ?
+                                [artwork.image_original if artwork.image_original else None],
                             "albums":
                                 [
                                     {
