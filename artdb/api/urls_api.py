@@ -40,6 +40,10 @@ urlpatterns = [
             'get': 'retrieve_slides_per_album',
             'post': 'edit_slides'}), name='slides'),
 
+    path('albums/<album_id>/permissions/', views.AlbumViewSet.as_view({
+                'get': 'retrieve_permissions_per_album',
+                'post': 'create_permissions'}), name='permissions'),
+
     path('autocomplete/', include('autocomplete.urls')),
     path('schema/openapi3.yaml', SpectacularAPIView.as_view(), name='schema'),
     path('schema/openapi3.json', SpectacularJSONAPIView.as_view(), name='schema'),

@@ -175,13 +175,36 @@ class CreateAlbumSerializer(serializers.ModelSerializer):
 class SlidesField(serializers.JSONField):
     pass
 
+class SharedInfoField(serializers.JSONField):
+    pass
+
 
 class UpdateAlbumSerializer(serializers.ModelSerializer):
-    # todo: add shared_info
 
     class Meta:
         model = Album
         fields = ('title',)
+        depth = 1
+
+
+class PermissionsSerializer(UpdateAlbumSerializer):
+    permissions = SharedInfoField(
+        label=_('Permissions'),
+        required=False,
+        allow_null=True,
+        default=[
+            {
+                "user_id": "123xd3",
+                "permission": {
+                    "id": "read"
+                }
+            }
+        ],
+    )
+
+    class Meta:
+        model = Album
+        fields = ('permissions',)
         depth = 1
 
 

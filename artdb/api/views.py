@@ -34,7 +34,7 @@ from artworks.models import (
 from .serializers import (
     ArtworkSerializer,
     AlbumSerializer, SlidesSerializer, UpdateAlbumSerializer, CreateAlbumSerializer, SearchRequestSerializer,
-    SearchResponseSerializer,
+    SearchResponseSerializer, PermissionsSerializer,
 
 )
 
@@ -532,6 +532,9 @@ class AlbumViewSet(viewsets.ViewSet):
     retrieve_slides_per_album:
     GET /albums/{id}/slides LIST (GET) endpoint
 
+    retrieve_permissions_per_album:
+    GET /albums/{id}/permissions
+
     create_album:
     POST new album with given title.
 
@@ -540,6 +543,9 @@ class AlbumViewSet(viewsets.ViewSet):
     Reorder Slides
     Separate_slides
     Reorder artworks within slides
+
+    create_permissions
+    POST /albums/{id}/permissions
 
     create_folder:
     POST
@@ -729,6 +735,7 @@ class AlbumViewSet(viewsets.ViewSet):
         '''
         Create Album /albums/{id}
         '''
+        # todo: do we need shared_info?
 
         title = request.data.get('title')
         album = Album.objects.create(title=title, user=request.user)
@@ -775,6 +782,73 @@ class AlbumViewSet(viewsets.ViewSet):
             )
 
     @extend_schema(
+        methods=['GET'],
+        responses={
+            200: PermissionsSerializer,
+            403: OpenApiResponse(description='Access not allowed'),
+            404: OpenApiResponse(description='Not found'),
+        }
+    )
+    def retrieve_permissions_per_album(self, request, partial=True, album_id=None, *args, **kwargs):
+        '''
+        Get Permissions /albums/{id}/permissions
+        '''
+
+        try:
+            album = Album.objects.get(pk=album_id)
+        except Album.DoesNotExist or ValueError:
+            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+
+        serializer = AlbumSerializer(album)
+        results = serializer.data
+        return Response(results.get('permissions'))
+
+    @extend_schema(
+        methods=['POST'],
+        request=PermissionsSerializer,
+        examples=[
+            OpenApiExample(
+                name='shared_info',
+                value=[
+                    {
+                        "user_id": "123xd3",
+                        "permission": {
+                            "id": "read"
+                        }
+                    }
+                ]
+            )],
+        responses={
+            200: AlbumSerializer,
+            403: OpenApiResponse(description='Access not allowed'),
+            404: OpenApiResponse(description='Not found'),
+        }
+    )
+    def create_permissions(self, request, partial=True, album_id=None, *args, **kwargs):
+        '''
+        Post Permissions /albums/{id}/permissions
+        '''
+
+        # todo WIP
+            # update album permissions
+
+        try:
+            album = Album.objects.get(pk=album_id)
+            serializer = PermissionsSerializer(data=request.data)
+
+            if not serializer.is_valid():
+                return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
+
+            permissions = serializer.validated_data.get('permissions')
+
+            album.permissions = permissions
+            album.save()
+            return Response(serializer.data)
+
+        except Album.DoesNotExist:
+            return Response(_('Album does not exist '), status=status.HTTP_404_NOT_FOUND)
+
+    @extend_schema(
         methods=['POST'],
         parameters=[
             OpenApiParameter(
@@ -818,28 +892,6 @@ class AlbumViewSet(viewsets.ViewSet):
     @extend_schema(
         methods=['PATCH'],
         request=UpdateAlbumSerializer,
-        examples=[
-            OpenApiExample(
-                name='shared_info',
-                value=[
-                    {
-                        'owner': {
-                            'id': '123abc',
-                            'name': 'Name Surname',
-                        },
-                        'shared_with': [
-                            {
-                                'id': '123xd3',
-                                'name': 'Name Surname',
-                                'permission': {
-                                    'id': 'read',  # todo still confusion about this
-                                    'label': 'Read',  # # todo if it comes from the vocabulary, BE, else FE)
-                                },
-                            },
-                        ],
-                    }
-                ]
-            )],
         responses={
             200: AlbumSerializer,
             403: OpenApiResponse(description='Access not allowed'),
@@ -850,7 +902,6 @@ class AlbumViewSet(viewsets.ViewSet):
         '''
         Update Album /albums/{id}
         '''
-        # TODO Alter Shared info
 
         try:
             album = Album.objects.get(pk=album_id)
@@ -862,8 +913,6 @@ class AlbumViewSet(viewsets.ViewSet):
                 return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
 
             album_serializer = AlbumSerializer(album)
-            # Todo : adjust shared info
-            shared_info = serializer.validated_data.get('shared_info')
             album.save()
             return Response(album_serializer.data)
 

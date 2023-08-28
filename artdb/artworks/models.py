@@ -218,7 +218,7 @@ class Album(models.Model):
     created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now=True)
     slides = JSONField(verbose_name=_('Slides'), blank=True, null=True)
-    shared_info = models.ManyToManyField(User, verbose_name=_('Shared Info'), related_name='shared_info_album')
+    permissions = models.ManyToManyField(User, verbose_name=_('Permissions'), related_name='permissions_album')
 
     def __str__(self):
         return '{0} by {1}'.format(self.title, self.user.get_full_name())
