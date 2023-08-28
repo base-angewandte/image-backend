@@ -175,7 +175,7 @@ class CreateAlbumSerializer(serializers.ModelSerializer):
 class SlidesField(serializers.JSONField):
     pass
 
-class SharedInfoField(serializers.JSONField):
+class PermissionsField(serializers.JSONField):
     pass
 
 
@@ -188,7 +188,7 @@ class UpdateAlbumSerializer(serializers.ModelSerializer):
 
 
 class PermissionsSerializer(UpdateAlbumSerializer):
-    permissions = SharedInfoField(
+    permissions = PermissionsField(
         label=_('Permissions'),
         required=False,
         allow_null=True,
