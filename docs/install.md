@@ -32,7 +32,7 @@ In both cases there are some common steps to follow:
     vi .env
     
     # django env
-    cp ./artdb/artb/env-skel ./artdb/artdb/.env
+    cp ./artdb/artdb/env-skel ./artdb/artdb/.env
     vi ./artdb/artdb/.env
     ```
 Take a look at the [](./configuration.md) section, for more details, if you need more
