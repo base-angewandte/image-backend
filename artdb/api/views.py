@@ -844,8 +844,12 @@ class AlbumViewSet(viewsets.ViewSet):
                 user = User.objects.get(pk=perm.get('user_id'))
                 permissions = perm.get('permissions').get('id')
 
+                if permissions.upper() not in ['VIEW', 'EDIT']:
+                    return Response(_('Permission invalid. Permission can be either VIEW or EDIT'),
+                                    status=status.HTTP_404_NOT_FOUND)
+
                 obj, created = PermissionsRelation.objects.update_or_create(
-                    permissions=permissions,
+                    permissions=permissions.upper(),
                     album=album,
                     user=user
                 )

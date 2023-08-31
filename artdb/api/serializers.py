@@ -195,12 +195,27 @@ class PermissionsSerializer(UpdateAlbumSerializer):
         default=[
             {
                 "user_id": "123xd3",
-                "permission": {
+                "permissions": {
                     "id": "read"
                 }
             }
         ],
     )
+
+    def validate_permissions(self, value):
+        schema = {
+                'type': 'object',
+                'properties': {
+                    'user_id': {'type': 'string'},
+                    'permissions': {
+                        'type': 'object',
+                        'properties': {
+                            'id': {'type': 'string'}
+                        }
+                    }
+                },
+        }
+        return validate_json_field(value, schema)
 
     class Meta:
         model = Album
