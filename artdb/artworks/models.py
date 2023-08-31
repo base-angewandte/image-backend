@@ -218,7 +218,7 @@ class Album(models.Model):
     created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now=True)
     slides = JSONField(verbose_name=_('Slides'), blank=True, null=True)
-    permissions = models.ManyToManyField(User, verbose_name=_('Permissions'), related_name='permissions_album')
+    permissions = models.ManyToManyField(User, verbose_name=_('Permissions'), through='PermissionsRelation', symmetrical=False, related_name='permissions')
 
     def __str__(self):
         return '{0} by {1}'.format(self.title, self.user.get_full_name())
@@ -230,6 +230,18 @@ class Album(models.Model):
         permissions = (('can_download_pptx', 'Can download as PowerPoint file'),)
         verbose_name = _('Album')
         verbose_name_plural = _('Albums')
+
+
+PERMISSION_CHOICES = (
+    ("VIEW", "view"),
+    ("EDIT", "edit"),
+)
+
+
+class PermissionsRelation(models.Model):
+    album = models.ForeignKey(Album, related_name='album', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
+    permissions = models.CharField(max_length=20, choices=PERMISSION_CHOICES)
 
 
 class AlbumMembership(OrderedModel):

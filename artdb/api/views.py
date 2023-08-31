@@ -1,5 +1,6 @@
 import logging
 from rest_framework.exceptions import ParseError
+from django.contrib.auth.models import User
 
 import re
 from django.contrib.postgres.search import SearchVector
@@ -28,6 +29,7 @@ from artworks.models import (
     Artwork,
     Album,
     AlbumMembership,
+    PermissionsRelation
 
 )
 
@@ -735,7 +737,6 @@ class AlbumViewSet(viewsets.ViewSet):
         '''
         Create Album /albums/{id}
         '''
-        # todo: do we need shared_info?
 
         title = request.data.get('title')
         album = Album.objects.create(title=title, user=request.user)
@@ -789,7 +790,7 @@ class AlbumViewSet(viewsets.ViewSet):
             404: OpenApiResponse(description='Not found'),
         }
     )
-    def retrieve_permissions_per_album(self, request, partial=True, album_id=None, *args, **kwargs):
+    def retrieve_permissions_per_album(self, request, album_id=None):
         '''
         Get Permissions /albums/{id}/permissions
         '''
@@ -799,9 +800,11 @@ class AlbumViewSet(viewsets.ViewSet):
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-        serializer = AlbumSerializer(album)
-        results = serializer.data
-        return Response(results.get('permissions'))
+        return Response({
+            "permissions": [{"user_id": i.user.id, "permissions": {"id": i.permissions.upper()}} for i in
+                            PermissionsRelation.objects.filter(album__id=album.id)]
+
+        })
 
     @extend_schema(
         methods=['POST'],
@@ -812,8 +815,8 @@ class AlbumViewSet(viewsets.ViewSet):
                 value=[
                     {
                         "user_id": "123xd3",
-                        "permission": {
-                            "id": "read"
+                        "permissions": {
+                            "id": "view"
                         }
                     }
                 ]
@@ -829,9 +832,6 @@ class AlbumViewSet(viewsets.ViewSet):
         Post Permissions /albums/{id}/permissions
         '''
 
-        # todo WIP
-            # update album permissions
-
         try:
             album = Album.objects.get(pk=album_id)
             serializer = PermissionsSerializer(data=request.data)
@@ -839,10 +839,17 @@ class AlbumViewSet(viewsets.ViewSet):
             if not serializer.is_valid():
                 return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
 
-            permissions = serializer.validated_data.get('permissions')
+            for perm in dict(serializer.validated_data).get('permissions'):
 
-            album.permissions = permissions
-            album.save()
+                user = User.objects.get(pk=perm.get('user_id'))
+                permissions = perm.get('permissions').get('id')
+
+                obj, created = PermissionsRelation.objects.update_or_create(
+                    permissions=permissions,
+                    album=album,
+                    user=user
+                )
+
             return Response(serializer.data)
 
         except Album.DoesNotExist:
