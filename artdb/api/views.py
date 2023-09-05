@@ -844,7 +844,7 @@ class AlbumViewSet(viewsets.ViewSet):
                 try:
                     user = User.objects.get(pk=perm.get('user_id'))
                 except User.DoesNotExist:
-                    return Response(_(f'Invalid user ID: {perm.get("user_id")}'), status=status.HTTP_404_NOT_FOUND)
+                    return Response(_(f'Invalid user ID: {perm.get("user_id")}'), status=status.HTTP_400_BAD_REQUEST)
 
                 permissions = perm.get('permissions').get('id')
 
