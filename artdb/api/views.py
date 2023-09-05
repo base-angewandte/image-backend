@@ -841,7 +841,11 @@ class AlbumViewSet(viewsets.ViewSet):
 
             for perm in dict(serializer.validated_data).get('permissions'):
 
-                user = User.objects.get(pk=perm.get('user_id'))
+                try:
+                    user = User.objects.get(pk=perm.get('user_id'))
+                except User.DoesNotExist:
+                    return Response(_(f'Invalid user ID: {perm.get("user_id")}'), status=status.HTTP_404_NOT_FOUND)
+
                 permissions = perm.get('permissions').get('id')
 
                 if permissions.upper() not in ['VIEW', 'EDIT']:
@@ -857,7 +861,8 @@ class AlbumViewSet(viewsets.ViewSet):
             return Response(serializer.data)
 
         except Album.DoesNotExist:
-            return Response(_('Album does not exist '), status=status.HTTP_404_NOT_FOUND)
+            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+
 
     @extend_schema(
         methods=['POST'],
