@@ -64,13 +64,13 @@ class SearchRequestSerializer(serializers.ModelSerializer):
             {
                 'limit': 0,
                 'offset': 0,
-                'exclude': ['id123', 'id345'],  # with artwork ids
+                'exclude': [123, 345],  # with artwork ids
                 'q': 'searchstring',  # the string from general search
                 'filters':
                     [
                         {
                             'id': 'artist',
-                            'filter_values': ['rubens', {'id': 'id786'}],
+                            'filter_values': ['rubens', {'id': 786}],
                         }
                     ],
             }
@@ -85,7 +85,7 @@ class SearchRequestSerializer(serializers.ModelSerializer):
                 'offset': {'type': 'integer'},
                 'exclude': {
                     'type': 'array',
-                    'items': {'type': 'string'}
+                    'items': {'type': 'integer'}
                 },
                 'q': {'type': 'string'},
                 'filters': {
@@ -95,31 +95,29 @@ class SearchRequestSerializer(serializers.ModelSerializer):
                         'properties': {
                             'id': {'type': 'string'},
                             'filter_values': {
-                                    'oneOf': [
-                                        {
-                                            'type': 'array',
-                                            'items': {
-                                                'anyOf': [
-                                                    {'type': 'string'},
-                                                    {'type': 'object',
-                                                     'properties': {
-                                                         'id': {'type': 'string'},
-                                                     },
-                                                     }
-                                                ]
-                                            }
-                                        },
-                                        {
-                                            'type': 'object',
-                                            'properties': {
-                                                'date_from': {'type': 'string'},
-                                                'date_to': {'type': 'string'}
-                                            }
+                                'oneOf': [
+                                    {
+                                        'type': 'array',
+                                        'items': {
+                                            'anyOf': [
+                                                {'type': 'string'},
+                                                {'type': 'object',
+                                                 'properties': {
+                                                     'id': {'type': 'integer'},
+                                                 },
+                                                 }
+                                            ]
                                         }
-                                    ]
+                                    },
+                                    {
+                                        'type': 'object',
+                                        'properties': {
+                                            'date_from': {'type': 'string'},
+                                            'date_to': {'type': 'string'}
+                                        }
+                                    }
+                                ]
                             }
-
-
 
                         }
                     }
@@ -175,12 +173,12 @@ class CreateAlbumSerializer(serializers.ModelSerializer):
 class SlidesField(serializers.JSONField):
     pass
 
+
 class PermissionsField(serializers.JSONField):
     pass
 
 
 class UpdateAlbumSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Album
         fields = ('title',)
@@ -204,16 +202,16 @@ class PermissionsSerializer(UpdateAlbumSerializer):
 
     def validate_permissions(self, value):
         schema = {
-                'type': 'object',
-                'properties': {
-                    'user_id': {'type': 'string'},
-                    'permissions': {
-                        'type': 'object',
-                        'properties': {
-                            'id': {'type': 'string'}
-                        }
+            'type': 'object',
+            'properties': {
+                'user_id': {'type': 'string'},
+                'permissions': {
+                    'type': 'object',
+                    'properties': {
+                        'id': {'type': 'string'}
                     }
-                },
+                }
+            },
         }
         return validate_json_field(value, schema)
 

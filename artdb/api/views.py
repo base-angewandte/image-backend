@@ -293,13 +293,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                     {
                         'limit': 0,
                         'offset': 0,
-                        'exclude': ['id123', 'id345'],  # with artwork ids
+                        'exclude': [123, 345],  # with artwork ids
                         'q': 'searchstring',  # the string from general search
                         'filters':
                             [
                                 {
                                     'id': 'artist',
-                                    'filter_values': ['rubens', {'id': 'id786'}],
+                                    'filter_values': ['rubens', {'id': 786}],
                                 }
                             ],
                     }
@@ -311,7 +311,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                     {
                         'limit': 0,
                         'offset': 0,
-                        'exclude': ['id123', 'id345'],  # with artwork ids
+                        'exclude': [123, 345],  # with artwork ids
                         'q': 'searchstring',  # the string from general search
                         'filters':
                             [
@@ -340,12 +340,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         limit = search_req_data.get('limit') if search_req_data.get('limit') else None
         offset = search_req_data.get('offset') if search_req_data.get('offset') else None
-        filters = search_req_data.get('filters')
-        filter_values = filters[0].get('filter_values')
-        searchstr = search_req_data.get('q')
-        excluded = search_req_data.get('exclude')
+        filters = search_req_data.get('filters', [])
+        filter_values = filters[0].get('filter_values') if filters else None
+        searchstr = search_req_data.get('q', '')
+        excluded = search_req_data.get('exclude', [])
 
-        results = Artwork.objects.exclude(id__in=[str(i) for i in excluded])
+        results = Artwork.objects.exclude(id__in=[str(i) for i in excluded]) if excluded else Artwork.objects.all()
         q_objects = Q()
 
         for i in filters:
