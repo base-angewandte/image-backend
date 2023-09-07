@@ -350,6 +350,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         for i in filters:
             if i['id'] == 'title':
+                print("title")
                 results = filter_title(filter_values, q_objects, results)
 
             elif i['id'] == 'artist':
@@ -393,6 +394,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 "results":
                     [
                         {
+                            "id": artwork.id, # todo: to be confirmed, or is it another id?
                             "title": artwork.title,
                             "artist": [artist.name for artist in artwork.artists.all()],
                             "date": artwork.date,
@@ -506,7 +508,7 @@ def filter_date(filter_values, q_objects, results):
 
         if re.match(r'^[12][0-9]{3}$', filter_values.get('date_from')):
             q_objects.add(Q(date_year_from__gte=filter_values['date_from']), Q.AND)
-        elif re.match(r'^[12][0-9]{3}$', filter_values.get('date_to')):
+        if re.match(r'^[12][0-9]{3}$', filter_values.get('date_to')):
             q_objects.add(Q(date_year_to__lte=filter_values['date_to']), Q.AND)
         else:
             raise ParseError(
