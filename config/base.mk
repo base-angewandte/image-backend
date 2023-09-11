@@ -43,10 +43,6 @@ build-docs-default:  ## build documentation
 .PHONY: update-default
 update-default: git-update init restart-gunicorn build-docs  ## update project (runs git-update init restart-gunicorn build-docs)
 
-.PHONY: start-dev-docker-default
-start-dev-docker-default: start-default  ## start docker development setup
-	docker logs -f ${PROJECT_NAME}-django
-
 .PHONY: pip-compile-default
 pip-compile-default:  ## run pip-compile locally
 	pip-compile src/requirements.in
