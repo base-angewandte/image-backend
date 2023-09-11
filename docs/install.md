@@ -24,7 +24,8 @@ In both cases there are some common steps to follow:
   git checkout develop
   ```
 
-- Check and adapt settings:
+- Check and adapt settings (if you need more details on the single settings, then the comments in the skeleton env
+  files give you, take a look at the [](./configuration.md) section) :
 
   ```bash
   # env
@@ -36,8 +37,11 @@ In both cases there are some common steps to follow:
   vi ./artdb/artdb/.env
   ```
 
-  Take a look at the [](./configuration.md) section, for more details, if you need more
-  context than the comments in the skeleton env files give you.
+- Create the docker-compose override file:
+
+  ```bash
+  cp docker-compose.override.dev.yml docker-compose.override.yml
+  ```
 
 Now, depending on which path you want to go, take one of the following two
 subsections.
@@ -87,11 +91,8 @@ subsections.
   cd ..
   ```
 
-- Create the docker-compose override file:
-
-  ```bash
-  cp docker-compose.override.dev.yml docker-compose.override.yml
-  ```
+- Check the _docker-compose.override.dev.yml_ file you created before from the template
+  and uncomment the port mounts for Redis and Postgres, so your local Django can access them.
 
 - Start required services:
 
