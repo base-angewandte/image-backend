@@ -14,54 +14,59 @@ There are two supported ways to start the development server:
 
 In both cases there are some common steps to follow:
 
-* Install docker and docker-compose for your system
+- Install docker and docker-compose for your system
 
-* Clone git repository and checkout branch `develop`:
+- Clone git repository and checkout branch `develop`:
 
-    ```bash
-    git clone https://***REMOVED***/image.git
-    cd image
-    git checkout develop
-    ```
+  ```bash
+  git clone https://***REMOVED***/image.git
+  cd image
+  git checkout develop
+  ```
 
-* Check and adapt settings:
+- Check and adapt settings:
 
-    ```bash
-    # env
-    cp env-skel .env
-    vi .env
-    
-    # django env
-    cp ./artdb/artdb/env-skel ./artdb/artdb/.env
-    vi ./artdb/artdb/.env
-    ```
-Take a look at the [](./configuration.md) section, for more details, if you need more
-context than the comments in the skeleton env files give you.
+  ```bash
+  # env
+  cp env-skel .env
+  vi .env
+
+  # django env
+  cp ./artdb/artdb/env-skel ./artdb/artdb/.env
+  vi ./artdb/artdb/.env
+  ```
+
+  Take a look at the [](./configuration.md) section, for more details, if you need more
+  context than the comments in the skeleton env files give you.
 
 Now, depending on which path you want to go, take one of the following two
 subsections.
 
-### Everything inside docker 
+### Everything inside docker
 
-* Make sure that the `DOCKER` variable in `./artdb/artdb/.env` is set to
+- Make sure that the `DOCKER` variable in `./artdb/artdb/.env` is set to
   `TRUE`. Otherwise, django will assume that postgres and redis are accessible
   on localhost ports.
 
-* Start everything:
-    ```bash
-    make start-dev-docker
-    ```
+- Start everything:
+
+  ```bash
+  make start-dev-docker
+  ```
+
   If this is your first start, you will also need to apply the initial
   migrations (can be skipped, unless you reset your database):
-    ```bash
-    make init
-    ```
-  To stop all services again hit CTRL-C to stop following the logs  and then use `make stop`.
 
-* To additionally get some initial test data into the database:
-    ```bash
-    make test-data
-    ```
+  ```bash
+  make init
+  ```
+
+  To stop all services again hit CTRL-C to stop following the logs and then use `make stop`.
+
+- To additionally get some initial test data into the database:
+  ```bash
+  make test-data
+  ```
 
 ### The full developer setup
 
@@ -71,53 +76,53 @@ subsections.
 > local django dev server those environement variables are not assigned
 > automagically. Take a look at the [](./configuration.md) section for details.
 
-* Install the latest python 3.8 and create virtualenv e.g. via `pyenv` and `pyenv-virtualenv`.
+- Install the latest python 3.8 and create virtualenv e.g. via `pyenv` and `pyenv-virtualenv`.
 
-* Install pip-tools and requirements in your virtualenv:
+- Install pip-tools and requirements in your virtualenv:
 
-    ```bash
-    pip install pip-tools
-    cd artdb
-    pip-sync
-    cd ..
-    ```
+  ```bash
+  pip install pip-tools
+  cd artdb
+  pip-sync
+  cd ..
+  ```
 
-* Create the docker-compose override file:
+- Create the docker-compose override file:
 
-    ```bash
-    cp docker-compose.override.dev.yml docker-compose.override.yml
-    ```
+  ```bash
+  cp docker-compose.override.dev.yml docker-compose.override.yml
+  ```
 
-* Start required services:
+- Start required services:
 
-    ```bash
-    make start-dev
-    ```
-    
-* Run migration:
+  ```bash
+  make start-dev
+  ```
 
-    ```bash
-    cd artdb
-    python manage.py migrate
-    ```
+- Run migration:
 
-* Start development server:
+  ```bash
+  cd artdb
+  python manage.py migrate
+  ```
 
-    ```bash
-    python manage.py runserver 8300
-    ```
+- Start development server:
 
-* To additionally get some initial test data into the database:
+  ```bash
+  python manage.py runserver 8300
+  ```
 
-    ```bash
-	python manage.py loaddata artworks/fixtures/artists.json
-	python manage.py loaddata artworks/fixtures/keywords.json
-	python manage.py loaddata artworks/fixtures/locations.json
-	python manage.py loaddata artworks/fixtures/artworks.json
-    cd ..
-	cp test-data/*.png artdb/assets/media
-	docker-compose exec -T artdb-postgres psql -U django_artdb django_artdb < test-data/set-placeholder-images.sql
-    ```
+- To additionally get some initial test data into the database:
+
+  ```bash
+  python manage.py loaddata artworks/fixtures/artists.json
+  python manage.py loaddata artworks/fixtures/keywords.json
+  python manage.py loaddata artworks/fixtures/locations.json
+  python manage.py loaddata artworks/fixtures/artworks.json
+  cd ..
+  cp test-data/*.png artdb/assets/media
+  docker-compose exec -T artdb-postgres psql -U django_artdb django_artdb < test-data/set-placeholder-images.sql
+  ```
 
 ### Resetting your database and/or the cache
 
@@ -129,49 +134,48 @@ again as described above, you have a new database and/or a fresh cache. If you c
 the database you have to apply the migrations again, so start again from the `make init`
 or `python manage.py migrate` steps above
 
-
 ## Production
 
-* Update package index:
+- Update package index:
 
-    ```bash
-    # RHEL
-    sudo yum update
+  ```bash
+  # RHEL
+  sudo yum update
 
-    # Debian
-    sudo apt-get update
-    ```
+  # Debian
+  sudo apt-get update
+  ```
 
-* Install docker and docker-compose 
-(see [base documentation](https://***REMOVED***/documentation/base/server.html#docker))
+- Install docker and docker-compose
+  (see [base documentation](https://***REMOVED***/documentation/base/server.html#docker))
 
-* Change to user `base`
+- Change to user `base`
 
-* Change to `/opt/base`
+- Change to `/opt/base`
 
-* Clone git repository and checkout branch `master` for production or 
-`develop` for development:
+- Clone git repository and checkout branch `master` for production or
+  `develop` for development:
 
-    ```bash
-    git clone https://***REMOVED***/image.git
-    cd image
-    git checkout <develop|master>
-    ```
+  ```bash
+  git clone https://***REMOVED***/image.git
+  cd image
+  git checkout <develop|master>
+  ```
 
-* Check and adapt settings:
+- Check and adapt settings:
 
-    ```bash
-    # env
-    cp env-skel .env
-    vi .env
-    
-    # django env
-    cp ./artdb/artdb/env-skel ./artdb/artdb/.env
-    vi ./artdb/artdb/.env
-    ```
+  ```bash
+  # env
+  cp env-skel .env
+  vi .env
 
-* Use `Makefile` to initialize and run project:
+  # django env
+  cp ./artdb/artdb/env-skel ./artdb/artdb/.env
+  vi ./artdb/artdb/.env
+  ```
 
-    ```bash
-    make start init init-static restart-gunicorn
-    ```
+- Use `Makefile` to initialize and run project:
+
+  ```bash
+  make start init init-static restart-gunicorn
+  ```
