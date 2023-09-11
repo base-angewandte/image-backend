@@ -1,17 +1,35 @@
-FROM python:3.8
+FROM python:3.8 AS base
 
 ENV PYTHONUNBUFFERED 1
+ENV PIP_NO_CACHE_DIR 1
+ENV PIP_DISABLE_PIP_VERSION_CHECK 1
+ENV PIP_QUIET 2
+ENV PIP_USER 1
+ENV PYTHONUSERBASE /djangoenv
+ENV PATH="$PYTHONUSERBASE/bin:$PATH"
 
 RUN mkdir /logs
 VOLUME /logs
 
 WORKDIR /django
 
-RUN pip install --upgrade pip==22.0.1
-ADD requirements.txt .
+RUN pip install pip==22.0.1
+COPY requirements.txt .
 RUN pip install -r requirements.txt
-ADD . .
-
-CMD rainbow-saddle --pid /var/run/django.pid gunicorn artdb.wsgi -w 3 -b :8300 -t 300 --max-requests 1000 --log-level=info --access-logfile=/logs/gunicorn.access.log --error-logfile=/logs/gunicorn.error.log
 
 EXPOSE 8300
+
+
+FROM base as dev
+
+COPY requirements-dev.txt .
+RUN pip install -r requirements-dev.txt
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8300"]
+
+
+FROM base as prod
+
+COPY . .
+
+CMD ["rainbow-saddle", "--pid", "/var/run/django.pid", "--gunicorn-pidfile", "/var/run/gunicorn.pid", "gunicorn", "artdb.wsgi", "-c", "/django/gunicorn-conf.py"]
