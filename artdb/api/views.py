@@ -436,6 +436,8 @@ def filter_artist(filter_values, q_objects, results):
      the given id
     """
     for val in filter_values:
+        if isinstance(val, dict) and 'id' in val.keys():
+            q_objects.add(Q(artists__id=val.get('id')), Q.AND)
         if isinstance(val, str):
             terms = [term.strip() for term in val.split()]
             for term in terms:
@@ -443,10 +445,6 @@ def filter_artist(filter_values, q_objects, results):
                     (Q(artists__name__unaccent__icontains=term) | Q(artists__synonyms__unaccent__icontains=term)),
                     Q.AND,
                 )
-        elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects.add(Q(artists__id=val.get('id')), Q.AND)
-        else:
-            raise ParseError('Invalid filter_value format. See example below for more information.', 400)
 
     return results.filter(q_objects)
 
@@ -726,7 +724,10 @@ class AlbumViewSet(viewsets.ViewSet):
 
         serializer = AlbumSerializer(album)
         results = serializer.data
-        return Response(results.get('slides'))
+        slides = results.get('slides')
+        return Response(slides if slides else {
+            "slides": []
+        })
 
     @extend_schema(
         methods=['POST'],
@@ -739,12 +740,16 @@ class AlbumViewSet(viewsets.ViewSet):
         '''
         Create Album /albums/{id}
         '''
-
-        title = request.data.get('title')
-        album = Album.objects.create(title=title, user=request.user)
-        album.save()
-        serializer = AlbumSerializer(album)
-        return Response(serializer.data)
+        try:
+            title = request.data.get('title')
+            album = Album.objects.create(title=title, user=request.user)
+            album.save()
+            serializer = AlbumSerializer(album)
+            return Response(serializer.data)
+        except ValueError:
+            return Response(
+                _('Album user must be a user instance'), status=status.HTTP_404_NOT_FOUND
+            )
 
     @extend_schema(
         methods=['POST'],
@@ -752,7 +757,7 @@ class AlbumViewSet(viewsets.ViewSet):
         examples=[
             OpenApiExample(
                 name='slides',
-                value=[[{'id': 'abc1'}, {'id': 'xyz2'}], [{'id': 'fgh23'}], [{'id': 'jk54'}]],
+                value=[[{'id': 123}, {'id': 456}], [{'id': 789}], [{'id': 123}]],
             )],
         responses={
             200: AlbumSerializer,

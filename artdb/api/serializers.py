@@ -192,7 +192,7 @@ class PermissionsSerializer(UpdateAlbumSerializer):
         allow_null=True,
         default=[
             {
-                "user_id": "123xd3",
+                "user_id": 123,
                 "permissions": {
                     "id": "read"
                 }
@@ -204,7 +204,7 @@ class PermissionsSerializer(UpdateAlbumSerializer):
         schema = {
             'type': 'object',
             'properties': {
-                'user_id': {'type': 'string'},
+                'user_id': {'type': 'integer'},
                 'permissions': {
                     'type': 'object',
                     'properties': {
@@ -226,7 +226,26 @@ class SlidesSerializer(serializers.ModelSerializer):
         label=_('Slides'),
         required=False,
         allow_null=True,
-        default=[[]],
+        default=[
+            [
+                {
+                    "id": 123
+                },
+                {
+                    "id": 456
+                }
+            ],
+            [
+                {
+                    "id": 789
+                }
+            ],
+            [
+                {
+                    "id": 432
+                }
+            ]
+        ],
     )
 
     def validate_slides(self, value):
@@ -235,7 +254,7 @@ class SlidesSerializer(serializers.ModelSerializer):
             'items': {
                 'type': 'object',
                 'properties': {
-                    'id': {'type': 'string'},
+                    'id': {'type': 'integer'},
                 },
             }
         }
