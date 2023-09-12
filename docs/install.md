@@ -154,13 +154,13 @@ or `python manage.py migrate` steps above
 
 - Change to `/opt/base`
 
-- Clone git repository and checkout branch `master` for production or
+- Clone git repository and checkout branch `main` for production or
   `develop` for development:
 
   ```bash
   git clone https://***REMOVED***/image.git
   cd image
-  git checkout <develop|master>
+  git checkout <develop|main>
   ```
 
 - Check and adapt settings:
