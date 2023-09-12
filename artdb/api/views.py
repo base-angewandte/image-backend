@@ -350,7 +350,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         for i in filters:
             if i['id'] == 'title':
-                print("title")
                 results = filter_title(filter_values, q_objects, results)
 
             elif i['id'] == 'artist':
