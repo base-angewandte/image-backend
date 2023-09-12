@@ -194,7 +194,7 @@ class PermissionsSerializer(UpdateAlbumSerializer):
             {
                 "user_id": 123,
                 "permissions": {
-                    "id": "read"
+                    "id": "VIEW"
                 }
             }
         ],
