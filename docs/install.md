@@ -148,7 +148,6 @@ or `python manage.py migrate` steps above
   ```
 
 - Install docker and docker-compose
-  (see [base documentation](https://***REMOVED***/documentation/base/server.html#docker))
 
 - Change to user `base`
 
