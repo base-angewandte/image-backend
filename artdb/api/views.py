@@ -347,39 +347,34 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         results = Artwork.objects.exclude(id__in=[str(i) for i in excluded]) if excluded else Artwork.objects.all()
         q_objects = Q()
 
-        try:
+        for i in filters:
 
-            for i in filters:
+            if i['id'] == 'title':
+                results |= filter_title(i['filter_values'], q_objects, results)
 
-                if i['id'] == 'title':
-                    results |= filter_title(i['filter_values'], q_objects, results)
+            elif i['id'] == 'artist':
+                results |= filter_artist(i['filter_values'], q_objects, results)
 
-                elif i['id'] == 'artist':
-                    results |= filter_artist(i['filter_values'], q_objects, results)
+            elif i['id'] == 'place_of_production':
+                results |= filter_place_of_production(i['filter_values'], q_objects, results)
 
-                elif i['id'] == 'place_of_production':
-                    results |= filter_place_of_production(i['filter_values'], q_objects, results)
+            elif i['id'] == 'current_location':
+                results |= filter_current_location(i['filter_values'], q_objects, results)
 
-                elif i['id'] == 'current_location':
-                    results |= filter_current_location(i['filter_values'], q_objects, results)
+            elif i['id'] == 'keywords':
+                results |= filter_keywords(i['filter_values'], q_objects, results)
 
-                elif i['id'] == 'keywords':
-                    results |= filter_keywords(i['filter_values'], q_objects, results)
+            elif i['id'] == 'date':
+                results |= filter_date(i['filter_values'], q_objects, results)
 
-                elif i['id'] == 'date':
-                    results |= filter_date(i['filter_values'], q_objects, results)
+            else:
+                raise ParseError('Invalid filter id. Filter id can only be title, artist, place_of_production, '
+                                 'current_location, keywords, or date.', 400)
 
-                else:
-                    raise ParseError('Invalid filter id. Filter id can only be title, artist, place_of_production, '
-                                     'current_location, keywords, or date.', 400)
-
-            results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
-                                                 "dimensions", "description", "credits", "keywords",
-                                                 "location_of_creation", "location_current"),
-                             ).filter(search__icontains=searchstr).order_by('id').distinct('id')
-
-        except Artwork.DoesNotExist as e:
-            return Response(_('Artwork does not exist'), status=status.HTTP_404_NOT_FOUND)
+        results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
+                                             "dimensions", "description", "credits", "keywords",
+                                             "location_of_creation", "location_current"),
+                         ).filter(search__icontains=searchstr).order_by('id').distinct('id')
 
         if offset and limit:
             end = offset + limit
