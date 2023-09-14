@@ -65,7 +65,7 @@ class SearchRequestSerializer(serializers.ModelSerializer):
                 'limit': 0,
                 'offset': 0,
                 'exclude': [123, 345],  # with artwork ids
-                'q': 'searchstring',  # the string from general search
+                'q': '',  # the string from general search
                 'filters':
                     [
                         {

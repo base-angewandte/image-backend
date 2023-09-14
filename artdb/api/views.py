@@ -294,7 +294,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         'limit': 0,
                         'offset': 0,
                         'exclude': [123, 345],  # with artwork ids
-                        'q': 'searchstring',  # the string from general search
+                        'q': '',  # the string from general search
                         'filters':
                             [
                                 {
@@ -312,7 +312,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         'limit': 0,
                         'offset': 0,
                         'exclude': [123, 345],  # with artwork ids
-                        'q': 'searchstring',  # the string from general search
+                        'q': '',  # the string from general search
                         'filters':
                             [
                                 {
@@ -341,31 +341,35 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         limit = search_req_data.get('limit') if search_req_data.get('limit') else None
         offset = search_req_data.get('offset') if search_req_data.get('offset') else None
         filters = search_req_data.get('filters', [])
-        filter_values = filters[0].get('filter_values') if filters else None
         searchstr = search_req_data.get('q', '')
         excluded = search_req_data.get('exclude', [])
 
         results = Artwork.objects.exclude(id__in=[str(i) for i in excluded]) if excluded else Artwork.objects.all()
         q_objects = Q()
 
+        filters_final = []
+
+        # todo: |= only not ok because it needs to exclude the rest
+
         for i in filters:
+
             if i['id'] == 'title':
-                results = filter_title(filter_values, q_objects, results)
+                results |= filter_title(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'artist':
-                results = filter_artist(filter_values, q_objects, results)
+                results |= filter_artist(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'place_of_production':
-                results = filter_place_of_production(filter_values, q_objects, results)
+                results |= filter_place_of_production(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'current_location':
-                results = filter_current_location(filter_values, q_objects, results)
+                results |= filter_current_location(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'keywords':
-                results = filter_keywords(filter_values, q_objects, results)
+                results |= filter_keywords(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'date':
-                results = filter_date(filter_values, q_objects, results)
+                results |= filter_date(i['filter_values'], q_objects, results)
 
             else:
                 raise ParseError('Invalid filter id. Filter id can only be title, artist, place_of_production, '
@@ -375,6 +379,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                                              "dimensions", "description", "credits", "keywords",
                                              "location_of_creation", "location_current"),
                          ).filter(search__icontains=searchstr).distinct()
+
+        # todo still: remove duplicates provokes by annotation
 
         if offset and limit:
             end = offset + limit
@@ -387,13 +393,14 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         results = results[offset:end]
 
+
         return Response(
             {
                 "total": results.count(),
                 "results":
                     [
                         {
-                            "id": artwork.id, # todo: to be confirmed, or is it another id?
+                            "id": artwork.id,
                             "title": artwork.title,
                             "artist": [artist.name for artist in artwork.artists.all()],
                             "date": artwork.date,
@@ -420,9 +427,9 @@ def filter_title(filter_values, q_objects, results):
     """
     for val in filter_values:
         if isinstance(val, str):
-            q_objects.add(Q(title__icontains=val) | Q(title_english__icontains=val), Q.AND)
+            q_objects |= Q(title__icontains=val) | Q(title_english__icontains=val) # todo check this too for OR / AND
         elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects.add(Q(id=val.get('id')), Q.AND)
+            q_objects |= Q(id=val.get('id'))
         else:
             raise ParseError('Invalid filter_value format. See example below for more information.', 400)
 
@@ -436,14 +443,13 @@ def filter_artist(filter_values, q_objects, results):
     """
     for val in filter_values:
         if isinstance(val, dict) and 'id' in val.keys():
-            q_objects.add(Q(artists__id=val.get('id')), Q.AND)
+            Artwork.objects.get(artists__id=val.get('id'))
+            q_objects |= Q(artists__id=val.get('id'))
+
         if isinstance(val, str):
             terms = [term.strip() for term in val.split()]
             for term in terms:
-                q_objects.add(
-                    (Q(artists__name__unaccent__icontains=term) | Q(artists__synonyms__unaccent__icontains=term)),
-                    Q.AND,
-                )
+                q_objects |= Q(artists__name__unaccent__icontains=term)
 
     return results.filter(q_objects)
 
@@ -456,9 +462,9 @@ def filter_place_of_production(filter_values, q_objects, results):
     for val in filter_values:
         if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val)
-            q_objects.add(Q(location_of_creation__in=locations), Q.AND)
+            q_objects |= Q(location_of_creation__in=locations)
         elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects.add(Q(location_of_creation__id=val.get('id')), Q.AND)
+            q_objects |= Q(location_of_creation__id=val.get('id'))
         else:
             raise ParseError('Invalid filter_value format. See example below for more information.', 400)
 
@@ -473,9 +479,9 @@ def filter_current_location(filter_values, q_objects, results):
     for val in filter_values:
         if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val)
-            q_objects.add(Q(location_current__in=locations), Q.AND)
+            q_objects |= Q(location_current__in=locations)
         elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects.add(Q(location_current__id=val.get('id')), Q.AND)
+            q_objects |= Q(location_current__id=val.get('id'))
         else:
             raise ParseError('Invalid filter_value format. See example below for more information.', 400)
 
@@ -490,9 +496,9 @@ def filter_keywords(filter_values, q_objects, results):
     for val in filter_values:
         if isinstance(val, str):
             keywords = Keyword.objects.filter(name__icontains=val)
-            q_objects.add(Q(keywords__in=keywords), Q.AND)
+            q_objects |= Q(keywords__in=keywords)
         elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects.add(Q(keywords__id=val.get('id')), Q.AND)
+            q_objects |= Q(keywords__id=val.get('id'))
         else:
             raise ParseError('Invalid filter_value format. See example below for more information.', 400)
 
@@ -504,9 +510,9 @@ def filter_date(filter_values, q_objects, results):
     if isinstance(filter_values, dict):
 
         if re.match(r'^[12][0-9]{3}$', filter_values.get('date_from')):
-            q_objects.add(Q(date_year_from__gte=filter_values['date_from']), Q.AND)
+            q_objects |= Q(date_year_from__gte=filter_values['date_from'])
         if re.match(r'^[12][0-9]{3}$', filter_values.get('date_to')):
-            q_objects.add(Q(date_year_to__lte=filter_values['date_to']), Q.AND)
+            q_objects |= Q(date_year_to__lte=filter_values['date_to'])
         else:
             raise ParseError(
                 'Only dates of format YYYY can be used as date filter values',
