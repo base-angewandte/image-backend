@@ -350,28 +350,27 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         for i in filters:
 
             if i['id'] == 'title':
-                q_objects &= filter_title(i['filter_values'], q_objects, results)
+                q_objects |= filter_title(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'artist':
-                q_objects &= filter_artist(i['filter_values'], q_objects, results)
+                q_objects |= filter_artist(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'place_of_production':
-                q_objects &= filter_place_of_production(i['filter_values'], q_objects, results)
+                q_objects |= filter_place_of_production(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'current_location':
-                q_objects &= filter_current_location(i['filter_values'], q_objects, results)
+                q_objects |= filter_current_location(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'keywords':
-                q_objects &= filter_keywords(i['filter_values'], q_objects, results)
+                q_objects |= filter_keywords(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'date':
-                q_objects &= filter_date(i['filter_values'], q_objects, results)
+                q_objects |= filter_date(i['filter_values'], q_objects, results)
 
             else:
                 raise ParseError('Invalid filter id. Filter id can only be title, artist, place_of_production, '
                                  'current_location, keywords, or date.', 400)
 
-        print(results.filter(q_objects))
         results = results.filter(q_objects)
         results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
                                              "dimensions", "description", "credits", "keywords",
@@ -420,7 +419,7 @@ def filter_title(filter_values, q_objects, results):
     """
     for val in filter_values:
         if isinstance(val, str):
-            q_objects |= Q(title__icontains=val) | Q(title_english__icontains=val) # todo check this too for OR / AND
+            q_objects |= Q(title__icontains=val) | Q(title_english__icontains=val)
         elif isinstance(val, dict) and 'id' in val.keys():
             q_objects |= Q(id=val.get('id'))
         else:
