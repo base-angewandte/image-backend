@@ -435,7 +435,6 @@ def filter_artist(filter_values, q_objects, results):
     """
     for val in filter_values:
         if isinstance(val, dict) and 'id' in val.keys():
-            Artwork.objects.get(artists__id=val.get('id'))
             q_objects |= Q(artists__id=val.get('id'))
 
         if isinstance(val, str):
