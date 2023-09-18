@@ -350,27 +350,29 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         for i in filters:
 
             if i['id'] == 'title':
-                results |= filter_title(i['filter_values'], q_objects, results)
+                q_objects &= filter_title(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'artist':
-                results |= filter_artist(i['filter_values'], q_objects, results)
+                q_objects &= filter_artist(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'place_of_production':
-                results |= filter_place_of_production(i['filter_values'], q_objects, results)
+                q_objects &= filter_place_of_production(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'current_location':
-                results |= filter_current_location(i['filter_values'], q_objects, results)
+                q_objects &= filter_current_location(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'keywords':
-                results |= filter_keywords(i['filter_values'], q_objects, results)
+                q_objects &= filter_keywords(i['filter_values'], q_objects, results)
 
             elif i['id'] == 'date':
-                results |= filter_date(i['filter_values'], q_objects, results)
+                q_objects &= filter_date(i['filter_values'], q_objects, results)
 
             else:
                 raise ParseError('Invalid filter id. Filter id can only be title, artist, place_of_production, '
                                  'current_location, keywords, or date.', 400)
 
+        print(results.filter(q_objects))
+        results = results.filter(q_objects)
         results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
                                              "dimensions", "description", "credits", "keywords",
                                              "location_of_creation", "location_current"),
@@ -397,9 +399,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                             "title": artwork.title,
                             "artist": [artist.name for artist in artwork.artists.all()],
                             "date": artwork.date,
-                            "image_urls":
-                            # todo list of strings, retriever urls. Is this what is needed ?
-                                [artwork.image_original if artwork.image_original else None],
+                            "image_urls": [artwork.image_original.url if artwork.image_original else None],
                             "albums":
                                 [
                                     {
@@ -426,7 +426,7 @@ def filter_title(filter_values, q_objects, results):
         else:
             raise ParseError('Invalid filter_value format. See example below for more information.', 400)
 
-    return results.filter(q_objects)
+    return q_objects
 
 
 def filter_artist(filter_values, q_objects, results):
@@ -440,11 +440,11 @@ def filter_artist(filter_values, q_objects, results):
             q_objects |= Q(artists__id=val.get('id'))
 
         if isinstance(val, str):
-            terms = [term.strip() for term in val.split()]
+            terms = val.split(" ")
             for term in terms:
                 q_objects |= Q(artists__name__unaccent__icontains=term)
 
-    return results.filter(q_objects)
+    return q_objects
 
 
 def filter_place_of_production(filter_values, q_objects, results):
@@ -461,7 +461,7 @@ def filter_place_of_production(filter_values, q_objects, results):
         else:
             raise ParseError('Invalid filter_value format. See example below for more information.', 400)
 
-    return results.filter(q_objects)
+    return q_objects
 
 
 def filter_current_location(filter_values, q_objects, results):
@@ -478,7 +478,7 @@ def filter_current_location(filter_values, q_objects, results):
         else:
             raise ParseError('Invalid filter_value format. See example below for more information.', 400)
 
-    return results.filter(q_objects)
+    return q_objects
 
 
 def filter_keywords(filter_values, q_objects, results):
@@ -495,7 +495,7 @@ def filter_keywords(filter_values, q_objects, results):
         else:
             raise ParseError('Invalid filter_value format. See example below for more information.', 400)
 
-    return results.filter(q_objects)
+    return q_objects
 
 
 def filter_date(filter_values, q_objects, results):
@@ -515,7 +515,7 @@ def filter_date(filter_values, q_objects, results):
     else:
         return Response(_('Invalid filter_value format. See example below for more information.'))
 
-    return results.filter(q_objects)
+    return q_objects
 
 
 class AlbumViewSet(viewsets.ViewSet):
