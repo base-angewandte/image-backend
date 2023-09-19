@@ -74,6 +74,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 type=OpenApiTypes.INT,
                 required=False,
                 description='',
+                default=100
             ),
             OpenApiParameter(
                 name='offset',
@@ -89,11 +90,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def list_artworks(self, request, *args, **kwargs):
-        limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
+        limit = int(request.GET.get('limit')) if request.GET.get('limit') else 100  # default limit
         offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
 
-        serializer = ArtworkSerializer(self.queryset, many=True)
-        results = serializer.data
+        results = Artwork.objects.all()
 
         limit = limit if limit != 0 else None
 
@@ -108,7 +108,27 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         results = results[offset:end]
 
-        return Response(results)
+        return Response(
+            {
+                "total": results.count(),
+                "results": [
+                    {
+                        "id": artwork.id,
+                        "image_original": artwork.image_original.url if artwork.image_original else None,
+                        "credits": artwork.credits,
+                        "title": artwork.title,
+                        "date": artwork.date,
+                        "artists": [
+                            {
+                                "id": artist.id,
+                                "value": artist.name
+                            }
+                            for artist in artwork.artists.all()
+                        ]
+                    }
+                    for artwork in results]
+            }
+        )
 
     @extend_schema(
         request=serializer_class,
@@ -123,11 +143,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             artwork = Artwork.objects.get(pk=item_id)
         except Artwork.DoesNotExist:
             return Response(_('Artwork does not exist'), status=status.HTTP_404_NOT_FOUND)
-
-        serializer = ArtworkSerializer(artwork)
-        artwork_data = serializer.data
-
-        # Todo WIP
 
         return Response(
             {
