@@ -1,6 +1,7 @@
 import logging
 from rest_framework.exceptions import ParseError
 from django.contrib.auth.models import User
+from django.contrib.postgres.search import SearchQuery
 
 import re
 from django.contrib.postgres.search import SearchVector
@@ -124,7 +125,46 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             return Response(_('Artwork does not exist'), status=status.HTTP_404_NOT_FOUND)
 
         serializer = ArtworkSerializer(artwork)
-        return Response(serializer.data)
+        artwork_data = serializer.data
+
+        # Todo WIP
+
+        return Response(
+            {
+                "id": artwork.id,
+                "image_original": artwork.image_original.url if artwork.image_original else None,
+                "credits": artwork.credits,
+                "license": "String", # todo
+                "title": artwork.title,
+                "title_english": artwork.title_english,
+                "title_notes": "String", # todo
+                "date": artwork.date,
+                "material": artwork.material,
+                "dimensions": artwork.dimensions,
+                "description": artwork.description,
+                "location_of_creation": {
+                    "id": artwork.location_of_creation.id,
+                    "value": artwork.location_of_creation.name,
+                },
+                "location_current": {
+                    "id": artwork.location_current.id,
+                    "value": artwork.location_current.name,
+                },
+                "artists": [
+                    {
+                        "id": artist.id,
+                        "value": artist.name
+                    }
+                    for artist in artwork.artists.all()
+                ],
+                "keywords": [
+                    {
+                        "id": keyword.id,
+                        "value": keyword.name
+                    } for keyword in artwork.keywords.all()
+                ]
+            }
+        )
 
     @extend_schema(
         request=serializer_class,
@@ -372,10 +412,29 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                                  'current_location, keywords, or date.', 400)
 
         results = results.filter(q_objects)
-        results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
+
+        query = SearchQuery(searchstr)
+        vector = SearchVector("title", "title_english", "artists", "material",
                                              "dimensions", "description", "credits", "keywords",
-                                             "location_of_creation", "location_current"),
-                         ).filter(search__icontains=searchstr).order_by('id').distinct('id')
+                                             "location_of_creation", "location_current")
+
+        # previously:
+        # results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
+        #                                      "dimensions", "description", "credits", "keywords",
+        #                                      "location_of_creation", "location_current"),
+        #                  ).filter(search__icontains=searchstr).order_by('id').distinct('id')
+
+        # Absolutely horrid hack in order to allow querystr to have strings with whitespaces. To be changed
+        # Does not work for all filters
+        if len(searchstr.split(" ")) >= 2:
+            print("here")
+            results = results.annotate(search=vector).filter(search=query)
+        else:
+            results = results.annotate(search=vector).filter(search__icontains=searchstr).order_by('id').distinct('id')
+
+
+        # todo works with icontains but search only does not work for the rest
+        print(results)
 
         if offset and limit:
             end = offset + limit
