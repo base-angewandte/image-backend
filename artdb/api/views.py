@@ -46,11 +46,14 @@ logger = logging.getLogger(__name__)
 
 class ArtworksViewSet(viewsets.GenericViewSet):
     """
-    list:
+    list_artworks:
     GET all artworks.
 
-    retrieve:
+    retrieve_artwork:
     GET specific artwork.
+
+    retrieve_albums_per_artwork:
+    GET albums the current user has added this artwork to.
 
     search:
     GET artworks according to search parameters.
@@ -149,10 +152,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 "id": artwork.id,
                 "image_original": artwork.image_original.url if artwork.image_original else None,
                 "credits": artwork.credits,
-                "license": "String", # todo
+                "license": "String",  # placeholder for future field change, see ticket 2070
                 "title": artwork.title,
                 "title_english": artwork.title_english,
-                "title_notes": "String", # todo
+                "title_notes": "String",  # placeholder for future field change, see ticket 2070
                 "date": artwork.date,
                 "material": artwork.material,
                 "dimensions": artwork.dimensions,
@@ -179,6 +182,29 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                     } for keyword in artwork.keywords.all()
                 ]
             }
+        )
+
+    @extend_schema(
+        request=serializer_class,
+        responses={
+            200: OpenApiResponse(description='OK'),
+            403: OpenApiResponse(description='Access not allowed'),
+            404: OpenApiResponse(description='Not found'),
+        },
+    )
+    def retrieve_albums_per_artwork(self, request, item_id=None):
+        try:
+            artwork = Artwork.objects.get(pk=item_id)
+            albums = artwork.album_set.all()
+        except Artwork.DoesNotExist:
+            return Response(_('Artwork does not exist'), status=status.HTTP_404_NOT_FOUND)
+
+        return Response([
+            {
+                "id": album.id,
+                "value": album.title,
+            }
+            for album in albums]
         )
 
     @extend_schema(
@@ -441,6 +467,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         # Absolutely horrid hack in order to allow querystr to have strings with whitespaces. To be changed
         # Does not work for all filters
+        # todo add more Q(), possibly split
         if len(searchstr.split(" ")) >= 2:
             print("here")
             results = results.annotate(search=vector).filter(search=query)
