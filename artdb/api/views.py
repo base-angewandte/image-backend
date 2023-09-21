@@ -456,8 +456,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         query = SearchQuery(searchstr)
         vector = SearchVector("title", "title_english", "artists", "material",
-                                             "dimensions", "description", "credits", "keywords",
-                                             "location_of_creation", "location_current")
+                              "dimensions", "description", "credits", "keywords",
+                              "location_of_creation", "location_current")
 
         # previously:
         # results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
@@ -473,7 +473,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             results = results.annotate(search=vector).filter(search=query)
         else:
             results = results.annotate(search=vector).filter(search__icontains=searchstr).order_by('id').distinct('id')
-
 
         # todo works with icontains but search only does not work for the rest
         print(results)
@@ -598,7 +597,6 @@ def filter_keywords(filter_values, q_objects, results):
 
 
 def filter_date(filter_values, q_objects, results):
-
     if isinstance(filter_values, dict):
 
         if re.match(r'^[12][0-9]{3}$', filter_values.get('date_from')):
@@ -758,8 +756,7 @@ class AlbumViewSet(viewsets.ViewSet):
         limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
         offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
 
-        serializer = AlbumSerializer(self.queryset, many=True)
-        results = serializer.data
+        results = Album.objects.all()
 
         limit = limit if limit != 0 else None
 
@@ -774,7 +771,50 @@ class AlbumViewSet(viewsets.ViewSet):
 
         results = results[offset:end]
 
-        return Response(results)
+        return Response(
+            {
+                "total": results.count(),
+                "results": [
+                    {
+                        "id": album.id,
+                        "title": "Album One",
+                        "number_of_artworks": album.artworks.all().count(),  # number of artworks in a specific album
+                        "artworks": [
+                                        # the first 4 artworks from all slides: [[{"id":1}], [2,3], [4,5]] -> 1,2,3,4,max 4 objects
+                                        {
+                                            "id": slides.get('id'),
+                                            "image_original": Artwork.objects.get(
+                                                id=slides.get('id')).image_original.url if Artwork.objects.get(
+                                                id=slides.get('id')).image_original else None,
+                                            "title": Artwork.objects.get(id=slides.get("id")).title
+                                        }
+
+                                        for artworks_list in album.slides
+                                        for slides in artworks_list
+
+                        ][:4] if album.slides else [],
+                        "owner": {
+                            "id": album.user.id,
+                            "name": f"{album.user.first_name} {album.user.last_name}"
+                        },
+                        "permissions": [
+                            {
+                                "user": {
+                                    "id": p.user.id,
+                                    "name": f"{p.user.first_name} {p.user.last_name}"
+                                },
+                                "permission": [
+                                    {
+                                        "id": p.permissions  # possible values: view | edit
+                                    }
+                                ]
+                            }
+                        for p in PermissionsRelation.objects.filter(album__id=album.id)]
+
+                    }
+                    for album in results]
+            }
+        )
 
     @extend_schema(
         request=AlbumSerializer,
@@ -966,7 +1006,6 @@ class AlbumViewSet(viewsets.ViewSet):
 
         except Album.DoesNotExist:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
-
 
     @extend_schema(
         methods=['POST'],

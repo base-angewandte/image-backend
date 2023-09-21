@@ -229,7 +229,7 @@ class SlidesSerializer(serializers.ModelSerializer):
         default=[
             [
                 {
-                    "id": 123
+                    "id": 18
                 },
                 {
                     "id": 456
