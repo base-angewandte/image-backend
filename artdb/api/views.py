@@ -822,8 +822,58 @@ class AlbumViewSet(viewsets.ViewSet):
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-        serializer = AlbumSerializer(album)
-        return Response(serializer.data)
+        # todo: artworks from slides or all artworks regardless?
+        # todo: check if it belongs to album? could be a solution for now. Otherwise first decide whether to influence artworks/album with slides
+
+        # Temporary solution:
+        artworks_in_slides = []
+
+        for artworks_list in album.slides:
+            for slides in artworks_list:
+                artwork = Artwork.objects.get(
+                    id=slides.get('id'))
+                if artwork in album.artworks.all():
+                    artworks_in_slides.append(
+                        {
+                            "id": artwork.id,  # Artwork id
+                            "image_original": artwork.image_original.url if artwork.image_original else None,
+                            "credits": artwork.credits,
+                            "title": artwork.title,
+                            "date": artwork.date,
+                            "artists": [
+                                {
+                                    "value": artist.name,  # firstname lastname
+                                    "id": artist.id
+                                }
+                            for artist in artwork.artists.all()]
+                        }
+                    )
+
+        return Response(
+            {
+                "id": album.id,
+                "title": album.title,
+                "number_of_artworks": album.artworks.all().count(),
+                "slides": [artwork_in_slide for artwork_in_slide in artworks_in_slides],
+                "owner": {
+                    "id": album.user.id,
+                    "name": f"{album.user.first_name} {album.user.last_name}"
+                },
+                "permissions": [
+                    {
+                        "user": {
+                            "id": p.user.id,
+                            "name": f"{p.user.first_name} {p.user.last_name}"
+                        },
+                        "permission": [
+                            {
+                                "id": p.permissions  # possible values: view | edit
+                            }
+                        ]
+                    }
+                    for p in PermissionsRelation.objects.filter(album__id=album.id)]
+            }
+        )
 
     @extend_schema(
         responses={
