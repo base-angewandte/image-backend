@@ -974,11 +974,23 @@ class AlbumViewSet(viewsets.ViewSet):
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-        return Response({
-            "permissions": [{"user_id": i.user.id, "permissions": {"id": i.permissions.upper()}} for i in
-                            PermissionsRelation.objects.filter(album__id=album.id)]
+        return Response(
+            [
+                {
+                    "user": {
+                        "id": p.user.id,
+                        "name": f"{p.user.first_name} {p.user.last_name}"
+                    },
+                    "permission": [
+                        {
+                            "id": p.permissions.upper()  # possible values: view | edit
+                        }
+                    ]
+                }
+                for p in
+                PermissionsRelation.objects.filter(album__id=album.id)]
+        )
 
-        })
 
     @extend_schema(
         methods=['POST'],
@@ -990,7 +1002,7 @@ class AlbumViewSet(viewsets.ViewSet):
                     {
                         "user_id": "123xd3",
                         "permissions": {
-                            "id": "view"
+                            "id": "VIEW"
                         }
                     }
                 ]
