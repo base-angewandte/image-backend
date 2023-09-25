@@ -460,8 +460,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                                              "location_of_creation", "location_current"),
                          ).filter(search__icontains=searchstr).order_by('id').distinct('id')
 
-        print(results)
-
         if offset and limit:
             end = offset + limit
 
