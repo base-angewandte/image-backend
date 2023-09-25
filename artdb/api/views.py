@@ -474,24 +474,21 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         return Response(
             {
                 "total": results.count(),
-                "results":
-                    [
-                        {
-                            "id": artwork.id,
-                            "title": artwork.title,
-                            "artist": [artist.name for artist in artwork.artists.all()],
-                            "date": artwork.date,
-                            "image_urls": [artwork.image_original.url if artwork.image_original else None],
-                            "albums":
-                                [
-                                    {
-                                        "label": album.title,
-                                        "id": album.id
-                                    }
-                                    for album in artwork.album_set.all()
-                                ]
-                        }
-                        for artwork in results]
+                "results": [
+                    {
+                        "id": artwork.id,
+                        "image_original": [artwork.image_original.url if artwork.image_original else None],
+                        "credits": artwork.credits,
+                        "title": artwork.title,
+                        "date": artwork.date,
+                        "artists": [
+                            {
+                                "value": artist.name,
+                                "id": artist.id
+                            }
+                            for artist in artwork.artists.all()]
+                    }
+                    for artwork in results]
             }
         )
 
