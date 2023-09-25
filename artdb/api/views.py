@@ -454,27 +454,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         results = results.filter(q_objects)
 
-        query = SearchQuery(searchstr)
-        vector = SearchVector("title", "title_english", "artists", "material",
-                              "dimensions", "description", "credits", "keywords",
-                              "location_of_creation", "location_current")
 
-        # previously:
-        # results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
-        #                                      "dimensions", "description", "credits", "keywords",
-        #                                      "location_of_creation", "location_current"),
-        #                  ).filter(search__icontains=searchstr).order_by('id').distinct('id')
+        results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
+                                             "dimensions", "description", "credits", "keywords",
+                                             "location_of_creation", "location_current"),
+                         ).filter(search__icontains=searchstr).order_by('id').distinct('id')
 
-        # Absolutely horrid hack in order to allow querystr to have strings with whitespaces. To be changed
-        # Does not work for all filters
-        # todo add more Q(), possibly split
-        if len(searchstr.split(" ")) >= 2:
-            print("here")
-            results = results.annotate(search=vector).filter(search=query)
-        else:
-            results = results.annotate(search=vector).filter(search__icontains=searchstr).order_by('id').distinct('id')
-
-        # todo works with icontains but search only does not work for the rest
         print(results)
 
         if offset and limit:
