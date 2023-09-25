@@ -819,6 +819,7 @@ class AlbumViewSet(viewsets.ViewSet):
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
+        # TODO slides ticket
         # todo: artworks from slides or all artworks regardless?
         # todo: check if it belongs to album? could be a solution for now. Otherwise first decide whether to influence artworks/album with slides
 
@@ -889,12 +890,37 @@ class AlbumViewSet(viewsets.ViewSet):
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-        serializer = AlbumSerializer(album)
-        results = serializer.data
-        slides = results.get('slides')
-        return Response(slides if slides else {
-            "slides": []
-        })
+        # todo: slides tickets
+
+        # Temporary solution:
+        artworks_in_slides = []
+
+        for artworks_list in album.slides:
+            for slides in artworks_list:
+                artwork = Artwork.objects.get(
+                    id=slides.get('id'))
+                if artwork in album.artworks.all():
+                    artworks_in_slides.append(
+                        {
+                            "id": artwork.id,  # Artwork id
+                            "image_original": artwork.image_original.url if artwork.image_original else None,
+                            "credits": artwork.credits,
+                            "title": artwork.title,
+                            "date": artwork.date,
+                            "artists": [
+                                {
+                                    "value": artist.name,  # firstname lastname
+                                    "id": artist.id
+                                }
+                                for artist in artwork.artists.all()]
+                        }
+                    )
+
+        return Response(
+            [
+                artworks_in_slides
+            ]
+        )
 
     @extend_schema(
         methods=['POST'],
