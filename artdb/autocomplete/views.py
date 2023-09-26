@@ -5,8 +5,7 @@ from rest_framework.response import Response
 
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from artworks.models import Album, Artwork, Artist, Keyword, Location
-
+from artworks.models import Album, Artwork, Artist, Keyword, Location, PermissionsRelation
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +18,16 @@ SOURCES = [
     'keywords',
     'origin',
     'location',
+    'permissions'
 ]
+
+searchstring_parameter = OpenApiParameter(
+    name='searchstr',
+    type=OpenApiTypes.STR,
+    required=False,
+    description='',
+    # default=''
+)
 
 type_parameter = OpenApiParameter(
     name='type_parameter',
@@ -46,8 +54,8 @@ def autocomplete_user(request, searchstr=''):
     """Get autocomplete results for query."""
     UserModel = get_user_model()
     search_result = UserModel.objects.filter(
-                Q(first_name__icontains=searchstr) | Q(last_name__icontains=searchstr)
-            )
+        Q(first_name__icontains=searchstr) | Q(last_name__icontains=searchstr)
+    )
     r = []
     for user in search_result:
         r.append(
@@ -60,15 +68,18 @@ def autocomplete_user(request, searchstr=''):
         )
     return r
 
+
 @extend_schema(
     tags=['autocomplete'],
-    parameters=[limit, type_parameter],
+    parameters=[limit, type_parameter, searchstring_parameter],
     operation_id='autocomplete_v1_lookup',
+
 )
 @api_view(['GET'])
-def autocomplete_search(request, searchstr='', *args, **kwargs):
+def autocomplete_search(request, *args, **kwargs):
     limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
     type_parameter = request.GET.get('type_parameter')
+    searchstr = request.GET.get('searchstr', '')
 
     items = []
     TYPES = {
@@ -79,7 +90,8 @@ def autocomplete_search(request, searchstr='', *args, **kwargs):
         'artist': Artist.objects.filter(name__icontains=searchstr),
         'keywords': Keyword.objects.filter(name__icontains=searchstr),
         'origin': Location.objects.filter(name__icontains=searchstr),
-        'location': Location.objects.filter(name__icontains=searchstr)
+        'location': Location.objects.filter(name__icontains=searchstr),
+        'permissions': PermissionsRelation.objects.all()  # no need for a searchstring
     }
 
     if type_parameter in 'users':
@@ -102,6 +114,21 @@ def autocomplete_search(request, searchstr='', *args, **kwargs):
         return Response(data)
 
     for data_item in data:
+        if type_parameter in 'permissions':
+            data_item = {
+                'id': data_item.get('permissions'),
+                'default': True,  # todo: make view default but also configurable in .env
+            }
+        elif type_parameter in 'albums' or type_parameter in 'title':
+            data_item = {
+                'id': data_item.get('id'),
+                'value': data_item.get('title')
+            }
+        else:
+            data_item = {
+                'id': data_item.get('id'),
+                'value': data_item.get('name')
+            }
         try:
             items.append(
                 data_item
