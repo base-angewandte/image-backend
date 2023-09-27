@@ -43,6 +43,65 @@ from .serializers import (
 logger = logging.getLogger(__name__)
 
 
+def artworks_in_slides(album):
+    # todo: slides tickets
+
+    # Temporary solution:
+    artworks_in_slides = []
+
+    for artworks_list in album.slides:
+        for slides in artworks_list:
+            artwork = Artwork.objects.get(
+                id=slides.get('id'))
+            if artwork in album.artworks.all():
+                artworks_in_slides.append(
+                    {
+                        "id": artwork.id,  # Artwork id
+                        "image_original": artwork.image_original.url if artwork.image_original else None,
+                        "credits": artwork.credits,
+                        "title": artwork.title,
+                        "date": artwork.date,
+                        "artists": [
+                            {
+                                "value": artist.name,  # firstname lastname
+                                "id": artist.id
+                            }
+                            for artist in artwork.artists.all()]
+                    }
+                )
+
+    return artworks_in_slides
+
+
+def simple_album_object(album):
+
+    return Response(
+        {
+            "id": album.id,
+            "title": album.title,
+            "number_of_artworks": album.artworks.all().count(),
+            "slides": [artwork_in_slide for artwork_in_slide in artworks_in_slides(album)],
+            "owner": {
+                "id": album.user.id,
+                "name": f"{album.user.first_name} {album.user.last_name}"
+            },
+            "permissions": [
+                {
+                    "user": {
+                        "id": p.user.id,
+                        "name": f"{p.user.first_name} {p.user.last_name}"
+                    },
+                    "permission": [
+                        {
+                            "id": p.permissions  # possible values: view | edit
+                        }
+                    ]
+                }
+                for p in PermissionsRelation.objects.filter(album__id=album.id)]
+        }
+    )
+
+
 class ArtworksViewSet(viewsets.GenericViewSet):
     """
     list_artworks:
@@ -453,11 +512,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         results = results.filter(q_objects)
 
-
         results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
-                                             "dimensions", "description", "credits", "keywords",
-                                             "location_of_creation", "location_current"),
-                         ).filter(search__icontains=searchstr).order_by('id').distinct('id')
+                                                       "dimensions", "description", "credits", "keywords",
+                                                       "location_of_creation", "location_current"),
+                                   ).filter(search__icontains=searchstr).order_by('id').distinct('id')
 
         if offset and limit:
             end = offset + limit
@@ -771,7 +829,7 @@ class AlbumViewSet(viewsets.ViewSet):
                                         for artworks_list in album.slides
                                         for slides in artworks_list
 
-                        ][:4] if album.slides else [],
+                                    ][:4] if album.slides else [],
                         "owner": {
                             "id": album.user.id,
                             "name": f"{album.user.first_name} {album.user.last_name}"
@@ -788,7 +846,7 @@ class AlbumViewSet(viewsets.ViewSet):
                                     }
                                 ]
                             }
-                        for p in PermissionsRelation.objects.filter(album__id=album.id)]
+                            for p in PermissionsRelation.objects.filter(album__id=album.id)]
 
                     }
                     for album in results]
@@ -822,55 +880,7 @@ class AlbumViewSet(viewsets.ViewSet):
         # todo: artworks from slides or all artworks regardless?
         # todo: check if it belongs to album? could be a solution for now. Otherwise first decide whether to influence artworks/album with slides
 
-        # Temporary solution:
-        artworks_in_slides = []
-
-        for artworks_list in album.slides:
-            for slides in artworks_list:
-                artwork = Artwork.objects.get(
-                    id=slides.get('id'))
-                if artwork in album.artworks.all():
-                    artworks_in_slides.append(
-                        {
-                            "id": artwork.id,  # Artwork id
-                            "image_original": artwork.image_original.url if artwork.image_original else None,
-                            "credits": artwork.credits,
-                            "title": artwork.title,
-                            "date": artwork.date,
-                            "artists": [
-                                {
-                                    "value": artist.name,  # firstname lastname
-                                    "id": artist.id
-                                }
-                            for artist in artwork.artists.all()]
-                        }
-                    )
-
-        return Response(
-            {
-                "id": album.id,
-                "title": album.title,
-                "number_of_artworks": album.artworks.all().count(),
-                "slides": [artwork_in_slide for artwork_in_slide in artworks_in_slides],
-                "owner": {
-                    "id": album.user.id,
-                    "name": f"{album.user.first_name} {album.user.last_name}"
-                },
-                "permissions": [
-                    {
-                        "user": {
-                            "id": p.user.id,
-                            "name": f"{p.user.first_name} {p.user.last_name}"
-                        },
-                        "permission": [
-                            {
-                                "id": p.permissions  # possible values: view | edit
-                            }
-                        ]
-                    }
-                    for p in PermissionsRelation.objects.filter(album__id=album.id)]
-            }
-        )
+        return simple_album_object(album)
 
     @extend_schema(
         responses={
@@ -891,33 +901,9 @@ class AlbumViewSet(viewsets.ViewSet):
 
         # todo: slides tickets
 
-        # Temporary solution:
-        artworks_in_slides = []
-
-        for artworks_list in album.slides:
-            for slides in artworks_list:
-                artwork = Artwork.objects.get(
-                    id=slides.get('id'))
-                if artwork in album.artworks.all():
-                    artworks_in_slides.append(
-                        {
-                            "id": artwork.id,  # Artwork id
-                            "image_original": artwork.image_original.url if artwork.image_original else None,
-                            "credits": artwork.credits,
-                            "title": artwork.title,
-                            "date": artwork.date,
-                            "artists": [
-                                {
-                                    "value": artist.name,  # firstname lastname
-                                    "id": artist.id
-                                }
-                                for artist in artwork.artists.all()]
-                        }
-                    )
-
         return Response(
             [
-                artworks_in_slides
+                artworks_in_slides(album)
             ]
         )
 
@@ -936,8 +922,8 @@ class AlbumViewSet(viewsets.ViewSet):
             title = request.data.get('title')
             album = Album.objects.create(title=title, user=request.user)
             album.save()
-            serializer = AlbumSerializer(album)
-            return Response(serializer.data)
+
+            return simple_album_object(album)
         except ValueError:
             return Response(
                 _('Album user must be a user instance'), status=status.HTTP_404_NOT_FOUND
@@ -971,10 +957,12 @@ class AlbumViewSet(viewsets.ViewSet):
             if not slides_serializer.is_valid():
                 return Response(_('Slides format incorrect'), status=status.HTTP_404_NOT_FOUND)
 
-            serializer = AlbumSerializer(album)
             album.slides = slides_serializer.data.get('slides')
+            # Todo: to be decided: do we need to update Artwork / Album too?
             album.save()
-            return Response(serializer.data)
+            return Response([
+                artworks_in_slides(album)
+            ])
 
         except TypeError:
             return Response(
@@ -1015,7 +1003,6 @@ class AlbumViewSet(viewsets.ViewSet):
                 for p in
                 PermissionsRelation.objects.filter(album__id=album.id)]
         )
-
 
     @extend_schema(
         methods=['POST'],
@@ -1069,7 +1056,22 @@ class AlbumViewSet(viewsets.ViewSet):
                     user=user
                 )
 
-            return Response(serializer.data)
+            return Response(
+                [
+                    {
+                        "user": {
+                            "id": p.user.id,
+                            "name": f"{p.user.first_name} {p.user.last_name}"
+                        },
+                        "permission": [
+                            {
+                                "id": p.permissions.upper()  # possible values: view | edit
+                            }
+                        ]
+                    }
+                    for p in
+                    PermissionsRelation.objects.filter(album__id=album.id)]
+            )
 
         except Album.DoesNotExist:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
@@ -1113,6 +1115,7 @@ class AlbumViewSet(viewsets.ViewSet):
             '# of works': 89,
             'thumbnail': 'https://www.thumbnail.com'
         }
+        # Todo: update response
         return Response(dummy_data)
 
     @extend_schema(
@@ -1138,9 +1141,8 @@ class AlbumViewSet(viewsets.ViewSet):
             if not serializer.is_valid():
                 return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
 
-            album_serializer = AlbumSerializer(album)
             album.save()
-            return Response(album_serializer.data)
+            return simple_album_object(album)
 
         except Album.DoesNotExist:
             return Response(_('Album does not exist '), status=status.HTTP_404_NOT_FOUND)
@@ -1155,7 +1157,7 @@ class AlbumViewSet(viewsets.ViewSet):
         try:
             album = Album.objects.get(pk=album_id)
             album.delete()
-            return Response(_(f'Album {album.title} was deleted'))
+            return Response(_(f'Album {album.title} was deleted'), status=status.HTTP_200_OK)
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
