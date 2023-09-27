@@ -1175,5 +1175,5 @@ class UserViewSet(viewsets.GenericViewSet):
             return Response(data)
         except AttributeError:
             return Response(
-                _('User does not exist or is not logged in.'), status=status.HTTP_403_FORBIDDEN
+                _('Authentication credentials were not provided.'), status=status.HTTP_403_FORBIDDEN
             )
