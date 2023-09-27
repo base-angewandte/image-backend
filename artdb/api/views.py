@@ -1,7 +1,6 @@
 import logging
 from rest_framework.exceptions import ParseError
 from django.contrib.auth.models import User
-from django.contrib.postgres.search import SearchQuery
 
 import re
 from django.contrib.postgres.search import SearchVector
@@ -1162,7 +1161,6 @@ class AlbumViewSet(viewsets.ViewSet):
 
 
 class UserViewSet(viewsets.GenericViewSet):
-    # TODO update. and user for artworks, etc
 
     @extend_schema(
         tags=['user'],
@@ -1177,5 +1175,5 @@ class UserViewSet(viewsets.GenericViewSet):
             return Response(data)
         except AttributeError:
             return Response(
-                _('User does not exist or is not logged in.'), status=status.HTTP_404_NOT_FOUND
+                _('User does not exist or is not logged in.'), status=status.HTTP_403_FORBIDDEN
             )
