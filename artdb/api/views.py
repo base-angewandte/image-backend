@@ -52,7 +52,8 @@ def artworks_in_slides(album):
     for artworks_list in album.slides:
         for slides in artworks_list:
             artwork = Artwork.objects.get(
-                id=slides.get('id'))
+                id=slides.get('id')) if Artwork.objects.get(
+                id=slides.get('id')) else None
             if artwork in album.artworks.all():
                 artworks_in_slides.append(
                     {
@@ -67,8 +68,8 @@ def artworks_in_slides(album):
                                 "id": artist.id
                             }
                             for artist in artwork.artists.all()]
-                    }
-                )
+                        }
+                    )
 
     return artworks_in_slides
 
