@@ -19,7 +19,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import path, include
 from django.utils.translation import gettext_lazy as _
 
-# adding this, so MEDIA dir can be served during development 
+# adding this, so MEDIA dir can be served during development
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -40,9 +40,9 @@ urlpatterns = [
     path('editing/', admin.site.urls),
     path('editing/', include('massadmin.urls')),
 
-    path(r'accounts/login/', django_cas_ng.views.login, name='cas_ng_login'),
-    path(r'accounts/logout/', django_cas_ng.views.logout, name='cas_ng_logout'),
-    path(r'accounts/callback/', django_cas_ng.views.callback, name='cas_ng_proxy_callback'),
+    path(r'accounts/login/', django_cas_ng.views.LoginView.as_view(), name='cas_ng_login'),
+    path(r'accounts/logout/', django_cas_ng.views.LogoutView.as_view(), name='cas_ng_logout'),
+    path(r'accounts/callback/', django_cas_ng.views.CallbackView.as_view(), name='cas_ng_proxy_callback'),
 
     path('i18n/', include('django.conf.urls.i18n')),
     path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
@@ -58,4 +58,3 @@ if settings.DEBUG:
     urlpatterns = [
         path('__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
-

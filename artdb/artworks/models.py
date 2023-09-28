@@ -4,6 +4,7 @@ import os
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import JSONField
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.db.models.functions import Upper
 from django.dispatch import receiver
@@ -11,7 +12,6 @@ from django.utils.translation import gettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 from ordered_model.models import OrderedModel
 from versatileimagefield.fields import VersatileImageField
-from django.contrib.postgres.fields import JSONField
 
 logger = logging.getLogger(__name__)
 

@@ -41,6 +41,8 @@ except ImportError:
     f.write("SECRET_KEY = '%s'\n" % SECRET_KEY)
     f.close()
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 DEBUG = env.bool('DEBUG', default=False)
 
 # Detect if executed under test
