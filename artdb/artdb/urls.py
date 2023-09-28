@@ -1,4 +1,4 @@
-"""artdb URL Configuration
+"""Artdb URL Configuration.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.0/topics/http/urls/
@@ -14,20 +14,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 import django_cas_ng.views
-from django.contrib import admin
-from django.contrib.auth.decorators import login_required
-from django.urls import path, include
-from django.utils.translation import gettext_lazy as _
+
+from django.conf import settings
 
 # adding this, so MEDIA dir can be served during development
 from django.conf.urls.static import static
-from django.conf import settings
-
+from django.contrib import admin
+from django.contrib.auth.decorators import login_required
+from django.urls import include, path
+from django.utils.translation import gettext_lazy as _
 from django.views.i18n import JavaScriptCatalog
 
-js_info_dict = {
-    'packages': ('languages', )
-}
+js_info_dict = {'packages': ('languages',)}
 
 admin.site.login = login_required(admin.site.login)
 admin.site.index_title = _('Image Admin')
@@ -36,14 +34,21 @@ admin.site.site_header = _('Image Admin')
 urlpatterns = [
     path('', include('artworks.urls')),
     path('api/', include('api.urls')),
-
     path('editing/', admin.site.urls),
     path('editing/', include('massadmin.urls')),
-
-    path(r'accounts/login/', django_cas_ng.views.LoginView.as_view(), name='cas_ng_login'),
-    path(r'accounts/logout/', django_cas_ng.views.LogoutView.as_view(), name='cas_ng_logout'),
-    path(r'accounts/callback/', django_cas_ng.views.CallbackView.as_view(), name='cas_ng_proxy_callback'),
-
+    path(
+        r'accounts/login/', django_cas_ng.views.LoginView.as_view(), name='cas_ng_login'
+    ),
+    path(
+        r'accounts/logout/',
+        django_cas_ng.views.LogoutView.as_view(),
+        name='cas_ng_logout',
+    ),
+    path(
+        r'accounts/callback/',
+        django_cas_ng.views.CallbackView.as_view(),
+        name='cas_ng_proxy_callback',
+    ),
     path('i18n/', include('django.conf.urls.i18n')),
     path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 ]
@@ -55,6 +60,7 @@ if settings.DEBUG:
 
     # django debug toolbar
     import debug_toolbar
+
     urlpatterns = [
         path('__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
