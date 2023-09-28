@@ -281,7 +281,7 @@ class AlbumMembership(OrderedModel):
         'self', null=True, blank=True, on_delete=models.CASCADE
     )
 
-    class Meta:
+    class Meta(OrderedModel.Meta):
         verbose_name = _('Folder Membership')
         verbose_name_plural = _('Folder Memberships')
 

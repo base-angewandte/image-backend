@@ -11,7 +11,7 @@ services:
     command: redis-server --appendonly yes
 
   artdb-postgres:
-    image: postgres:10.5-alpine
+    image: postgres:13-alpine
     container_name: artdb-postgres
     environment:
       - POSTGRES_PASSWORD=$DB_PASSWORD
@@ -19,7 +19,7 @@ services:
       - POSTGRES_DB=$DB_NAME
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - ./dockerdata/postgres/10/data:/var/lib/postgresql/data/pgdata
+      - ./dockerdata/postgres/13/data:/var/lib/postgresql/data/pgdata
     networks:
       - artdbnet
     restart: always

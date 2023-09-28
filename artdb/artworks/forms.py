@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.forms import ModelMultipleChoiceField
-from django.utils.encoding import smart_text
+from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 from dal import autocomplete
 from artworks.models import Artwork, Artist, Keyword, Album
@@ -35,19 +35,19 @@ class MPTTMultipleChoiceField(ModelMultipleChoiceField):
     # https://gist.github.com/tdsymonds/abdcb395f172a016ed785f59043749e3
     def label_from_instance(self, obj):
         level = getattr(obj, getattr(self.queryset.model._meta, 'level_attr', 'level'), 0)
-        return u'%s %s' % ('-'*level, smart_text(obj))
+        return u'%s %s' % ('-'*level, force_str(obj))
 
 
 class ArtworkAdminForm(forms.ModelForm):
     keywords = MPTTMultipleChoiceField(
-        Keyword.objects.all(), 
+        Keyword.objects.all(),
         widget=FilteredSelectMultiple(_('Keywords'), False),
         required=False,
 
     )
 
     artists = MPTTMultipleChoiceField(
-        Artist.objects.all(), 
+        Artist.objects.all(),
         widget=FilteredSelectMultiple(_('Artists'), False),
         required=False
     )
