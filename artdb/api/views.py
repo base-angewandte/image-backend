@@ -956,11 +956,23 @@ class AlbumViewSet(viewsets.ViewSet):
             album = Album.objects.get(pk=album_id)
             slides_serializer = SlidesSerializer(data=request.data)
 
+            # Validate slides object
             if not slides_serializer.is_valid():
                 return Response(_('Slides format incorrect'), status=status.HTTP_404_NOT_FOUND)
 
-            album.slides = slides_serializer.data.get('slides')
-            # Todo: to be decided: do we need to update Artwork / Album too?
+            slides = slides_serializer.data.get('slides')
+
+            # Validate artworks within slides & assign if missing
+            for artworks_list in slides:
+                for slide in artworks_list:
+                    artworks = Artwork.objects.filter(
+                        id=slide.get('id'))
+                    for artwork in artworks:
+                        if artwork not in album.artworks.all():
+                            album.artworks.add(artwork)
+
+            # Update slides object
+            album.slides = slides
             album.save()
             return Response([
                 artworks_in_slides(album)
