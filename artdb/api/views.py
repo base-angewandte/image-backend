@@ -49,25 +49,25 @@ def artworks_in_slides(album):
     # Temporary solution:
     artworks_in_slides = []
 
-    for artworks_list in album.slides:
+    for artworks_list in album.slides: # todo test with several ids fake and not fake locally
         for slides in artworks_list:
-            artwork = Artwork.objects.get(
-                id=slides.get('id')) if Artwork.objects.get(
-                id=slides.get('id')) else None
-            if artwork in album.artworks.all():
-                artworks_in_slides.append(
-                    {
-                        "id": artwork.id,  # Artwork id
-                        "image_original": artwork.image_original.url if artwork.image_original else None,
-                        "credits": artwork.credits,
-                        "title": artwork.title,
-                        "date": artwork.date,
-                        "artists": [
-                            {
-                                "value": artist.name,  # firstname lastname
-                                "id": artist.id
-                            }
-                            for artist in artwork.artists.all()]
+            artworks = Artwork.objects.filter(
+                id=slides.get('id'))
+            for artwork in artworks:
+                if artwork in album.artworks.all():
+                    artworks_in_slides.append(
+                        {
+                            "id": artwork.id,
+                            "image_original": artwork.image_original.url if artwork.image_original else None,
+                            "credits": artwork.credits,
+                            "title": artwork.title,
+                            "date": artwork.date,
+                            "artists": [
+                                {
+                                    "value": artist.name,
+                                    "id": artist.id
+                                }
+                                for artist in artwork.artists.all()]
                         }
                     )
 
@@ -815,7 +815,8 @@ class AlbumViewSet(viewsets.ViewSet):
                 "results": [
                     {
                         "id": album.id,
-                        "title": "Album One",
+                        "title": album.title,
+                        # todo needs testing
                         "number_of_artworks": album.artworks.all().count(),  # number of artworks in a specific album
                         "artworks": [
                                         # the first 4 artworks from all slides: [[{"id":1}], [2,3], [4,5]] -> 1,2,3,4,max 4 objects
