@@ -4,11 +4,11 @@
 #
 #    pip-compile --strip-extras requirements.in
 #
-apimapper==0.7.8
+apimapper==0.7.9
     # via -r requirements.in
 asgiref==3.7.2
     # via django
-astroid==2.0
+astroid==2.15.8
     # via
     #   -r requirements.in
     #   pylint
@@ -26,17 +26,20 @@ build==1.0.3
     # via pip-tools
 certifi==2023.7.22
     # via requests
-chardet==3.0.4
+charset-normalizer==3.3.0
     # via requests
 click==8.1.7
     # via pip-tools
-concurrent-log-handler==0.9.16
+concurrent-log-handler==0.9.24
     # via -r requirements.in
 dal-admin-filters==1.1.0
     # via -r requirements.in
+dill==0.3.7
+    # via pylint
 django==4.2.5
     # via
     #   -r requirements.in
+    #   django-appconf
     #   django-autocomplete-light
     #   django-cas-ng
     #   django-cors-headers
@@ -45,9 +48,10 @@ django==4.2.5
     #   django-js-asset
     #   django-mass-edit
     #   django-redis
+    #   django-versatileimagefield
     #   djangorestframework
     #   drf-spectacular
-django-appconf==1.0.2
+django-appconf==1.0.5
     # via
     #   -r requirements.in
     #   django-imagekit
@@ -59,15 +63,15 @@ django-cas-ng==4.3.0
     # via -r requirements.in
 django-cleanup==8.0.0
     # via -r requirements.in
-django-cors-headers==3.11.0
+django-cors-headers==4.2.0
     # via -r requirements.in
 django-debug-toolbar==4.2.0
     # via -r requirements.in
-django-environ==0.4.5
+django-environ==0.11.2
     # via -r requirements.in
-django-filter==2.4.0
+django-filter==23.3
     # via -r requirements.in
-django-imagekit==4.0.2
+django-imagekit==4.1.0
     # via -r requirements.in
 django-js-asset==2.1.0
     # via django-mptt
@@ -79,15 +83,15 @@ django-ordered-model==3.7.4
     # via -r requirements.in
 django-redis==5.3.0
     # via -r requirements.in
-django-versatileimagefield==2.2
+django-versatileimagefield==3.0
     # via -r requirements.in
 djangorestframework==3.14.0
     # via
     #   -r requirements.in
     #   drf-spectacular
-drf-spectacular==0.25.1
+drf-spectacular==0.26.5
     # via -r requirements.in
-gunicorn==20.1.0
+gunicorn==21.2.0
     # via -r requirements.in
 idna==2.7
     # via requests
@@ -101,7 +105,7 @@ importlib-resources==6.1.0
     #   jsonschema-specifications
 inflection==0.5.1
     # via drf-spectacular
-isort==4.3.4
+isort==5.12.0
     # via
     #   -r requirements.in
     #   pylint
@@ -109,7 +113,7 @@ jsonschema==4.19.1
     # via drf-spectacular
 jsonschema-specifications==2023.7.1
     # via jsonschema
-lazy-object-proxy==1.3.1
+lazy-object-proxy==1.9.0
     # via
     #   -r requirements.in
     #   astroid
@@ -119,17 +123,19 @@ lxml==4.9.3
     #   python-pptx
 markdown==3.4.4
     # via apimapper
-mccabe==0.6.1
+mccabe==0.7.0
     # via
     #   -r requirements.in
     #   pylint
 packaging==23.1
-    # via build
+    # via
+    #   build
+    #   gunicorn
 pilkit==2.0
     # via
     #   -r requirements.in
     #   django-imagekit
-pillow==9.2.0
+pillow==9.5.0
     # via
     #   -r requirements.in
     #   django-versatileimagefield
@@ -138,13 +144,15 @@ pip-tools==7.3.0
     # via -r requirements.in
 pkgutil-resolve-name==1.3.10
     # via jsonschema
+platformdirs==3.10.0
+    # via pylint
 portalocker==2.8.2
     # via concurrent-log-handler
 psutil==5.9.5
     # via rainbow-saddle
-psycopg2-binary==2.8.6
+psycopg2-binary==2.9.8
     # via -r requirements.in
-pylint==2.0.0
+pylint==2.17.6
     # via -r requirements.in
 pyproject-hooks==1.0.0
     # via build
@@ -152,9 +160,9 @@ python-cas==1.6.0
     # via django-cas-ng
 python-magic==0.4.27
     # via django-versatileimagefield
-python-pptx==0.6.16
+python-pptx==0.6.22
     # via -r requirements.in
-pytz==2018.4
+pytz==2023.3
     # via
     #   -r requirements.in
     #   djangorestframework
@@ -168,7 +176,7 @@ referencing==0.30.2
     # via
     #   jsonschema
     #   jsonschema-specifications
-requests==2.19.1
+requests==2.31.0
     # via
     #   -r requirements.in
     #   apimapper
@@ -180,7 +188,6 @@ rpds-py==0.10.3
 six==1.16.0
     # via
     #   -r requirements.in
-    #   astroid
     #   django-autocomplete-light
     #   django-imagekit
     #   python-cas
@@ -192,11 +199,17 @@ tomli==2.0.1
     # via
     #   build
     #   pip-tools
+    #   pylint
     #   pyproject-hooks
-typed-ast==1.5.4
+tomlkit==0.12.1
+    # via pylint
+typed-ast==1.5.5
     # via -r requirements.in
 typing-extensions==4.8.0
-    # via asgiref
+    # via
+    #   asgiref
+    #   astroid
+    #   pylint
 uritemplate==4.1.1
     # via drf-spectacular
 urllib3==1.23
@@ -205,7 +218,7 @@ wheel==0.41.2
     # via pip-tools
 whitenoise==6.5.0
     # via -r requirements.in
-wrapt==1.10.11
+wrapt==1.15.0
     # via
     #   -r requirements.in
     #   astroid
