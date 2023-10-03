@@ -62,3 +62,7 @@ SITE_URL=https://base.uni-ak.ac.at/
 ## Similar to Postgres we also might need to change the Redis port, if
 ## the standard port is already in use by another container.
 # REDIS_PORT=6379
+
+## Permissions default for autocomplete search, type permissions. Can be True or False
+PERMISSIONS_DEFAULT_VIEW=True
+PERMISSIONS_DEFAULT_EDIT=False

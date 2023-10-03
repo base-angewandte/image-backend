@@ -232,13 +232,12 @@ class Album(models.Model):
         verbose_name_plural = _('Albums')
 
 
-PERMISSION_CHOICES = (
-    ("VIEW", "view"),
-    ("EDIT", "edit"),
-)
-
-
 class PermissionsRelation(models.Model):
+    PERMISSION_CHOICES = (
+        ("VIEW", "view"),
+        ("EDIT", "edit"),
+    )
+
     album = models.ForeignKey(Album, related_name='album', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
     permissions = models.CharField(max_length=20, choices=PERMISSION_CHOICES)

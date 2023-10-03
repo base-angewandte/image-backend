@@ -7,6 +7,8 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from artworks.models import Album, Artwork, Artist, Keyword, Location, PermissionsRelation
 
+from artdb.settings import PERMISSIONS_DEFAULT
+
 logger = logging.getLogger(__name__)
 
 SOURCES = [
@@ -91,13 +93,22 @@ def autocomplete_search(request, *args, **kwargs):
         'keywords': Keyword.objects.filter(name__icontains=searchstr),
         'origin': Location.objects.filter(name__icontains=searchstr),
         'location': Location.objects.filter(name__icontains=searchstr),
-        'permissions': PermissionsRelation.objects.all()  # no need for a searchstring
     }
 
     if type_parameter in 'users':
         data = TYPES[type_parameter]
         if limit and data:
             data = TYPES[type_parameter][0:limit]
+        return Response(data)
+
+    if type_parameter in 'permissions':
+        data = []
+        for permission_type in PermissionsRelation.PERMISSION_CHOICES:
+            data.append({
+                    "id": permission_type[0],
+                    "default": PERMISSIONS_DEFAULT.get(permission_type[0])
+                })
+        data = data[0:limit]
         return Response(data)
 
     data = TYPES[type_parameter].values()
@@ -114,12 +125,7 @@ def autocomplete_search(request, *args, **kwargs):
         return Response(data)
 
     for data_item in data:
-        if type_parameter in 'permissions':
-            data_item = {
-                'id': data_item.get('permissions'),
-                'default': True,  # todo: make view default but also configurable in .env
-            }
-        elif type_parameter in 'albums' or type_parameter in 'title':
+        if type_parameter in 'albums' or type_parameter in 'title':
             data_item = {
                 'id': data_item.get('id'),
                 'value': data_item.get('title')

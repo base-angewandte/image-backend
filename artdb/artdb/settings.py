@@ -420,3 +420,8 @@ CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
 BASE_HEADER_SITE_URL = env.str('BASE_HEADER_SITE_URL', SITE_URL)
 BASE_HEADER_JSON = '{}bs/base-header.json'.format(BASE_HEADER_SITE_URL)
 BASE_HEADER = '{}{}'.format(BASE_HEADER_SITE_URL, requests.get(BASE_HEADER_JSON).json()['latest'])
+
+PERMISSIONS_DEFAULT = {
+    'VIEW': env.str('PERMISSIONS_DEFAULT_VIEW'),
+    'EDIT': env.str('PERMISSIONS_DEFAULT_EDIT')
+}
