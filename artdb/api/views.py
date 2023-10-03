@@ -44,12 +44,12 @@ logger = logging.getLogger(__name__)
 
 
 def artworks_in_slides(album):
-    # todo: slides tickets
 
-    # Temporary solution:
+    # Todo test
+
     artworks_in_slides = []
 
-    for artworks_list in album.slides: # todo test with several ids fake and not fake locally
+    for artworks_list in album.slides:
         for slides in artworks_list:
             artworks = Artwork.objects.filter(
                 id=slides.get('id'))
@@ -75,7 +75,6 @@ def artworks_in_slides(album):
 
 
 def simple_album_object(album):
-
     return Response(
         {
             "id": album.id,
@@ -679,6 +678,10 @@ class AlbumViewSet(viewsets.ViewSet):
     Separate_slides
     Reorder artworks within slides
 
+    append_artwork
+    POST /albums/{id}/append_artwork
+    Append artwork to slides as singular slide [{'id': x}]
+
     create_permissions
     POST /albums/{id}/permissions
 
@@ -981,6 +984,47 @@ class AlbumViewSet(viewsets.ViewSet):
         except TypeError:
             return Response(
                 _('Could not edit slides'), status=status.HTTP_404_NOT_FOUND
+            )
+
+    @extend_schema(
+        methods=['POST'],
+        parameters=[
+            OpenApiParameter(
+                name='artwork_id',
+                type=OpenApiTypes.INT,
+                required=True,
+                description='',
+                default=0
+            )],
+        responses={
+            200: AlbumSerializer,
+            403: OpenApiResponse(description='Access not allowed'),
+            404: OpenApiResponse(description='Not found'), }
+    )
+    def append_artwork(self, request, album_id=None, artwork_id=None, *args, **kwargs):
+        '''
+        /albums/{id}/append_artwork
+        Append artwork to slides as singular slide [{'id': x}]
+        '''
+
+        # Todo: figure out whether we need to check if an artwork object ({'id': x}) is already present within the slides.
+        #   For now, an artwork is appended as slide regardless
+
+        try:
+            album = Album.objects.get(pk=album_id)
+            album.slides.append([{'id': int(request.GET.get('artwork_id'))}])
+            album.save()
+            return Response([
+                {
+                    "id": album.id,
+                    "title": album.title,
+                    "slides": album.slides,
+                }
+            ])
+
+        except Artwork.DoesNotExist:
+            return Response(
+                _('There is no artwork associated with the given id.'), status=status.HTTP_404_NOT_FOUND
             )
 
     @extend_schema(

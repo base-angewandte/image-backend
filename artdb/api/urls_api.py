@@ -41,6 +41,9 @@ urlpatterns = [
             'get': 'retrieve_slides_per_album',
             'post': 'edit_slides'}), name='slides'),
 
+    path('albums/<album_id>/append-artwork/', views.AlbumViewSet.as_view({
+      'post': 'append_artwork'}), name='append_artwork'),
+
     path('albums/<album_id>/permissions/', views.AlbumViewSet.as_view({
                 'get': 'retrieve_permissions_per_album',
                 'post': 'create_permissions'}), name='permissions'),
