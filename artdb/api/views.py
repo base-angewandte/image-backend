@@ -799,6 +799,11 @@ class AlbumViewSet(viewsets.ViewSet):
 
         results = Album.objects.all()
 
+        slides_ids = [
+            slides.get('id') for album in results for artworks_list in album.slides for slides in artworks_list
+            if Artwork.objects.filter(id=slides.get('id')).first()
+        ]
+
         limit = limit if limit != 0 else None
 
         if offset and limit:
@@ -811,10 +816,11 @@ class AlbumViewSet(viewsets.ViewSet):
             end = None
 
         results = results[offset:end]
+        print(results)
 
         return Response(
             {
-                "total": results.count(),
+                "total": len(results),
                 "results": [
                     {
                         "id": album.id,
@@ -824,15 +830,14 @@ class AlbumViewSet(viewsets.ViewSet):
                         "artworks": [
                                         # the first 4 artworks from all slides: [[{"id":1}], [2,3], [4,5]] -> 1,2,3,4,max 4 objects
                                         {
-                                            "id": slides.get('id'),
+                                            "id": artwork_id,
                                             "image_original": Artwork.objects.get(
-                                                id=slides.get('id')).image_original.url if Artwork.objects.get(
-                                                id=slides.get('id')).image_original else None,
-                                            "title": Artwork.objects.get(id=slides.get("id")).title
+                                                id=artwork_id).image_original.url if Artwork.objects.get(
+                                                id=artwork_id).image_original else None,
+                                            "title": Artwork.objects.get(id=artwork_id).title
                                         }
 
-                                        for artworks_list in album.slides
-                                        for slides in artworks_list
+                                       for artwork_id in slides_ids if artwork_id
 
                                     ][:4] if album.slides else [],
                         "owner": {
