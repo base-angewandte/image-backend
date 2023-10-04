@@ -44,32 +44,30 @@ logger = logging.getLogger(__name__)
 
 
 def artworks_in_slides(album):
-
-    # Todo test
-
     artworks_in_slides = []
 
-    for artworks_list in album.slides:
-        for slides in artworks_list:
-            artworks = Artwork.objects.filter(
-                id=slides.get('id'))
-            for artwork in artworks:
-                if artwork in album.artworks.all():
-                    artworks_in_slides.append(
-                        {
-                            "id": artwork.id,
-                            "image_original": artwork.image_original.url if artwork.image_original else None,
-                            "credits": artwork.credits,
-                            "title": artwork.title,
-                            "date": artwork.date,
-                            "artists": [
-                                {
-                                    "value": artist.name,
-                                    "id": artist.id
-                                }
-                                for artist in artwork.artists.all()]
-                        }
-                    )
+    if album.slides:
+        for artworks_list in album.slides:
+            for slides in artworks_list:
+                artworks = Artwork.objects.filter(
+                    id=slides.get('id'))
+                for artwork in artworks:
+                    if artwork in album.artworks.all():
+                        artworks_in_slides.append(
+                            {
+                                "id": artwork.id,
+                                "image_original": artwork.image_original.url if artwork.image_original else None,
+                                "credits": artwork.credits,
+                                "title": artwork.title,
+                                "date": artwork.date,
+                                "artists": [
+                                    {
+                                        "value": artist.name,
+                                        "id": artist.id
+                                    }
+                                    for artist in artwork.artists.all()]
+                            }
+                        )
 
     return artworks_in_slides
 
