@@ -816,7 +816,6 @@ class AlbumViewSet(viewsets.ViewSet):
             end = None
 
         results = results[offset:end]
-        print(results)
 
         return Response(
             {
@@ -825,7 +824,6 @@ class AlbumViewSet(viewsets.ViewSet):
                     {
                         "id": album.id,
                         "title": album.title,
-                        # todo needs testing
                         "number_of_artworks": album.artworks.all().count(),  # number of artworks in a specific album
                         "artworks": [
                                         # the first 4 artworks from all slides: [[{"id":1}], [2,3], [4,5]] -> 1,2,3,4,max 4 objects
