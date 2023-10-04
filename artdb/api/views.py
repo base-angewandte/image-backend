@@ -219,11 +219,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 "location_of_creation": {
                     "id": artwork.location_of_creation.id,
                     "value": artwork.location_of_creation.name,
-                },
+                } if artwork.location_of_creation else {},
                 "location_current": {
                     "id": artwork.location_current.id,
                     "value": artwork.location_current.name,
-                },
+                } if artwork.location_current else {},
                 "artists": [
                     {
                         "id": artist.id,
@@ -1013,6 +1013,8 @@ class AlbumViewSet(viewsets.ViewSet):
 
         try:
             album = Album.objects.get(pk=album_id)
+            if not album.slides:
+                album.slides = []
             album.slides.append([{'id': int(request.GET.get('artwork_id'))}])
             album.save()
             return Response([
@@ -1071,7 +1073,7 @@ class AlbumViewSet(viewsets.ViewSet):
                 name='shared_info',
                 value=[
                     {
-                        "user_id": "123xd3",
+                        "user_id": 123,
                         "permissions": {
                             "id": "VIEW"
                         }
