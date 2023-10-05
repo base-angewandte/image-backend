@@ -797,10 +797,14 @@ class AlbumViewSet(viewsets.ViewSet):
 
         results = Album.objects.all()
 
-        slides_ids = [
-            slides.get('id') for album in results for artworks_list in album.slides for slides in artworks_list
-            if Artwork.objects.filter(id=slides.get('id')).first()
-        ]
+        slides_ids = []
+
+        for album in results:
+            if album.slides:
+                for artworks_list in album.slides:
+                    for slides in artworks_list:
+                        if Artwork.objects.filter(id=slides.get('id')).first():
+                            slides_ids.append(slides.get('id'))
 
         limit = limit if limit != 0 else None
 
@@ -966,7 +970,7 @@ class AlbumViewSet(viewsets.ViewSet):
 
             slides = slides_serializer.data.get('slides')
 
-            # Validate artworks within slides & assign if missing
+            # Validate artworks within slides & assign artwork to album if missing
             for artworks_list in slides:
                 for slide in artworks_list:
                     artworks = Artwork.objects.filter(
@@ -1008,14 +1012,20 @@ class AlbumViewSet(viewsets.ViewSet):
         Append artwork to slides as singular slide [{'id': x}]
         '''
 
-        # Todo: figure out whether we need to check if an artwork object ({'id': x}) is already present within the slides.
+        # Todo: Decide whether we need to check if an artwork object ({'id': x}) is already present within the slides.
         #   For now, an artwork is appended as slide regardless
 
         try:
             album = Album.objects.get(pk=album_id)
             if not album.slides:
                 album.slides = []
-            album.slides.append([{'id': int(request.GET.get('artwork_id'))}])
+
+            # Check if artwork exists
+            artwork = Artwork.objects.get(pk=int(request.GET.get('artwork_id')))
+            # Assign artwork to album
+            album.artworks.add(artwork)
+
+            album.slides.append([{'id': artwork.id}])
             album.save()
             return Response([
                 {
