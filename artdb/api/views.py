@@ -1023,7 +1023,10 @@ class AlbumViewSet(viewsets.ViewSet):
             # Check if artwork exists
             artwork = Artwork.objects.get(pk=int(request.GET.get('artwork_id')))
             # Assign artwork to album
-            album.artworks.add(artwork)
+            # album.artworks.add(artwork)  # used to be
+
+            # Temporary solution to avoid IntegrityError
+            AlbumMembership.objects.get_or_create(collection=album, artwork=artwork)
 
             album.slides.append([{'id': artwork.id}])
             album.save()
