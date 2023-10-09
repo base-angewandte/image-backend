@@ -977,7 +977,10 @@ class AlbumViewSet(viewsets.ViewSet):
                         id=slide.get('id'))
                     for artwork in artworks:
                         if artwork not in album.artworks.all():
-                            album.artworks.add(artwork)
+                            # album.artworks.add(artwork)  # used to be
+
+                            # Temporary solution to avoid IntegrityError
+                            AlbumMembership.objects.get_or_create(collection=album, artwork=artwork)
 
             # Update slides object
             album.slides = slides
@@ -1023,7 +1026,10 @@ class AlbumViewSet(viewsets.ViewSet):
             # Check if artwork exists
             artwork = Artwork.objects.get(pk=int(request.GET.get('artwork_id')))
             # Assign artwork to album
-            album.artworks.add(artwork)
+            # album.artworks.add(artwork)  # used to be
+
+            # Temporary solution to avoid IntegrityError
+            AlbumMembership.objects.get_or_create(collection=album, artwork=artwork)
 
             album.slides.append([{'id': artwork.id}])
             album.save()
