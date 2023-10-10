@@ -513,7 +513,17 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
                                                        "dimensions", "description", "credits", "keywords",
                                                        "location_of_creation", "location_current"),
-                                   ).filter(search__icontains=searchstr).order_by('id').distinct('id')
+                                   )#.filter(search__icontains=searchstr).order_by('id').distinct('id')
+        # Test: this version does not combine q and a
+        print(results)
+        search_terms = searchstr.split(' ')
+        for term in search_terms:
+            if term:
+                q_objects |= Q(search__icontains=term)
+        print(results.filter(search__icontains=searchstr).order_by('id').distinct('id'))
+        results = results.filter(q_objects)
+        # test
+        print(results)
 
         if offset and limit:
             end = offset + limit
@@ -972,11 +982,17 @@ class AlbumViewSet(viewsets.ViewSet):
 
             slides = slides_serializer.data.get('slides')
 
-            # Validate artworks within slides & assign artwork to album if missing
+            # Validate artworks within slides & assign artwork to album if missing and artwork exists
+            artworks_to_remove = []
+            artworks = []
             for artworks_list in slides:
                 for slide in artworks_list:
-                    artworks = Artwork.objects.filter(
-                        id=slide.get('id'))
+                    try:
+                        artworks.append(Artwork.objects.get(
+                            id=slide.get('id')))
+                    except Artwork.DoesNotExist:
+                        artworks_to_remove.append(slide.get('id'))
+
                     for artwork in artworks:
                         if artwork not in album.artworks.all():
                             # album.artworks.add(artwork)  # used to be
@@ -984,14 +1000,16 @@ class AlbumViewSet(viewsets.ViewSet):
                             # Temporary solution to avoid IntegrityError
                             AlbumMembership.objects.get_or_create(collection=album, artwork=artwork)
 
-            # Update slides object
+            # Update slides object after removing non existing artwork
+            slides = [l for l in slides for d in l if d.get('id') not in artworks_to_remove]
+            print(slides)
             album.slides = slides
             album.save()
             return Response(album.slides)
 
-        except TypeError:
+        except TypeError as e:
             return Response(
-                _('Could not edit slides'), status=status.HTTP_404_NOT_FOUND
+                _(f'Could not edit slides: {e}'), status=status.HTTP_404_NOT_FOUND
             )
 
     @extend_schema(
