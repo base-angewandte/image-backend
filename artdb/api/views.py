@@ -987,9 +987,7 @@ class AlbumViewSet(viewsets.ViewSet):
             # Update slides object
             album.slides = slides
             album.save()
-            return Response([
-                artworks_in_slides(album)
-            ])
+            return Response(album.slides)
 
         except TypeError:
             return Response(
