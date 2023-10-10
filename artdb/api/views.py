@@ -966,7 +966,9 @@ class AlbumViewSet(viewsets.ViewSet):
 
             # Validate slides object
             if not slides_serializer.is_valid():
-                return Response(_('Slides format incorrect'), status=status.HTTP_404_NOT_FOUND)
+                return Response(
+                    _('Slides format incorrect'), status=status.HTTP_400_BAD_REQUEST
+                )
 
             slides = slides_serializer.data.get('slides')
 

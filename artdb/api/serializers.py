@@ -21,6 +21,15 @@ def validate_json_field(value, schema):
     except TypeError as e:
         raise ValidationError(f'Invalid characters: {e}') from e
 
+    # check if it is slides, because in that case duplicates are allowed.
+    # The validity of slidesis checked above
+    if isinstance(value, list):
+        for i in value:
+            if isinstance(i, list):
+                if 'id' in i: # then it is slides
+                    pass
+        return value
+
     if len(value) > len({json.dumps(d, sort_keys=True) for d in value}):
         raise ValidationError(_('Data contains duplicate entries'))
 
