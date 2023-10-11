@@ -1041,13 +1041,9 @@ class AlbumViewSet(viewsets.ViewSet):
 
             album.slides.append([{'id': artwork.id}])
             album.save()
-            return Response([
-                {
-                    "id": album.id,
-                    "title": album.title,
-                    "slides": album.slides,
-                }
-            ])
+            return Response(
+                _('Artwork added.'), status=status.HTTP_200_OK
+            )
 
         except Artwork.DoesNotExist:
             return Response(
