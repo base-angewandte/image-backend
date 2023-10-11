@@ -1029,6 +1029,7 @@ class AlbumViewSet(viewsets.ViewSet):
         /albums/{id}/append_artwork
         Append artwork to slides as singular slide [{'id': x}]
         '''
+        # TODO it should be at the end
 
         try:
             album = Album.objects.get(pk=album_id)
