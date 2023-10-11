@@ -44,32 +44,39 @@ logger = logging.getLogger(__name__)
 
 
 def artworks_in_slides(album):
-    artworks_in_slides = []
-
+    info_per_slide = []
     if album.slides:
-        for artworks_list in album.slides:
-            for slides in artworks_list:
-                artworks = Artwork.objects.filter(
-                    id=slides.get('id'))
-                for artwork in artworks:
-                    if artwork in album.artworks.all():
-                        artworks_in_slides.append(
-                            {
-                                "id": artwork.id,
-                                "image_original": artwork.image_original.url if artwork.image_original else None,
-                                "credits": artwork.credits,
-                                "title": artwork.title,
-                                "date": artwork.date,
-                                "artists": [
-                                    {
-                                        "value": artist.name,
-                                        "id": artist.id
-                                    }
-                                    for artist in artwork.artists.all()]
-                            }
-                        )
+        for slide in album.slides:
+            artwork_info = []
+            for artwork_in_slide in slide:
 
-    return artworks_in_slides
+                try:
+                    artwork = Artwork.objects.get(
+                        id=artwork_in_slide.get('id'))
+                except Artwork.DoesNotExist:
+                    return Response(
+                        _(f'There is no artwork associated with id {artwork_in_slide.get("id")}.'),
+                        status=status.HTTP_404_NOT_FOUND
+                    )
+
+                artwork_info.append(
+                    {
+                        "id": artwork.id,
+                        "image_original": artwork.image_original.url if artwork.image_original else None,
+                        "credits": artwork.credits,
+                        "title": artwork.title,
+                        "date": artwork.date,
+                        "artists": [
+                            {
+                                "value": artist.name,
+                                "id": artist.id
+                            }
+                            for artist in artwork.artists.all()]
+                    }
+                )
+            info_per_slide.append(artwork_info)
+
+    return info_per_slide
 
 
 def simple_album_object(album):
@@ -513,7 +520,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
                                                        "dimensions", "description", "credits", "keywords",
                                                        "location_of_creation", "location_current"),
-                                   )#.filter(search__icontains=searchstr).order_by('id').distinct('id')
+                                   )  # .filter(search__icontains=searchstr).order_by('id').distinct('id')
         # Test: this version does not combine q and a
         print(results)
         search_terms = searchstr.split(' ')
@@ -847,7 +854,7 @@ class AlbumViewSet(viewsets.ViewSet):
                                             "title": Artwork.objects.get(id=artwork_id).title
                                         }
 
-                                       for artwork_id in slides_ids if artwork_id
+                                        for artwork_id in slides_ids if artwork_id
 
                                     ][:4] if album.slides else [],
                         "owner": {
@@ -919,12 +926,8 @@ class AlbumViewSet(viewsets.ViewSet):
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-        # todo: slides tickets
-
         return Response(
-            [
                 artworks_in_slides(album)
-            ]
         )
 
     @extend_schema(
@@ -982,8 +985,7 @@ class AlbumViewSet(viewsets.ViewSet):
 
             slides = slides_serializer.data.get('slides')
 
-            # Validate artworks within slides & assign artwork to album if missing and artwork exists
-            artworks_to_remove = []
+            # Check if artworks exist
             artworks = []
             for artworks_list in slides:
                 for slide in artworks_list:
@@ -991,21 +993,16 @@ class AlbumViewSet(viewsets.ViewSet):
                         artworks.append(Artwork.objects.get(
                             id=slide.get('id')))
                     except Artwork.DoesNotExist:
-                        artworks_to_remove.append(slide.get('id'))
+                        return Response(
+                            _(f'There is no artwork associated with id {slide.get("id")}.'),
+                            status=status.HTTP_404_NOT_FOUND
+                        )
 
-                    for artwork in artworks:
-                        if artwork not in album.artworks.all():
-                            # album.artworks.add(artwork)  # used to be
-
-                            # Temporary solution to avoid IntegrityError
-                            AlbumMembership.objects.get_or_create(collection=album, artwork=artwork)
-
-            # Update slides object after removing non existing artwork
-            slides = [l for l in slides for d in l if d.get('id') not in artworks_to_remove]
-            print(slides)
             album.slides = slides
             album.save()
-            return Response(album.slides)
+            return Response(
+                artworks_in_slides(album)
+            )
 
         except TypeError as e:
             return Response(
@@ -1033,9 +1030,6 @@ class AlbumViewSet(viewsets.ViewSet):
         Append artwork to slides as singular slide [{'id': x}]
         '''
 
-        # Todo: Decide whether we need to check if an artwork object ({'id': x}) is already present within the slides.
-        #   For now, an artwork is appended as slide regardless
-
         try:
             album = Album.objects.get(pk=album_id)
             if not album.slides:
@@ -1043,11 +1037,6 @@ class AlbumViewSet(viewsets.ViewSet):
 
             # Check if artwork exists
             artwork = Artwork.objects.get(pk=int(request.GET.get('artwork_id')))
-            # Assign artwork to album
-            # album.artworks.add(artwork)  # used to be
-
-            # Temporary solution to avoid IntegrityError
-            AlbumMembership.objects.get_or_create(collection=album, artwork=artwork)
 
             album.slides.append([{'id': artwork.id}])
             album.save()
