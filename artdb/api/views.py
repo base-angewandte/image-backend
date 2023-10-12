@@ -520,17 +520,19 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
                                                        "dimensions", "description", "credits", "keywords",
                                                        "location_of_creation", "location_current"),
-                                   )  # .filter(search__icontains=searchstr).order_by('id').distinct('id')
-        # Test: this version does not combine q and a
-        print(results)
+                                   )
+
+        final_results = []
+
         search_terms = searchstr.split(' ')
         for term in search_terms:
             if term:
-                q_objects |= Q(search__icontains=term)
-        print(results.filter(search__icontains=searchstr).order_by('id').distinct('id'))
-        results = results.filter(q_objects)
-        # test
-        print(results)
+                # It filters as intended if we literally append to a list when adding further filtering.
+                # Possibly improvable, q_objects and direct filtering did not work so far
+                final_results.append(list(results.filter(search__icontains=term).order_by('id').distinct('id')))
+
+        if final_results:
+            results = final_results[0]
 
         if offset and limit:
             end = offset + limit
@@ -545,7 +547,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         return Response(
             {
-                "total": results.count(),
+                "total": len(results),
                 "results": [
                     {
                         "id": artwork.id,
