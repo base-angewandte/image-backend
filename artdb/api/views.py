@@ -39,6 +39,7 @@ from .serializers import (
     SearchResponseSerializer, PermissionsSerializer,
 
 )
+from artdb.settings import SITE_URL
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +63,8 @@ def artworks_in_slides(album):
                 artwork_info.append(
                     {
                         "id": artwork.id,
-                        "image_original": artwork.image_original.url if artwork.image_original else None,
+                        "image_original": f"{SITE_URL}{Artwork.objects.get(id=artwork.id).image_original}"
+                                            if Artwork.objects.get(id=artwork.id).image_original else None,
                         "credits": artwork.credits,
                         "title": artwork.title,
                         "date": artwork.date,
@@ -525,14 +527,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         final_results = []
 
         search_terms = searchstr.split(' ')
-        print(search_terms)
         for term in search_terms:
             if term:
-                if "..." in term:
-                    final_results.append(list(results.filter(search__icontains=term).order_by('id').distinct('id')))
                 # It filters as intended if we literally append to a list when adding further filtering.
                 # Possibly improvable, q_objects and direct filtering did not work so far
-                print(results.filter(search__icontains=term))
                 final_results.append(list(results.filter(search__icontains=term).order_by('id').distinct('id')))
 
         if final_results:
@@ -861,9 +859,8 @@ class AlbumViewSet(viewsets.ViewSet):
                                         # the first 4 artworks from all slides: [[{"id":1}], [2,3], [4,5]] -> 1,2,3,4,max 4 objects
                                         {
                                             "id": artwork_id,
-                                            "image_original": Artwork.objects.get(
-                                                id=artwork_id).image_original.url if Artwork.objects.get(
-                                                id=artwork_id).image_original else None,
+                                            "image_original": f"{SITE_URL}{Artwork.objects.get(id=artwork_id).image_original}"
+                                            if Artwork.objects.get(id=artwork_id).image_original else None,
                                             "title": Artwork.objects.get(id=artwork_id).title
                                         }
 
