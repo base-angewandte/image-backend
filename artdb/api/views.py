@@ -533,6 +533,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         if final_results:
             results = final_results[0]
+        else:
+            results = results.order_by('id').distinct('id')
 
         if offset and limit:
             end = offset + limit
