@@ -525,16 +525,23 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         final_results = []
 
         search_terms = searchstr.split(' ')
+        print(search_terms)
         for term in search_terms:
             if term:
+                if "..." in term:
+                    final_results.append(list(results.filter(search__icontains=term).order_by('id').distinct('id')))
                 # It filters as intended if we literally append to a list when adding further filtering.
                 # Possibly improvable, q_objects and direct filtering did not work so far
+                print(results.filter(search__icontains=term))
                 final_results.append(list(results.filter(search__icontains=term).order_by('id').distinct('id')))
 
         if final_results:
             results = final_results[0]
         else:
             results = results.order_by('id').distinct('id')
+
+        # total of results before applying limits:
+        total = len(results)
 
         if offset and limit:
             end = offset + limit
@@ -549,7 +556,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         return Response(
             {
-                "total": len(results),
+                "total": total,
                 "results": [
                     {
                         "id": artwork.id,
@@ -827,6 +834,8 @@ class AlbumViewSet(viewsets.ViewSet):
                         if Artwork.objects.filter(id=slides.get('id')).first():
                             slides_ids.append(slides.get('id'))
 
+        total = len(results)
+
         limit = limit if limit != 0 else None
 
         if offset and limit:
@@ -842,7 +851,7 @@ class AlbumViewSet(viewsets.ViewSet):
 
         return Response(
             {
-                "total": len(results),
+                "total": total,
                 "results": [
                     {
                         "id": album.id,
