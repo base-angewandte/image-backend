@@ -128,3 +128,48 @@ msgstr "Datierung von, bis"
 #: artdb/api/views.py:422
 msgid "enter date"
 msgstr "Datum eintragen"
+
+
+## Labels
+msgid "artists"
+msgstr "Künstler*innen"
+
+msgid "date"
+msgstr "Datierung"
+
+msgid "credits"
+msgstr "Abbildungsnachweis"
+
+msgid "description"
+msgstr "Beschreibung"
+
+msgid "dimensions"
+msgstr "Format"
+
+msgid "keywords"
+msgstr "Schlagwörter"
+
+msgid "license"
+msgstr "Lizenz"
+
+msgid "location_current"
+msgstr "Standort"
+
+msgid "location_of_creation"
+msgstr "Entstehungsort"
+
+msgid "material"
+msgstr "Material/Technik"
+
+msgid "title"
+msgstr "Titel"
+
+msgid "title_notes"
+msgstr "Notizen zu problematischen Begrifflichkeiten"
+
+msgid "edit"
+msgstr "Bearbeiten"
+
+msgid "view"
+msgstr "Ansehen"
+}

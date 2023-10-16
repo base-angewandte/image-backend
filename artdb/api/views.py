@@ -64,7 +64,7 @@ def artworks_in_slides(album):
                     {
                         "id": artwork.id,
                         "image_original": f"{SITE_URL}{Artwork.objects.get(id=artwork.id).image_original}"
-                                            if Artwork.objects.get(id=artwork.id).image_original else None,
+                        if Artwork.objects.get(id=artwork.id).image_original else None,
                         "credits": artwork.credits,
                         "title": artwork.title,
                         "date": artwork.date,
@@ -427,7 +427,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             }
         }
 
-
         return Response(data)
 
     @extend_schema(
@@ -719,6 +718,9 @@ class AlbumViewSet(viewsets.ViewSet):
     delete_album:
     DELETE specific album
 
+    list_labels:
+    GET labels
+
 
 
     """
@@ -938,7 +940,7 @@ class AlbumViewSet(viewsets.ViewSet):
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
         return Response(
-                artworks_in_slides(album)
+            artworks_in_slides(album)
         )
 
     @extend_schema(
@@ -1252,6 +1254,54 @@ class AlbumViewSet(viewsets.ViewSet):
             return Response(_(f'Album {album.title} was deleted'), status=status.HTTP_200_OK)
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+
+
+class LabelsViewSet(viewsets.GenericViewSet):
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='limit',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+            ),
+            OpenApiParameter(
+                name='offset',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+            )
+        ],
+        responses={
+            200: OpenApiResponse(description='OK'),
+            403: OpenApiResponse(description='Access not allowed'),
+            404: OpenApiResponse(description='Not found'),
+        },
+    )
+    def list_labels(self, request, *args, **kwargs):
+        data = {
+            "artworks": {
+                "artists": "Artists",
+                "credits": "Credits",
+                "date": "Date of creation",
+                "description": "Description",
+                "dimensions": "Dimensions",
+                "keywords": "Keywords",
+                "license": "License",
+                "location_current": "Current location",
+                "location_of_creation": "Place of creation",
+                "material": "Material/Technique",
+                "title": "Title",
+                "title_notes": "Notes on problematic terms"
+            },
+            "permissions": {
+                "edit": "Edit",
+                "view": "View"
+            }
+        }
+
+        return Response(data)
 
 
 class UserViewSet(viewsets.GenericViewSet):
