@@ -427,6 +427,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             }
         }
 
+
         return Response(data)
 
     @extend_schema(

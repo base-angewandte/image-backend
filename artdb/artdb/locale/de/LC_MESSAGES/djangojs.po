@@ -81,50 +81,50 @@ msgstr "Mehr anzeigen"
 
 ## API
 
-#: artdb/api/views.py:151
+#: artdb/api/views.py:299
 msgid "title"
 msgstr "Titel"
 
-#: artdb/api/views.py:158
+#: artdb/api/views.py:306
 msgid "enter title"
 msgstr "Titel eintragen"
 
-#: artdb/api/views.py:175
+#: artdb/api/views.py:323
 msgid "artist"
 msgstr "Künstler*in"
 
-#: artdb/api/views.py:182
+#: artdb/api/views.py:330
 msgid "enter artist"
 msgstr "Künstler*in eintragen"
 
-#: artdb/api/views.py:199
+#: artdb/api/views.py:347
 msgid "place of production"
 msgstr "Entstehungsort"
 
-#: artdb/api/views.py:206
+#: artdb/api/views.py:354
 msgid "enter place of production"
 msgstr "Entstehungsort eintragen"
 
-#: artdb/api/views.py:223
+#: artdb/api/views.py:371
 msgid "current location"
 msgstr "Standort"
 
-#: artdb/api/views.py:230
+#: artdb/api/views.py:378
 msgid "enter current location"
 msgstr "Standort eintragen"
 
-#: artdb/api/views.py:247
+#: artdb/api/views.py:395
 msgid "keywords"
 msgstr "Schlagwort"
 
-#: artdb/api/views.py:249
+#: artdb/api/views.py:397
 msgid "enter keywords"
 msgstr "Schlagwort eintragen"
 
-#: artdb/api/views.py:268
+#: artdb/api/views.py:416
 msgid "date from, to"
 msgstr "Datierung von, bis"
 
-#: artdb/api/views.py:275
+#: artdb/api/views.py:422
 msgid "enter date"
 msgstr "Datum eintragen"
