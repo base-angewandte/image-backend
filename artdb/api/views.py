@@ -718,11 +718,6 @@ class AlbumViewSet(viewsets.ViewSet):
     delete_album:
     DELETE specific album
 
-    list_labels:
-    GET labels
-
-
-
     """
 
     queryset = Album.objects.all()
@@ -1257,6 +1252,10 @@ class AlbumViewSet(viewsets.ViewSet):
 
 
 class LabelsViewSet(viewsets.GenericViewSet):
+    """
+    list_labels:
+    GET labels
+    """
 
     @extend_schema(
         parameters=[
