@@ -531,10 +531,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             if term:
                 # It filters as intended if we literally append to a list when adding further filtering.
                 # Possibly improvable, q_objects and direct filtering did not work so far
-                final_results.append(list(results.filter(search__icontains=term).order_by('id').distinct('id')))
+                final_results.extend(list(results.filter(search__icontains=term).order_by('id').distinct('id')))
 
         if final_results:
-            results = final_results[0]
+            results = final_results
         else:
             results = results.order_by('id').distinct('id')
 
