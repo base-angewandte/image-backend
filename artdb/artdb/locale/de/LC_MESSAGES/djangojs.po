@@ -172,4 +172,3 @@ msgstr "Bearbeiten"
 
 msgid "view"
 msgstr "Ansehen"
-}
