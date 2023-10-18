@@ -41,7 +41,7 @@ from .serializers import (
 )
 from artdb.settings import SITE_URL
 
-from artworks.views import collection_download_as_pptx_en, collection_download_as_pptx_de
+from artworks.exports import collection_download_as_pptx_en, collection_download_as_pptx_de
 
 logger = logging.getLogger(__name__)
 

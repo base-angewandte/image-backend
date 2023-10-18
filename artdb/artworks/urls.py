@@ -1,5 +1,5 @@
 from django.urls import path, re_path
-from . import views
+from . import views, exports
 
 urlpatterns = [
     path('', views.artworks_list, name='artworks-list'),
@@ -9,8 +9,8 @@ urlpatterns = [
     path('artwork/<int:id>/collect_overlay/', views.artwork_collect, name='artwork-collect'),
     path('collections/', views.collections_list, name='collections-list'),
     path('collection/<int:id>/', views.collection, name='collection'),
-    path('collection/<int:id>_de.pptx', views.collection_download_as_pptx_de, name="download-pptx-de"),
-    path('collection/<int:id>_en.pptx', views.collection_download_as_pptx_en, name="download-pptx-en"),
+    path('collection/<int:id>_de.pptx', exports.collection_download_as_pptx_de, name="download-pptx-de"),
+    path('collection/<int:id>_en.pptx', exports.collection_download_as_pptx_en, name="download-pptx-en"),
     path('collection/<int:id>.json', views.collection_json, name='collection-json'),
     path('collection/<int:id>/edit/', views.collection_edit, name='collection-edit'),
     path('collection/<int:id>/delete/', views.collection_delete, name='collection-delete'),
