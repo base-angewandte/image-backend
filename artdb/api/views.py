@@ -41,6 +41,8 @@ from .serializers import (
 )
 from artdb.settings import SITE_URL
 
+from artworks.views import collection_download_as_pptx_en, collection_download_as_pptx_de
+
 logger = logging.getLogger(__name__)
 
 
@@ -125,6 +127,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     list_search_filters:
     GET filters for search.
+
+    download_artwork:
+    GET Download artwork + metadata
 
     """
 
@@ -429,6 +434,14 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         return Response(data)
 
+    def download_artwork(self, request, artwork_id=None, *args, **kwargs):
+        # Todo: all
+        artwork = Artwork.objects.get(id=artwork_id)
+
+        return Response(
+            {}
+        )
+
     @extend_schema(
         methods=['POST'],
         request=SearchRequestSerializer,
@@ -717,6 +730,9 @@ class AlbumViewSet(viewsets.ViewSet):
 
     delete_album:
     DELETE specific album
+
+    download_album:
+    GET Download album as pptx or PDF
 
     """
 
@@ -1249,6 +1265,66 @@ class AlbumViewSet(viewsets.ViewSet):
             return Response(_(f'Album {album.title} was deleted'), status=status.HTTP_200_OK)
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+
+    @extend_schema(
+        methods=['GET'],
+        parameters=[
+            OpenApiParameter(
+                name='download_format',
+                type=OpenApiTypes.STR,
+                # enum=['pptx', 'pdf'],  # Todo to be added
+                default='pptx',
+                description="Enter either 'pptx' or 'PDF'",
+                required=True,
+            ),
+            OpenApiParameter(
+                name='language',
+                type=OpenApiTypes.STR,
+                required=True,
+                enum=['de', 'en'],
+                default='en',
+                description="Enter either 'en' or 'de'",
+
+            )
+        ],
+        responses={
+            200: OpenApiResponse(description='OK'),
+            403: OpenApiResponse(description='Access not allowed'),
+            404: OpenApiResponse(description='Not found'),
+        },
+    )
+    def download_album(self, request, album_id=None):  # , *args, **kwargs):
+        # Todo: now only pptx, later also PDF
+        try:
+            album = Album.objects.get(id=album_id)
+        except Exception:
+            return Response(
+                _("Album doesn't exist", status.HTTP_404_NOT_FOUND)
+            )
+
+        download_format = request.GET.get('download_format')
+        lang = request.GET.get('language')
+
+        download_map = {
+            'pptx_en': collection_download_as_pptx_en(request, id=album_id),
+            'pptx_de': collection_download_as_pptx_de(request, id=album_id),
+            'pdf_en': {},
+            'pdf_de': {},
+        }
+
+        if download_format == 'pptx' and lang == 'en':
+            return download_map['pptx_en']
+        if download_format == 'pptx' and lang == 'de':
+            return download_map['pptx_de']
+        if download_format == 'pdf' and lang == 'en':
+            return download_map['pdf_en']  # Todo to implement
+        if download_format == 'pdf' and lang == 'de':
+            return download_map['pdf_de']  # Todo to implement
+        else:
+            return Response(
+                _("Wrong parameters.", status.HTTP_404_NOT_FOUND)
+            )
+
 
 
 class LabelsViewSet(viewsets.GenericViewSet):
