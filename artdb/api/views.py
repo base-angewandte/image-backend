@@ -1,10 +1,13 @@
 import logging
 from rest_framework.exceptions import ParseError
 from django.contrib.auth.models import User
-
+from io import BytesIO
+import zipfile
+import os
 import re
 from django.contrib.postgres.search import SearchVector
 
+from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -434,13 +437,55 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         return Response(data)
 
-    def download_artwork(self, request, artwork_id=None, *args, **kwargs):
-        # Todo: all
-        artwork = Artwork.objects.get(id=artwork_id)
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(description='OK'),
+            403: OpenApiResponse(description='Access not allowed'),
+            404: OpenApiResponse(description='Not found'),
+        },
+    )
+    def download_artwork(self, request, artwork_id=None):
+        # Todo: unsure whether language works
+        try:
+            artwork = Artwork.objects.get(id=artwork_id)
 
-        return Response(
-            {}
-        )
+            buffer = BytesIO()
+
+            # create metadata file
+            with open(f'{artwork.title}_metadata.txt', 'w') as f:
+                f.write(f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title},"\n"')
+                f.write(f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]},"\n"')
+                f.write(f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date},"\n"')
+                f.write(f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material},"\n"')
+                f.write(f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions},"\n"')
+                f.write(f'{artwork._meta.get_field("description").verbose_name.title()}: {artwork.description},"\n"')
+                f.write(f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits},"\n"')
+                f.write(f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]},"\n"')
+                f.write(f'{artwork._meta.get_field("location_current").verbose_name.title()}: {artwork.location_current},"\n"')
+                f.write(f'{artwork._meta.get_field("location_of_creation").verbose_name.title()}: {artwork.location_of_creation}"\n"')
+                f.close()
+
+            #  image to zipfile & metadata
+            with zipfile.ZipFile(f'{artwork.title}.zip', 'w') as image_zip:
+                image_name = os.path.basename(artwork.image_original.url)  # was url
+                image_zip.write(os.path.basename(f'{artwork.title}_metadata.txt'))
+                image_zip.write(image_name)
+
+            response = HttpResponse(buffer.getvalue())
+            response['Content-Type'] = 'application/x-zip-compressed'
+            response['Content-Disposition'] = f'attachment; filename={artwork.title}.zip'
+
+            return response
+
+        except Artwork.DoesNotExist:
+            return Response(
+                _("Artwork doesn't exist", status.HTTP_404_NOT_FOUND)
+            )
+
+        except FileNotFoundError:
+            return Response(
+                _(f"File for id {artwork_id} not found")# todo, status.HTTP_404_NOT_FOUND)
+            )
 
     @extend_schema(
         methods=['POST'],
@@ -1293,7 +1338,7 @@ class AlbumViewSet(viewsets.ViewSet):
             404: OpenApiResponse(description='Not found'),
         },
     )
-    def download_album(self, request, album_id=None):  # , *args, **kwargs):
+    def download_album(self, request, album_id=None):
         # Todo: now only pptx, later also PDF
         try:
             album = Album.objects.get(id=album_id)
@@ -1326,13 +1371,14 @@ class AlbumViewSet(viewsets.ViewSet):
             )
 
 
-
 class LabelsViewSet(viewsets.GenericViewSet):
     """
     list_labels:
     GET labels
     """
 
+    # TODO
+    # @language_header_decorator
     @extend_schema(
         parameters=[
             OpenApiParameter(
