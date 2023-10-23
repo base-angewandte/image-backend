@@ -1058,13 +1058,19 @@ class AlbumViewSet(viewsets.ViewSet):
             artworks = []
             for artworks_list in slides:
                 for slide in artworks_list:
-                    try:
-                        artworks.append(Artwork.objects.get(
-                            id=slide.get('id')))
-                    except Artwork.DoesNotExist:
+                    if len(artworks_list) <= 2:
+                        try:
+                            artworks.append(Artwork.objects.get(
+                                id=slide.get('id')))
+                        except Artwork.DoesNotExist:
+                            return Response(
+                                _(f'There is no artwork associated with id {slide.get("id")}.'),
+                                status=status.HTTP_404_NOT_FOUND
+                            )
+                    else:
                         return Response(
-                            _(f'There is no artwork associated with id {slide.get("id")}.'),
-                            status=status.HTTP_404_NOT_FOUND
+                            _(f'No more than two artworks per slide.'),
+                            status=status.HTTP_400_BAD_REQUEST
                         )
 
             album.slides = slides
