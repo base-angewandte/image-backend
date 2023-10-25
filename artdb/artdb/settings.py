@@ -263,7 +263,7 @@ WSGI_APPLICATION = f'{PROJECT_NAME}.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ.get('POSTGRES_DB', f'django_{PROJECT_NAME}'),
         'USER': os.environ.get('POSTGRES_USER', f'django_{PROJECT_NAME}'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', f'password_{PROJECT_NAME}'),
@@ -296,7 +296,6 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'de'
 TIME_ZONE = 'Europe/Vienna'
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 LANGUAGES = (
@@ -309,7 +308,14 @@ LOCALE_PATHS = (os.path.join(BASE_DIR, 'artdb', 'locale'),)
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 STATICFILES_DIRS = (
     # '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'static')), os.sep),

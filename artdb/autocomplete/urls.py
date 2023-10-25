@@ -1,7 +1,7 @@
-from django.urls import include, re_path
+from django.urls import include, path
 
 from . import urls_autocomplete
 
 urlpatterns = [
-    re_path('', include(urls_autocomplete)),
+    path('', include(urls_autocomplete)),
 ]
