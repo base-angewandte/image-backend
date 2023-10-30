@@ -277,7 +277,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 "id": album.id,
                 "value": album.title,
             }
-            for album in albums]
+            for album in albums
+            if request.user.username in [p.user.username for p in PermissionsRelation.objects.filter(album__id=album.id)] and
+            "VIEW" in [p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]
+        ]
         )
 
     @extend_schema(
@@ -1437,6 +1440,7 @@ class UserViewSet(viewsets.GenericViewSet):
         tags=['user'],
     )
     def retrieve(self, request, *args, **kwargs):
+        # todo below?
         try:
             data = {
                 'uuid': request.user.username,
