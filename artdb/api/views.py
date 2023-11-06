@@ -86,7 +86,7 @@ def artworks_in_slides(album):
     return info_per_slide
 
 
-def simple_album_object(album):
+def simple_album_object(album, request):
     return Response(
         {
             "id": album.id,
@@ -109,7 +109,11 @@ def simple_album_object(album):
                         }
                     ]
                 }
-                for p in PermissionsRelation.objects.filter(album__id=album.id)]
+                for p in PermissionsRelation.objects.filter(album__id=album.id)
+                if request.user.username in p.user.username and
+                   "VIEW" in [p.permissions for p in
+                              PermissionsRelation.objects.filter(user__username=request.user.username)]
+            ]
         }
     )
 
@@ -820,6 +824,7 @@ class AlbumViewSet(viewsets.ViewSet):
         offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
 
         # TODO: to complete when folders are relevant
+        # todo also add checks folders user.username
 
         dummy_data = [{
             'title': 'Some title',
@@ -945,7 +950,11 @@ class AlbumViewSet(viewsets.ViewSet):
                                     }
                                 ]
                             }
-                            for p in PermissionsRelation.objects.filter(album__id=album.id)]
+                            for p in PermissionsRelation.objects.filter(album__id=album.id)
+                            if request.user.username in p.user.username and
+                               "VIEW" in [p.permissions for p in
+                                          PermissionsRelation.objects.filter(user__username=request.user.username)]
+                        ]
 
                     }
                     for album in results]
@@ -975,11 +984,7 @@ class AlbumViewSet(viewsets.ViewSet):
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-        # TODO slides ticket
-        # todo: artworks from slides or all artworks regardless?
-        # todo: check if it belongs to album? could be a solution for now. Otherwise first decide whether to influence artworks/album with slides
-
-        return simple_album_object(album)
+        return simple_album_object(album, request)
 
     @extend_schema(
         responses={
@@ -998,9 +1003,17 @@ class AlbumViewSet(viewsets.ViewSet):
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-        return Response(
-            artworks_in_slides(album)
-        )
+        if request.user.username in [p.user.username for p in
+                                     PermissionsRelation.objects.filter(album__id=album.id)] and "VIEW" in [
+            p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
+
+            return Response(
+                artworks_in_slides(album)
+            )
+        else:
+            return Response(
+                _("Not allowed", status.HTTP_403_FORBIDDEN)
+            )
 
     @extend_schema(
         methods=['POST'],
@@ -1016,7 +1029,16 @@ class AlbumViewSet(viewsets.ViewSet):
         try:
             title = request.data.get('title')
             album = Album.objects.create(title=title, user=request.user)
-            album.save()
+
+            if request.user.username in [p.user.username for p in
+                                         PermissionsRelation.objects.filter(album__id=album.id)] and "EDIT" in [
+                p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
+
+                album.save()
+            else:
+                return Response(
+                    _("Not allowed", status.HTTP_403_FORBIDDEN)
+                )
 
             return simple_album_object(album)
         except ValueError:
@@ -1077,10 +1099,20 @@ class AlbumViewSet(viewsets.ViewSet):
                         )
 
             album.slides = slides
-            album.save()
-            return Response(
-                artworks_in_slides(album)
-            )
+
+            if request.user.username in [p.user.username for p in
+                                         PermissionsRelation.objects.filter(album__id=album.id)] and "EDIT" in [
+                p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
+
+                album.save()
+                return Response(
+                    artworks_in_slides(album)
+                )
+
+            else:
+                return Response(
+                    _("Not allowed", status.HTTP_403_FORBIDDEN)
+                )
 
         except TypeError as e:
             return Response(
@@ -1118,10 +1150,19 @@ class AlbumViewSet(viewsets.ViewSet):
             artwork = Artwork.objects.get(pk=int(request.GET.get('artwork_id')))
 
             album.slides.append([{'id': artwork.id}])
-            album.save()
-            return Response(
-                _('Artwork added.'), status=status.HTTP_200_OK
-            )
+
+            if request.user.username in [p.user.username for p in
+                                         PermissionsRelation.objects.filter(album__id=album.id)] and "EDIT" in [
+                p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
+
+                album.save()
+                return Response(
+                    _('Artwork added.'), status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    _("Not allowed", status.HTTP_403_FORBIDDEN)
+                )
 
         except Artwork.DoesNotExist:
             return Response(
@@ -1159,8 +1200,11 @@ class AlbumViewSet(viewsets.ViewSet):
                         }
                     ]
                 }
-                for p in
-                PermissionsRelation.objects.filter(album__id=album.id)]
+                for p in PermissionsRelation.objects.filter(album__id=album.id)
+                if request.user.username in [p.user.username for p in
+                                             PermissionsRelation.objects.filter(album__id=album.id)] and "VIEW" in [
+                       p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]
+            ]
         )
 
     @extend_schema(
@@ -1195,8 +1239,6 @@ class AlbumViewSet(viewsets.ViewSet):
 
             if not serializer.is_valid():
                 return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
-
-            for perm in dict(serializer.validated_data).get('permissions'):
 
                 try:
                     user = User.objects.get(pk=perm.get('user_id'))
@@ -1267,6 +1309,8 @@ class AlbumViewSet(viewsets.ViewSet):
         # todo
         # Create folder with given data
         # validate object
+        # check for user.username compatibility
+
         dummy_data = {
             'title': request.data.get('title'),
             'ID': 1111,
@@ -1300,8 +1344,17 @@ class AlbumViewSet(viewsets.ViewSet):
             if not serializer.is_valid():
                 return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
 
-            album.save()
-            return simple_album_object(album)
+            if request.user.username in [p.user.username for p in
+                                         PermissionsRelation.objects.filter(album__id=album.id)] and "EDIT" in [
+                p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
+
+                album.save()
+                return simple_album_object(album)
+
+            else:
+                return Response(
+                    _("Not allowed", status.HTTP_403_FORBIDDEN)
+                )
 
         except Album.DoesNotExist:
             return Response(_('Album does not exist '), status=status.HTTP_404_NOT_FOUND)
@@ -1315,8 +1368,16 @@ class AlbumViewSet(viewsets.ViewSet):
         '''
         try:
             album = Album.objects.get(pk=album_id)
-            album.delete()
-            return Response(_(f'Album {album.title} was deleted'), status=status.HTTP_200_OK)
+            if request.user.username in [p.user.username for p in
+                                         PermissionsRelation.objects.filter(album__id=album.id)] and "EDIT" in [
+                p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
+
+                album.delete()
+                return Response(_(f'Album {album.title} was deleted'), status=status.HTTP_200_OK)
+            else:
+                return Response(
+                    _("Not allowed", status.HTTP_403_FORBIDDEN)
+                )
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
@@ -1351,6 +1412,13 @@ class AlbumViewSet(viewsets.ViewSet):
         # Todo: now only pptx, later also PDF
         try:
             album = Album.objects.get(id=album_id)
+            if not request.user.username in [p.user.username for p in
+                                         PermissionsRelation.objects.filter(album__id=album.id)]:
+                if not "VIEW" in [
+                p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
+                    return Response(
+                        _("Not allowed", status.HTTP_403_FORBIDDEN)
+                    )
         except Exception:
             return Response(
                 _("Album doesn't exist", status.HTTP_404_NOT_FOUND)
