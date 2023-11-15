@@ -5,6 +5,7 @@ from io import BytesIO
 import zipfile
 import os
 import re
+import json
 from django.contrib.postgres.search import SearchVector
 
 from django.http import HttpResponse
@@ -110,9 +111,6 @@ def simple_album_object(album, request):
                     ]
                 }
                 for p in PermissionsRelation.objects.filter(album__id=album.id)
-                if request.user.username in p.user.username and
-                   "VIEW" in [p.permissions for p in
-                              PermissionsRelation.objects.filter(user__username=request.user.username)]
             ]
         }
     )
@@ -951,13 +949,15 @@ class AlbumViewSet(viewsets.ViewSet):
                                 ]
                             }
                             for p in PermissionsRelation.objects.filter(album__id=album.id)
-                            if request.user.username in p.user.username and
-                               "VIEW" in [p.permissions for p in
-                                          PermissionsRelation.objects.filter(user__username=request.user.username)]
                         ]
 
                     }
-                    for album in results]
+                    for album in results
+                    if request.user.username in [p.user.username for p in
+                                     PermissionsRelation.objects.filter(album__id=album.id)] and
+                       "VIEW" in [p.permissions for p in
+                                  PermissionsRelation.objects.filter(user__username=request.user.username)]
+                ]
             }
         )
 
@@ -981,10 +981,18 @@ class AlbumViewSet(viewsets.ViewSet):
         # file type + image metadata (title, artist - current status)
         try:
             album = Album.objects.get(pk=album_id)
+            if request.user.username in [p.user.username for p in
+                                         PermissionsRelation.objects.filter(album__id=album.id)] and "VIEW" in [
+                p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
+
+                return simple_album_object(album, request)
+            else:
+                return Response(
+                    _("Not allowed"), status.HTTP_403_FORBIDDEN
+                )
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-        return simple_album_object(album, request)
 
     @extend_schema(
         responses={
@@ -1012,7 +1020,7 @@ class AlbumViewSet(viewsets.ViewSet):
             )
         else:
             return Response(
-                _("Not allowed", status.HTTP_403_FORBIDDEN)
+                _("Not allowed"), status.HTTP_403_FORBIDDEN
             )
 
     @extend_schema(
@@ -1030,15 +1038,7 @@ class AlbumViewSet(viewsets.ViewSet):
             title = request.data.get('title')
             album = Album.objects.create(title=title, user=request.user)
 
-            if request.user.username in [p.user.username for p in
-                                         PermissionsRelation.objects.filter(album__id=album.id)] and "EDIT" in [
-                p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
-
-                album.save()
-            else:
-                return Response(
-                    _("Not allowed", status.HTTP_403_FORBIDDEN)
-                )
+            album.save()
 
             return simple_album_object(album)
         except ValueError:
@@ -1111,7 +1111,7 @@ class AlbumViewSet(viewsets.ViewSet):
 
             else:
                 return Response(
-                    _("Not allowed", status.HTTP_403_FORBIDDEN)
+                    _("Not allowed"), status.HTTP_403_FORBIDDEN
                 )
 
         except TypeError as e:
@@ -1161,7 +1161,7 @@ class AlbumViewSet(viewsets.ViewSet):
                 )
             else:
                 return Response(
-                    _("Not allowed", status.HTTP_403_FORBIDDEN)
+                    _("Not allowed"), status.HTTP_403_FORBIDDEN
                 )
 
         except Artwork.DoesNotExist:
@@ -1236,26 +1236,27 @@ class AlbumViewSet(viewsets.ViewSet):
         try:
             album = Album.objects.get(pk=album_id)
             serializer = PermissionsSerializer(data=request.data)
+            perm = json.loads(request.data.get('permissions'))[0]
 
             if not serializer.is_valid():
                 return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
 
-                try:
-                    user = User.objects.get(pk=perm.get('user_id'))
-                except User.DoesNotExist:
-                    return Response(_(f'Invalid user ID: {perm.get("user_id")}'), status=status.HTTP_400_BAD_REQUEST)
+            try:
+                user = User.objects.get(pk=perm.get('user_id'))
+            except User.DoesNotExist:
+                return Response(_(f'Invalid user ID: {perm.get("user_id")}'), status=status.HTTP_400_BAD_REQUEST)
 
-                permissions = perm.get('permissions').get('id')
+            permissions = perm.get('permissions').get('id')
 
-                if permissions.upper() not in ['VIEW', 'EDIT']:
-                    return Response(_('Permission invalid. Permission can be either VIEW or EDIT'),
-                                    status=status.HTTP_404_NOT_FOUND)
+            if permissions.upper() not in ['VIEW', 'EDIT']:
+                return Response(_('Permission invalid. Permission can be either VIEW or EDIT'),
+                                status=status.HTTP_404_NOT_FOUND)
 
-                obj, created = PermissionsRelation.objects.update_or_create(
-                    permissions=permissions.upper(),
-                    album=album,
-                    user=user
-                )
+            obj, created = PermissionsRelation.objects.update_or_create(
+                permissions=permissions.upper(),
+                album=album,
+                user=user
+            )
 
             return Response(
                 [
@@ -1349,11 +1350,11 @@ class AlbumViewSet(viewsets.ViewSet):
                 p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
 
                 album.save()
-                return simple_album_object(album)
+                return simple_album_object(album, request)
 
             else:
                 return Response(
-                    _("Not allowed", status.HTTP_403_FORBIDDEN)
+                    _("Not allowed"), status.HTTP_403_FORBIDDEN
                 )
 
         except Album.DoesNotExist:
@@ -1376,7 +1377,7 @@ class AlbumViewSet(viewsets.ViewSet):
                 return Response(_(f'Album {album.title} was deleted'), status=status.HTTP_200_OK)
             else:
                 return Response(
-                    _("Not allowed", status.HTTP_403_FORBIDDEN)
+                    _("Not allowed"), status.HTTP_403_FORBIDDEN
                 )
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
@@ -1417,7 +1418,7 @@ class AlbumViewSet(viewsets.ViewSet):
                 if not "VIEW" in [
                 p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
                     return Response(
-                        _("Not allowed", status.HTTP_403_FORBIDDEN)
+                        _("Not allowed"), status.HTTP_403_FORBIDDEN
                     )
         except Exception:
             return Response(
@@ -1511,6 +1512,7 @@ class UserViewSet(viewsets.GenericViewSet):
         # todo below?
         try:
             data = {
+                "id": request.user.id,
                 'uuid': request.user.username,
                 'name': request.user.get_full_name(),
                 'email': request.user.email,

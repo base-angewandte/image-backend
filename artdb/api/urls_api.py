@@ -15,8 +15,8 @@ urlpatterns = [
     # Artworks
     path('artworks/', views.ArtworksViewSet.as_view({
         'get': 'list_artworks', }), name='artworks'),
-    path('artworks/<item_id>/', views.ArtworksViewSet.as_view({'get': 'retrieve_artwork'}), name='artwork'),
-    path('artworks/<item_id>/albums/', views.ArtworksViewSet.as_view({'get': 'retrieve_albums_per_artwork'}),
+    path('artworks/<artwork_id>/', views.ArtworksViewSet.as_view({'get': 'retrieve_artwork'}), name='artwork'),
+    path('artworks/<artwork_id>/albums/', views.ArtworksViewSet.as_view({'get': 'retrieve_albums_per_artwork'}),
          name='albums-per-artwork'),
     path('search/', views.ArtworksViewSet.as_view({
         'post': 'search'}), name='search_artworks'),
