@@ -1512,7 +1512,6 @@ class UserViewSet(viewsets.GenericViewSet):
         # todo below?
         try:
             data = {
-                "id": request.user.id,
                 'uuid': request.user.username,
                 'name': request.user.get_full_name(),
                 'email': request.user.email,
