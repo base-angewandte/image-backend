@@ -1,10 +1,10 @@
 import logging
+
+from django.utils.text import slugify
 from rest_framework.exceptions import ParseError
 from django.contrib.auth.models import User
 from io import BytesIO
 import zipfile
-import tempfile
-from wsgiref.util import FileWrapper
 
 import os
 import re
@@ -457,7 +457,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             output = BytesIO()
 
             # create metadata file
-            with open(f'{artwork.title}_metadata.txt', 'w') as f:
+            artwork_title = slugify(artwork.title)
+
+            with open(f'{artwork_title}_metadata.txt', 'w') as f:
                 f.write(f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title},"\n"')
                 f.write(f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]},"\n"')
                 f.write(f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date},"\n"')
@@ -474,7 +476,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as image_zip:
                 img_relative_path = artwork.image_original.name
                 image_name = os.path.join(settings.MEDIA_ROOT, img_relative_path) # was image_path
-                image_zip.write(os.path.basename(f'{artwork.title}_metadata.txt'))
+                image_zip.write(os.path.basename(f'{artwork_title}_metadata.txt'))
                 image_zip.write(image_name)
                 image_zip.close()
 
