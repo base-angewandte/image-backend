@@ -135,39 +135,40 @@ def collection_download_as_pptx(request, id=None, language='de'):
         return
 
     slides = col.slides
-    for slide in slides:
+    if slides:
+        for slide in slides:
 
-        try:
+            try:
 
-            if len(slide) == 2:
-                artwork_ids = []
-                for artwork_in_slide in slide:
-                    artwork_ids.append(Artwork.objects.get(
-                        id=artwork_in_slide.get('id')))
-                add_slide_with_two_pictures(artwork_ids[0], artwork_ids[1], prs_padding)
+                if len(slide) == 2:
+                    artwork_ids = []
+                    for artwork_in_slide in slide:
+                        artwork_ids.append(Artwork.objects.get(
+                            id=artwork_in_slide.get('id')))
+                    add_slide_with_two_pictures(artwork_ids[0], artwork_ids[1], prs_padding)
 
-            elif len(slide) == 1:
-                for artwork_in_slide in slide:
-                    artwork = Artwork.objects.get(id=artwork_in_slide.get('id'))
-                    add_slide_with_one_picture(artwork, prs_padding)
+                elif len(slide) == 1:
+                    for artwork_in_slide in slide:
+                        artwork = Artwork.objects.get(id=artwork_in_slide.get('id'))
+                        add_slide_with_one_picture(artwork, prs_padding)
 
-            else:
+                else:
+                    return Response(
+                        _('Too many artworks per slides. You can only have two artworks per slide. Please edit slides.'),
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+            except Artwork.DoesNotExist:
                 return Response(
-                    _('Too many artworks per slides. You can only have two artworks per slide. Please edit slides.'),
-                    status=status.HTTP_400_BAD_REQUEST
+                    _(f'There is no artwork associated with id {artwork_in_slide.get("id")}.'),
+                    status=status.HTTP_404_NOT_FOUND
                 )
 
-        except Artwork.DoesNotExist:
-            return Response(
-                _(f'There is no artwork associated with id {artwork_in_slide.get("id")}.'),
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        except FileNotFoundError:
-            return Response(
-                _(f"There is no image associated with artwork with id {artwork_in_slide.get('id')}; it's a directory"),
-                status=status.HTTP_404_NOT_FOUND
-            )
+            except FileNotFoundError:
+                return Response(
+                    _(f"There is no image associated with artwork with id {artwork_in_slide.get('id')}; it's a directory"),
+                    status=status.HTTP_404_NOT_FOUND
+                )
 
     output = BytesIO()
     prs.save(output)

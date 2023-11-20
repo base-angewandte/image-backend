@@ -3,9 +3,14 @@ from rest_framework.exceptions import ParseError
 from django.contrib.auth.models import User
 from io import BytesIO
 import zipfile
+import tempfile
+from wsgiref.util import FileWrapper
+
 import os
 import re
 from django.contrib.postgres.search import SearchVector
+from django.conf import settings
+
 
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
@@ -182,11 +187,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         else:
             end = None
 
+        total = results.count()
         results = results[offset:end]
 
         return Response(
             {
-                "total": results.count(),
+                "total": total,
                 "results": [
                     {
                         "id": artwork.id,
@@ -445,11 +451,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def download_artwork(self, request, artwork_id=None):
-        # Todo: unsure whether language works
         try:
             artwork = Artwork.objects.get(id=artwork_id)
 
-            buffer = BytesIO()
+            output = BytesIO()
 
             # create metadata file
             with open(f'{artwork.title}_metadata.txt', 'w') as f:
@@ -466,25 +471,27 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 f.close()
 
             #  image to zipfile & metadata
-            with zipfile.ZipFile(f'{artwork.title}.zip', 'w') as image_zip:
-                image_name = os.path.basename(artwork.image_original.url)  # was url
+            with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as image_zip:
+                img_relative_path = artwork.image_original.name
+                image_name = os.path.join(settings.MEDIA_ROOT, img_relative_path) # was image_path
                 image_zip.write(os.path.basename(f'{artwork.title}_metadata.txt'))
                 image_zip.write(image_name)
+                image_zip.close()
 
-            response = HttpResponse(buffer.getvalue())
-            response['Content-Type'] = 'application/x-zip-compressed'
-            response['Content-Disposition'] = f'attachment; filename={artwork.title}.zip'
+                response = HttpResponse(output.getvalue(), content_type='application/x-zip-compressed')
+                response['Content-Disposition'] = f'attachment; filename={"test"}.zip'
+                output.seek(0)
 
-            return response
+                return response
 
         except Artwork.DoesNotExist:
             return Response(
-                _("Artwork doesn't exist", status.HTTP_404_NOT_FOUND)
+                _("Artwork doesn't exist"), status.HTTP_404_NOT_FOUND
             )
 
         except FileNotFoundError:
             return Response(
-                _(f"File for id {artwork_id} not found")# todo, status.HTTP_404_NOT_FOUND)
+                _(f"File for id {artwork_id} not found"), status.HTTP_404_NOT_FOUND
             )
 
     @extend_schema(
@@ -972,10 +979,6 @@ class AlbumViewSet(viewsets.ViewSet):
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-        # TODO slides ticket
-        # todo: artworks from slides or all artworks regardless?
-        # todo: check if it belongs to album? could be a solution for now. Otherwise first decide whether to influence artworks/album with slides
-
         return simple_album_object(album)
 
     @extend_schema(
@@ -1104,7 +1107,6 @@ class AlbumViewSet(viewsets.ViewSet):
         /albums/{id}/append_artwork
         Append artwork to slides as singular slide [{'id': x}]
         '''
-        # TODO it should be at the end
 
         try:
             album = Album.objects.get(pk=album_id)
@@ -1321,6 +1323,15 @@ class AlbumViewSet(viewsets.ViewSet):
         methods=['GET'],
         parameters=[
             OpenApiParameter(
+                name='language',
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.HEADER,
+                required=True,
+                enum=['de', 'en'],
+                default='en',
+                description="de or en. The default value is en"
+            ),
+            OpenApiParameter(
                 name='download_format',
                 type=OpenApiTypes.STR,
                 # enum=['pptx', 'pdf'],  # Todo to be added
@@ -1328,15 +1339,6 @@ class AlbumViewSet(viewsets.ViewSet):
                 description="Enter either 'pptx' or 'PDF'",
                 required=True,
             ),
-            OpenApiParameter(
-                name='language',
-                type=OpenApiTypes.STR,
-                required=True,
-                enum=['de', 'en'],
-                default='en',
-                description="Enter either 'en' or 'de'",
-
-            )
         ],
         responses={
             200: OpenApiResponse(description='OK'),
@@ -1348,13 +1350,14 @@ class AlbumViewSet(viewsets.ViewSet):
         # Todo: now only pptx, later also PDF
         try:
             album = Album.objects.get(id=album_id)
-        except Exception:
+        except Album.DoesNotExist:
             return Response(
-                _("Album doesn't exist", status.HTTP_404_NOT_FOUND)
+                _("Album doesn't exist"), status.HTTP_404_NOT_FOUND
             )
 
         download_format = request.GET.get('download_format')
-        lang = request.GET.get('language')
+        lang = request.headers.get('Language')
+
 
         download_map = {
             'pptx_en': collection_download_as_pptx_en(request, id=album_id),
@@ -1363,6 +1366,7 @@ class AlbumViewSet(viewsets.ViewSet):
             'pdf_de': {},
         }
 
+        print(request.headers)
         if download_format == 'pptx' and lang == 'en':
             return download_map['pptx_en']
         if download_format == 'pptx' and lang == 'de':
@@ -1373,7 +1377,7 @@ class AlbumViewSet(viewsets.ViewSet):
             return download_map['pdf_de']  # Todo to implement
         else:
             return Response(
-                _("Wrong parameters.", status.HTTP_404_NOT_FOUND)
+                _("Wrong parameters."), status.HTTP_404_NOT_FOUND
             )
 
 
