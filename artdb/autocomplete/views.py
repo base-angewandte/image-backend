@@ -3,11 +3,11 @@ from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-
+from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from artworks.models import Album, Artwork, Artist, Keyword, Location, PermissionsRelation
-
+from django.core.exceptions import FieldError
 from artdb.settings import PERMISSIONS_DEFAULT
 from django.utils.translation import gettext_lazy as _
 
@@ -80,39 +80,26 @@ def autocomplete_user(request, searchstr=''):
     operation_id='autocomplete_v1_lookup',
 
 )
-@api_view(['GET'])
+@api_view(['POST'])
 def autocomplete_search(request, *args, **kwargs):
     try:
         limit = int(request.GET.get('limit')) if request.GET.get('limit') else 10  # default
         type_parameter = request.GET.get('type_parameter') if request.GET.get('type_parameter') else 'artworks'
 
+        if not isinstance((limit), int):
+            return Response(_('Limit must be an integer.'), status=status.HTTP_400_BAD_REQUEST)
 
-        # Todo In progress after review
-
-        # if not isinstance(limit), int):
-        #     return Response(_('Limit must be an integer.'), status=status.HTTP_400_BAD_REQUEST)
-
-        # if type_parameter not in SOURCES:
-        #     return Response(_(f'The type_parameter must be one of the following: {"".join(SOURCES)}.'), status=status.HTTP_400_BAD_REQUEST)
+        if type_parameter not in SOURCES:
+            return Response(_(f'The type_parameter must be one of the following: {"".join(SOURCES)}.'), status=status.HTTP_400_BAD_REQUEST)
 
         searchstr = request.GET.get('searchstr', '')
 
         items = []
-        TYPES = {
-            'artworks': {},
-            'users': autocomplete_user(request, searchstr),
-            'albums': Album.objects.filter(title__icontains=searchstr),
-            'title': Artwork.objects.filter(title__icontains=searchstr),  # meaning title of artworks
-            'artist': Artist.objects.filter(name__icontains=searchstr),
-            'keywords': Keyword.objects.filter(name__icontains=searchstr),
-            'origin': Location.objects.filter(name__icontains=searchstr),
-            'location': Location.objects.filter(name__icontains=searchstr),
-        }
 
         if type_parameter == 'users':
-            data = TYPES[type_parameter]
+            data = autocomplete_user(request, searchstr)
             if limit and data:
-                data = TYPES[type_parameter][0:limit]
+                data = autocomplete_user(request, searchstr)[0:limit]
             return Response(data)
 
         if type_parameter == 'permissions':
@@ -125,52 +112,63 @@ def autocomplete_search(request, *args, **kwargs):
             data = data[0:limit]
             return Response(data)
 
-        data = TYPES[type_parameter].values()
-
         if type_parameter == 'artworks':
             data = [{
-                'title': [data_item for data_item in TYPES['title'].values()],
-                'artist': [data_item for data_item in TYPES['artist'].values()],
-                'keywords': [data_item for data_item in TYPES['keywords'].values()],
-                'origin': [data_item for data_item in TYPES['origin'].values()],
-                'location': [data_item for data_item in TYPES['location'].values()],
+                'title': [data_item for data_item in
+                          Artwork.objects.filter(title__icontains=searchstr)[0:limit].values()],
+                # meaning title of artworks
+                'artist': [data_item for data_item in
+                           Artist.objects.filter(name__icontains=searchstr)[0:limit].values()],
+                'keywords': [data_item for data_item in
+                             Keyword.objects.filter(name__icontains=searchstr)[0:limit].values()],
+                'origin': [data_item for data_item in
+                           Location.objects.filter(name__icontains=searchstr)[0:limit].values()],
+                'location': [data_item for data_item in
+                             Location.objects.filter(name__icontains=searchstr)[0:limit].values()],
             }]
             data = data[0:limit]
             return Response(data)
 
+        model_map = {
+            'albums': 'Album',
+            'title': 'Artwork',
+            'artist': 'Artist',
+            'keywords': 'Keyword',
+            'origin': 'Location',
+            'location': 'Location',
+        }
+
+        try:
+            data = apps.get_model('artworks', model_map[type_parameter]).objects.filter(name__icontains=searchstr)[0:limit]
+        except FieldError:
+            data = apps.get_model('artworks', model_map[type_parameter]).objects.filter(title__icontains=searchstr)[0:limit]
+
         for data_item in data:
-            if type_parameter in 'albums' or type_parameter in 'title':
+            if type_parameter == 'albums' or type_parameter == 'title':
+                print(data_item)
                 data_item = {
-                    'id': data_item.get('id'),
-                    'value': data_item.get('title')
+                    'id': data_item.id,
+                    'value': data_item.title
                 }
             else:
                 data_item = {
-                    'id': data_item.get('id'),
-                    'value': data_item.get('name')
+                    'id': data_item.id,
+                    'value': data_item.name
                 }
             try:
                 items.append(
                     data_item
                 )
             except AttributeError:
-                print("whgwzgw")
                 items.append(
                     data_item
                 )
         if limit and items:
-            print("ok if limit")
-            # print(items)
-            # print(limit)
-            print(type(limit))
-            print(items[0:limit])
             items = items[0:limit]
-            print("!!!!")
 
-    except Exception: # todo
+    except Exception as e:
         return Response(
-            _('Nope', status.HTTP_400_BAD_REQUEST)
+            _(f'{e}'), status.HTTP_400_BAD_REQUEST
         )
 
-    print("about to return")
     return Response(items, status=200)
