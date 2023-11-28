@@ -460,16 +460,16 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             artwork_title = slugify(artwork.title)
 
             with open(f'{artwork_title}_metadata.txt', 'w') as f:
-                f.write(f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title},"\n"')
-                f.write(f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]},"\n"')
-                f.write(f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date},"\n"')
-                f.write(f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material},"\n"')
-                f.write(f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions},"\n"')
-                f.write(f'{artwork._meta.get_field("description").verbose_name.title()}: {artwork.description},"\n"')
-                f.write(f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits},"\n"')
-                f.write(f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]},"\n"')
-                f.write(f'{artwork._meta.get_field("location_current").verbose_name.title()}: {artwork.location_current},"\n"')
-                f.write(f'{artwork._meta.get_field("location_of_creation").verbose_name.title()}: {artwork.location_of_creation}"\n"')
+                f.write(f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n')
+                f.write(f'{artwork._meta.get_field("artist(s)").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n')
+                f.write(f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n')
+                f.write(f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n')
+                f.write(f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n')
+                f.write(f'{artwork._meta.get_field("description").verbose_name.title()}: {artwork.description} \n')
+                f.write(f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n')
+                f.write(f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]} \n')
+                f.write(f'{artwork._meta.get_field("location_current").verbose_name.title()}: {artwork.location_current if artwork.location_current else ""} \n')
+                f.write(f'{artwork._meta.get_field("location_of_creation").verbose_name.title()}: {artwork.location_of_creation} \n')
                 f.close()
 
             #  image to zipfile & metadata
@@ -481,8 +481,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 image_zip.close()
 
                 response = HttpResponse(output.getvalue(), content_type='application/x-zip-compressed')
-                response['Content-Disposition'] = f'attachment; filename={"test"}.zip'
-                output.seek(0)
+                response['Content-Disposition'] = f'attachment; filename={artwork_title}.zip'
 
                 return response
 
@@ -1368,7 +1367,6 @@ class AlbumViewSet(viewsets.ViewSet):
             'pdf_de': {},
         }
 
-        print(request.headers)
         if download_format == 'pptx' and lang == 'en':
             return download_map['pptx_en']
         if download_format == 'pptx' and lang == 'de':
@@ -1377,10 +1375,9 @@ class AlbumViewSet(viewsets.ViewSet):
             return download_map['pdf_en']  # Todo to implement
         if download_format == 'pdf' and lang == 'de':
             return download_map['pdf_de']  # Todo to implement
-        else:
-            return Response(
-                _("Wrong parameters."), status.HTTP_404_NOT_FOUND
-            )
+        return Response(
+            _("Wrong parameters."), status.HTTP_400_BAD_REQUEST
+        )
 
 
 class LabelsViewSet(viewsets.GenericViewSet):
