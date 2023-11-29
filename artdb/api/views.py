@@ -461,7 +461,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
             with open(f'{artwork_title}_metadata.txt', 'w') as f:
                 f.write(f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n')
-                f.write(f'{artwork._meta.get_field("artist(s)").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n')
+                if len(artwork.artists.all()) > 1:
+                    f.write(
+                        f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n')
+                else:
+                    f.write(
+                        f'Artist: {artwork.artists.all()[0]} \n')
                 f.write(f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n')
                 f.write(f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n')
                 f.write(f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n')
