@@ -266,9 +266,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def retrieve_albums_per_artwork(self, request, item_id=None):
+        # todo add permissions?
         try:
-            artwork = Artwork.objects.get(pk=item_id)
-            albums = artwork.album_set.all()
+            Artwork.objects.get(pk=item_id)
+            albums = Album.objects.filter(slides__contains=[[{'id':item_id}]])
+            print(albums)
         except Artwork.DoesNotExist:
             return Response(_('Artwork does not exist'), status=status.HTTP_404_NOT_FOUND)
 
