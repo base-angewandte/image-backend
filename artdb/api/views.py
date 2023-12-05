@@ -457,50 +457,37 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
             output_zip = BytesIO()
 
+            # create metadata file
+            artwork_title = slugify(artwork.title)
+
+            metadata_content = ''
+            metadata_content +=f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n'
+            if len(artwork.artists.all()) > 1:
+                metadata_content += f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n'
+            else:
+                metadata_content += f'Artist: {artwork.artists.all()[0]} \n'
+            metadata_content +=f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n'
+            metadata_content +=f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
+            metadata_content +=f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n'
+            metadata_content +=f'{artwork._meta.get_field("description").verbose_name.title()}: {artwork.description} \n'
+            metadata_content +=f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
+            metadata_content +=f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]} \n'
+            metadata_content +=f'{artwork._meta.get_field("location_current").verbose_name.title()}: {artwork.location_current if artwork.location_current else ""} \n'
+            metadata_content +=f'{artwork._meta.get_field("location_of_creation").verbose_name.title()}: {artwork.location_of_creation} \n'
+
             #  image to zipfile & metadata
             with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as image_zip:
-
-                # create metadata file
-                artwork_title = slugify(artwork.title)
-
-                directory = 'tmp'
-                os.mkdir(directory)
-                with open(f'tmp/{artwork_title}_metadata.txt', 'w') as f:
-
-                    f.write(f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n')
-                    if len(artwork.artists.all()) > 1:
-                        f.write(
-                            f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n')
-                    else:
-                        f.write(
-                            f'Artist: {artwork.artists.all()[0]} \n')
-                    f.write(f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n')
-                    f.write(f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n')
-                    f.write(f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n')
-                    f.write(f'{artwork._meta.get_field("description").verbose_name.title()}: {artwork.description} \n')
-                    f.write(f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n')
-                    f.write(
-                        f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]} \n')
-                    f.write(
-                        f'{artwork._meta.get_field("location_current").verbose_name.title()}: {artwork.location_current if artwork.location_current else ""} \n')
-                    f.write(
-                        f'{artwork._meta.get_field("location_of_creation").verbose_name.title()}: {artwork.location_of_creation} \n')
-
-                    f.close()
-                    metadata_file =f'tmp/{artwork_title}_metadata.txt'
 
                     # create zip file
 
                     img_relative_path = artwork.image_original.name
                     image_name = os.path.join(settings.MEDIA_ROOT, img_relative_path)  # was image_path
-                    image_zip.write(metadata_file)
-                    image_zip.write(image_name)
+                    image_zip.writestr(f'{artwork_title}_metadata.txt', metadata_content)
+                    image_zip.write(image_name,  arcname=artwork.image_original.name)
                     image_zip.close()
 
                     response = HttpResponse(output_zip.getvalue(), content_type='application/x-zip-compressed')
                     response['Content-Disposition'] = f'attachment; filename={artwork_title}.zip'
-
-                    shutil.rmtree(directory)
 
                     return response
 
@@ -509,7 +496,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 _("Artwork doesn't exist"), status.HTTP_404_NOT_FOUND
             )
 
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             return Response(
                 _(f"File for id {artwork_id} not found"), status.HTTP_404_NOT_FOUND
             )
