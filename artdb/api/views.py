@@ -1127,7 +1127,7 @@ class AlbumViewSet(viewsets.ViewSet):
             album.slides.append([{'id': artwork.id}])
             album.save()
             return Response(
-                _('Artwork added.'), status=status.HTTP_200_OK
+                _('Artwork added.'), status=status.HTTP_204_NO_CONTENT
             )
 
         except Artwork.DoesNotExist:
@@ -1323,7 +1323,7 @@ class AlbumViewSet(viewsets.ViewSet):
         try:
             album = Album.objects.get(pk=album_id)
             album.delete()
-            return Response(_(f'Album {album.title} was deleted'), status=status.HTTP_200_OK)
+            return Response(_(f'Album {album.title} was deleted'), status=status.HTTP_204_NO_CONTENT)
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
