@@ -30,6 +30,8 @@ from rest_framework.response import Response
 
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
+log = logging.getLogger(__name__)
+
 
 from artworks.models import (
     Artist,
@@ -480,10 +482,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
                     # create zip file
 
-                    img_relative_path = artwork.image_original.name
-                    image_name = os.path.join(settings.MEDIA_ROOT, img_relative_path)  # was image_path
+                    image_zip.write(artwork.image_original.path, arcname=artwork.image_original.name)
                     image_zip.writestr(f'{artwork_title}_metadata.txt', metadata_content)
-                    image_zip.write(image_name,  arcname=artwork.image_original.name)
                     image_zip.close()
 
                     response = HttpResponse(output_zip.getvalue(), content_type='application/x-zip-compressed')
@@ -497,6 +497,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             )
 
         except FileNotFoundError:
+            log.error(f"File for id {artwork_id} not found")
             return Response(
                 _(f"File for id {artwork_id} not found"), status.HTTP_404_NOT_FOUND
             )
