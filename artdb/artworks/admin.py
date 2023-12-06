@@ -1,22 +1,26 @@
 from dal_admin_filters import AutocompleteFilter
+from mptt.admin import MPTTModelAdmin
+from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
+
 from django.contrib import admin
 from django.db import models
-from django.forms import TextInput, Textarea
-from django.utils.html import format_html, escape
+from django.forms import Textarea, TextInput
+from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
-from mptt.admin import MPTTModelAdmin
-from ordered_model.admin import OrderedTabularInline, OrderedInlineModelAdminMixin
 
 from .forms import ArtworkAdminForm
-from .models import AlbumMembership, Album, Artist, Artwork, Keyword, Location
+from .models import Album, AlbumMembership, Artist, Artwork, Keyword, Location
 
 
 class AlbumMembershipInline(OrderedTabularInline):
     model = AlbumMembership
     autocomplete_fields = ['artwork']
     extra = 0
-    fields = ('artwork', )
-    readonly_fields = ('order', 'move_up_down_links',)
+    fields = ('artwork',)
+    readonly_fields = (
+        'order',
+        'move_up_down_links',
+    )
     ordering = ('order',)
 
 
@@ -41,9 +45,17 @@ class CollectionListFilter(admin.SimpleListFilter):
             return queryset
 
 
+@admin.register(Artwork)
 class ArtworkAdmin(admin.ModelAdmin):
     form = ArtworkAdminForm
-    list_display = ('title', 'get_artists', 'checked', 'published', 'created_at', 'updated_at')
+    list_display = (
+        'title',
+        'get_artists',
+        'checked',
+        'published',
+        'created_at',
+        'updated_at',
+    )
     ordering = ('-created_at',)
     search_fields = ['title']
     fields = (
@@ -73,23 +85,34 @@ class ArtworkAdmin(admin.ModelAdmin):
         models.CharField: {'widget': TextInput(attrs={'size': '80'})},
         models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 80})},
     }
-    list_filter = (ArtistFilter, 'published', 'checked', CollectionListFilter, 'created_at', 'updated_at')
+    list_filter = (
+        ArtistFilter,
+        'published',
+        'checked',
+        CollectionListFilter,
+        'created_at',
+        'updated_at',
+    )
 
     class Media:
         js = ['js/artwork_form.js']
 
+    @admin.display(description=_('Artists'))
     def get_artists(self, obj):
         return format_html('<br>'.join([escape(a.name) for a in obj.artists.all()]))
 
-    get_artists.short_description = _('Artists')
-
     def thumbnail_image(self, obj):
         if obj.image_original:
-            return format_html('<img src="{url}" />'.format(url=obj.image_original.thumbnail['180x180']))
+            return format_html(
+                '<img src="{url}" />'.format(
+                    url=obj.image_original.thumbnail['180x180']
+                )
+            )
         else:
             return format_html('none')
 
 
+@admin.register(Album)
 class AlbumAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_at')
     list_display = ('title', 'created_at', 'updated_at')
@@ -99,24 +122,22 @@ class AlbumAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
     autocomplete_fields = ('user',)
 
 
+@admin.register(Artist)
 class ArtistAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_at')
     list_display = ('name', 'created_at', 'updated_at')
     ordering = ('-created_at',)
-    search_fields = ['name', ]
+    search_fields = [
+        'name',
+    ]
     list_filter = ('created_at', 'updated_at')
 
 
+@admin.register(Keyword)
 class KeywordAdmin(MPTTModelAdmin):
     search_fields = ['name']
 
 
+@admin.register(Location)
 class LocationAdmin(MPTTModelAdmin):
     search_fields = ['name']
-
-
-admin.site.register(Album, AlbumAdmin)
-admin.site.register(Artist, ArtistAdmin)
-admin.site.register(Artwork, ArtworkAdmin)
-admin.site.register(Keyword, KeywordAdmin)
-admin.site.register(Location, LocationAdmin)

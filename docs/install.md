@@ -80,7 +80,7 @@ subsections.
 > local django dev server those environement variables are not assigned
 > automagically. Take a look at the [](./configuration.md) section for details.
 
-- Install the latest python 3.8 and create virtualenv e.g. via `pyenv` and `pyenv-virtualenv`.
+- Install the latest python 3.11 and create virtualenv e.g. via `pyenv` and `pyenv-virtualenv`.
 
 - Install pip-tools and requirements in your virtualenv:
 

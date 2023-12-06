@@ -1,12 +1,18 @@
 import logging
+
+from django.utils.text import slugify
 from rest_framework.exceptions import ParseError
 from django.contrib.auth.models import User
 from io import BytesIO
+import shutil
 import zipfile
+
 import os
 import re
 import json
 from django.contrib.postgres.search import SearchVector
+from django.conf import settings
+
 
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
@@ -25,6 +31,8 @@ from rest_framework.response import Response
 
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
+log = logging.getLogger(__name__)
+
 
 from artworks.models import (
     Artist,
@@ -184,11 +192,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         else:
             end = None
 
+        total = results.count()
         results = results[offset:end]
 
         return Response(
             {
-                "total": results.count(),
+                "total": total,
                 "results": [
                     {
                         "id": artwork.id,
@@ -450,46 +459,52 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def download_artwork(self, request, artwork_id=None):
-        # Todo: unsure whether language works
         try:
             artwork = Artwork.objects.get(id=artwork_id)
 
-            buffer = BytesIO()
+            output_zip = BytesIO()
 
             # create metadata file
-            with open(f'{artwork.title}_metadata.txt', 'w') as f:
-                f.write(f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title},"\n"')
-                f.write(f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]},"\n"')
-                f.write(f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date},"\n"')
-                f.write(f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material},"\n"')
-                f.write(f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions},"\n"')
-                f.write(f'{artwork._meta.get_field("description").verbose_name.title()}: {artwork.description},"\n"')
-                f.write(f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits},"\n"')
-                f.write(f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]},"\n"')
-                f.write(f'{artwork._meta.get_field("location_current").verbose_name.title()}: {artwork.location_current},"\n"')
-                f.write(f'{artwork._meta.get_field("location_of_creation").verbose_name.title()}: {artwork.location_of_creation}"\n"')
-                f.close()
+            artwork_title = slugify(artwork.title)
+
+            metadata_content = ''
+            metadata_content +=f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n'
+            if len(artwork.artists.all()) > 1:
+                metadata_content += f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n'
+            else:
+                metadata_content += f'Artist: {artwork.artists.all()[0]} \n'
+            metadata_content +=f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n'
+            metadata_content +=f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
+            metadata_content +=f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n'
+            metadata_content +=f'{artwork._meta.get_field("description").verbose_name.title()}: {artwork.description} \n'
+            metadata_content +=f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
+            metadata_content +=f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]} \n'
+            metadata_content +=f'{artwork._meta.get_field("location_current").verbose_name.title()}: {artwork.location_current if artwork.location_current else ""} \n'
+            metadata_content +=f'{artwork._meta.get_field("location_of_creation").verbose_name.title()}: {artwork.location_of_creation} \n'
 
             #  image to zipfile & metadata
-            with zipfile.ZipFile(f'{artwork.title}.zip', 'w') as image_zip:
-                image_name = os.path.basename(artwork.image_original.url)  # was url
-                image_zip.write(os.path.basename(f'{artwork.title}_metadata.txt'))
-                image_zip.write(image_name)
+            with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as image_zip:
 
-            response = HttpResponse(buffer.getvalue())
-            response['Content-Type'] = 'application/x-zip-compressed'
-            response['Content-Disposition'] = f'attachment; filename={artwork.title}.zip'
+                    # create zip file
 
-            return response
+                    image_zip.write(artwork.image_original.path, arcname=artwork.image_original.name)
+                    image_zip.writestr(f'{artwork_title}_metadata.txt', metadata_content)
+                    image_zip.close()
+
+                    response = HttpResponse(output_zip.getvalue(), content_type='application/x-zip-compressed')
+                    response['Content-Disposition'] = f'attachment; filename={artwork_title}.zip'
+
+                    return response
 
         except Artwork.DoesNotExist:
             return Response(
-                _("Artwork doesn't exist", status.HTTP_404_NOT_FOUND)
+                _("Artwork doesn't exist"), status.HTTP_404_NOT_FOUND
             )
 
         except FileNotFoundError:
+            log.error(f"File for id {artwork_id} not found")
             return Response(
-                _(f"File for id {artwork_id} not found")# todo, status.HTTP_404_NOT_FOUND)
+                _(f"File for id {artwork_id} not found"), status.HTTP_404_NOT_FOUND
             )
 
     @extend_schema(
@@ -993,7 +1008,6 @@ class AlbumViewSet(viewsets.ViewSet):
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-
     @extend_schema(
         responses={
             200: OpenApiResponse(description='OK'),
@@ -1139,7 +1153,6 @@ class AlbumViewSet(viewsets.ViewSet):
         /albums/{id}/append_artwork
         Append artwork to slides as singular slide [{'id': x}]
         '''
-        # TODO it should be at the end
 
         try:
             album = Album.objects.get(pk=album_id)
@@ -1386,6 +1399,15 @@ class AlbumViewSet(viewsets.ViewSet):
         methods=['GET'],
         parameters=[
             OpenApiParameter(
+                name='language',
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.HEADER,
+                required=True,
+                enum=['de', 'en'],
+                default='en',
+                description="de or en. The default value is en"
+            ),
+            OpenApiParameter(
                 name='download_format',
                 type=OpenApiTypes.STR,
                 # enum=['pptx', 'pdf'],  # Todo to be added
@@ -1393,15 +1415,6 @@ class AlbumViewSet(viewsets.ViewSet):
                 description="Enter either 'pptx' or 'PDF'",
                 required=True,
             ),
-            OpenApiParameter(
-                name='language',
-                type=OpenApiTypes.STR,
-                required=True,
-                enum=['de', 'en'],
-                default='en',
-                description="Enter either 'en' or 'de'",
-
-            )
         ],
         responses={
             200: OpenApiResponse(description='OK'),
@@ -1420,13 +1433,13 @@ class AlbumViewSet(viewsets.ViewSet):
                     return Response(
                         _("Not allowed"), status.HTTP_403_FORBIDDEN
                     )
-        except Exception:
+        except Album.DoesNotExist:
             return Response(
-                _("Album doesn't exist", status.HTTP_404_NOT_FOUND)
+                _("Album doesn't exist"), status.HTTP_404_NOT_FOUND
             )
 
         download_format = request.GET.get('download_format')
-        lang = request.GET.get('language')
+        lang = request.headers.get('Language')
 
         download_map = {
             'pptx_en': collection_download_as_pptx_en(request, id=album_id),
@@ -1443,10 +1456,9 @@ class AlbumViewSet(viewsets.ViewSet):
             return download_map['pdf_en']  # Todo to implement
         if download_format == 'pdf' and lang == 'de':
             return download_map['pdf_de']  # Todo to implement
-        else:
-            return Response(
-                _("Wrong parameters.", status.HTTP_404_NOT_FOUND)
-            )
+        return Response(
+            _("Wrong parameters."), status.HTTP_400_BAD_REQUEST
+        )
 
 
 class LabelsViewSet(viewsets.GenericViewSet):
