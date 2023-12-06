@@ -275,7 +275,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def retrieve_albums_per_artwork(self, request, item_id=None):
-        # todo check permissions, current user allowed to access the album or owner?
         try:
             artwork = Artwork.objects.get(pk=item_id)
             albums = Album.objects.filter(slides__contains=[[{'id': artwork.pk}]])
