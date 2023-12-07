@@ -289,8 +289,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 "value": album.title,
             }
             for album in albums
-            if request.user.username in [p.user.username for p in PermissionsRelation.objects.filter(album__id=album.id)] and
-            "VIEW" in [p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]
+            if (album.user.username == request.user.username)
+            or (request.user.username in [p.user.username for p in PermissionsRelation.objects.filter(album__id=album.id)] and
+            "VIEW" in [p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)])
         ]
         )
 
@@ -968,10 +969,11 @@ class AlbumViewSet(viewsets.ViewSet):
 
                     }
                     for album in results
-                    if request.user.username in [p.user.username for p in
+                    if (album.user.username == request.user.username)
+                    or (request.user.username in [p.user.username for p in
                                      PermissionsRelation.objects.filter(album__id=album.id)] and
                        "VIEW" in [p.permissions for p in
-                                  PermissionsRelation.objects.filter(user__username=request.user.username)]
+                                  PermissionsRelation.objects.filter(user__username=request.user.username)])
                 ]
             }
         )
@@ -991,6 +993,8 @@ class AlbumViewSet(viewsets.ViewSet):
 
         try:
             album = Album.objects.get(pk=album_id)
+            if album.user.username == request.user.username:
+                return simple_album_object(album, request)
             if request.user.username in [p.user.username for p in
                                          PermissionsRelation.objects.filter(album__id=album.id)] and "VIEW" in [
                 p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
@@ -1020,6 +1024,10 @@ class AlbumViewSet(viewsets.ViewSet):
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
+        if album.user.username == request.user.username:
+            return Response(
+                artworks_in_slides(album)
+            )
         if request.user.username in [p.user.username for p in
                                      PermissionsRelation.objects.filter(album__id=album.id)] and "VIEW" in [
             p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
@@ -1109,10 +1117,14 @@ class AlbumViewSet(viewsets.ViewSet):
 
             album.slides = slides
 
+            if album.user.username == request.user.username:
+                album.save()
+                return Response(
+                    artworks_in_slides(album)
+                )
             if request.user.username in [p.user.username for p in
                                          PermissionsRelation.objects.filter(album__id=album.id)] and "EDIT" in [
                 p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
-
                 album.save()
                 return Response(
                     artworks_in_slides(album)
@@ -1159,6 +1171,11 @@ class AlbumViewSet(viewsets.ViewSet):
 
             album.slides.append([{'id': artwork.id}])
 
+            if album.user.username == request.user.username:
+                album.save()
+                return Response(
+                    _('Artwork added.'), status=status.HTTP_200_OK
+                )
             if request.user.username in [p.user.username for p in
                                          PermissionsRelation.objects.filter(album__id=album.id)] and "EDIT" in [
                 p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
@@ -1209,9 +1226,10 @@ class AlbumViewSet(viewsets.ViewSet):
                     ]
                 }
                 for p in PermissionsRelation.objects.filter(album__id=album.id)
-                if request.user.username in [p.user.username for p in
+                if (album.user.username == request.user.username)
+                or (request.user.username in [p.user.username for p in
                                              PermissionsRelation.objects.filter(album__id=album.id)] and "VIEW" in [
-                       p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]
+                       p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)])
             ]
         )
 
@@ -1353,6 +1371,10 @@ class AlbumViewSet(viewsets.ViewSet):
             if not serializer.is_valid():
                 return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
 
+            if album.user.username == request.user.username:
+                album.save()
+                return simple_album_object(album, request)
+
             if request.user.username in [p.user.username for p in
                                          PermissionsRelation.objects.filter(album__id=album.id)] and "EDIT" in [
                 p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
@@ -1377,6 +1399,10 @@ class AlbumViewSet(viewsets.ViewSet):
         '''
         try:
             album = Album.objects.get(pk=album_id)
+            if album.user.username == request.user.username:
+                album.delete()
+                return Response(_(f'Album {album.title} was deleted'), status=status.HTTP_200_OK)
+
             if request.user.username in [p.user.username for p in
                                          PermissionsRelation.objects.filter(album__id=album.id)] and "EDIT" in [
                 p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
