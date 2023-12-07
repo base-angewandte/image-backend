@@ -1054,7 +1054,7 @@ class AlbumViewSet(viewsets.ViewSet):
 
             album.save()
 
-            return simple_album_object(album)
+            return simple_album_object(album, request)
         except ValueError:
             return Response(
                 _('Album user must be a user instance'), status=status.HTTP_404_NOT_FOUND
