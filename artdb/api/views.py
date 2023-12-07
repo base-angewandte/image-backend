@@ -279,7 +279,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     def retrieve_albums_per_artwork(self, request, item_id=None):
         try:
             artwork = Artwork.objects.get(pk=item_id)
-            albums = artwork.album_set.all()
+            albums = Album.objects.filter(slides__contains=[[{'id': artwork.pk}]])
         except Artwork.DoesNotExist:
             return Response(_('Artwork does not exist'), status=status.HTTP_404_NOT_FOUND)
 
@@ -989,11 +989,6 @@ class AlbumViewSet(viewsets.ViewSet):
         List of Works (Slides) in a specific Album /albums/{id}
         '''
 
-        # todo
-
-        # - Download album with slides  - usually needs to take more detailed settings like language,
-        # which entry details to include) /album/{id}/download ? definite in version version: language,
-        # file type + image metadata (title, artist - current status)
         try:
             album = Album.objects.get(pk=album_id)
             if request.user.username in [p.user.username for p in
