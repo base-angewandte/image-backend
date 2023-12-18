@@ -1238,6 +1238,32 @@ class AlbumViewSet(viewsets.ViewSet):
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
     @extend_schema(
+        methods=['DELETE'],
+    )
+    def delete_permissions(self, request, album_id=None, *args, **kwargs):
+        '''
+        Delete Permissions /albums/{id}/permissions/
+        "Unshare" album
+        '''
+        # If an authenticated user accesses the endpoint:
+        # if the user is the owner of the album: they receive a 204 NO CONTENT, and all shares (permissions) are deleted
+        try:
+            album = Album.objects.get(pk=album_id)
+            if album.user.username == request.user.username:
+                perm_rel = PermissionsRelation.objects.get(user=request.user)
+                perm_rel.delete()
+                perm_rel.save()
+                # todo test album
+                return Response(status=status.HTTP_204_NO_CONTENT)
+        # if the user is just one of those who the album is shared with: they receive a 204 NO CONTENT, and the user's share (permission) is deleted
+        # if the user is neither of the above: they receive a 403 FORBIDDEN
+        # Important: in the description of the endpoint make clear what the endpoint does for the owner vs. a person this is shared with
+
+
+        except Album.DoesNotExist or ValueError:
+            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+
+    @extend_schema(
         methods=['POST'],
         parameters=[
             OpenApiParameter(

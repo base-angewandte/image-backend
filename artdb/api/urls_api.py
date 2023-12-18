@@ -93,7 +93,7 @@ urlpatterns = [
     path(
         'albums/<album_id>/permissions/',
         views.AlbumViewSet.as_view(
-            {'get': 'retrieve_permissions_per_album', 'post': 'create_permissions'}
+            {'get': 'retrieve_permissions_per_album', 'post': 'create_permissions', 'delete': 'delete_permissions'}
         ),
         name='permissions',
     ),
