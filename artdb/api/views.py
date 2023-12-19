@@ -1316,8 +1316,7 @@ class AlbumViewSet(viewsets.ViewSet):
         '''
         try:
             album = Album.objects.get(pk=album_id)
-            shares_per_album = [p.user.username for p in
-             PermissionsRelation.objects.filter(album__id=album_id)]
+            shares_per_album = [p.user.username for p in PermissionsRelation.objects.filter(album__id=album_id)]
 
             # If User is owner of Album
             if album.user.username == request.user.username:
@@ -1325,6 +1324,7 @@ class AlbumViewSet(viewsets.ViewSet):
                 perm_rel = PermissionsRelation.objects.filter(album__id=album_id)  # maybe user=request.user
                 for p in perm_rel:
                     p.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
 
             # If User shares Album but is not owner
             if request.user.username in shares_per_album:
@@ -1332,12 +1332,11 @@ class AlbumViewSet(viewsets.ViewSet):
                 for sharing_user in shares_per_album:
                     if request.user.username == sharing_user:
                         PermissionsRelation.objects.filter(user=request.user).delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
 
             else:
                 # User is not owner nor has shares (permissions)
                 return Response(status=status.HTTP_403_FORBIDDEN)
-
-            return Response(status=status.HTTP_204_NO_CONTENT)
 
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
