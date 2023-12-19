@@ -788,6 +788,9 @@ class AlbumViewSet(viewsets.ViewSet):
     create_permissions
     POST /albums/{id}/permissions
 
+    delete_permissions
+    DELETE /albums/{id}/permissions
+
     create_folder:
     POST
 
