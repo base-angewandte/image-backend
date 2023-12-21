@@ -1458,6 +1458,8 @@ class AlbumViewSet(viewsets.ViewSet):
                 _("Album doesn't exist"), status.HTTP_404_NOT_FOUND
             )
 
+        # todo if (album.user.username == request.user.username)...
+
         download_format = request.GET.get('download_format')
         lang = request.headers.get('Language')
 
