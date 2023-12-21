@@ -1240,7 +1240,7 @@ class AlbumViewSet(viewsets.ViewSet):
                 name='shared_info',
                 value=[
                     {
-                        "user_id": 123,
+                        "user": "username",
                         "permissions": {
                             "id": "VIEW"
                         }
@@ -1261,15 +1261,18 @@ class AlbumViewSet(viewsets.ViewSet):
         try:
             album = Album.objects.get(pk=album_id)
             serializer = PermissionsSerializer(data=request.data)
-            perm = json.loads(request.data.get('permissions'))[0]
 
             if not serializer.is_valid():
                 return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
 
+            perm = json.loads(request.data.get('permissions'))[0]
+
+
+
             try:
-                user = User.objects.get(pk=perm.get('user_id'))
+                user = User.objects.get(username=perm.get('user'))
             except User.DoesNotExist:
-                return Response(_(f'Invalid user ID: {perm.get("user_id")}'), status=status.HTTP_400_BAD_REQUEST)
+                return Response(_(f'Invalid user ID: {perm.get("user")}'), status=status.HTTP_400_BAD_REQUEST)
 
             permissions = perm.get('permissions').get('id')
 

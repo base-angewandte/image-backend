@@ -201,7 +201,7 @@ class PermissionsSerializer(UpdateAlbumSerializer):
         allow_null=True,
         default=[
             {
-                "user_id": 123,
+                "user": "username",
                 "permissions": {
                     "id": "VIEW"
                 }
@@ -213,7 +213,7 @@ class PermissionsSerializer(UpdateAlbumSerializer):
         schema = {
             'type': 'object',
             'properties': {
-                'user_id': {'type': 'integer'},
+                'user': {'type': 'string'},
                 'permissions': {
                     'type': 'object',
                     'properties': {
