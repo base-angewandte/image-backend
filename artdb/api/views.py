@@ -1458,7 +1458,7 @@ class AlbumViewSet(viewsets.ViewSet):
                 _("Album doesn't exist"), status.HTTP_404_NOT_FOUND
             )
 
-        # todo if (album.user.username == request.user.username)...
+        # todo if (album.user.username == request.user.username)... etc if user is not the owner?
 
         download_format = request.GET.get('download_format')
         lang = request.headers.get('Language')
@@ -1466,8 +1466,12 @@ class AlbumViewSet(viewsets.ViewSet):
         download_map = {
             'pptx_en': collection_download_as_pptx_en(request, id=album_id),
             'pptx_de': collection_download_as_pptx_de(request, id=album_id),
-            'pdf_en': {},
-            'pdf_de': {},
+            'pdf_en': Response(
+            _("Wrong parameters."), status.HTTP_422_UNPROCESSABLE_ENTITY
+        ),
+            'pdf_de': Response(
+            _("Wrong parameters."), status.HTTP_422_UNPROCESSABLE_ENTITY
+        ),
         }
 
         if download_format == 'pptx' and lang == 'en':
