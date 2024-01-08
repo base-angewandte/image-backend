@@ -788,6 +788,9 @@ class AlbumViewSet(viewsets.ViewSet):
     create_permissions
     POST /albums/{id}/permissions
 
+    delete_permissions
+    DELETE /albums/{id}/permissions
+
     create_folder:
     POST
 
@@ -1304,6 +1307,41 @@ class AlbumViewSet(viewsets.ViewSet):
             )
 
         except Album.DoesNotExist:
+            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+
+    @extend_schema(
+        methods=['DELETE'],
+    )
+    def delete_permissions(self, request, album_id=None, *args, **kwargs):
+        '''
+        Delete Permissions /albums/{id}/permissions/
+        "Unshare" album
+
+        If the user is the owner of the album, all sharing permissions will be deleted.
+        If the user is just a user who this album is shared with, only their own sharing permission will be deleted.
+        '''
+        try:
+            album = Album.objects.get(pk=album_id)
+            shares_per_album = [p.user.username for p in PermissionsRelation.objects.filter(album__id=album_id)]
+
+            # If User is owner of Album
+            if album.user.username == request.user.username:
+                # all shares (permissions) per Album are deleted
+                perm_rel = PermissionsRelation.objects.filter(album__id=album_id)
+                for p in perm_rel:
+                    p.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
+            # If User shares Album but is not owner
+            if request.user.username in shares_per_album:
+                # the user's share (permission) is deleted
+                PermissionsRelation.objects.filter(user=request.user).delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
+            # User is not owner nor has shares (permissions)
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
     @extend_schema(
