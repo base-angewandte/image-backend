@@ -1332,9 +1332,7 @@ class AlbumViewSet(viewsets.ViewSet):
             # If User shares Album but is not owner
             if request.user.username in shares_per_album:
                 # the user's share (permission) is deleted
-                for sharing_user in shares_per_album:
-                    if request.user.username == sharing_user:
-                        PermissionsRelation.objects.filter(user=request.user).delete()
+                PermissionsRelation.objects.filter(user=request.user).delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
 
             # User is not owner nor has shares (permissions)
