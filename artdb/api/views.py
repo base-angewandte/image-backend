@@ -1324,7 +1324,7 @@ class AlbumViewSet(viewsets.ViewSet):
             # If User is owner of Album
             if album.user.username == request.user.username:
                 # all shares (permissions) per Album are deleted
-                perm_rel = PermissionsRelation.objects.filter(album__id=album_id)  # maybe user=request.user
+                perm_rel = PermissionsRelation.objects.filter(album__id=album_id)
                 for p in perm_rel:
                     p.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
