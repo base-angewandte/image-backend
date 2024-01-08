@@ -1313,6 +1313,9 @@ class AlbumViewSet(viewsets.ViewSet):
         '''
         Delete Permissions /albums/{id}/permissions/
         "Unshare" album
+
+        If the user is the owner of the album, all sharing permissions will be deleted.
+        If the user is just a user who this album is shared with, only their own sharing permission will be deleted.
         '''
         try:
             album = Album.objects.get(pk=album_id)
@@ -1334,9 +1337,8 @@ class AlbumViewSet(viewsets.ViewSet):
                         PermissionsRelation.objects.filter(user=request.user).delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
 
-            else:
-                # User is not owner nor has shares (permissions)
-                return Response(status=status.HTTP_403_FORBIDDEN)
+            # User is not owner nor has shares (permissions)
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
         except Album.DoesNotExist or ValueError:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
