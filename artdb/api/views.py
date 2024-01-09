@@ -1458,25 +1458,18 @@ class AlbumViewSet(viewsets.ViewSet):
                 download_format = request.GET.get('download_format')
                 lang = request.headers.get('Language')
 
-                download_map = {
-                    'pptx_en': collection_download_as_pptx_en(request, id=album_id),
-                    'pptx_de': collection_download_as_pptx_de(request, id=album_id),
-                    'pdf_en': Response(
-                        _("Not implemented yet"), status.HTTP_422_UNPROCESSABLE_ENTITY
-                    ),
-                    'pdf_de': Response(
-                        _("Not implemented yet"), status.HTTP_422_UNPROCESSABLE_ENTITY
-                    ),
-                }
-
                 if download_format == 'pptx' and lang == 'en':
-                    return download_map['pptx_en']
+                    return collection_download_as_pptx_en(request, id=album_id)
                 if download_format == 'pptx' and lang == 'de':
-                    return download_map['pptx_de']
+                    return collection_download_as_pptx_de(request, id=album_id)
                 if download_format == 'pdf' and lang == 'en':
-                    return download_map['pdf_en']  # Todo to implement
+                    return Response(
+                        _("Not implemented yet"), status.HTTP_501_NOT_IMPLEMENTED
+                    )  # Todo to implement
                 if download_format == 'pdf' and lang == 'de':
-                    return download_map['pdf_de']  # Todo to implement
+                    return Response(
+                        _("Not implemented yet"), status.HTTP_501_NOT_IMPLEMENTED
+                    )  # Todo to implement
                 return Response(
                     _("Wrong parameters."), status.HTTP_400_BAD_REQUEST
                 )
