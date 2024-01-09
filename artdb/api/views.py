@@ -1434,7 +1434,7 @@ class AlbumViewSet(viewsets.ViewSet):
                 type=OpenApiTypes.STR,
                 # enum=['pptx', 'pdf'],  # Todo to be added
                 default='pptx',
-                description="Enter either 'pptx' or 'PDF'",
+                description="At the moment, only 'pptx' is available. Later on, 'PDF' will also be available",
                 required=True,
             ),
         ],
@@ -1442,6 +1442,7 @@ class AlbumViewSet(viewsets.ViewSet):
             200: OpenApiResponse(description='OK'),
             403: OpenApiResponse(description='Access not allowed'),
             404: OpenApiResponse(description='Not found'),
+            501: OpenApiResponse(description='Not implemented yet')
         },
     )
     def download_album(self, request, album_id=None):
