@@ -13,7 +13,6 @@ import json
 from django.contrib.postgres.search import SearchVector
 from django.conf import settings
 
-
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
@@ -31,8 +30,8 @@ from rest_framework.response import Response
 
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
-log = logging.getLogger(__name__)
 
+log = logging.getLogger(__name__)
 
 from artworks.models import (
     Artist,
@@ -290,8 +289,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             }
             for album in albums
             if (album.user.username == request.user.username)
-            or (request.user.username in [p.user.username for p in PermissionsRelation.objects.filter(album__id=album.id)] and
-            "VIEW" in [p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)])
+               or (request.user.username in [p.user.username for p in
+                                             PermissionsRelation.objects.filter(album__id=album.id)] and
+                   "VIEW" in [p.permissions for p in
+                              PermissionsRelation.objects.filter(user__username=request.user.username)])
         ]
         )
 
@@ -469,33 +470,33 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             artwork_title = slugify(artwork.title)
 
             metadata_content = ''
-            metadata_content +=f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n'
+            metadata_content += f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n'
             if len(artwork.artists.all()) > 1:
                 metadata_content += f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n'
             else:
                 metadata_content += f'Artist: {artwork.artists.all()[0]} \n'
-            metadata_content +=f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n'
-            metadata_content +=f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
-            metadata_content +=f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n'
-            metadata_content +=f'{artwork._meta.get_field("description").verbose_name.title()}: {artwork.description} \n'
-            metadata_content +=f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
-            metadata_content +=f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]} \n'
-            metadata_content +=f'{artwork._meta.get_field("location_current").verbose_name.title()}: {artwork.location_current if artwork.location_current else ""} \n'
-            metadata_content +=f'{artwork._meta.get_field("location_of_creation").verbose_name.title()}: {artwork.location_of_creation} \n'
+            metadata_content += f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n'
+            metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
+            metadata_content += f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n'
+            metadata_content += f'{artwork._meta.get_field("description").verbose_name.title()}: {artwork.description} \n'
+            metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
+            metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]} \n'
+            metadata_content += f'{artwork._meta.get_field("location_current").verbose_name.title()}: {artwork.location_current if artwork.location_current else ""} \n'
+            metadata_content += f'{artwork._meta.get_field("location_of_creation").verbose_name.title()}: {artwork.location_of_creation} \n'
 
             #  image to zipfile & metadata
             with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as image_zip:
 
-                    # create zip file
+                # create zip file
 
-                    image_zip.write(artwork.image_original.path, arcname=artwork.image_original.name)
-                    image_zip.writestr(f'{artwork_title}_metadata.txt', metadata_content)
-                    image_zip.close()
+                image_zip.write(artwork.image_original.path, arcname=artwork.image_original.name)
+                image_zip.writestr(f'{artwork_title}_metadata.txt', metadata_content)
+                image_zip.close()
 
-                    response = HttpResponse(output_zip.getvalue(), content_type='application/x-zip-compressed')
-                    response['Content-Disposition'] = f'attachment; filename={artwork_title}.zip'
+                response = HttpResponse(output_zip.getvalue(), content_type='application/x-zip-compressed')
+                response['Content-Disposition'] = f'attachment; filename={artwork_title}.zip'
 
-                    return response
+                return response
 
         except Artwork.DoesNotExist:
             return Response(
@@ -973,10 +974,10 @@ class AlbumViewSet(viewsets.ViewSet):
                     }
                     for album in results
                     if (album.user.username == request.user.username)
-                    or (request.user.username in [p.user.username for p in
-                                     PermissionsRelation.objects.filter(album__id=album.id)] and
-                       "VIEW" in [p.permissions for p in
-                                  PermissionsRelation.objects.filter(user__username=request.user.username)])
+                       or (request.user.username in [p.user.username for p in
+                                                     PermissionsRelation.objects.filter(album__id=album.id)] and
+                           "VIEW" in [p.permissions for p in
+                                      PermissionsRelation.objects.filter(user__username=request.user.username)])
                 ]
             }
         )
@@ -1229,9 +1230,10 @@ class AlbumViewSet(viewsets.ViewSet):
                 }
                 for p in PermissionsRelation.objects.filter(album__id=album.id)
                 if (album.user.username == request.user.username)
-                or (request.user.username in [p.user.username for p in
-                                             PermissionsRelation.objects.filter(album__id=album.id)] and "VIEW" in [
-                       p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)])
+                   or (request.user.username in [p.user.username for p in
+                                                 PermissionsRelation.objects.filter(album__id=album.id)] and "VIEW" in [
+                           p.permissions for p in
+                           PermissionsRelation.objects.filter(user__username=request.user.username)])
             ]
         )
 
@@ -1471,9 +1473,9 @@ class AlbumViewSet(viewsets.ViewSet):
             OpenApiParameter(
                 name='download_format',
                 type=OpenApiTypes.STR,
-                # enum=['pptx', 'pdf'],  # Todo to be added
+                enum=['pptx', 'pdf'],  # Todo: PDF will be made functional later
                 default='pptx',
-                description="Enter either 'pptx' or 'PDF'",
+                description="At the moment, only 'pptx' is available. Later on, 'PDF' will also be available",
                 required=True,
             ),
         ],
@@ -1481,45 +1483,46 @@ class AlbumViewSet(viewsets.ViewSet):
             200: OpenApiResponse(description='OK'),
             403: OpenApiResponse(description='Access not allowed'),
             404: OpenApiResponse(description='Not found'),
+            501: OpenApiResponse(description='Not implemented yet')
         },
     )
     def download_album(self, request, album_id=None):
         # Todo: now only pptx, later also PDF
         try:
             album = Album.objects.get(id=album_id)
-            if not request.user.username in [p.user.username for p in
-                                         PermissionsRelation.objects.filter(album__id=album.id)]:
-                if not "VIEW" in [
-                p.permissions for p in PermissionsRelation.objects.filter(user__username=request.user.username)]:
+            # If user is the owner or has VIEW permissions, allow the download. Otherwise, throw a 403
+            if ((album.user.username == request.user.username) or
+                    (request.user.username in [p.user.username
+                                               for p in PermissionsRelation.objects.filter(album__id=album.id)] and
+                     "VIEW" in [p.permissions for p in
+                                PermissionsRelation.objects.filter(user__username=request.user.username)])):
+
+                download_format = request.GET.get('download_format')
+                lang = request.headers.get('Language')
+
+                if download_format == 'pptx' and lang == 'en':
+                    return collection_download_as_pptx_en(request, id=album_id)
+                if download_format == 'pptx' and lang == 'de':
+                    return collection_download_as_pptx_de(request, id=album_id)
+                if download_format == 'pdf' and lang == 'en':
                     return Response(
-                        _("Not allowed"), status.HTTP_403_FORBIDDEN
-                    )
+                        _("Not implemented yet"), status.HTTP_501_NOT_IMPLEMENTED
+                    )  # Todo to implement
+                if download_format == 'pdf' and lang == 'de':
+                    return Response(
+                        _("Not implemented yet"), status.HTTP_501_NOT_IMPLEMENTED
+                    )  # Todo to implement
+                return Response(
+                    _("Wrong parameters."), status.HTTP_400_BAD_REQUEST
+                )
+
+            return Response(
+                _("Not allowed"), status.HTTP_403_FORBIDDEN
+            )
         except Album.DoesNotExist:
             return Response(
                 _("Album doesn't exist"), status.HTTP_404_NOT_FOUND
             )
-
-        download_format = request.GET.get('download_format')
-        lang = request.headers.get('Language')
-
-        download_map = {
-            'pptx_en': collection_download_as_pptx_en(request, id=album_id),
-            'pptx_de': collection_download_as_pptx_de(request, id=album_id),
-            'pdf_en': {},
-            'pdf_de': {},
-        }
-
-        if download_format == 'pptx' and lang == 'en':
-            return download_map['pptx_en']
-        if download_format == 'pptx' and lang == 'de':
-            return download_map['pptx_de']
-        if download_format == 'pdf' and lang == 'en':
-            return download_map['pdf_en']  # Todo to implement
-        if download_format == 'pdf' and lang == 'de':
-            return download_map['pdf_de']  # Todo to implement
-        return Response(
-            _("Wrong parameters."), status.HTTP_400_BAD_REQUEST
-        )
 
 
 class LabelsViewSet(viewsets.GenericViewSet):
