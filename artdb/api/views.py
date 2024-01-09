@@ -1462,10 +1462,10 @@ class AlbumViewSet(viewsets.ViewSet):
                     'pptx_en': collection_download_as_pptx_en(request, id=album_id),
                     'pptx_de': collection_download_as_pptx_de(request, id=album_id),
                     'pdf_en': Response(
-                        _("Wrong parameters."), status.HTTP_422_UNPROCESSABLE_ENTITY
+                        _("Not implemented yet"), status.HTTP_422_UNPROCESSABLE_ENTITY
                     ),
                     'pdf_de': Response(
-                        _("Wrong parameters."), status.HTTP_422_UNPROCESSABLE_ENTITY
+                        _("Not implemented yet"), status.HTTP_422_UNPROCESSABLE_ENTITY
                     ),
                 }
 
