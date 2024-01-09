@@ -175,8 +175,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def list_artworks(self, request, *args, **kwargs):
-        limit = int(request.GET.get('limit')) if request.GET.get('limit') else 100  # default limit
-        offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
+        try:
+            limit = int(request.GET.get('limit')) if request.GET.get('limit') else 100  # default limit
+            offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
+        except ValueError:
+            return Response(
+                'Limit and offset should be int'
+            )
 
         results = Artwork.objects.all()
 
