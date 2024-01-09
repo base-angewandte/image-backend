@@ -1432,7 +1432,7 @@ class AlbumViewSet(viewsets.ViewSet):
             OpenApiParameter(
                 name='download_format',
                 type=OpenApiTypes.STR,
-                # enum=['pptx', 'pdf'],  # Todo to be added
+                enum=['pptx'],  # Todo: PDF will be added
                 default='pptx',
                 description="At the moment, only 'pptx' is available. Later on, 'PDF' will also be available",
                 required=True,
