@@ -26,19 +26,17 @@ SOURCES = [
     'permissions'
 ]
 
-searchstring_parameter = OpenApiParameter(
-    name='searchstr',
+query = OpenApiParameter(
+    name='query',
     type=OpenApiTypes.STR,
     required=False,
-    description='',
-    # default=''
 )
 
-type_parameter = OpenApiParameter(
-    name='type_parameter',
+type = OpenApiParameter(
+    name='type',
     type=OpenApiTypes.STR,
     required=True,
-    enum=SOURCES,
+    description=f'choose between {", ".join(SOURCES)}, only one at a time allowed.',
 )
 
 limit = OpenApiParameter(
@@ -76,21 +74,21 @@ def autocomplete_user(request, searchstr=''):
 
 @extend_schema(
     tags=['autocomplete'],
-    parameters=[limit, type_parameter, searchstring_parameter],
+    parameters=[limit, type, query],
     operation_id='autocomplete_v1_lookup',
 
 )
-@api_view(['POST'])
+@api_view(['GET'])
 def autocomplete_search(request, *args, **kwargs):
     try:
         limit = int(request.GET.get('limit')) if request.GET.get('limit') else 10  # default
-        type_parameter = request.GET.get('type_parameter') if request.GET.get('type_parameter') else 'artworks'
+        type_parameter = request.GET.get('type') if request.GET.get('type') else 'artworks'
 
         if not isinstance((limit), int):
             return Response(_('Limit must be an integer.'), status=status.HTTP_400_BAD_REQUEST)
 
         if type_parameter not in SOURCES:
-            return Response(_(f'The type_parameter must be one of the following: {"".join(SOURCES)}.'), status=status.HTTP_400_BAD_REQUEST)
+            return Response(_(f'The type_parameter must be one of the following: {", ".join(SOURCES)}.'), status=status.HTTP_400_BAD_REQUEST)
 
         searchstr = request.GET.get('searchstr', '')
 
