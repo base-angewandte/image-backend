@@ -51,6 +51,7 @@ subsections.
 - Make sure that the `DOCKER` variable in `./artdb/artdb/.env` is set to
   `TRUE`. Otherwise, django will assume that postgres and redis are accessible
   on localhost ports.
+- Also in `./artdb/artdb/.env`, make sure the variable `FORCE_SCRIPT_NAME=` is uncommented and set to nothing.
 
 - Start everything:
 
