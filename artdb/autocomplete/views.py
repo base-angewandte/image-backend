@@ -27,7 +27,7 @@ SOURCES = [
 ]
 
 query = OpenApiParameter(
-    name='query',
+    name='q',
     type=OpenApiTypes.STR,
     required=False,
 )
