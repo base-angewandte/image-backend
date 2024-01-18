@@ -36,7 +36,7 @@ type = OpenApiParameter(
     name='type',
     type=OpenApiTypes.STR,
     required=True,
-    description=f'choose between {", ".join(SOURCES)}, only one at a time allowed.',
+    description=f'You can pick any number of types among {", ".join(SOURCES)}, separated by commas.',
 )
 
 limit = OpenApiParameter(
@@ -82,91 +82,99 @@ def autocomplete_user(request, searchstr=''):
 def autocomplete_search(request, *args, **kwargs):
     try:
         limit = int(request.GET.get('limit')) if request.GET.get('limit') else 10  # default
-        type_parameter = request.GET.get('type') if request.GET.get('type') else 'artworks'
+        type_parameters = request.GET.get('type') if request.GET.get('type') else 'artworks'
+        type_parameters = [x.strip() for x in type_parameters.split(',')]
+
+        # todo permissions are not searched for q
 
         if not isinstance((limit), int):
             return Response(_('Limit must be an integer.'), status=status.HTTP_400_BAD_REQUEST)
 
-        if type_parameter not in SOURCES:
-            return Response(_(f'The type_parameter must be one of the following: {", ".join(SOURCES)}.'), status=status.HTTP_400_BAD_REQUEST)
+        for type_name in type_parameters:
+            if type_name not in SOURCES:
+                return Response(_(f'The type_parameters must be among the following: {", ".join(SOURCES)}.'), status=status.HTTP_400_BAD_REQUEST)
 
-        searchstr = request.GET.get('searchstr', '')
+        searchstr = request.GET.get('q', '')
 
         items = []
 
-        if type_parameter == 'users':
-            data = autocomplete_user(request, searchstr)
-            if limit and data:
-                data = autocomplete_user(request, searchstr)[0:limit]
-            return Response(data)
+        for type in type_parameters:
+            d = {f'{type}': []}
+            if type in ['users', 'permissions', 'artworks']:
+                if type == 'users':
+                    data = autocomplete_user(request, searchstr)
+                    if limit and data:
+                        data = autocomplete_user(request, searchstr)[0:limit]
+                    d.get(type).append(data)
 
-        if type_parameter == 'permissions':
-            data = []
-            for permission_type in PermissionsRelation.PERMISSION_CHOICES:
-                data.append({
-                        "id": permission_type[0],
-                        "default": PERMISSIONS_DEFAULT.get(permission_type[0])
-                    })
-            data = data[0:limit]
-            return Response(data)
+                if type == 'permissions':
+                    print("perm")
+                    data = []
+                    for permission_type in PermissionsRelation.PERMISSION_CHOICES:
+                        data.append({
+                                "id": permission_type[0],
+                                "default": PERMISSIONS_DEFAULT.get(permission_type[0])
+                            })
+                    data = data[0:limit]
+                    d.get(type).append(data)
+                    print(d)
 
-        if type_parameter == 'artworks':
-            data = [{
-                'title': [data_item for data_item in
-                          Artwork.objects.filter(title__icontains=searchstr)[0:limit].values()],
-                # meaning title of artworks
-                'artist': [data_item for data_item in
-                           Artist.objects.filter(name__icontains=searchstr)[0:limit].values()],
-                'keywords': [data_item for data_item in
-                             Keyword.objects.filter(name__icontains=searchstr)[0:limit].values()],
-                'origin': [data_item for data_item in
-                           Location.objects.filter(name__icontains=searchstr)[0:limit].values()],
-                'location': [data_item for data_item in
-                             Location.objects.filter(name__icontains=searchstr)[0:limit].values()],
-            }]
-            data = data[0:limit]
-            return Response(data)
+                if type == 'artworks':
+                    data = [{
+                        'title': [data_item for data_item in
+                                  Artwork.objects.filter(title__icontains=searchstr)[0:limit].values()],
+                        # meaning title of artworks
+                        'artist': [data_item for data_item in
+                                   Artist.objects.filter(name__icontains=searchstr)[0:limit].values()],
+                        'keywords': [data_item for data_item in
+                                     Keyword.objects.filter(name__icontains=searchstr)[0:limit].values()],
+                        'origin': [data_item for data_item in
+                                   Location.objects.filter(name__icontains=searchstr)[0:limit].values()],
+                        'location': [data_item for data_item in
+                                     Location.objects.filter(name__icontains=searchstr)[0:limit].values()],
+                    }]
+                    data = data[0:limit]
+                    d.get(type).append(data)
+                items.append(d)
 
-        model_map = {
-            'albums': 'Album',
-            'title': 'Artwork',
-            'artist': 'Artist',
-            'keywords': 'Keyword',
-            'origin': 'Location',
-            'location': 'Location',
-        }
-
-        try:
-            data = apps.get_model('artworks', model_map[type_parameter]).objects.filter(name__icontains=searchstr)[0:limit]
-        except FieldError:
-            data = apps.get_model('artworks', model_map[type_parameter]).objects.filter(title__icontains=searchstr)[0:limit]
-
-        for data_item in data:
-            if type_parameter == 'albums' or type_parameter == 'title':
-                print(data_item)
-                data_item = {
-                    'id': data_item.id,
-                    'value': data_item.title
-                }
             else:
-                data_item = {
-                    'id': data_item.id,
-                    'value': data_item.name
+                model_map = {
+                    'albums': 'Album',
+                    'title': 'Artwork',
+                    'artist': 'Artist',
+                    'keywords': 'Keyword',
+                    'origin': 'Location',
+                    'location': 'Location',
                 }
-            try:
-                items.append(
-                    data_item
-                )
-            except AttributeError:
-                items.append(
-                    data_item
-                )
-        if limit and items:
-            items = items[0:limit]
 
-    except Exception as e:
+                try:
+                    data = apps.get_model('artworks', model_map[type]).objects.filter(name__icontains=searchstr)[0:limit]
+                except FieldError:
+                    data = apps.get_model('artworks', model_map[type]).objects.filter(title__icontains=searchstr)[0:limit]
+
+                for data_item in data:
+
+                    if type == 'albums' or type == 'title':
+
+                        data_item = {
+                            'id': data_item.id,
+                            'value': data_item.title
+                        }
+                    else:
+                        data_item = {
+                            'id': data_item.id,
+                            'value': data_item.name
+                        }
+                    d.get(type).append(data_item)
+
+                items.append(d)
+
+                if limit and items:
+                    items = items[0:limit]
+
+    except ValueError:
         return Response(
-            _(f'{e}'), status.HTTP_400_BAD_REQUEST
+            _(f'Limit and offset should be int, and type should be a string of one or more types among {", ".join(SOURCES)}, separated by commas.')
         )
 
     return Response(items, status=200)
