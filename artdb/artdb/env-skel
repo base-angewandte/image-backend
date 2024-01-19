@@ -36,8 +36,10 @@ SITE_URL=https://base.uni-ak.ac.at/
 # EMAIL_SUBJECT_PREFIX=[Image]
 
 ## Set up CSRF and CORS settings here. For a local development server you
-## might want to set CSRF_TRUSTED_ORIGINS to: localhost,127.0.0.1
-## and CORS_EXPOSE_HEADERS to: content-disposition
+## might want to set CORS_ALLOW_CREDENTIALS to: True
+## CORS_ALLOWED_ORIGINS to: localhost,127.0.0.1
+## CORS_EXPOSE_HEADERS to: content-disposition
+## and CSRF_TRUSTED_ORIGINS to: localhost,127.0.0.1
 # CORS_ALLOW_CREDENTIALS=False
 # CORS_ALLOWED_ORIGINS=
 # CORS_EXPOSE_HEADERS=
