@@ -35,7 +35,7 @@ query = OpenApiParameter(
 type = OpenApiParameter(
     name='type',
     type=OpenApiTypes.STR,
-    required=True,
+    required=False,
     description=f'You can pick any number of types among {", ".join(SOURCES)}, separated by commas.',
 )
 
