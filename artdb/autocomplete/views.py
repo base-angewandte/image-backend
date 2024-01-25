@@ -85,8 +85,6 @@ def autocomplete_search(request, *args, **kwargs):
         type_parameters = request.GET.get('type') if request.GET.get('type') else 'artworks'
         type_parameters = [x.strip() for x in type_parameters.split(',')]
 
-        # todo permissions are not searched for q
-
         if not isinstance((limit), int):
             return Response(_('Limit must be an integer.'), status=status.HTTP_400_BAD_REQUEST)
 
