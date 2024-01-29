@@ -604,23 +604,22 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         results = results.filter(q_objects)
 
-        results = results.annotate(search=SearchVector("title", "title_english", "artists", "material",
-                                                       "dimensions", "description", "credits", "keywords",
-                                                       "location_of_creation", "location_current"),
-                                   )
+        final_q_objects = Q()
+        if searchstr:
 
-        final_results = []
+            # Q filter results to search all necessary fields for the given searchstr, without splitting (top be changed later)
+            final_q_objects |= Q(title__icontains=searchstr) | Q(title_english__icontains=searchstr)
+            final_q_objects |= Q(artists__name__unaccent__icontains=searchstr)
+            final_q_objects |= Q(material__icontains=searchstr)
+            final_q_objects |= Q(dimensions__icontains=searchstr)
+            final_q_objects |= Q(description__icontains=searchstr)
+            keywords = Keyword.objects.filter(name__icontains=searchstr)
+            final_q_objects |= Q(keywords__in=keywords)
+            locations = Location.objects.filter(name__icontains=searchstr)
+            final_q_objects |= Q(location_of_creation__in=locations)
+            final_q_objects |= Q(location_current__in=locations)
+            results = results.filter(final_q_objects)
 
-        search_terms = searchstr.split(' ')
-        for term in search_terms:
-            if term:
-                # It filters as intended if we literally append to a list when adding further filtering.
-                # Possibly improvable, q_objects and direct filtering did not work so far
-                final_results.extend(list(results.filter(search__icontains=term).order_by('id').distinct('id')))
-
-        if final_results:
-            results = final_results
-        else:
             results = results.order_by('id').distinct('id')
 
         # total of results before applying limits:
