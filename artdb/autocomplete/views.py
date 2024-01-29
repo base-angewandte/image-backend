@@ -15,7 +15,6 @@ from django.utils.translation import gettext_lazy as _
 logger = logging.getLogger(__name__)
 
 SOURCES = [
-    'artworks',
     'users',
     'albums',
     'title',
@@ -98,7 +97,7 @@ def autocomplete_search(request, *args, **kwargs):
 
         for type in type_parameters:
             d = {f'{type}': []}
-            if type in ['users', 'permissions', 'artworks']:
+            if type in ['users', 'permissions']:
                 if type == 'users':
                     data = autocomplete_user(request, searchstr)
                     if limit and data:
@@ -106,7 +105,6 @@ def autocomplete_search(request, *args, **kwargs):
                     d.get(type).append(data)
 
                 if type == 'permissions':
-                    print("perm")
                     data = []
                     for permission_type in PermissionsRelation.PERMISSION_CHOICES:
                         data.append({
@@ -115,24 +113,7 @@ def autocomplete_search(request, *args, **kwargs):
                             })
                     data = data[0:limit]
                     d.get(type).append(data)
-                    print(d)
 
-                if type == 'artworks':
-                    data = [{
-                        'title': [data_item for data_item in
-                                  Artwork.objects.filter(title__icontains=searchstr)[0:limit].values()],
-                        # meaning title of artworks
-                        'artist': [data_item for data_item in
-                                   Artist.objects.filter(name__icontains=searchstr)[0:limit].values()],
-                        'keywords': [data_item for data_item in
-                                     Keyword.objects.filter(name__icontains=searchstr)[0:limit].values()],
-                        'origin': [data_item for data_item in
-                                   Location.objects.filter(name__icontains=searchstr)[0:limit].values()],
-                        'location': [data_item for data_item in
-                                     Location.objects.filter(name__icontains=searchstr)[0:limit].values()],
-                    }]
-                    data = data[0:limit]
-                    d.get(type).append(data)
                 items.append(d)
 
             else:
