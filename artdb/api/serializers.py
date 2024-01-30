@@ -1,10 +1,12 @@
-from artworks.models import Artwork, Artist, Keyword, Location, Album, AlbumMembership
-from versatileimagefield.serializers import VersatileImageFieldSerializer
-from rest_framework import serializers
-from django.core.exceptions import ValidationError
-import jsonschema
-from jsonschema import validate
 import json
+
+import jsonschema
+from artworks.models import Album, AlbumMembership, Artist, Artwork, Keyword, Location
+from jsonschema import validate
+from rest_framework import serializers
+from versatileimagefield.serializers import VersatileImageFieldSerializer
+
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 
@@ -26,7 +28,7 @@ def validate_json_field(value, schema):
     if isinstance(value, list):
         for i in value:
             if isinstance(i, list):
-                if 'id' in i: # then it is slides
+                if 'id' in i:  # then it is slides
                     pass
         return value
 
@@ -75,13 +77,12 @@ class SearchRequestSerializer(serializers.ModelSerializer):
                 'offset': 0,
                 'exclude': [123, 345],  # with artwork ids
                 'q': '',  # the string from general search
-                'filters':
-                    [
-                        {
-                            'id': 'artist',
-                            'filter_values': ['rubens', {'id': 786}],
-                        }
-                    ],
+                'filters': [
+                    {
+                        'id': 'artist',
+                        'filter_values': ['rubens', {'id': 786}],
+                    }
+                ],
             }
         ],
     )
@@ -92,10 +93,7 @@ class SearchRequestSerializer(serializers.ModelSerializer):
             'properties': {
                 'limit': {'type': 'integer'},
                 'offset': {'type': 'integer'},
-                'exclude': {
-                    'type': 'array',
-                    'items': {'type': 'integer'}
-                },
+                'exclude': {'type': 'array', 'items': {'type': 'integer'}},
                 'q': {'type': 'string'},
                 'filters': {
                     'type': 'array',
@@ -110,26 +108,26 @@ class SearchRequestSerializer(serializers.ModelSerializer):
                                         'items': {
                                             'anyOf': [
                                                 {'type': 'string'},
-                                                {'type': 'object',
-                                                 'properties': {
-                                                     'id': {'type': 'integer'},
-                                                 },
-                                                 }
+                                                {
+                                                    'type': 'object',
+                                                    'properties': {
+                                                        'id': {'type': 'integer'},
+                                                    },
+                                                },
                                             ]
-                                        }
+                                        },
                                     },
                                     {
                                         'type': 'object',
                                         'properties': {
                                             'date_from': {'type': 'string'},
-                                            'date_to': {'type': 'string'}
-                                        }
-                                    }
+                                            'date_to': {'type': 'string'},
+                                        },
+                                    },
                                 ]
-                            }
-
-                        }
-                    }
+                            },
+                        },
+                    },
                 },
             },
         }
@@ -149,8 +147,9 @@ class SearchResponseSerializer(serializers.ModelSerializer):
 
 class ThumbnailSerializer(serializers.ModelSerializer):
     artists = ArtistSerializer(read_only=True, many=True)
-    image_original = VersatileImageFieldSerializer(sizes=[
-        ('thumbnail', 'thumbnail__180x180')])
+    image_original = VersatileImageFieldSerializer(
+        sizes=[('thumbnail', 'thumbnail__180x180')]
+    )
 
     class Meta:
         model = Artwork
@@ -199,14 +198,7 @@ class PermissionsSerializer(UpdateAlbumSerializer):
         label=_('Permissions'),
         required=False,
         allow_null=True,
-        default=[
-            {
-                "user": "username",
-                "permissions": {
-                    "id": "VIEW"
-                }
-            }
-        ],
+        default=[{'user': 'username', 'permissions': {'id': 'VIEW'}}],
     )
 
     def validate_permissions(self, value):
@@ -216,10 +208,8 @@ class PermissionsSerializer(UpdateAlbumSerializer):
                 'user': {'type': 'string'},
                 'permissions': {
                     'type': 'object',
-                    'properties': {
-                        'id': {'type': 'string'}
-                    }
-                }
+                    'properties': {'id': {'type': 'string'}},
+                },
             },
         }
         return validate_json_field(value, schema)
@@ -235,26 +225,7 @@ class SlidesSerializer(serializers.ModelSerializer):
         label=_('Slides'),
         required=False,
         allow_null=True,
-        default=[
-            [
-                {
-                    "id": 18
-                },
-                {
-                    "id": 456
-                }
-            ],
-            [
-                {
-                    "id": 789
-                }
-            ],
-            [
-                {
-                    "id": 432
-                }
-            ]
-        ],
+        default=[[{'id': 18}, {'id': 456}], [{'id': 789}], [{'id': 432}]],
     )
 
     def validate_slides(self, value):
@@ -265,7 +236,7 @@ class SlidesSerializer(serializers.ModelSerializer):
                 'properties': {
                     'id': {'type': 'integer'},
                 },
-            }
+            },
         }
         return validate_json_field(value, schema)
 
