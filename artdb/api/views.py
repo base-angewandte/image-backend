@@ -19,7 +19,7 @@ from drf_spectacular.utils import (
 )
 from rest_framework import status, viewsets
 from rest_framework.exceptions import ParseError
-from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
 from django.conf import settings
@@ -36,7 +36,7 @@ from .serializers import (
     CreateAlbumSerializer,
     PermissionsSerializer,
     SearchRequestSerializer,
-    SearchResponseSerializer,
+    SearchResultSerializer,
     SlidesSerializer,
     UpdateAlbumSerializer,
 )
@@ -134,7 +134,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     serializer_class = ArtworkSerializer
     queryset = Artwork.objects.all()
-    parser_classes = (FormParser, MultiPartParser)
+    parser_classes = (FormParser, MultiPartParser, JSONParser)
     filter_backends = (DjangoFilterBackend,)
     UserModel = get_user_model()
 
@@ -499,48 +499,44 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         methods=['POST'],
-        request=SearchRequestSerializer,
+        request={'application/json': SearchRequestSerializer},
         examples=[
             OpenApiExample(
                 name='search with filter type title, artist, place_of_production, current_location, keywords',
-                value=[
-                    {
-                        'limit': 0,
-                        'offset': 0,
-                        'exclude': [123, 345],  # with artwork ids
-                        'q': '',  # the string from general search
-                        'filters': [
-                            {
-                                'id': 'artist',
-                                'filter_values': ['rubens', {'id': 786}],
-                            }
-                        ],
-                    }
-                ],
+                value={
+                    'limit': settings.SEARCH_LIMIT,
+                    'offset': 0,
+                    'exclude': [123, 345],  # with artwork ids
+                    'q': 'query string',  # the string from general search
+                    'filters': [
+                        {
+                            'id': 'artist',
+                            'filter_values': ['rubens', {'id': 786}],
+                        }
+                    ],
+                },
             ),
             OpenApiExample(
                 name='search with filter type date',
-                value=[
-                    {
-                        'limit': 0,
-                        'offset': 0,
-                        'exclude': [123, 345],  # with artwork ids
-                        'q': '',  # the string from general search
-                        'filters': [
-                            {
-                                'id': 'date',
-                                'filter_values': {
-                                    'date_from': '2000',
-                                    'date_to': '2001',
-                                },
-                            }
-                        ],
-                    }
-                ],
+                value={
+                    'limit': settings.SEARCH_LIMIT,
+                    'offset': 0,
+                    'exclude': [123, 345],  # with artwork ids
+                    'q': 'query string',  # the string from general search
+                    'filters': [
+                        {
+                            'id': 'date',
+                            'filter_values': {
+                                'date_from': '2000',
+                                'date_to': '2001',
+                            },
+                        }
+                    ],
+                },
             ),
         ],
         responses={
-            200: SearchResponseSerializer,
+            200: SearchResultSerializer,
             403: OpenApiResponse(description='Access not allowed'),
             404: OpenApiResponse(description='Not found'),
         },
@@ -548,15 +544,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     def search(self, request, *args, **kwargs):
         serializer = SearchRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        search_req_data = serializer.data.get('search_request')[0]
-
-        limit = search_req_data.get('limit') if search_req_data.get('limit') else None
-        offset = (
-            search_req_data.get('offset') if search_req_data.get('offset') else None
-        )
-        filters = search_req_data.get('filters', [])
-        searchstr = search_req_data.get('q', '')
-        excluded = search_req_data.get('exclude', [])
+        limit = serializer.validated_data.get('limit', settings.SEARCH_LIMIT)
+        offset = serializer.validated_data.get('offset', 0)
+        filters = serializer.validated_data.get('filters', [])
+        searchstr = serializer.validated_data.get('q')
+        excluded = serializer.validated_data.get('exclude', [])
 
         results = (
             Artwork.objects.exclude(id__in=[str(i) for i in excluded])

@@ -6,6 +6,7 @@ from jsonschema import validate
 from rest_framework import serializers
 from versatileimagefield.serializers import VersatileImageFieldSerializer
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -62,87 +63,61 @@ class ArtworkSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class SearchRequestField(serializers.JSONField):
-    pass
-
-
-class SearchRequestSerializer(serializers.ModelSerializer):
-    search_request = SearchRequestField(
-        label=_('Search'),
-        required=False,
-        allow_null=True,
-        default=[
-            {
-                'limit': 0,
-                'offset': 0,
-                'exclude': [123, 345],  # with artwork ids
-                'q': '',  # the string from general search
-                'filters': [
-                    {
-                        'id': 'artist',
-                        'filter_values': ['rubens', {'id': 786}],
-                    }
-                ],
-            }
-        ],
+class SearchFilterSerializer(serializers.Serializer):
+    id = serializers.CharField(
+        help_text='id of the filter as obtained from the /filters endpoint'
+    )
+    filter_values = serializers.ListField(
+        child=serializers.JSONField(),
+        help_text='Array of either strings, dates, date ranges or a chips options.'
+        + ' Multiple values will be combined in a logical OR.',
     )
 
-    def validate_search_request(self, value):
-        schema = {
-            'type': 'object',
-            'properties': {
-                'limit': {'type': 'integer'},
-                'offset': {'type': 'integer'},
-                'exclude': {'type': 'array', 'items': {'type': 'integer'}},
-                'q': {'type': 'string'},
-                'filters': {
-                    'type': 'array',
-                    'items': {
-                        'type': 'object',
-                        'properties': {
-                            'id': {'type': 'string'},
-                            'filter_values': {
-                                'oneOf': [
-                                    {
-                                        'type': 'array',
-                                        'items': {
-                                            'anyOf': [
-                                                {'type': 'string'},
-                                                {
-                                                    'type': 'object',
-                                                    'properties': {
-                                                        'id': {'type': 'integer'},
-                                                    },
-                                                },
-                                            ]
-                                        },
-                                    },
-                                    {
-                                        'type': 'object',
-                                        'properties': {
-                                            'date_from': {'type': 'string'},
-                                            'date_to': {'type': 'string'},
-                                        },
-                                    },
-                                ]
-                            },
-                        },
-                    },
-                },
-            },
-        }
-        return validate_json_field(value, schema)
 
-    class Meta:
-        model = Album
-        fields = ('search_request',)
-        depth = 1
+class SearchRequestSerializer(serializers.Serializer):
+    filters = serializers.ListField(
+        child=SearchFilterSerializer(),
+        required=False,
+        help_text='Array of logical AND filters that should be applied to the search.',
+    )
+    exclude = serializers.ListField(
+        child=serializers.IntegerField(),
+        required=False,
+        help_text='Exclude certain artworks from the results.',
+    )
+    q = serializers.CharField(
+        required=False, help_text='Query string for full text search.'
+    )
+    limit = serializers.IntegerField(
+        required=False,
+        help_text=f'Limit the number of results. Default: {settings.SEARCH_LIMIT}',
+    )
+    offset = serializers.IntegerField(
+        required=False,
+        help_text='Offset for the first item in the results set.',
+    )
 
 
-class SearchResponseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Artwork
-        fields = '__all__'
+class SearchArtistsSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    value = serializers.CharField()
+
+
+class SearchItemSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    image_original = serializers.URLField()
+    credits = serializers.CharField()
+    title = serializers.CharField()
+    date = serializers.CharField()
+    artists = SearchArtistsSerializer(many=True)
+
+    score = serializers.FloatField()
+
+
+class SearchResultSerializer(serializers.Serializer):
+    label = serializers.CharField()
+    total = serializers.IntegerField()
+    data = SearchItemSerializer(many=True)
 
 
 class ThumbnailSerializer(serializers.ModelSerializer):
