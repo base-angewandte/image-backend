@@ -22,14 +22,13 @@ from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-
-from artdb.settings import SITE_URL
 
 from .serializers import (
     AlbumSerializer,
@@ -65,7 +64,7 @@ def artworks_in_slides(album):
                 artwork_info.append(
                     {
                         'id': artwork.id,
-                        'image_original': f'{SITE_URL}{Artwork.objects.get(id=artwork.id).image_original}'
+                        'image_original': f'{settings.SITE_URL}{Artwork.objects.get(id=artwork.id).image_original}'
                         if Artwork.objects.get(id=artwork.id).image_original
                         else None,
                         'credits': artwork.credits,
@@ -948,7 +947,7 @@ class AlbumViewSet(viewsets.ViewSet):
                             # the first 4 artworks from all slides: [[{"id":1}], [2,3], [4,5]] -> 1,2,3,4,max 4 objects
                             {
                                 'id': artwork_id,
-                                'image_original': f'{SITE_URL}{Artwork.objects.get(id=artwork_id).image_original}'
+                                'image_original': f'{settings.SITE_URL}{Artwork.objects.get(id=artwork_id).image_original}'
                                 if Artwork.objects.get(id=artwork_id).image_original
                                 else None,
                                 'title': Artwork.objects.get(id=artwork_id).title,
