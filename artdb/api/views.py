@@ -559,26 +559,22 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         for i in filters:
             if i['id'] == 'title':
-                q_objects |= filter_title(i['filter_values'], q_objects, results)
+                q_objects |= filter_title(i['filter_values'])
 
             elif i['id'] == 'artist':
-                q_objects |= filter_artist(i['filter_values'], q_objects, results)
+                q_objects |= filter_artist(i['filter_values'])
 
             elif i['id'] == 'place_of_production':
-                q_objects |= filter_place_of_production(
-                    i['filter_values'], q_objects, results
-                )
+                q_objects |= filter_place_of_production(i['filter_values'])
 
             elif i['id'] == 'current_location':
-                q_objects |= filter_current_location(
-                    i['filter_values'], q_objects, results
-                )
+                q_objects |= filter_current_location(i['filter_values'])
 
             elif i['id'] == 'keywords':
-                q_objects |= filter_keywords(i['filter_values'], q_objects, results)
+                q_objects |= filter_keywords(i['filter_values'])
 
             elif i['id'] == 'date':
-                q_objects |= filter_date(i['filter_values'], q_objects, results)
+                q_objects |= filter_date(i['filter_values'])
 
             else:
                 raise ParseError(
@@ -647,9 +643,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         )
 
 
-def filter_title(filter_values, q_objects, results):
+def filter_title(filter_values):
     """Should filter artworks whose title include the string if given, AND the
     artworks with given id."""
+    q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
             q_objects |= Q(title__icontains=val) | Q(title_english__icontains=val)
@@ -664,9 +661,10 @@ def filter_title(filter_values, q_objects, results):
     return q_objects
 
 
-def filter_artist(filter_values, q_objects, results):
+def filter_artist(filter_values):
     """Should filter artworks whose artist name includes the string if given,
     AND the artworks for artist which has the given id."""
+    q_objects = Q()
     for val in filter_values:
         if isinstance(val, dict) and 'id' in val.keys():
             q_objects |= Q(artists__id=val.get('id'))
@@ -679,9 +677,10 @@ def filter_artist(filter_values, q_objects, results):
     return q_objects
 
 
-def filter_place_of_production(filter_values, q_objects, results):
+def filter_place_of_production(filter_values):
     """Should filter artworks whose place of production includes the string if
     given, AND the artworks for place of production which has the given id."""
+    q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val)
@@ -697,9 +696,10 @@ def filter_place_of_production(filter_values, q_objects, results):
     return q_objects
 
 
-def filter_current_location(filter_values, q_objects, results):
+def filter_current_location(filter_values):
     """Should filter artworks whose current location includes the string if
     given, AND the artworks for current location which has the given id."""
+    q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val)
@@ -715,9 +715,10 @@ def filter_current_location(filter_values, q_objects, results):
     return q_objects
 
 
-def filter_keywords(filter_values, q_objects, results):
+def filter_keywords(filter_values):
     """Should filter artworks whose keywords include the string if given, AND
     the artworks for keyword which has the given id."""
+    q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
             keywords = Keyword.objects.filter(name__icontains=val)
@@ -733,7 +734,8 @@ def filter_keywords(filter_values, q_objects, results):
     return q_objects
 
 
-def filter_date(filter_values, q_objects, results):
+def filter_date(filter_values):
+    q_objects = Q()
     if isinstance(filter_values, dict):
         if re.match(r'^[12][0-9]{3}$', filter_values.get('date_from')):
             q_objects |= Q(date_year_from__gte=filter_values['date_from'])
