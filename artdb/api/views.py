@@ -25,7 +25,7 @@ from rest_framework.response import Response
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.db.models import FloatField, Q, Value
 from django.http import HttpResponse
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
@@ -544,79 +544,59 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     def search(self, request, *args, **kwargs):
         serializer = SearchRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
         limit = serializer.validated_data.get('limit', settings.SEARCH_LIMIT)
         offset = serializer.validated_data.get('offset', 0)
         filters = serializer.validated_data.get('filters', [])
-        searchstr = serializer.validated_data.get('q')
-        excluded = serializer.validated_data.get('exclude', [])
+        q_param = serializer.validated_data.get('q')
+        exclude = serializer.validated_data.get('exclude', [])
 
-        results = (
-            Artwork.objects.exclude(id__in=[str(i) for i in excluded])
-            if excluded
-            else Artwork.objects.all()
-        )
-        q_objects = Q()
-
-        for i in filters:
-            if i['id'] == 'title':
-                q_objects |= filter_title(i['filter_values'])
-
-            elif i['id'] == 'artist':
-                q_objects |= filter_artist(i['filter_values'])
-
-            elif i['id'] == 'place_of_production':
-                q_objects |= filter_place_of_production(i['filter_values'])
-
-            elif i['id'] == 'current_location':
-                q_objects |= filter_current_location(i['filter_values'])
-
-            elif i['id'] == 'keywords':
-                q_objects |= filter_keywords(i['filter_values'])
-
-            elif i['id'] == 'date':
-                q_objects |= filter_date(i['filter_values'])
-
-            else:
-                raise ParseError(
-                    'Invalid filter id. Filter id can only be title, artist, place_of_production, '
-                    'current_location, keywords, or date.',
-                    400,
-                )
-
-        results = results.filter(q_objects)
-
-        final_q_objects = Q()
-        if searchstr:
-            # Q filter results to search all necessary fields for the given searchstr, without splitting (top be changed later)
-            final_q_objects |= Q(title__icontains=searchstr) | Q(
-                title_english__icontains=searchstr
-            )
-            final_q_objects |= Q(artists__name__unaccent__icontains=searchstr)
-            final_q_objects |= Q(material__icontains=searchstr)
-            final_q_objects |= Q(dimensions__icontains=searchstr)
-            final_q_objects |= Q(description__icontains=searchstr)
-            keywords = Keyword.objects.filter(name__icontains=searchstr)
-            final_q_objects |= Q(keywords__in=keywords)
-            locations = Location.objects.filter(name__icontains=searchstr)
-            final_q_objects |= Q(location_of_creation__in=locations)
-            final_q_objects |= Q(location_current__in=locations)
-            results = results.filter(final_q_objects)
-
-            results = results.order_by('id').distinct('id')
-
-        # total of results before applying limits:
-        total = len(results)
-
-        if offset and limit:
-            end = offset + limit
-
-        elif limit and not offset:
-            end = limit
-
+        if q_param:
+            qs = Artwork.objects.search(q_param)
         else:
-            end = None
+            qs = Artwork.objects.annotate(rank=Value(1.0, FloatField()))
 
-        results = results[offset:end]
+        # only search for published artworks
+        qs = qs.filter(published=True)
+
+        if exclude:
+            qs = qs.exclude(id__in=exclude)
+
+        if filters:
+            q_objects = Q()
+
+            for i in filters:
+                if i['id'] == 'title':
+                    q_objects |= filter_title(i['filter_values'])
+
+                elif i['id'] == 'artist':
+                    q_objects |= filter_artist(i['filter_values'])
+
+                elif i['id'] == 'place_of_production':
+                    q_objects |= filter_place_of_production(i['filter_values'])
+
+                elif i['id'] == 'current_location':
+                    q_objects |= filter_current_location(i['filter_values'])
+
+                elif i['id'] == 'keywords':
+                    q_objects |= filter_keywords(i['filter_values'])
+
+                elif i['id'] == 'date':
+                    q_objects |= filter_date(i['filter_values'])
+
+                else:
+                    raise ParseError(
+                        'Invalid filter id. Filter id can only be title, artist, place_of_production, '
+                        'current_location, keywords, or date.',
+                        400,
+                    )
+
+            qs = qs.filter(q_objects)
+
+        # total of results before applying limits
+        total = qs.count()
+
+        qs = qs[offset : offset + limit]
 
         return Response(
             {
@@ -636,8 +616,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                             {'value': artist.name, 'id': artist.id}
                             for artist in artwork.artists.all()
                         ],
+                        'score': artwork.rank,
                     }
-                    for artwork in results
+                    for artwork in qs
                 ],
             }
         )
