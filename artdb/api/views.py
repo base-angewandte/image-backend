@@ -160,8 +160,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         ],
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def list_artworks(self, request, *args, **kwargs):
@@ -219,8 +219,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         request=serializer_class,
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def retrieve_artwork(self, request, item_id=None):
@@ -274,8 +274,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         request=serializer_class,
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def retrieve_albums_per_artwork(self, request, item_id=None):
@@ -317,8 +317,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         request=serializer_class,
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def list_search_filters(self, request, *args, **kwargs):
@@ -446,8 +446,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     @extend_schema(
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def download_artwork(self, request, artwork_id=None):
@@ -548,8 +548,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         ],
         responses={
             200: SearchResponseSerializer,
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def search(self, request, *args, **kwargs):
@@ -861,8 +861,8 @@ class AlbumViewSet(viewsets.ViewSet):
         ],
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def list_folders(self, request, *args, **kwargs):
@@ -927,8 +927,8 @@ class AlbumViewSet(viewsets.ViewSet):
         ],
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def list_albums(self, request, *args, **kwargs):
@@ -1031,8 +1031,8 @@ class AlbumViewSet(viewsets.ViewSet):
         request=AlbumSerializer,
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def retrieve_album(self, request, album_id=None):  # TODO update
@@ -1060,8 +1060,8 @@ class AlbumViewSet(viewsets.ViewSet):
     @extend_schema(
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def retrieve_slides_per_album(self, request, album_id=None):
@@ -1118,8 +1118,8 @@ class AlbumViewSet(viewsets.ViewSet):
         ],
         responses={
             200: AlbumSerializer,
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def edit_slides(self, request, album_id=None, slides=None, *args, **kwargs):
@@ -1196,8 +1196,8 @@ class AlbumViewSet(viewsets.ViewSet):
         ],
         responses={
             200: AlbumSerializer,
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def append_artwork(self, request, album_id=None, artwork_id=None, *args, **kwargs):
@@ -1240,8 +1240,8 @@ class AlbumViewSet(viewsets.ViewSet):
         methods=['GET'],
         responses={
             200: PermissionsSerializer,
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def retrieve_permissions_per_album(self, request, album_id=None):
@@ -1293,8 +1293,8 @@ class AlbumViewSet(viewsets.ViewSet):
         ],
         responses={
             200: AlbumSerializer,
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def create_permissions(self, request, partial=True, album_id=None, *args, **kwargs):
@@ -1436,8 +1436,8 @@ class AlbumViewSet(viewsets.ViewSet):
         request=UpdateAlbumSerializer,
         responses={
             200: AlbumSerializer,
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def update_album(self, request, partial=True, album_id=None, *args, **kwargs):
@@ -1533,8 +1533,8 @@ class AlbumViewSet(viewsets.ViewSet):
         ],
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
             501: OpenApiResponse(description='Not implemented yet'),
         },
     )
@@ -1608,8 +1608,8 @@ class LabelsViewSet(viewsets.GenericViewSet):
         ],
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def list_labels(self, request, *args, **kwargs):
