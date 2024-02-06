@@ -434,9 +434,9 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Image+ API',
+    'TITLE': 'Image API',
     'DESCRIPTION': '',
-    'VERSION': '1.0.0',
+    'VERSION': '1.0',
     'SERVERS': [
         {
             'url': env.str(
