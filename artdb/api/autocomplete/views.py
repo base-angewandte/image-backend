@@ -1,9 +1,9 @@
+from artworks.models import Album, Artist, Artwork, Keyword, Location
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
@@ -11,12 +11,12 @@ from django.utils.translation import gettext_lazy as _
 from .serializers import SOURCES, AutocompleteRequestSerializer
 
 MODEL_MAP = {
-    'albums': 'Album',
-    'titles': 'Artwork',
-    'artists': 'Artist',
-    'keywords': 'Keyword',
-    'origins': 'Location',
-    'locations': 'Location',
+    'albums': Album,
+    'titles': Artwork,
+    'artists': Artist,
+    'keywords': Keyword,
+    'origins': Location,
+    'locations': Location,
 }
 
 LABELS_MAP = {
@@ -76,9 +76,7 @@ def autocomplete(request, *args, **kwargs):
                     },
                 )
         elif t in ['albums', 'titles']:
-            data = apps.get_model('artworks', MODEL_MAP[t]).objects.filter(
-                title__icontains=q_param
-            )[:limit]
+            data = MODEL_MAP[t].objects.filter(title__icontains=q_param)[:limit]
 
             for item in data:
                 d['data'].append(
@@ -88,9 +86,7 @@ def autocomplete(request, *args, **kwargs):
                     }
                 )
         else:
-            data = apps.get_model('artworks', MODEL_MAP[t]).objects.filter(
-                name__icontains=q_param
-            )[:limit]
+            data = MODEL_MAP[t].objects.filter(name__icontains=q_param)[:limit]
 
             for item in data:
                 d['data'].append(
