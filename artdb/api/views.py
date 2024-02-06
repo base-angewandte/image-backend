@@ -1606,8 +1606,6 @@ class LabelsViewSet(viewsets.GenericViewSet):
     GET labels
     """
 
-    # TODO
-    # @language_header_decorator
     @extend_schema(
         parameters=[
             OpenApiParameter(
