@@ -116,7 +116,6 @@ INSTALLED_APPS = [
     'ordered_model',
     'corsheaders',
     # Project apps
-    'general',
     'artworks',
     # API
     'api',
