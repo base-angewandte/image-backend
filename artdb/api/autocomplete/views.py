@@ -1,5 +1,11 @@
 from artworks.models import Album, Artist, Artwork, Keyword, Location
-from drf_spectacular.utils import OpenApiParameter, extend_schema
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiParameter,
+    OpenApiResponse,
+    PolymorphicProxySerializer,
+    extend_schema,
+)
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -8,7 +14,14 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
-from .serializers import SOURCES, AutocompleteRequestSerializer
+from .serializers import (
+    SOURCES,
+    AutocompleteRequestSerializer,
+    AutocompleteResponseIntegerIdSerializer,
+    AutocompleteResponseItemIntegerIdSerializer,
+    AutocompleteResponseItemSerializer,
+    AutocompleteResponseSerializer,
+)
 
 MODEL_MAP = {
     'albums': Album,
@@ -44,6 +57,61 @@ LABELS_MAP = {
     ],
     request=AutocompleteRequestSerializer,
     # responses=AutocompleteResponseSerializer,
+    responses={
+        status.HTTP_200_OK: OpenApiResponse(
+            description='A JSON array containing the autocomplete results',
+            response=PolymorphicProxySerializer(
+                component_name='AutocompleteResult',
+                serializers=[
+                    AutocompleteResponseSerializer(many=True),
+                    AutocompleteResponseItemSerializer(many=True),
+                    AutocompleteResponseIntegerIdSerializer(many=True),
+                    AutocompleteResponseItemIntegerIdSerializer(many=True),
+                ],
+                resource_type_field_name=None,
+                many=False,
+            ),
+            examples=[
+                OpenApiExample(
+                    name='single type response',
+                    value=[
+                        {
+                            'id': 'id1',
+                            'label': 'Robin Smith',
+                        },
+                        {
+                            'id': 'id2',
+                            'label': 'Max Smith',
+                        },
+                    ],
+                ),
+                OpenApiExample(
+                    name='multiple types response',
+                    value=[
+                        {
+                            'id': 'users',
+                            'label': 'Users',
+                            'data': [
+                                {
+                                    'id': 'id1',
+                                    'label': 'Max Smith',
+                                },
+                                {
+                                    'id': 'id2',
+                                    'label': 'Robin Smith',
+                                },
+                            ],
+                        },
+                        {
+                            'id': 'titles',
+                            'label': 'Titles',
+                            'data': [],
+                        },
+                    ],
+                ),
+            ],
+        )
+    },
 )
 @api_view(['GET'])
 def autocomplete(request, *args, **kwargs):

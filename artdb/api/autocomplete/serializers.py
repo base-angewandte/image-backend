@@ -21,3 +21,25 @@ class AutocompleteRequestSerializer(serializers.Serializer):
             if t not in SOURCES:
                 raise serializers.ValidationError(f'{t} is not a valid type')
         return value
+
+
+class AutocompleteResponseItemSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    label = serializers.CharField()
+
+
+class AutocompleteResponseSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    label = serializers.CharField()
+    data = AutocompleteResponseItemSerializer(many=True)
+
+
+class AutocompleteResponseItemIntegerIdSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    label = serializers.CharField()
+
+
+class AutocompleteResponseIntegerIdSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    label = serializers.CharField()
+    data = AutocompleteResponseItemIntegerIdSerializer(many=True)
