@@ -67,11 +67,11 @@ def autocomplete(request, *args, **kwargs):
         else:
             model_map = {
                 'albums': 'Album',
-                'title': 'Artwork',
-                'artist': 'Artist',
+                'titles': 'Artwork',
+                'artists': 'Artist',
                 'keywords': 'Keyword',
-                'origin': 'Location',
-                'location': 'Location',
+                'origins': 'Location',
+                'locations': 'Location',
             }
 
             try:
@@ -84,7 +84,7 @@ def autocomplete(request, *args, **kwargs):
                 )[0:limit]
 
             for data_item in data:
-                if t == 'albums' or t == 'title':
+                if t == 'albums' or t == 'titles':
                     data_item = {
                         'id': data_item.id,
                         'value': data_item.title,

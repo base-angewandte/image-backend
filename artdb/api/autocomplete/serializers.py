@@ -3,11 +3,11 @@ from rest_framework import serializers
 SOURCES = [
     'users',
     'albums',
-    'title',
-    'artist',
+    'titles',
+    'artists',
     'keywords',
-    'origin',
-    'location',
+    'origins',
+    'locations',
     'permissions',
 ]
 
