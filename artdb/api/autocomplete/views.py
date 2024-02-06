@@ -64,11 +64,17 @@ def autocomplete(request, *args, **kwargs):
         }
 
         if t == 'users':
-            data = autocomplete_user(request, q_param)
-            if limit and data:
-                data = autocomplete_user(request, q_param)[:limit]
-            d['data'] = data
-
+            UserModel = get_user_model()
+            query = UserModel.objects.filter(
+                Q(first_name__icontains=q_param) | Q(last_name__icontains=q_param)
+            )[:limit]
+            for user in query:
+                d['data'].append(
+                    {
+                        'id': user.username,
+                        'label': user.get_full_name(),
+                    },
+                )
         elif t in ['albums', 'titles']:
             data = apps.get_model('artworks', MODEL_MAP[t]).objects.filter(
                 title__icontains=q_param
@@ -100,20 +106,3 @@ def autocomplete(request, *args, **kwargs):
         ret = ret[0]['data']
 
     return Response(ret, status=status.HTTP_200_OK)
-
-
-def autocomplete_user(request, searchstr=''):
-    """Get autocomplete results for query."""
-    UserModel = get_user_model()
-    search_result = UserModel.objects.filter(
-        Q(first_name__icontains=searchstr) | Q(last_name__icontains=searchstr)
-    )
-    r = []
-    for user in search_result:
-        r.append(
-            {
-                'id': user.username,
-                'label': user.get_full_name(),
-            },
-        )
-    return r
