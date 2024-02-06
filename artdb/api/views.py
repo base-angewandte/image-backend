@@ -1638,10 +1638,6 @@ class LabelsViewSet(viewsets.GenericViewSet):
                 'title': 'Title',
                 'title_notes': 'Notes on problematic terms',
             },
-            'permissions': {
-                'edit': 'Edit',
-                'view': 'View',
-            },
         }
 
         return Response(data)
