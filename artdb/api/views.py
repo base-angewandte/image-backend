@@ -43,7 +43,6 @@ from .serializers import (
     UpdateAlbumSerializer,
 )
 
-log = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 
 
@@ -498,7 +497,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             return Response(_("Artwork doesn't exist"), status.HTTP_404_NOT_FOUND)
 
         except FileNotFoundError:
-            log.error(f'File for id {artwork_id} not found')
+            logger.error(f'File for id {artwork_id} not found')
             return Response(
                 _(f'File for id {artwork_id} not found'), status.HTTP_404_NOT_FOUND
             )
