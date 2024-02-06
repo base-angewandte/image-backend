@@ -8,7 +8,6 @@ SOURCES = [
     'keywords',
     'origins',
     'locations',
-    'permissions',
 ]
 
 

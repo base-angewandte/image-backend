@@ -1,11 +1,9 @@
-from artworks.models import PermissionsRelation
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from django.apps import apps
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import FieldError
 from django.db.models import Q
@@ -41,26 +39,11 @@ def autocomplete(request, *args, **kwargs):
 
     for t in type_list:
         d = {f'{t}': []}
-        if t in ['users', 'permissions']:
-            if t == 'users':
-                data = autocomplete_user(request, q_param)
-                if limit and data:
-                    data = autocomplete_user(request, q_param)[0:limit]
-                d.get(t).append(data)
-
-            if t == 'permissions':
-                data = []
-                for permission_type in PermissionsRelation.PERMISSION_CHOICES:
-                    data.append(
-                        {
-                            'id': permission_type[0],
-                            'default': settings.PERMISSIONS_DEFAULT.get(
-                                permission_type[0]
-                            ),
-                        }
-                    )
-                data = data[0:limit]
-                d.get(t).append(data)
+        if t == 'users':
+            data = autocomplete_user(request, q_param)
+            if limit and data:
+                data = autocomplete_user(request, q_param)[0:limit]
+            d.get(t).append(data)
 
             ret.append(d)
 
