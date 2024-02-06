@@ -123,14 +123,6 @@ INSTALLED_APPS = [
     'drf_spectacular',
 ]
 
-REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'base_common_drf.authentication.SessionAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
-}
-
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Image+ API',
     'DESCRIPTION': '',
@@ -447,6 +439,14 @@ BASE_HEADER_JSON = f'{BASE_HEADER_SITE_URL}bs/base-header.json'
 BASE_HEADER = '{}{}'.format(
     BASE_HEADER_SITE_URL, requests.get(BASE_HEADER_JSON, timeout=60).json()['latest']
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'base_common_drf.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'base_common_drf.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+}
 
 PERMISSIONS_DEFAULT = {
     'VIEW': env.str('PERMISSIONS_DEFAULT_VIEW'),
