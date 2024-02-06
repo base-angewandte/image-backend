@@ -109,11 +109,11 @@ urlpatterns = [
     # Labels
     path('labels/', views.LabelsViewSet.as_view({'get': 'list_labels'}), name='labels'),
     path('autocomplete/', include('autocomplete.urls')),
-    path('schema/openapi3.yaml', SpectacularAPIView.as_view(), name='schema'),
-    path('schema/openapi3.json', SpectacularJSONAPIView.as_view(), name='schema'),
+    path('openapi.yaml', SpectacularAPIView.as_view(), name='schema_yaml'),
+    path('openapi.json', SpectacularJSONAPIView.as_view(), name='schema_json'),
     path(
-        'schema/swagger-ui',
-        SpectacularSwaggerView.as_view(url_name='schema'),
-        name='swagger-ui',
+        'docs/',
+        SpectacularSwaggerView.as_view(url_name='schema_json'),
+        name='schema_docs',
     ),
 ]
