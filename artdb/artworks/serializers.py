@@ -1,20 +1,21 @@
+from artworks.models import Album, AlbumMembership, Artist, Artwork, Keyword, Location
 from rest_framework import serializers
-from artworks.models import Artwork, Artist, Keyword, Location, Album, AlbumMembership
 from versatileimagefield.serializers import VersatileImageFieldSerializer
 
-class LocationSerializer(serializers.ModelSerializer):    
+
+class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = 'id', 'name'
 
 
-class ArtistSerializer(serializers.ModelSerializer):    
+class ArtistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artist
         fields = 'id', 'name'
 
 
-class KeywordSerializer(serializers.ModelSerializer):    
+class KeywordSerializer(serializers.ModelSerializer):
     class Meta:
         model = Keyword
         fields = 'id', 'name'
@@ -28,14 +29,29 @@ class ArtworkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Artwork
-        fields = ('title', 'title_english', 'artists', 'location_of_creation', 'location_current', 'date', 'material', 'dimensions', 'keywords', 'description', 'credits', 'checked','published')
+        fields = (
+            'title',
+            'title_english',
+            'artists',
+            'location_of_creation',
+            'location_current',
+            'date',
+            'material',
+            'dimensions',
+            'keywords',
+            'description',
+            'credits',
+            'checked',
+            'published',
+        )
 
 
 class ThumbnailSerializer(serializers.ModelSerializer):
     artists = ArtistSerializer(read_only=True, many=True)
-    image_original = VersatileImageFieldSerializer(sizes=[
-            ('thumbnail', 'thumbnail__180x180')])
-    
+    image_original = VersatileImageFieldSerializer(
+        sizes=[('thumbnail', 'thumbnail__180x180')]
+    )
+
     class Meta:
         model = Artwork
         fields = ('id', 'title', 'artists', 'image_original')
@@ -50,7 +66,11 @@ class MembershipSerializer(serializers.ModelSerializer):
 
 
 class CollectionSerializer(serializers.ModelSerializer):
-    members = MembershipSerializer(source='Albummembership_set',read_only=True, many=True)
+    members = MembershipSerializer(
+        source='Albummembership_set',
+        read_only=True,
+        many=True,
+    )
 
     class Meta:
         model = Album

@@ -1,13 +1,10 @@
-from django.conf import settings
-from django.contrib.auth.models import Group
-from django.contrib.auth.models import Permission
-from django.db.models import Q
-from django.dispatch import receiver
-
 from django_cas_ng.signals import cas_user_authenticated
 
+from django.contrib.auth.models import Group, Permission
+from django.dispatch import receiver
 
-@receiver(cas_user_authenticated, dispatch_uid="process_user_attributes")
+
+@receiver(cas_user_authenticated, dispatch_uid='process_user_attributes')
 def process_user_attributes(sender, user, created, attributes, *args, **kwargs):
     if not user or not attributes:
         return
