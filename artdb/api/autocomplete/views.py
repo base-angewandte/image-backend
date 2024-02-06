@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
 
 from .serializers import SOURCES, AutocompleteRequestSerializer
 
@@ -16,6 +17,16 @@ MODEL_MAP = {
     'keywords': 'Keyword',
     'origins': 'Location',
     'locations': 'Location',
+}
+
+LABELS_MAP = {
+    'albums': _('autocomplete_albums'),
+    'titles': _('autocomplete_titles'),
+    'artists': _('autocomplete_artists'),
+    'keywords': _('autocomplete_keywords'),
+    'origins': _('autocomplete_origins'),
+    'locations': _('autocomplete_locations'),
+    'users': _('autocomplete_users'),
 }
 
 
@@ -46,12 +57,17 @@ def autocomplete(request, *args, **kwargs):
     ret = []
 
     for t in type_list:
-        d = {f'{t}': []}
+        d = {
+            'id': t,
+            'label': LABELS_MAP[t],
+            'data': [],
+        }
+
         if t == 'users':
             data = autocomplete_user(request, q_param)
             if limit and data:
                 data = autocomplete_user(request, q_param)[:limit]
-            d.get(t).append(data)
+            d['data'] = data
 
         elif t in ['albums', 'titles']:
             data = apps.get_model('artworks', MODEL_MAP[t]).objects.filter(
@@ -59,10 +75,10 @@ def autocomplete(request, *args, **kwargs):
             )[:limit]
 
             for item in data:
-                d[t].append(
+                d['data'].append(
                     {
                         'id': item.id,
-                        'value': item.title,
+                        'label': item.title,
                     }
                 )
         else:
@@ -71,14 +87,17 @@ def autocomplete(request, *args, **kwargs):
             )[:limit]
 
             for item in data:
-                d[t].append(
+                d['data'].append(
                     {
                         'id': item.id,
-                        'value': item.name,
+                        'label': item.name,
                     }
                 )
 
         ret.append(d)
+
+    if len(ret) == 1:
+        ret = ret[0]['data']
 
     return Response(ret, status=status.HTTP_200_OK)
 
@@ -93,10 +112,8 @@ def autocomplete_user(request, searchstr=''):
     for user in search_result:
         r.append(
             {
-                'UUID': user.username,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'label': f'{user.first_name} {user.last_name}',
+                'id': user.username,
+                'label': user.get_full_name(),
             },
         )
     return r
