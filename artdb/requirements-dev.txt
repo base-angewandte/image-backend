@@ -18,7 +18,7 @@ attrs==23.1.0
     #   referencing
 base-common==0.2
     # via -r artdb/requirements.in
-base-common-drf==0.1
+base-common-drf==0.2
     # via -r artdb/requirements.in
 brotli==1.1.0
     # via whitenoise
@@ -97,7 +97,9 @@ djangorestframework==3.14.0
     #   base-common-drf
     #   drf-spectacular
 drf-spectacular==0.26.5
-    # via -r artdb/requirements.in
+    # via
+    #   -r artdb/requirements.in
+    #   base-common-drf
 filelock==3.12.4
     # via virtualenv
 gunicorn==21.2.0
