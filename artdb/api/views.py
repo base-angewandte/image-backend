@@ -113,6 +113,7 @@ def simple_album_object(album, request):
     )
 
 
+@extend_schema(tags=['artworks'])
 class ArtworksViewSet(viewsets.GenericViewSet):
     """
     list:
@@ -316,6 +317,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         )
 
     @extend_schema(
+        tags=['search'],
         request=serializer_class,
         responses={
             200: OpenApiResponse(description='OK'),
@@ -508,6 +510,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             )
 
     @extend_schema(
+        tags=['search'],
         methods=['POST'],
         request=SearchRequestSerializer,
         examples=[
@@ -791,6 +794,7 @@ def filter_date(filter_values, q_objects, results):
     return q_objects
 
 
+@extend_schema(tags=['albums'])
 class AlbumsViewSet(viewsets.ViewSet):
     """
     list_folders:
@@ -847,6 +851,7 @@ class AlbumsViewSet(viewsets.ViewSet):
     UserModel = get_user_model()
 
     @extend_schema(
+        tags=['folders'],
         request=AlbumSerializer,
         parameters=[
             OpenApiParameter(
@@ -1396,6 +1401,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
     @extend_schema(
+        tags=['folders'],
         methods=['POST'],
         parameters=[
             OpenApiParameter(
@@ -1593,6 +1599,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             return Response(_("Album doesn't exist"), status.HTTP_404_NOT_FOUND)
 
 
+@extend_schema(tags=['labels'])
 class LabelsViewSet(viewsets.GenericViewSet):
     """
     list:
@@ -1643,6 +1650,7 @@ class LabelsViewSet(viewsets.GenericViewSet):
         return Response(data)
 
 
+@extend_schema(tags=['permissions'])
 class PermissionsViewSet(viewsets.GenericViewSet):
     @extend_schema(
         responses={
