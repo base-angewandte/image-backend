@@ -5,7 +5,6 @@ from rest_framework.response import Response
 
 from django.apps import apps
 from django.contrib.auth import get_user_model
-from django.core.exceptions import FieldError
 from django.db.models import Q
 
 from .serializers import SOURCES, AutocompleteRequestSerializer
@@ -51,35 +50,35 @@ def autocomplete(request, *args, **kwargs):
         if t == 'users':
             data = autocomplete_user(request, q_param)
             if limit and data:
-                data = autocomplete_user(request, q_param)[0:limit]
+                data = autocomplete_user(request, q_param)[:limit]
             d.get(t).append(data)
 
-            ret.append(d)
+        elif t in ['albums', 'titles']:
+            data = apps.get_model('artworks', MODEL_MAP[t]).objects.filter(
+                title__icontains=q_param
+            )[:limit]
 
+            for item in data:
+                d[t].append(
+                    {
+                        'id': item.id,
+                        'value': item.title,
+                    }
+                )
         else:
-            try:
-                data = apps.get_model('artworks', MODEL_MAP[t]).objects.filter(
-                    name__icontains=q_param
-                )[0:limit]
-            except FieldError:
-                data = apps.get_model('artworks', MODEL_MAP[t]).objects.filter(
-                    title__icontains=q_param
-                )[0:limit]
+            data = apps.get_model('artworks', MODEL_MAP[t]).objects.filter(
+                name__icontains=q_param
+            )[:limit]
 
-            for data_item in data:
-                if t == 'albums' or t == 'titles':
-                    data_item = {
-                        'id': data_item.id,
-                        'value': data_item.title,
+            for item in data:
+                d[t].append(
+                    {
+                        'id': item.id,
+                        'value': item.name,
                     }
-                else:
-                    data_item = {
-                        'id': data_item.id,
-                        'value': data_item.name,
-                    }
-                d.get(t).append(data_item)
+                )
 
-            ret.append(d)
+        ret.append(d)
 
     return Response(ret, status=status.HTTP_200_OK)
 
