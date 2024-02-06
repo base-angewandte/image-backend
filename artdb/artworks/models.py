@@ -252,8 +252,8 @@ class Album(models.Model):
 
 class PermissionsRelation(models.Model):
     PERMISSION_CHOICES = (
-        ('VIEW', 'view'),
-        ('EDIT', 'edit'),
+        ('VIEW', _('View')),
+        ('EDIT', _('Edit')),
     )
 
     album = models.ForeignKey(Album, related_name='album', on_delete=models.CASCADE)
