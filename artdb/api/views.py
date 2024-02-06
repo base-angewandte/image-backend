@@ -9,6 +9,7 @@ from artworks.exports import (
     collection_download_as_pptx_en,
 )
 from artworks.models import Album, Artwork, Keyword, Location, PermissionsRelation
+from base_common_drf.openapi.responses import ERROR_RESPONSES
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiExample,
@@ -18,6 +19,7 @@ from drf_spectacular.utils import (
     extend_schema,
 )
 from rest_framework import status, viewsets
+from rest_framework.decorators import api_view
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
@@ -40,6 +42,7 @@ from .serializers import (
     SearchResponseSerializer,
     SlidesSerializer,
     UpdateAlbumSerializer,
+    UserDataSerializer,
 )
 
 logger = logging.getLogger(__name__)
@@ -1634,21 +1637,22 @@ class LabelsViewSet(viewsets.GenericViewSet):
         return Response(data)
 
 
-class UserViewSet(viewsets.GenericViewSet):
-    @extend_schema(
-        tags=['user'],
-    )
-    def retrieve(self, request, *args, **kwargs):
-        # todo below?
-        try:
-            data = {
-                'uuid': request.user.username,
-                'name': request.user.get_full_name(),
-                'email': request.user.email,
-            }
-            return Response(data)
-        except AttributeError:
-            return Response(
-                _('Authentication credentials were not provided.'),
-                status=status.HTTP_403_FORBIDDEN,
-            )
+@extend_schema(
+    tags=['auth'],
+    responses={
+        200: UserDataSerializer,
+        401: ERROR_RESPONSES[401],
+    },
+)
+@api_view(['GET'])
+def get_user_data(request, *args, **kwargs):
+    attributes = request.session.get('attributes', {})
+    ret = {
+        'id': request.user.username,
+        'name': request.user.get_full_name(),
+        'email': request.user.email,
+        'showroom_id': attributes.get('showroom_id'),
+        'groups': attributes.get('groups'),
+        'permissions': attributes.get('permissions'),
+    }
+    return Response(ret, status=200)

@@ -13,7 +13,7 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('user/', views.UserViewSet.as_view({'get': 'retrieve'}), name='user'),
+    path('user/', views.get_user_data, name='user'),
     # Artworks
     path(
         'artworks/',
