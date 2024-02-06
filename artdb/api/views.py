@@ -1648,7 +1648,7 @@ class LabelsViewSet(viewsets.GenericViewSet):
 
 
 @extend_schema(
-    tags=['auth'],
+    tags=['user'],
     responses={
         200: UserDataSerializer,
         401: ERROR_RESPONSES[401],
