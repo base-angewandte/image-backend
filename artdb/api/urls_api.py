@@ -11,44 +11,39 @@ from . import views
 
 router = routers.DefaultRouter()
 
+router.register('artworks', views.ArtworksViewSet, basename='artwork')
+router.register('albums', views.AlbumsViewSet, basename='album')
+router.register('labels', views.LabelsViewSet, basename='label')
+
 urlpatterns = [
     path('', include(router.urls)),
     path('user/', views.get_user_data, name='user'),
-    # Artworks
-    path(
-        'artworks/',
-        views.ArtworksViewSet.as_view({'get': 'list_artworks'}),
-        name='artworks',
-    ),
-    path(
-        'artworks/<item_id>/',
-        views.ArtworksViewSet.as_view({'get': 'retrieve_artwork'}),
-        name='artwork',
-    ),
-    path(
-        'artworks/<item_id>/albums/',
-        views.ArtworksViewSet.as_view({'get': 'retrieve_albums_per_artwork'}),
-        name='albums-per-artwork',
-    ),
+    # Search
     path(
         'search/',
         views.ArtworksViewSet.as_view({'post': 'search'}),
-        name='search_artworks',
+        name='search',
     ),
     path(
         'search/filters/',
         views.ArtworksViewSet.as_view({'get': 'list_search_filters'}),
         name='search_filters',
     ),
+    # Artworks
     path(
-        'artworks/<artwork_id>/download/',
-        views.ArtworksViewSet.as_view({'get': 'download_artwork'}),
-        name='download-artwork',
+        'artworks/<id>/albums/',
+        views.ArtworksViewSet.as_view({'get': 'retrieve_albums'}),
+        name='artwork-albums',
+    ),
+    path(
+        'artworks/<id>/download/',
+        views.ArtworksViewSet.as_view({'get': 'download'}),
+        name='artwork-download',
     ),
     # Folders
     path(
         'folders/',
-        views.AlbumViewSet.as_view(
+        views.AlbumsViewSet.as_view(
             {
                 'get': 'list_folders',
                 'post': 'create_folder',
@@ -58,59 +53,42 @@ urlpatterns = [
     ),
     # Albums
     path(
-        'albums/',
-        views.AlbumViewSet.as_view(
+        'albums/<id>/slides/',
+        views.AlbumsViewSet.as_view(
             {
-                'get': 'list_albums',  # per user
-                'post': 'create_album',
+                'get': 'retrieve_slides',
+                'post': 'create_slides',
             }
         ),
-        name='albums',
+        name='album-slides',
     ),
     path(
-        'albums/<album_id>/',
-        views.AlbumViewSet.as_view(
+        'albums/<id>/append-artwork/',
+        views.AlbumsViewSet.as_view({'post': 'append_artwork'}),
+        name='album-append-artwork',
+    ),
+    path(
+        'albums/<id>/permissions/',
+        views.AlbumsViewSet.as_view(
             {
-                'get': 'retrieve_album',  # retrieve
-                'patch': 'update_album',
-                'delete': 'delete_album',
-            }
-        ),
-        name='slides',
-    ),
-    path(
-        'albums/<album_id>/slides/',
-        views.AlbumViewSet.as_view(
-            {'get': 'retrieve_slides_per_album', 'post': 'edit_slides'}
-        ),
-        name='slides',
-    ),
-    path(
-        'albums/<album_id>/append-artwork/',
-        views.AlbumViewSet.as_view({'post': 'append_artwork'}),
-        name='append_artwork',
-    ),
-    path(
-        'albums/<album_id>/permissions/',
-        views.AlbumViewSet.as_view(
-            {
-                'get': 'retrieve_permissions_per_album',
+                'get': 'retrieve_permissions',
                 'post': 'create_permissions',
-                'delete': 'delete_permissions',
+                'delete': 'destroy_permissions',
             }
         ),
-        name='permissions',
+        name='album-permissions',
     ),
     path(
-        'albums/<album_id>/download/',
-        views.AlbumViewSet.as_view({'get': 'download_album'}),
-        name='download-album',
+        'albums/<id>/download/',
+        views.AlbumsViewSet.as_view({'get': 'download'}),
+        name='album-download',
     ),
-    # Labels
-    path('labels/', views.LabelsViewSet.as_view({'get': 'list_labels'}), name='labels'),
+    # Autocomplete
     path('autocomplete/', include('autocomplete.urls')),
+    # Schema
     path('openapi.yaml', SpectacularAPIView.as_view(), name='schema_yaml'),
     path('openapi.json', SpectacularJSONAPIView.as_view(), name='schema_json'),
+    # Schema Docs / Swagger UI
     path(
         'docs/',
         SpectacularSwaggerView.as_view(url_name='schema_json'),
