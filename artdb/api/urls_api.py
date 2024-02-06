@@ -8,6 +8,7 @@ from rest_framework import routers
 from django.urls import include, path
 
 from . import views
+from .autocomplete import urls as autocomplete_urls
 
 router = routers.DefaultRouter()
 
@@ -108,7 +109,7 @@ urlpatterns = [
     ),
     # Labels
     path('labels/', views.LabelsViewSet.as_view({'get': 'list_labels'}), name='labels'),
-    path('autocomplete/', include('autocomplete.urls')),
+    path('autocomplete/', include(autocomplete_urls)),
     path('openapi.yaml', SpectacularAPIView.as_view(), name='schema_yaml'),
     path('openapi.json', SpectacularJSONAPIView.as_view(), name='schema_json'),
     path(
