@@ -81,9 +81,6 @@ def autocomplete(request, *args, **kwargs):
 
             ret.append(d)
 
-            if limit and ret:
-                ret = ret[0:limit]
-
     return Response(ret, status=status.HTTP_200_OK)
 
 
