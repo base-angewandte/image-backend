@@ -14,6 +14,7 @@ router = routers.DefaultRouter()
 router.register('artworks', views.ArtworksViewSet, basename='artwork')
 router.register('albums', views.AlbumsViewSet, basename='album')
 router.register('labels', views.LabelsViewSet, basename='label')
+router.register('permissions', views.PermissionsViewSet, basename='permission')
 
 urlpatterns = [
     path('', include(router.urls)),

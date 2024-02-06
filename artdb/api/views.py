@@ -1647,6 +1647,26 @@ class LabelsViewSet(viewsets.GenericViewSet):
         return Response(data)
 
 
+class PermissionsViewSet(viewsets.GenericViewSet):
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(description='OK'),
+            403: ERROR_RESPONSES[403],
+        },
+    )
+    def list(self, request, *args, **kwargs):
+        ret = []
+        for permission_type in PermissionsRelation.PERMISSION_CHOICES:
+            ret.append(
+                {
+                    'id': permission_type[0],
+                    'label': permission_type[1],
+                    'default': settings.PERMISSIONS_DEFAULT.get(permission_type[0]),
+                }
+            )
+        return Response(ret)
+
+
 @extend_schema(
     tags=['user'],
     responses={
