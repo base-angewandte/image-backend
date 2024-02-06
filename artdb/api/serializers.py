@@ -271,7 +271,10 @@ class UserDataSerializer(serializers.Serializer):
     email = serializers.CharField(help_text='The user\'s e-mail address')
     showroom_id = serializers.CharField(
         allow_null=True,
-        help_text='The user\'s associated showroom id. Or null, if no associated showroom entity can be found or showroom page is deactivated',
+        help_text=(
+            'The user\'s associated showroom id. Or null, if no associated '
+            'showroom entity can be found or showroom page is deactivated'
+        ),
     )
     groups = serializers.ListSerializer(
         child=serializers.CharField(), help_text='The groups this user belongs to.'
