@@ -1,7 +1,7 @@
-from django.urls import include, path
+from django.urls import include, re_path
 
 from . import urls_api
 
 urlpatterns = [
-    path('v1/', include(urls_api)),
+    re_path(r'^(?P<version>(v1))/', include(urls_api)),
 ]

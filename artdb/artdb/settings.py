@@ -431,6 +431,8 @@ REST_FRAMEWORK = {
         'base_common_drf.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
+    'DEFAULT_VERSION': 'v1',
 }
 
 SPECTACULAR_SETTINGS = {
