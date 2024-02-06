@@ -10,6 +10,15 @@ from django.db.models import Q
 
 from .serializers import SOURCES, AutocompleteRequestSerializer
 
+MODEL_MAP = {
+    'albums': 'Album',
+    'titles': 'Artwork',
+    'artists': 'Artist',
+    'keywords': 'Keyword',
+    'origins': 'Location',
+    'locations': 'Location',
+}
+
 
 @extend_schema(
     parameters=[
@@ -48,21 +57,12 @@ def autocomplete(request, *args, **kwargs):
             ret.append(d)
 
         else:
-            model_map = {
-                'albums': 'Album',
-                'titles': 'Artwork',
-                'artists': 'Artist',
-                'keywords': 'Keyword',
-                'origins': 'Location',
-                'locations': 'Location',
-            }
-
             try:
-                data = apps.get_model('artworks', model_map[t]).objects.filter(
+                data = apps.get_model('artworks', MODEL_MAP[t]).objects.filter(
                     name__icontains=q_param
                 )[0:limit]
             except FieldError:
-                data = apps.get_model('artworks', model_map[t]).objects.filter(
+                data = apps.get_model('artworks', MODEL_MAP[t]).objects.filter(
                     title__icontains=q_param
                 )[0:limit]
 
