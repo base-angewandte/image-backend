@@ -12,12 +12,14 @@ astroid==2.15.8
     # via
     #   -r artdb/requirements.in
     #   pylint
-async-timeout==4.0.3
-    # via redis
 attrs==23.1.0
     # via
     #   jsonschema
     #   referencing
+base-common==0.2
+    # via -r artdb/requirements.in
+base-common-drf==0.1
+    # via -r artdb/requirements.in
 brotli==1.1.0
     # via whitenoise
 build==1.0.3
@@ -37,6 +39,8 @@ dill==0.3.7
 django==4.2.6
     # via
     #   -r artdb/requirements.in
+    #   base-common
+    #   base-common-drf
     #   django-appconf
     #   django-autocomplete-light
     #   django-cas-ng
@@ -86,6 +90,7 @@ django-versatileimagefield==3.0
 djangorestframework==3.14.0
     # via
     #   -r artdb/requirements.in
+    #   base-common-drf
     #   drf-spectacular
 drf-spectacular==0.26.5
     # via -r artdb/requirements.in
@@ -175,6 +180,8 @@ rpds-py==0.10.6
     # via
     #   jsonschema
     #   referencing
+shortuuid==1.0.11
+    # via base-common
 six==1.16.0
     # via
     #   -r artdb/requirements.in
