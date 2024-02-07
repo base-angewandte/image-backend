@@ -9,6 +9,7 @@ from artworks.exports import (
     collection_download_as_pptx_en,
 )
 from artworks.models import Album, Artwork, Keyword, Location, PermissionsRelation
+from base_common_drf.openapi.responses import ERROR_RESPONSES
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiExample,
@@ -18,6 +19,7 @@ from drf_spectacular.utils import (
     extend_schema,
 )
 from rest_framework import status, viewsets
+from rest_framework.decorators import api_view
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
@@ -40,6 +42,7 @@ from .serializers import (
     SearchResponseSerializer,
     SlidesSerializer,
     UpdateAlbumSerializer,
+    UserDataSerializer,
 )
 
 logger = logging.getLogger(__name__)
@@ -110,15 +113,16 @@ def simple_album_object(album, request):
     )
 
 
+@extend_schema(tags=['artworks'])
 class ArtworksViewSet(viewsets.GenericViewSet):
     """
-    list_artworks:
+    list:
     GET all artworks.
 
-    retrieve_artwork:
+    retrieve:
     GET specific artwork.
 
-    retrieve_albums_per_artwork:
+    retrieve_albums:
     GET albums the current user has added this artwork to.
 
     search:
@@ -157,11 +161,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         ],
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
-    def list_artworks(self, request, *args, **kwargs):
+    def list(self, request, *args, **kwargs):
         try:
             limit = (
                 int(request.GET.get('limit'))
@@ -216,11 +220,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         request=serializer_class,
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve_artwork(self, request, item_id=None):
+    def retrieve(self, request, *args, **kwargs):
+        item_id = kwargs['id']
         try:
             artwork = Artwork.objects.get(pk=item_id)
         except Artwork.DoesNotExist:
@@ -271,11 +276,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         request=serializer_class,
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve_albums_per_artwork(self, request, item_id=None):
+    def retrieve_albums(self, request, *args, **kwargs):
+        item_id = kwargs['id']
         try:
             artwork = Artwork.objects.get(pk=item_id)
             albums = Album.objects.filter(slides__contains=[[{'id': artwork.pk}]])
@@ -311,11 +317,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         )
 
     @extend_schema(
+        tags=['search'],
         request=serializer_class,
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def list_search_filters(self, request, *args, **kwargs):
@@ -443,11 +450,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     @extend_schema(
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
-    def download_artwork(self, request, artwork_id=None):
+    def download(self, request, *args, **kwargs):
+        artwork_id = kwargs['id']
         try:
             artwork = Artwork.objects.get(id=artwork_id)
 
@@ -502,6 +510,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             )
 
     @extend_schema(
+        tags=['search'],
         methods=['POST'],
         request=SearchRequestSerializer,
         examples=[
@@ -545,8 +554,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         ],
         responses={
             200: SearchResponseSerializer,
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def search(self, request, *args, **kwargs):
@@ -785,27 +794,28 @@ def filter_date(filter_values, q_objects, results):
     return q_objects
 
 
-class AlbumViewSet(viewsets.ViewSet):
+@extend_schema(tags=['albums'])
+class AlbumsViewSet(viewsets.ViewSet):
     """
     list_folders:
     List of all the users albums /folders (in anticipation that there will be folders later)
 
-    list_albums:
+    list:
     GET all the users albums.
 
-    retrieve_album:
+    retrieve:
     GET specific album.
 
-    retrieve_slides_per_album:
+    retrieve_slides:
     GET /albums/{id}/slides LIST (GET) endpoint
 
-    retrieve_permissions_per_album:
+    retrieve_permissions:
     GET /albums/{id}/permissions
 
-    create_album:
+    create:
     POST new album with given title.
 
-    edit_slides:
+    create_slides:
     POST /albums/{id}/slides
     Reorder Slides
     Separate_slides
@@ -818,19 +828,19 @@ class AlbumViewSet(viewsets.ViewSet):
     create_permissions
     POST /albums/{id}/permissions
 
-    delete_permissions
+    destroy_permissions
     DELETE /albums/{id}/permissions
 
     create_folder:
     POST
 
-    update_album:
+    update:
     PATCH specific album and album’s fields
 
-    delete_album:
+    destroy:
     DELETE specific album
 
-    download_album:
+    download:
     GET Download album as pptx or PDF
 
     """
@@ -841,6 +851,7 @@ class AlbumViewSet(viewsets.ViewSet):
     UserModel = get_user_model()
 
     @extend_schema(
+        tags=['folders'],
         request=AlbumSerializer,
         parameters=[
             OpenApiParameter(
@@ -858,8 +869,8 @@ class AlbumViewSet(viewsets.ViewSet):
         ],
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
     def list_folders(self, request, *args, **kwargs):
@@ -924,11 +935,11 @@ class AlbumViewSet(viewsets.ViewSet):
         ],
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
-    def list_albums(self, request, *args, **kwargs):
+    def list(self, request, *args, **kwargs):
         """List of all Albums (used for getting latest Albums) /albums."""
         limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
         offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
@@ -1028,13 +1039,14 @@ class AlbumViewSet(viewsets.ViewSet):
         request=AlbumSerializer,
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve_album(self, request, album_id=None):  # TODO update
+    def retrieve(self, request, *args, **kwargs):  # TODO update
         """List of Works (Slides) in a specific Album /albums/{id}"""
 
+        album_id = kwargs['id']
         try:
             album = Album.objects.get(pk=album_id)
             if album.user.username == request.user.username:
@@ -1057,13 +1069,13 @@ class AlbumViewSet(viewsets.ViewSet):
     @extend_schema(
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve_slides_per_album(self, request, album_id=None):
+    def retrieve_slides(self, request, *args, **kwargs):
         """/albums/{id}/slides LIST (GET) endpoint returns:"""
-
+        album_id = kwargs['id']
         try:
             album = Album.objects.get(pk=album_id)
         except (Album.DoesNotExist, ValueError):
@@ -1089,7 +1101,7 @@ class AlbumViewSet(viewsets.ViewSet):
         request=CreateAlbumSerializer,  # todo fix serializers
         responses={200: AlbumSerializer},
     )
-    def create_album(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         """Create Album /albums/{id}"""
         try:
             title = request.data.get('title')
@@ -1115,14 +1127,15 @@ class AlbumViewSet(viewsets.ViewSet):
         ],
         responses={
             200: AlbumSerializer,
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
-    def edit_slides(self, request, album_id=None, slides=None, *args, **kwargs):
+    def create_slides(self, request, *args, **kwargs):
         """/albums/{id}/slides Reorder Slides, Separate_slides, Reorder
         artworks within slides."""
 
+        album_id = kwargs['id']
         try:
             album = Album.objects.get(pk=album_id)
             slides_serializer = SlidesSerializer(data=request.data)
@@ -1193,14 +1206,15 @@ class AlbumViewSet(viewsets.ViewSet):
         ],
         responses={
             200: AlbumSerializer,
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
-    def append_artwork(self, request, album_id=None, artwork_id=None, *args, **kwargs):
+    def append_artwork(self, request, *args, **kwargs):
         """/albums/{id}/append_artwork Append artwork to slides as singular
         slide [{'id': x}]"""
 
+        album_id = kwargs['id']
         try:
             album = Album.objects.get(pk=album_id)
             if not album.slides:
@@ -1237,13 +1251,13 @@ class AlbumViewSet(viewsets.ViewSet):
         methods=['GET'],
         responses={
             200: PermissionsSerializer,
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve_permissions_per_album(self, request, album_id=None):
+    def retrieve_permissions(self, request, *args, **kwargs):
         """Get Permissions /albums/{id}/permissions."""
-
+        album_id = kwargs['id']
         try:
             album = Album.objects.get(pk=album_id)
         except (Album.DoesNotExist, ValueError):
@@ -1290,13 +1304,13 @@ class AlbumViewSet(viewsets.ViewSet):
         ],
         responses={
             200: AlbumSerializer,
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
-    def create_permissions(self, request, partial=True, album_id=None, *args, **kwargs):
+    def create_permissions(self, request, *args, **kwargs):
         """Post Permissions /albums/{id}/permissions."""
-
+        album_id = kwargs['id']
         try:
             album = Album.objects.get(pk=album_id)
             serializer = PermissionsSerializer(data=request.data)
@@ -1351,13 +1365,14 @@ class AlbumViewSet(viewsets.ViewSet):
     @extend_schema(
         methods=['DELETE'],
     )
-    def delete_permissions(self, request, album_id=None, *args, **kwargs):
+    def destroy_permissions(self, request, *args, **kwargs):
         """Delete Permissions /albums/{id}/permissions/ "Unshare" album.
 
         If the user is the owner of the album, all sharing permissions
         will be deleted. If the user is just a user who this album is
         shared with, only their own sharing permission will be deleted.
         """
+        album_id = kwargs['id']
         try:
             album = Album.objects.get(pk=album_id)
             shares_per_album = [
@@ -1386,6 +1401,7 @@ class AlbumViewSet(viewsets.ViewSet):
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
     @extend_schema(
+        tags=['folders'],
         methods=['POST'],
         parameters=[
             OpenApiParameter(
@@ -1433,12 +1449,13 @@ class AlbumViewSet(viewsets.ViewSet):
         request=UpdateAlbumSerializer,
         responses={
             200: AlbumSerializer,
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
-    def update_album(self, request, partial=True, album_id=None, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
         """Update Album /albums/{id}"""
+        album_id = kwargs['id']
 
         try:
             album = Album.objects.get(pk=album_id)
@@ -1477,8 +1494,9 @@ class AlbumViewSet(viewsets.ViewSet):
     @extend_schema(
         methods=['DELETE'],
     )
-    def delete_album(self, request, album_id=None, *args, **kwargs):
+    def destroy(self, request, *args, **kwargs):
         """Delete Album /albums/{id}"""
+        album_id = kwargs['id']
         try:
             album = Album.objects.get(pk=album_id)
             if album.user.username == request.user.username:
@@ -1530,13 +1548,14 @@ class AlbumViewSet(viewsets.ViewSet):
         ],
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
             501: OpenApiResponse(description='Not implemented yet'),
         },
     )
-    def download_album(self, request, album_id=None):
+    def download(self, request, *args, **kwargs):
         # Todo: now only pptx, later also PDF
+        album_id = kwargs['id']
         try:
             album = Album.objects.get(id=album_id)
             # If user is the owner or has VIEW permissions, allow the download. Otherwise, throw a 403
@@ -1580,14 +1599,13 @@ class AlbumViewSet(viewsets.ViewSet):
             return Response(_("Album doesn't exist"), status.HTTP_404_NOT_FOUND)
 
 
+@extend_schema(tags=['labels'])
 class LabelsViewSet(viewsets.GenericViewSet):
     """
-    list_labels:
+    list:
     GET labels
     """
 
-    # TODO
-    # @language_header_decorator
     @extend_schema(
         parameters=[
             OpenApiParameter(
@@ -1605,11 +1623,11 @@ class LabelsViewSet(viewsets.GenericViewSet):
         ],
         responses={
             200: OpenApiResponse(description='OK'),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='Not found'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
         },
     )
-    def list_labels(self, request, *args, **kwargs):
+    def list(self, request, *args, **kwargs):
         data = {
             'artworks': {
                 'artists': 'Artists',
@@ -1625,30 +1643,48 @@ class LabelsViewSet(viewsets.GenericViewSet):
                 'title': 'Title',
                 'title_notes': 'Notes on problematic terms',
             },
-            'permissions': {
-                'edit': 'Edit',
-                'view': 'View',
-            },
         }
 
         return Response(data)
 
 
-class UserViewSet(viewsets.GenericViewSet):
+@extend_schema(tags=['permissions'])
+class PermissionsViewSet(viewsets.GenericViewSet):
     @extend_schema(
-        tags=['user'],
+        responses={
+            200: OpenApiResponse(description='OK'),
+            403: ERROR_RESPONSES[403],
+        },
     )
-    def retrieve(self, request, *args, **kwargs):
-        # todo below?
-        try:
-            data = {
-                'uuid': request.user.username,
-                'name': request.user.get_full_name(),
-                'email': request.user.email,
-            }
-            return Response(data)
-        except AttributeError:
-            return Response(
-                _('Authentication credentials were not provided.'),
-                status=status.HTTP_403_FORBIDDEN,
+    def list(self, request, *args, **kwargs):
+        ret = []
+        for permission_type in PermissionsRelation.PERMISSION_CHOICES:
+            ret.append(
+                {
+                    'id': permission_type[0],
+                    'label': permission_type[1],
+                    'default': settings.PERMISSIONS_DEFAULT.get(permission_type[0]),
+                }
             )
+        return Response(ret)
+
+
+@extend_schema(
+    tags=['user'],
+    responses={
+        200: UserDataSerializer,
+        401: ERROR_RESPONSES[401],
+    },
+)
+@api_view(['GET'])
+def get_user_data(request, *args, **kwargs):
+    attributes = request.session.get('attributes', {})
+    ret = {
+        'id': request.user.username,
+        'name': request.user.get_full_name(),
+        'email': request.user.email,
+        'showroom_id': attributes.get('showroom_id'),
+        'groups': attributes.get('groups'),
+        'permissions': attributes.get('permissions'),
+    }
+    return Response(ret, status=200)
