@@ -103,6 +103,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
+    # base common apps
+    'base_common',
+    'base_common_drf',
     # Third-party apps
     'rest_framework',
     'versatileimagefield',
@@ -113,7 +116,7 @@ INSTALLED_APPS = [
     'ordered_model',
     'corsheaders',
     # Project apps
-    'general',
+    'core',
     'artworks',
     # API
     'api',
@@ -123,7 +126,7 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'general.drf.authentication.SessionAuthentication',
+        'base_common_drf.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
 }
@@ -225,7 +228,7 @@ if DEBUG:
 
 if BEHIND_PROXY:
     MIDDLEWARE += [
-        'general.middleware.SetRemoteAddrFromForwardedFor',
+        'base_common.middleware.SetRemoteAddrFromForwardedFor',
     ]
     USE_X_FORWARDED_HOST = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -246,7 +249,7 @@ TEMPLATES = [
                 'django.template.context_processors.i18n',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'general.context_processors.global_settings',
+                'base_common.context_processors.global_settings',
             ],
             'debug': DEBUG,
             'string_if_invalid': "[invalid variable '%s'!]" if DEBUG else '',
