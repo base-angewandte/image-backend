@@ -8,6 +8,7 @@ from rest_framework import routers
 from django.urls import include, path
 
 from . import views
+from .autocomplete import urls as autocomplete_urls
 
 router = routers.DefaultRouter()
 
@@ -85,7 +86,7 @@ urlpatterns = [
         name='album-download',
     ),
     # Autocomplete
-    path('autocomplete/', include('autocomplete.urls')),
+    path('autocomplete/', include(autocomplete_urls)),
     # Schema
     path('openapi.yaml', SpectacularAPIView.as_view(), name='schema_yaml'),
     path('openapi.json', SpectacularJSONAPIView.as_view(), name='schema_json'),
