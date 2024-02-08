@@ -143,6 +143,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 type=OpenApiTypes.INT,
                 required=False,
                 description='',
+                default=0,
             ),
         ],
         responses={
@@ -153,32 +154,24 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     )
     def list(self, request, *args, **kwargs):
         try:
-            limit = (
-                int(request.GET.get('limit'))
-                if request.GET.get('limit')
-                else 100  # default limit
-            )
-            offset = (
-                int(request.GET.get('offset')) if request.GET.get('offset') else None
-            )
-        except ValueError:
-            return Response('Limit and offset should be int')
+            limit = int(request.query_params.get('limit', 100))
+            if limit <= 0:
+                raise ValueError
+        except ValueError as e:
+            raise ParseError(_('limit must be a positive integer')) from e
+
+        try:
+            offset = int(request.query_params.get('offset', 0))
+            if offset < 0:
+                raise ParseError(_('negative offset is not allowed'))
+        except ValueError as e:
+            raise ParseError(_('offset must be an integer')) from e
 
         results = self.get_queryset()
 
-        limit = limit if limit != 0 else None
-
-        if offset and limit:
-            end = offset + limit
-
-        elif limit and not offset:
-            end = limit
-
-        else:
-            end = None
-
         total = results.count()
-        results = results[offset:end]
+
+        results = results[offset : offset + limit]
 
         return Response(
             {
