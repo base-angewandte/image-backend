@@ -5,7 +5,7 @@
 apimapper==0.7.9
 astroid==2.15.8
 base-common==0.2
-base-common-drf==0.3
+base-common-drf==0.4
 concurrent-log-handler==0.9.24
 dal-admin-filters==1.1.0
 django~=4.2
