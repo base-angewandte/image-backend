@@ -135,7 +135,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     """
 
     serializer_class = ArtworkSerializer
-    queryset = Artwork.objects.all()
+    queryset = Artwork.objects.filter(published=True)
     filter_backends = (DjangoFilterBackend,)
 
     @extend_schema(
