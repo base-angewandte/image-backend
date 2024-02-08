@@ -80,7 +80,7 @@ def artworks_in_slides(album):
     return info_per_slide
 
 
-def simple_album_object(album, request):
+def simple_album_object(album):
     return Response(
         {
             'id': album.id,
@@ -657,7 +657,7 @@ class AlbumsViewSet(viewsets.ViewSet):
 
             album.save()
 
-            resp = simple_album_object(album, request)
+            resp = simple_album_object(album)
             resp.status_code = status.HTTP_201_CREATED
             return resp
         except ValueError:
@@ -681,7 +681,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         try:
             album = Album.objects.get(pk=album_id)
             if album.user.username == request.user.username:
-                return simple_album_object(album, request)
+                return simple_album_object(album)
             if request.user.username in [
                 p.user.username
                 for p in PermissionsRelation.objects.filter(album__id=album.id)
@@ -691,7 +691,7 @@ class AlbumsViewSet(viewsets.ViewSet):
                     user__username=request.user.username
                 )
             ]:
-                return simple_album_object(album, request)
+                return simple_album_object(album)
             else:
                 return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
         except (Album.DoesNotExist, ValueError):
@@ -720,7 +720,7 @@ class AlbumsViewSet(viewsets.ViewSet):
 
             if album.user.username == request.user.username:
                 album.save()
-                return simple_album_object(album, request)
+                return simple_album_object(album)
 
             if request.user.username in [
                 p.user.username
@@ -732,7 +732,7 @@ class AlbumsViewSet(viewsets.ViewSet):
                 )
             ]:
                 album.save()
-                return simple_album_object(album, request)
+                return simple_album_object(album)
 
             else:
                 return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
