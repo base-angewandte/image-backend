@@ -21,16 +21,8 @@ urlpatterns = [
     path('', include(router.urls)),
     path('user/', views.get_user_data, name='user'),
     # Search
-    path(
-        'search/',
-        views.ArtworksViewSet.as_view({'post': 'search'}),
-        name='search',
-    ),
-    path(
-        'search/filters/',
-        views.ArtworksViewSet.as_view({'get': 'list_search_filters'}),
-        name='search_filters',
-    ),
+    path('search/', views.search, name='search'),
+    path('search/filters/', views.search_filters, name='search-filters'),
     # Autocomplete
     path('autocomplete/', include(autocomplete_urls)),
     # Schema
