@@ -510,7 +510,7 @@ class AlbumsViewSet(viewsets.ViewSet):
     Separate_slides
     Reorder artworks within slides
 
-    retrieve_permissions:
+    permissions:
     GET /albums/{id}/permissions
 
     create_permissions
@@ -934,8 +934,8 @@ class AlbumsViewSet(viewsets.ViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    @action(detail=True, methods=['get'], url_path='permissions')
-    def retrieve_permissions(self, request, pk=None, *args, **kwargs):
+    @action(detail=True, methods=['get'])
+    def permissions(self, request, pk=None, *args, **kwargs):
         """Get Permissions /albums/{id}/permissions."""
         album_id = pk
         try:
@@ -987,7 +987,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    @action(detail=True, methods=['post'], url_path='permissions')
+    @permissions.mapping.post
     def create_permissions(self, request, pk=None, *args, **kwargs):
         """Post Permissions /albums/{id}/permissions."""
         album_id = pk
@@ -1042,7 +1042,14 @@ class AlbumsViewSet(viewsets.ViewSet):
         except Album.DoesNotExist:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=True, methods=['delete'], url_path='permissions')
+    @extend_schema(
+        responses={
+            204: OpenApiResponse(),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
+    @permissions.mapping.delete
     def destroy_permissions(self, request, pk=None, *args, **kwargs):
         """Delete Permissions /albums/{id}/permissions/ "Unshare" album.
 
