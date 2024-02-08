@@ -21,14 +21,13 @@ from drf_spectacular.utils import (
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import ParseError
-from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-from django.contrib.postgres.search import SearchVector
-from django.db.models import Q
+from django.db.models import FloatField, Q, Value
 from django.http import HttpResponse
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
@@ -39,7 +38,7 @@ from .serializers import (
     CreateAlbumSerializer,
     PermissionsSerializer,
     SearchRequestSerializer,
-    SearchResponseSerializer,
+    SearchResultSerializer,
     SlidesSerializer,
     UpdateAlbumSerializer,
     UserDataSerializer,
@@ -125,12 +124,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     retrieve_albums:
     GET albums the current user has added this artwork to.
 
-    search:
-    GET artworks according to search parameters.
-
-    list_search_filters:
-    GET filters for search.
-
     download_artwork:
     GET Download artwork + metadata
 
@@ -138,7 +131,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     serializer_class = ArtworkSerializer
     queryset = Artwork.objects.all()
-    parser_classes = (FormParser, MultiPartParser)
+    parser_classes = (FormParser, MultiPartParser, JSONParser)
     filter_backends = (DjangoFilterBackend,)
     UserModel = get_user_model()
 
@@ -317,137 +310,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         )
 
     @extend_schema(
-        tags=['search'],
-        request=serializer_class,
-        responses={
-            200: OpenApiResponse(description='OK'),
-            403: ERROR_RESPONSES[403],
-            404: ERROR_RESPONSES[404],
-        },
-    )
-    def list_search_filters(self, request, *args, **kwargs):
-        data = {
-            'title': {
-                'type': 'array',
-                'items': {
-                    'type': 'object',
-                    'properties': {
-                        'label': {'type': 'string'},
-                        'source': {'type': 'string'},
-                    },
-                },
-                'title': 'title',
-                'x-attrs': {
-                    'field_format': 'half',
-                    'field_type': 'chips',
-                    'dynamic_autosuggest': True,
-                    'allow_unknown_entries': True,
-                    'source': '/autosuggest/v1/titles/',
-                    'placeholder': 'enter title',
-                    'order': 1,
-                },
-            },
-            'artist': {
-                'type': 'array',
-                'items': {
-                    'type': 'object',
-                    'properties': {
-                        'label': {'type': 'string'},
-                        'source': {'type': 'string'},
-                    },
-                },
-                'title': 'artist',
-                'x-attrs': {
-                    'field_format': 'half',
-                    'field_type': 'chips',
-                    'dynamic_autosuggest': True,
-                    'allow_unknown_entries': True,
-                    'source': '/autosuggest/v1/artists/',
-                    'placeholder': 'enter artist',
-                    'order': 2,
-                },
-            },
-            'place_of_production': {
-                'type': 'array',
-                'items': {
-                    'type': 'object',
-                    'properties': {
-                        'label': {'type': 'string'},
-                        'source': {'type': 'string'},
-                    },
-                },
-                'title': 'place of production',
-                'x-attrs': {
-                    'field_format': 'half',
-                    'field_type': 'chips',
-                    'dynamic_autosuggest': True,
-                    'allow_unknown_entries': True,
-                    'source': '/autosuggest/v1/locations/',
-                    'placeholder': 'enter place of production',
-                    'order': 3,
-                },
-            },
-            'current_location': {
-                'type': 'array',
-                'items': {
-                    'type': 'object',
-                    'properties': {
-                        'label': {'type': 'string'},
-                        'source': {'type': 'string'},
-                    },
-                },
-                'title': 'current location',
-                'x-attrs': {
-                    'field_format': 'half',
-                    'field_type': 'chips',
-                    'dynamic_autosuggest': True,
-                    'allow_unknown_entries': True,
-                    'source': '/autosuggest/v1/locations/',
-                    'placeholder': 'enter current location',
-                    'order': 4,
-                },
-            },
-            'keywords': {
-                'type': 'array',
-                'items': {
-                    'type': 'object',
-                    'properties': {
-                        'label': {'type': 'string'},
-                        'source': {'type': 'string'},
-                    },
-                },
-                'title': 'keywords',
-                'x-attrs': {
-                    'placeholder': 'enter keywords',
-                    'order': 5,
-                    'field_format': 'full',
-                    'field_type': 'chips',
-                    'allow_unknown_entries': False,
-                    'dynamic_autosuggest': True,
-                    'source': '/autosuggest/v1/keywords/',
-                },
-            },
-            'date': {
-                'type': 'object',
-                'properties': {
-                    'date_from': {'type': 'string'},
-                    'date_to': {'type': 'string'},
-                },
-                'title': 'date from, to',
-                'additionalProperties': False,
-                'x-attrs': {
-                    'field_format': 'full',
-                    'field_type': 'date',
-                    'date_format': 'year',
-                    'placeholder': {'date': 'enter date'},
-                    'order': 6,
-                },
-            },
-        }
-
-        return Response(data)
-
-    @extend_schema(
         responses={
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
@@ -509,188 +371,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 _(f'File for id {artwork_id} not found'), status.HTTP_404_NOT_FOUND
             )
 
-    @extend_schema(
-        tags=['search'],
-        methods=['POST'],
-        request=SearchRequestSerializer,
-        examples=[
-            OpenApiExample(
-                name='search with filter type title, artist, place_of_production, current_location, keywords',
-                value=[
-                    {
-                        'limit': 0,
-                        'offset': 0,
-                        'exclude': [123, 345],  # with artwork ids
-                        'q': '',  # the string from general search
-                        'filters': [
-                            {
-                                'id': 'artist',
-                                'filter_values': ['rubens', {'id': 786}],
-                            }
-                        ],
-                    }
-                ],
-            ),
-            OpenApiExample(
-                name='search with filter type date',
-                value=[
-                    {
-                        'limit': 0,
-                        'offset': 0,
-                        'exclude': [123, 345],  # with artwork ids
-                        'q': '',  # the string from general search
-                        'filters': [
-                            {
-                                'id': 'date',
-                                'filter_values': {
-                                    'date_from': '2000',
-                                    'date_to': '2001',
-                                },
-                            }
-                        ],
-                    }
-                ],
-            ),
-        ],
-        responses={
-            200: SearchResponseSerializer,
-            403: ERROR_RESPONSES[403],
-            404: ERROR_RESPONSES[404],
-        },
-    )
-    def search(self, request, *args, **kwargs):
-        serializer = SearchRequestSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        search_req_data = serializer.data.get('search_request')[0]
 
-        limit = search_req_data.get('limit') if search_req_data.get('limit') else None
-        offset = (
-            search_req_data.get('offset') if search_req_data.get('offset') else None
-        )
-        filters = search_req_data.get('filters', [])
-        searchstr = search_req_data.get('q', '')
-        excluded = search_req_data.get('exclude', [])
-
-        results = (
-            Artwork.objects.exclude(id__in=[str(i) for i in excluded])
-            if excluded
-            else Artwork.objects.all()
-        )
-        q_objects = Q()
-
-        for i in filters:
-            if i['id'] == 'title':
-                q_objects |= filter_title(i['filter_values'], q_objects, results)
-
-            elif i['id'] == 'artist':
-                q_objects |= filter_artist(i['filter_values'], q_objects, results)
-
-            elif i['id'] == 'place_of_production':
-                q_objects |= filter_place_of_production(
-                    i['filter_values'],
-                    q_objects,
-                    results,
-                )
-
-            elif i['id'] == 'current_location':
-                q_objects |= filter_current_location(
-                    i['filter_values'],
-                    q_objects,
-                    results,
-                )
-
-            elif i['id'] == 'keywords':
-                q_objects |= filter_keywords(i['filter_values'], q_objects, results)
-
-            elif i['id'] == 'date':
-                q_objects |= filter_date(i['filter_values'], q_objects, results)
-
-            else:
-                raise ParseError(
-                    'Invalid filter id. Filter id can only be title, artist, place_of_production, '
-                    'current_location, keywords, or date.',
-                    400,
-                )
-
-        results = results.filter(q_objects)
-
-        results = results.annotate(
-            search=SearchVector(
-                'title',
-                'title_english',
-                'artists',
-                'material',
-                'dimensions',
-                'description',
-                'credits',
-                'keywords',
-                'location_of_creation',
-                'location_current',
-            ),
-        )
-
-        final_results = []
-
-        search_terms = searchstr.split(' ')
-        for term in search_terms:
-            if term:
-                # It filters as intended if we literally append to a list when adding further filtering.
-                # Possibly improvable, q_objects and direct filtering did not work so far
-                final_results.extend(
-                    list(
-                        results.filter(search__icontains=term)
-                        .order_by('id')
-                        .distinct('id')
-                    )
-                )
-
-        if final_results:
-            results = final_results
-        else:
-            results = results.order_by('id').distinct('id')
-
-        # total of results before applying limits:
-        total = len(results)
-
-        if offset and limit:
-            end = offset + limit
-
-        elif limit and not offset:
-            end = limit
-
-        else:
-            end = None
-
-        results = results[offset:end]
-
-        return Response(
-            {
-                'total': total,
-                'results': [
-                    {
-                        'id': artwork.id,
-                        'image_original': [
-                            artwork.image_original.url
-                            if artwork.image_original
-                            else None
-                        ],
-                        'credits': artwork.credits,
-                        'title': artwork.title,
-                        'date': artwork.date,
-                        'artists': [
-                            {'value': artist.name, 'id': artist.id}
-                            for artist in artwork.artists.all()
-                        ],
-                    }
-                    for artwork in results
-                ],
-            }
-        )
-
-
-def filter_title(filter_values, q_objects, results):
+def filter_title(filter_values):
     """Should filter artworks whose title include the string if given, AND the
     artworks with given id."""
+    q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
             q_objects |= Q(title__icontains=val) | Q(title_english__icontains=val)
@@ -705,9 +390,10 @@ def filter_title(filter_values, q_objects, results):
     return q_objects
 
 
-def filter_artist(filter_values, q_objects, results):
+def filter_artist(filter_values):
     """Should filter artworks whose artist name includes the string if given,
     AND the artworks for artist which has the given id."""
+    q_objects = Q()
     for val in filter_values:
         if isinstance(val, dict) and 'id' in val.keys():
             q_objects |= Q(artists__id=val.get('id'))
@@ -720,9 +406,10 @@ def filter_artist(filter_values, q_objects, results):
     return q_objects
 
 
-def filter_place_of_production(filter_values, q_objects, results):
+def filter_place_of_production(filter_values):
     """Should filter artworks whose place of production includes the string if
     given, AND the artworks for place of production which has the given id."""
+    q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val)
@@ -738,9 +425,10 @@ def filter_place_of_production(filter_values, q_objects, results):
     return q_objects
 
 
-def filter_current_location(filter_values, q_objects, results):
+def filter_current_location(filter_values):
     """Should filter artworks whose current location includes the string if
     given, AND the artworks for current location which has the given id."""
+    q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val)
@@ -756,9 +444,10 @@ def filter_current_location(filter_values, q_objects, results):
     return q_objects
 
 
-def filter_keywords(filter_values, q_objects, results):
+def filter_keywords(filter_values):
     """Should filter artworks whose keywords include the string if given, AND
     the artworks for keyword which has the given id."""
+    q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
             keywords = Keyword.objects.filter(name__icontains=val)
@@ -774,7 +463,8 @@ def filter_keywords(filter_values, q_objects, results):
     return q_objects
 
 
-def filter_date(filter_values, q_objects, results):
+def filter_date(filter_values):
+    q_objects = Q()
     if isinstance(filter_values, dict):
         if re.match(r'^[12][0-9]{3}$', filter_values.get('date_from')):
             q_objects |= Q(date_year_from__gte=filter_values['date_from'])
@@ -1688,3 +1378,261 @@ def get_user_data(request, *args, **kwargs):
         'permissions': attributes.get('permissions'),
     }
     return Response(ret, status=200)
+
+
+@extend_schema(
+    tags=['search'],
+    request={'application/json': SearchRequestSerializer},
+    examples=[
+        OpenApiExample(
+            name='search with filter type title, artist, place_of_production, current_location, keywords',
+            value={
+                'limit': settings.SEARCH_LIMIT,
+                'offset': 0,
+                'exclude': [123, 345],  # with artwork ids
+                'q': 'query string',  # the string from general search
+                'filters': [
+                    {
+                        'id': 'artist',
+                        'filter_values': ['rubens', {'id': 786}],
+                    }
+                ],
+            },
+        ),
+        OpenApiExample(
+            name='search with filter type date',
+            value={
+                'limit': settings.SEARCH_LIMIT,
+                'offset': 0,
+                'exclude': [123, 345],  # with artwork ids
+                'q': 'query string',  # the string from general search
+                'filters': [
+                    {
+                        'id': 'date',
+                        'filter_values': {
+                            'date_from': '2000',
+                            'date_to': '2001',
+                        },
+                    }
+                ],
+            },
+        ),
+    ],
+    responses={
+        200: SearchResultSerializer,
+        403: ERROR_RESPONSES[403],
+        404: ERROR_RESPONSES[404],
+    },
+)
+@api_view(['post'])
+def search(request, *args, **kwargs):
+    serializer = SearchRequestSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    limit = serializer.validated_data.get('limit', settings.SEARCH_LIMIT)
+    offset = serializer.validated_data.get('offset', 0)
+    filters = serializer.validated_data.get('filters', [])
+    q_param = serializer.validated_data.get('q')
+    exclude = serializer.validated_data.get('exclude', [])
+
+    if q_param:
+        qs = Artwork.objects.search(q_param)
+    else:
+        qs = Artwork.objects.annotate(rank=Value(1.0, FloatField()))
+
+    # only search for published artworks
+    qs = qs.filter(published=True)
+
+    if exclude:
+        qs = qs.exclude(id__in=exclude)
+
+    if filters:
+        q_objects = Q()
+
+        for i in filters:
+            if i['id'] == 'title':
+                q_objects |= filter_title(i['filter_values'])
+
+            elif i['id'] == 'artist':
+                q_objects |= filter_artist(i['filter_values'])
+
+            elif i['id'] == 'place_of_production':
+                q_objects |= filter_place_of_production(i['filter_values'])
+
+            elif i['id'] == 'current_location':
+                q_objects |= filter_current_location(i['filter_values'])
+
+            elif i['id'] == 'keywords':
+                q_objects |= filter_keywords(i['filter_values'])
+
+            elif i['id'] == 'date':
+                q_objects |= filter_date(i['filter_values'])
+
+            else:
+                raise ParseError(
+                    'Invalid filter id. Filter id can only be title, artist, place_of_production, '
+                    'current_location, keywords, or date.',
+                    400,
+                )
+
+        qs = qs.filter(q_objects)
+
+    # total of results before applying limits
+    total = qs.count()
+
+    qs = qs[offset : offset + limit]
+
+    return Response(
+        {
+            'total': total,
+            'results': [
+                {
+                    'id': artwork.id,
+                    'image_original': artwork.image_original.url
+                    if artwork.image_original
+                    else None,
+                    'credits': artwork.credits,
+                    'title': artwork.title,
+                    'date': artwork.date,
+                    'artists': [
+                        {'value': artist.name, 'id': artist.id}
+                        for artist in artwork.artists.all()
+                    ],
+                    'score': artwork.rank,
+                }
+                for artwork in qs
+            ],
+        }
+    )
+
+
+@extend_schema(
+    tags=['search'],
+    responses={
+        200: OpenApiResponse(description='OK'),
+        403: ERROR_RESPONSES[403],
+        404: ERROR_RESPONSES[404],
+    },
+)
+@api_view(['get'])
+def search_filters(request, *args, **kwargs):
+    data = {
+        'title': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'label': {'type': 'string'},
+                    'source': {'type': 'string'},
+                },
+            },
+            'title': 'title',
+            'x-attrs': {
+                'field_format': 'half',
+                'field_type': 'chips',
+                'dynamic_autosuggest': True,
+                'allow_unknown_entries': True,
+                'source': '/autosuggest/v1/titles/',
+                'placeholder': 'enter title',
+                'order': 1,
+            },
+        },
+        'artist': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'label': {'type': 'string'},
+                    'source': {'type': 'string'},
+                },
+            },
+            'title': 'artist',
+            'x-attrs': {
+                'field_format': 'half',
+                'field_type': 'chips',
+                'dynamic_autosuggest': True,
+                'allow_unknown_entries': True,
+                'source': '/autosuggest/v1/artists/',
+                'placeholder': 'enter artist',
+                'order': 2,
+            },
+        },
+        'place_of_production': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'label': {'type': 'string'},
+                    'source': {'type': 'string'},
+                },
+            },
+            'title': 'place of production',
+            'x-attrs': {
+                'field_format': 'half',
+                'field_type': 'chips',
+                'dynamic_autosuggest': True,
+                'allow_unknown_entries': True,
+                'source': '/autosuggest/v1/locations/',
+                'placeholder': 'enter place of production',
+                'order': 3,
+            },
+        },
+        'current_location': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'label': {'type': 'string'},
+                    'source': {'type': 'string'},
+                },
+            },
+            'title': 'current location',
+            'x-attrs': {
+                'field_format': 'half',
+                'field_type': 'chips',
+                'dynamic_autosuggest': True,
+                'allow_unknown_entries': True,
+                'source': '/autosuggest/v1/locations/',
+                'placeholder': 'enter current location',
+                'order': 4,
+            },
+        },
+        'keywords': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'label': {'type': 'string'},
+                    'source': {'type': 'string'},
+                },
+            },
+            'title': 'keywords',
+            'x-attrs': {
+                'placeholder': 'enter keywords',
+                'order': 5,
+                'field_format': 'full',
+                'field_type': 'chips',
+                'allow_unknown_entries': False,
+                'dynamic_autosuggest': True,
+                'source': '/autosuggest/v1/keywords/',
+            },
+        },
+        'date': {
+            'type': 'object',
+            'properties': {
+                'date_from': {'type': 'string'},
+                'date_to': {'type': 'string'},
+            },
+            'title': 'date from, to',
+            'additionalProperties': False,
+            'x-attrs': {
+                'field_format': 'full',
+                'field_type': 'date',
+                'date_format': 'year',
+                'placeholder': {'date': 'enter date'},
+                'order': 6,
+            },
+        },
+    }
+
+    return Response(data)

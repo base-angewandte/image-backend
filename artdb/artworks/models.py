@@ -14,6 +14,8 @@ from django.db.models.functions import Upper
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
+from .managers import ArtworkManager
+
 logger = logging.getLogger(__name__)
 
 
@@ -154,6 +156,8 @@ class Artwork(models.Model):
     )
     checked = models.BooleanField(verbose_name=_('Checked'), default=False)
     published = models.BooleanField(verbose_name=_('Published'), default=False)
+
+    objects = ArtworkManager()
 
     class Meta:
         ordering = [
