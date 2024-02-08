@@ -19,6 +19,7 @@ from urllib.parse import urlparse
 
 import environ
 import requests
+from drf_spectacular.utils import OpenApiParameter
 
 from django.urls import reverse_lazy
 
@@ -103,6 +104,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
+    # base common apps
+    'base_common',
+    'base_common_drf',
     # Third-party apps
     'rest_framework',
     'versatileimagefield',
@@ -113,38 +117,12 @@ INSTALLED_APPS = [
     'ordered_model',
     'corsheaders',
     # Project apps
-    'general',
+    'core',
     'artworks',
     # API
     'api',
     'drf_spectacular',
 ]
-
-REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'general.drf.authentication.SessionAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
-}
-
-SPECTACULAR_SETTINGS = {
-    'TITLE': 'Image+ API',
-    'DESCRIPTION': '',
-    'VERSION': '1.0.0',
-    'SERVERS': [
-        {
-            'url': env.str(
-                'OPENAPI_SERVER_URL',
-                default=f'{SITE_URL.rstrip("/")}{FORCE_SCRIPT_NAME}',
-            ),
-            'description': env.str('OPENAPI_SERVER_DESCRIPTION', default='Image+'),
-        },
-    ],
-    'SERVE_INCLUDE_SCHEMA': False,
-    'COMPONENT_SPLIT_REQUEST': True,
-    # OTHER SETTINGS
-}
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -225,7 +203,7 @@ if DEBUG:
 
 if BEHIND_PROXY:
     MIDDLEWARE += [
-        'general.middleware.SetRemoteAddrFromForwardedFor',
+        'base_common.middleware.SetRemoteAddrFromForwardedFor',
     ]
     USE_X_FORWARDED_HOST = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -246,7 +224,7 @@ TEMPLATES = [
                 'django.template.context_processors.i18n',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'general.context_processors.global_settings',
+                'base_common.context_processors.global_settings',
             ],
             'debug': DEBUG,
             'string_if_invalid': "[invalid variable '%s'!]" if DEBUG else '',
@@ -306,6 +284,8 @@ LANGUAGES = (
     ('de', _('German')),
     ('en', _('English')),
 )
+
+LANGUAGES_DICT = dict(LANGUAGES)
 
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'artdb', 'locale'),)
 
@@ -444,6 +424,45 @@ BASE_HEADER_JSON = f'{BASE_HEADER_SITE_URL}bs/base-header.json'
 BASE_HEADER = '{}{}'.format(
     BASE_HEADER_SITE_URL, requests.get(BASE_HEADER_JSON, timeout=60).json()['latest']
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'base_common_drf.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'base_common_drf.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
+    'DEFAULT_VERSION': 'v1',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Image API',
+    'DESCRIPTION': '',
+    'VERSION': '1.0',
+    'SERVERS': [
+        {
+            'url': env.str(
+                'OPENAPI_SERVER_URL',
+                default=f'{SITE_URL.rstrip("/")}{FORCE_SCRIPT_NAME}',
+            ),
+            'description': env.str('OPENAPI_SERVER_DESCRIPTION', default='Image+'),
+        },
+    ],
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    # OTHER SETTINGS
+    # set GLOBAL_PARAMS used in base_common_drf.openapi.AutoSchema
+    'GLOBAL_PARAMS': [
+        OpenApiParameter(
+            name='Accept-Language',
+            type=str,
+            location=OpenApiParameter.HEADER,
+            required=False,
+            enum=list(LANGUAGES_DICT.keys()),
+            default='en',
+        )
+    ],
+}
 
 PERMISSIONS_DEFAULT = {
     'VIEW': env.str('PERMISSIONS_DEFAULT_VIEW'),
