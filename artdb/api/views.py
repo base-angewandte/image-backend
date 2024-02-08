@@ -957,7 +957,6 @@ class AlbumsViewSet(viewsets.ViewSet):
         )
 
     @extend_schema(
-        methods=['POST'],
         request=CreateAlbumSerializer,  # todo fix serializers
         responses={200: AlbumSerializer},
     )
@@ -1008,7 +1007,6 @@ class AlbumsViewSet(viewsets.ViewSet):
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
     @extend_schema(
-        methods=['PATCH'],
         request=UpdateAlbumSerializer,
         responses={
             200: AlbumSerializer,
@@ -1054,9 +1052,6 @@ class AlbumsViewSet(viewsets.ViewSet):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-    @extend_schema(
-        methods=['DELETE'],
-    )
     def destroy(self, request, *args, **kwargs):
         """Delete Album /albums/{id}"""
         album_id = kwargs['id']
