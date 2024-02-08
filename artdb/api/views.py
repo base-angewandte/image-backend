@@ -24,7 +24,6 @@ from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchVector
 from django.db.models import Q
@@ -138,7 +137,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     serializer_class = ArtworkSerializer
     queryset = Artwork.objects.all()
     filter_backends = (DjangoFilterBackend,)
-    UserModel = get_user_model()
 
     @extend_schema(
         request=serializer_class,
@@ -845,7 +843,6 @@ class AlbumsViewSet(viewsets.ViewSet):
 
     queryset = Album.objects.all()
     filter_backends = (DjangoFilterBackend,)
-    UserModel = get_user_model()
 
     @extend_schema(
         tags=['folders'],
