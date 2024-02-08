@@ -21,7 +21,6 @@ from drf_spectacular.utils import (
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import ParseError
-from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 
 from django.conf import settings
@@ -138,7 +137,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     serializer_class = ArtworkSerializer
     queryset = Artwork.objects.all()
-    parser_classes = (FormParser, MultiPartParser)
     filter_backends = (DjangoFilterBackend,)
     UserModel = get_user_model()
 
@@ -846,7 +844,6 @@ class AlbumsViewSet(viewsets.ViewSet):
     """
 
     queryset = Album.objects.all()
-    parser_classes = (FormParser, MultiPartParser)
     filter_backends = (DjangoFilterBackend,)
     UserModel = get_user_model()
 
