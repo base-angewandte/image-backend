@@ -31,17 +31,6 @@ urlpatterns = [
         views.ArtworksViewSet.as_view({'get': 'list_search_filters'}),
         name='search_filters',
     ),
-    # Artworks
-    path(
-        'artworks/<id>/albums/',
-        views.ArtworksViewSet.as_view({'get': 'retrieve_albums'}),
-        name='artwork-albums',
-    ),
-    path(
-        'artworks/<id>/download/',
-        views.ArtworksViewSet.as_view({'get': 'download'}),
-        name='artwork-download',
-    ),
     # Autocomplete
     path('autocomplete/', include(autocomplete_urls)),
     # Schema

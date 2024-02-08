@@ -271,6 +271,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
+    @action(detail=True, methods=['get'])
     def download(self, request, *args, **kwargs):
         artwork_id = kwargs['id']
         try:
@@ -333,6 +334,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
+    @action(detail=True, methods=['get'], url_path='albums')
     def retrieve_albums(self, request, *args, **kwargs):
         item_id = kwargs['id']
         try:
