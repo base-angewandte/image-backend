@@ -151,7 +151,6 @@ class CreateAlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
         fields = ('title',)
-        depth = 1
 
 
 class SlidesField(serializers.JSONField):
