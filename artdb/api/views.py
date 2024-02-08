@@ -121,6 +121,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     retrieve_albums:
     GET albums the current user has added this artwork to.
 
+    download:
+    GET Download artwork + metadata
+
     """
 
     queryset = Artwork.objects.filter(published=True)
