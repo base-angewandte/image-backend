@@ -426,13 +426,13 @@ BASE_HEADER = '{}{}'.format(
 )
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'base_common_drf.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'base_common_drf.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
     'DEFAULT_VERSION': 'v1',
+    'DEFAULT_SCHEMA_CLASS': 'base_common_drf.openapi.AutoSchema',
 }
 
 SPECTACULAR_SETTINGS = {
