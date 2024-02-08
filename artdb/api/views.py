@@ -651,20 +651,16 @@ class AlbumsViewSet(viewsets.ViewSet):
     )
     def create(self, request, *args, **kwargs):
         """Create Album /albums/{id}"""
-        try:
-            title = request.data.get('title')
-            album = Album.objects.create(title=title, user=request.user)
+        serializer = CreateAlbumRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-            album.save()
+        title = serializer.validated_data['title']
 
-            resp = simple_album_object(album)
-            resp.status_code = status.HTTP_201_CREATED
-            return resp
-        except ValueError:
-            return Response(
-                _('Album user must be a user instance'),
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        album = Album.objects.create(title=title, user=request.user)
+
+        resp = simple_album_object(album)
+        resp.status_code = status.HTTP_201_CREATED
+        return resp
 
     @extend_schema(
         request=AlbumSerializer,
