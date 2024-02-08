@@ -647,7 +647,7 @@ class AlbumsViewSet(viewsets.ViewSet):
 
     @extend_schema(
         request=CreateAlbumSerializer,  # todo fix serializers
-        responses={200: AlbumSerializer},
+        responses={201: AlbumSerializer},
     )
     def create(self, request, *args, **kwargs):
         """Create Album /albums/{id}"""
@@ -657,7 +657,9 @@ class AlbumsViewSet(viewsets.ViewSet):
 
             album.save()
 
-            return simple_album_object(album, request)
+            resp = simple_album_object(album, request)
+            resp.status_code = status.HTTP_201_CREATED
+            return resp
         except ValueError:
             return Response(
                 _('Album user must be a user instance'),
