@@ -19,7 +19,7 @@ from drf_spectacular.utils import (
     extend_schema,
 )
 from rest_framework import status, viewsets
-from rest_framework.decorators import api_view
+from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 
@@ -1086,22 +1086,13 @@ class AlbumsViewSet(viewsets.ViewSet):
     # additional actions
 
     @extend_schema(
-        methods=['POST'],
-        parameters=[
-            OpenApiParameter(
-                name='artwork_id',
-                type=OpenApiTypes.INT,
-                required=True,
-                description='',
-                default=0,
-            )
-        ],
         responses={
             200: AlbumSerializer,
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
     )
+    @action(detail=True, methods=['post'], url_path='append-artwork')
     def append_artwork(self, request, *args, **kwargs):
         """/albums/{id}/append_artwork Append artwork to slides as singular
         slide [{'id': x}]"""
@@ -1146,6 +1137,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
+    @action(detail=True, methods=['get'], url_path='slides')
     def retrieve_slides(self, request, *args, **kwargs):
         """/albums/{id}/slides LIST (GET) endpoint returns:"""
         album_id = kwargs['id']
@@ -1170,7 +1162,6 @@ class AlbumsViewSet(viewsets.ViewSet):
             return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
 
     @extend_schema(
-        methods=['POST'],
         request=SlidesSerializer,
         examples=[
             OpenApiExample(
@@ -1184,6 +1175,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
+    @action(detail=True, methods=['post'], url_path='slides')
     def create_slides(self, request, *args, **kwargs):
         """/albums/{id}/slides Reorder Slides, Separate_slides, Reorder
         artworks within slides."""
@@ -1247,13 +1239,13 @@ class AlbumsViewSet(viewsets.ViewSet):
             )
 
     @extend_schema(
-        methods=['GET'],
         responses={
             200: PermissionsSerializer,
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
     )
+    @action(detail=True, methods=['get'], url_path='permissions')
     def retrieve_permissions(self, request, *args, **kwargs):
         """Get Permissions /albums/{id}/permissions."""
         album_id = kwargs['id']
@@ -1293,7 +1285,6 @@ class AlbumsViewSet(viewsets.ViewSet):
         )
 
     @extend_schema(
-        methods=['POST'],
         request=PermissionsSerializer,
         examples=[
             OpenApiExample(
@@ -1307,6 +1298,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
+    @action(detail=True, methods=['post'], url_path='permissions')
     def create_permissions(self, request, *args, **kwargs):
         """Post Permissions /albums/{id}/permissions."""
         album_id = kwargs['id']
@@ -1361,9 +1353,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         except Album.DoesNotExist:
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
-    @extend_schema(
-        methods=['DELETE'],
-    )
+    @action(detail=True, methods=['delete'], url_path='permissions')
     def destroy_permissions(self, request, *args, **kwargs):
         """Delete Permissions /albums/{id}/permissions/ "Unshare" album.
 
@@ -1400,7 +1390,6 @@ class AlbumsViewSet(viewsets.ViewSet):
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
     @extend_schema(
-        methods=['GET'],
         parameters=[
             OpenApiParameter(
                 name='language',
@@ -1427,6 +1416,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             501: OpenApiResponse(description='Not implemented yet'),
         },
     )
+    @action(detail=True, methods=['get'])
     def download(self, request, *args, **kwargs):
         # Todo: now only pptx, later also PDF
         album_id = kwargs['id']
