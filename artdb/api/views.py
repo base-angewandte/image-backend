@@ -810,7 +810,7 @@ class AlbumsViewSet(viewsets.ViewSet):
     POST /albums/{id}/append_artwork
     Append artwork to slides as singular slide [{'id': x}]
 
-    retrieve_slides:
+    slides:
     GET /albums/{id}/slides LIST (GET) endpoint
 
     create_slides:
@@ -1135,8 +1135,8 @@ class AlbumsViewSet(viewsets.ViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    @action(detail=True, methods=['get'], url_path='slides')
-    def retrieve_slides(self, request, pk=None, *args, **kwargs):
+    @action(detail=True, methods=['get'])
+    def slides(self, request, pk=None, *args, **kwargs):
         """/albums/{id}/slides LIST (GET) endpoint returns:"""
         album_id = pk
         try:
@@ -1173,7 +1173,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    @action(detail=True, methods=['post'], url_path='slides')
+    @slides.mapping.post
     def create_slides(self, request, pk=None, *args, **kwargs):
         """/albums/{id}/slides Reorder Slides, Separate_slides, Reorder
         artworks within slides."""
