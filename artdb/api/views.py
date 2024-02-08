@@ -216,8 +216,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve(self, request, *args, **kwargs):
-        item_id = kwargs['id']
+    def retrieve(self, request, pk=None, *args, **kwargs):
+        item_id = pk
         try:
             artwork = self.get_queryset().get(pk=item_id)
         except Artwork.DoesNotExist:
@@ -274,8 +274,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=True, methods=['get'], url_path='albums')
-    def retrieve_albums(self, request, *args, **kwargs):
-        item_id = kwargs['id']
+    def retrieve_albums(self, request, pk=None, *args, **kwargs):
+        item_id = pk
         try:
             artwork = Artwork.objects.get(pk=item_id)
             albums = Album.objects.filter(slides__contains=[[{'id': artwork.pk}]])
@@ -318,8 +318,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=True, methods=['get'])
-    def download(self, request, *args, **kwargs):
-        artwork_id = kwargs['id']
+    def download(self, request, pk=None, *args, **kwargs):
+        artwork_id = pk
         try:
             artwork = Artwork.objects.get(id=artwork_id)
 
@@ -981,10 +981,10 @@ class AlbumsViewSet(viewsets.ViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve(self, request, *args, **kwargs):  # TODO update
+    def retrieve(self, request, pk=None, *args, **kwargs):  # TODO update
         """List of Works (Slides) in a specific Album /albums/{id}"""
 
-        album_id = kwargs['id']
+        album_id = pk
         try:
             album = Album.objects.get(pk=album_id)
             if album.user.username == request.user.username:
@@ -1012,9 +1012,9 @@ class AlbumsViewSet(viewsets.ViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    def update(self, request, *args, **kwargs):
+    def update(self, request, pk=None, *args, **kwargs):
         """Update Album /albums/{id}"""
-        album_id = kwargs['id']
+        album_id = pk
 
         try:
             album = Album.objects.get(pk=album_id)
@@ -1050,9 +1050,9 @@ class AlbumsViewSet(viewsets.ViewSet):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-    def destroy(self, request, *args, **kwargs):
+    def destroy(self, request, pk=None, *args, **kwargs):
         """Delete Album /albums/{id}"""
-        album_id = kwargs['id']
+        album_id = pk
         try:
             album = Album.objects.get(pk=album_id)
             if album.user.username == request.user.username:
@@ -1091,11 +1091,11 @@ class AlbumsViewSet(viewsets.ViewSet):
         },
     )
     @action(detail=True, methods=['post'], url_path='append-artwork')
-    def append_artwork(self, request, *args, **kwargs):
+    def append_artwork(self, request, pk=None, *args, **kwargs):
         """/albums/{id}/append_artwork Append artwork to slides as singular
         slide [{'id': x}]"""
 
-        album_id = kwargs['id']
+        album_id = pk
         try:
             album = Album.objects.get(pk=album_id)
             if not album.slides:
@@ -1136,9 +1136,9 @@ class AlbumsViewSet(viewsets.ViewSet):
         },
     )
     @action(detail=True, methods=['get'], url_path='slides')
-    def retrieve_slides(self, request, *args, **kwargs):
+    def retrieve_slides(self, request, pk=None, *args, **kwargs):
         """/albums/{id}/slides LIST (GET) endpoint returns:"""
-        album_id = kwargs['id']
+        album_id = pk
         try:
             album = Album.objects.get(pk=album_id)
         except (Album.DoesNotExist, ValueError):
@@ -1174,11 +1174,11 @@ class AlbumsViewSet(viewsets.ViewSet):
         },
     )
     @action(detail=True, methods=['post'], url_path='slides')
-    def create_slides(self, request, *args, **kwargs):
+    def create_slides(self, request, pk=None, *args, **kwargs):
         """/albums/{id}/slides Reorder Slides, Separate_slides, Reorder
         artworks within slides."""
 
-        album_id = kwargs['id']
+        album_id = pk
         try:
             album = Album.objects.get(pk=album_id)
             slides_serializer = SlidesSerializer(data=request.data)
@@ -1244,9 +1244,9 @@ class AlbumsViewSet(viewsets.ViewSet):
         },
     )
     @action(detail=True, methods=['get'], url_path='permissions')
-    def retrieve_permissions(self, request, *args, **kwargs):
+    def retrieve_permissions(self, request, pk=None, *args, **kwargs):
         """Get Permissions /albums/{id}/permissions."""
-        album_id = kwargs['id']
+        album_id = pk
         try:
             album = Album.objects.get(pk=album_id)
         except (Album.DoesNotExist, ValueError):
@@ -1297,9 +1297,9 @@ class AlbumsViewSet(viewsets.ViewSet):
         },
     )
     @action(detail=True, methods=['post'], url_path='permissions')
-    def create_permissions(self, request, *args, **kwargs):
+    def create_permissions(self, request, pk=None, *args, **kwargs):
         """Post Permissions /albums/{id}/permissions."""
-        album_id = kwargs['id']
+        album_id = pk
         try:
             album = Album.objects.get(pk=album_id)
             serializer = PermissionsSerializer(data=request.data)
@@ -1352,14 +1352,14 @@ class AlbumsViewSet(viewsets.ViewSet):
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
     @action(detail=True, methods=['delete'], url_path='permissions')
-    def destroy_permissions(self, request, *args, **kwargs):
+    def destroy_permissions(self, request, pk=None, *args, **kwargs):
         """Delete Permissions /albums/{id}/permissions/ "Unshare" album.
 
         If the user is the owner of the album, all sharing permissions
         will be deleted. If the user is just a user who this album is
         shared with, only their own sharing permission will be deleted.
         """
-        album_id = kwargs['id']
+        album_id = pk
         try:
             album = Album.objects.get(pk=album_id)
             shares_per_album = [
@@ -1415,9 +1415,9 @@ class AlbumsViewSet(viewsets.ViewSet):
         },
     )
     @action(detail=True, methods=['get'])
-    def download(self, request, *args, **kwargs):
+    def download(self, request, pk=None, *args, **kwargs):
         # Todo: now only pptx, later also PDF
-        album_id = kwargs['id']
+        album_id = pk
         try:
             album = Album.objects.get(id=album_id)
             # If user is the owner or has VIEW permissions, allow the download. Otherwise, throw a 403
