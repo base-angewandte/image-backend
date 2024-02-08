@@ -796,17 +796,24 @@ class AlbumsViewSet(viewsets.ViewSet):
     list:
     GET all the users albums.
 
+    create:
+    POST new album with given title.
+
     retrieve:
     GET specific album.
 
+    update:
+    PATCH specific album and album’s fields
+
+    destroy:
+    DELETE specific album
+
+    append_artwork
+    POST /albums/{id}/append_artwork
+    Append artwork to slides as singular slide [{'id': x}]
+
     retrieve_slides:
     GET /albums/{id}/slides LIST (GET) endpoint
-
-    retrieve_permissions:
-    GET /albums/{id}/permissions
-
-    create:
-    POST new album with given title.
 
     create_slides:
     POST /albums/{id}/slides
@@ -814,21 +821,14 @@ class AlbumsViewSet(viewsets.ViewSet):
     Separate_slides
     Reorder artworks within slides
 
-    append_artwork
-    POST /albums/{id}/append_artwork
-    Append artwork to slides as singular slide [{'id': x}]
+    retrieve_permissions:
+    GET /albums/{id}/permissions
 
     create_permissions
     POST /albums/{id}/permissions
 
     destroy_permissions
     DELETE /albums/{id}/permissions
-
-    update:
-    PATCH specific album and album’s fields
-
-    destroy:
-    DELETE specific album
 
     download:
     GET Download album as pptx or PDF
@@ -957,6 +957,26 @@ class AlbumsViewSet(viewsets.ViewSet):
         )
 
     @extend_schema(
+        methods=['POST'],
+        request=CreateAlbumSerializer,  # todo fix serializers
+        responses={200: AlbumSerializer},
+    )
+    def create(self, request, *args, **kwargs):
+        """Create Album /albums/{id}"""
+        try:
+            title = request.data.get('title')
+            album = Album.objects.create(title=title, user=request.user)
+
+            album.save()
+
+            return simple_album_object(album, request)
+        except ValueError:
+            return Response(
+                _('Album user must be a user instance'),
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+    @extend_schema(
         request=AlbumSerializer,
         responses={
             200: OpenApiResponse(description='OK'),
@@ -988,6 +1008,143 @@ class AlbumsViewSet(viewsets.ViewSet):
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
     @extend_schema(
+        methods=['PATCH'],
+        request=UpdateAlbumSerializer,
+        responses={
+            200: AlbumSerializer,
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
+    def update(self, request, *args, **kwargs):
+        """Update Album /albums/{id}"""
+        album_id = kwargs['id']
+
+        try:
+            album = Album.objects.get(pk=album_id)
+            album.title = request.data.get('title')
+
+            serializer = UpdateAlbumSerializer(data=request.data)
+
+            if not serializer.is_valid():
+                return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
+
+            if album.user.username == request.user.username:
+                album.save()
+                return simple_album_object(album, request)
+
+            if request.user.username in [
+                p.user.username
+                for p in PermissionsRelation.objects.filter(album__id=album.id)
+            ] and 'EDIT' in [
+                p.permissions
+                for p in PermissionsRelation.objects.filter(
+                    user__username=request.user.username
+                )
+            ]:
+                album.save()
+                return simple_album_object(album, request)
+
+            else:
+                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
+
+        except Album.DoesNotExist:
+            return Response(
+                _('Album does not exist '),
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+    @extend_schema(
+        methods=['DELETE'],
+    )
+    def destroy(self, request, *args, **kwargs):
+        """Delete Album /albums/{id}"""
+        album_id = kwargs['id']
+        try:
+            album = Album.objects.get(pk=album_id)
+            if album.user.username == request.user.username:
+                album.delete()
+                return Response(
+                    _(f'Album {album.title} was deleted'),
+                    status=status.HTTP_200_OK,
+                )
+
+            if request.user.username in [
+                p.user.username
+                for p in PermissionsRelation.objects.filter(album__id=album.id)
+            ] and 'EDIT' in [
+                p.permissions
+                for p in PermissionsRelation.objects.filter(
+                    user__username=request.user.username
+                )
+            ]:
+                album.delete()
+                return Response(
+                    _(f'Album {album.title} was deleted'),
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
+        except (Album.DoesNotExist, ValueError):
+            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+
+    # additional actions
+
+    @extend_schema(
+        methods=['POST'],
+        parameters=[
+            OpenApiParameter(
+                name='artwork_id',
+                type=OpenApiTypes.INT,
+                required=True,
+                description='',
+                default=0,
+            )
+        ],
+        responses={
+            200: AlbumSerializer,
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
+    def append_artwork(self, request, *args, **kwargs):
+        """/albums/{id}/append_artwork Append artwork to slides as singular
+        slide [{'id': x}]"""
+
+        album_id = kwargs['id']
+        try:
+            album = Album.objects.get(pk=album_id)
+            if not album.slides:
+                album.slides = []
+
+            # Check if artwork exists
+            artwork = Artwork.objects.get(pk=int(request.GET.get('artwork_id')))
+
+            album.slides.append([{'id': artwork.id}])
+            if album.user.username == request.user.username:
+                album.save()
+                return Response(_('Artwork added.'), status=status.HTTP_200_OK)
+            if request.user.username in [
+                p.user.username
+                for p in PermissionsRelation.objects.filter(album__id=album.id)
+            ] and 'EDIT' in [
+                p.permissions
+                for p in PermissionsRelation.objects.filter(
+                    user__username=request.user.username
+                )
+            ]:
+                album.save()
+                return Response(_('Artwork added.'), status=status.HTTP_200_OK)
+            else:
+                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
+
+        except Artwork.DoesNotExist:
+            return Response(
+                _('There is no artwork associated with the given id.'),
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+    @extend_schema(
         responses={
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
@@ -1016,26 +1173,6 @@ class AlbumsViewSet(viewsets.ViewSet):
             return Response(artworks_in_slides(album))
         else:
             return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-
-    @extend_schema(
-        methods=['POST'],
-        request=CreateAlbumSerializer,  # todo fix serializers
-        responses={200: AlbumSerializer},
-    )
-    def create(self, request, *args, **kwargs):
-        """Create Album /albums/{id}"""
-        try:
-            title = request.data.get('title')
-            album = Album.objects.create(title=title, user=request.user)
-
-            album.save()
-
-            return simple_album_object(album, request)
-        except ValueError:
-            return Response(
-                _('Album user must be a user instance'),
-                status=status.HTTP_404_NOT_FOUND,
-            )
 
     @extend_schema(
         methods=['POST'],
@@ -1112,60 +1249,6 @@ class AlbumsViewSet(viewsets.ViewSet):
         except TypeError as e:
             return Response(
                 _(f'Could not edit slides: {e}'), status=status.HTTP_404_NOT_FOUND
-            )
-
-    @extend_schema(
-        methods=['POST'],
-        parameters=[
-            OpenApiParameter(
-                name='artwork_id',
-                type=OpenApiTypes.INT,
-                required=True,
-                description='',
-                default=0,
-            )
-        ],
-        responses={
-            200: AlbumSerializer,
-            403: ERROR_RESPONSES[403],
-            404: ERROR_RESPONSES[404],
-        },
-    )
-    def append_artwork(self, request, *args, **kwargs):
-        """/albums/{id}/append_artwork Append artwork to slides as singular
-        slide [{'id': x}]"""
-
-        album_id = kwargs['id']
-        try:
-            album = Album.objects.get(pk=album_id)
-            if not album.slides:
-                album.slides = []
-
-            # Check if artwork exists
-            artwork = Artwork.objects.get(pk=int(request.GET.get('artwork_id')))
-
-            album.slides.append([{'id': artwork.id}])
-            if album.user.username == request.user.username:
-                album.save()
-                return Response(_('Artwork added.'), status=status.HTTP_200_OK)
-            if request.user.username in [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ] and 'EDIT' in [
-                p.permissions
-                for p in PermissionsRelation.objects.filter(
-                    user__username=request.user.username
-                )
-            ]:
-                album.save()
-                return Response(_('Artwork added.'), status=status.HTTP_200_OK)
-            else:
-                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-
-        except Artwork.DoesNotExist:
-            return Response(
-                _('There is no artwork associated with the given id.'),
-                status=status.HTTP_404_NOT_FOUND,
             )
 
     @extend_schema(
@@ -1318,87 +1401,6 @@ class AlbumsViewSet(viewsets.ViewSet):
             # User is not owner nor has shares (permissions)
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-        except (Album.DoesNotExist, ValueError):
-            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
-
-    @extend_schema(
-        methods=['PATCH'],
-        request=UpdateAlbumSerializer,
-        responses={
-            200: AlbumSerializer,
-            403: ERROR_RESPONSES[403],
-            404: ERROR_RESPONSES[404],
-        },
-    )
-    def update(self, request, *args, **kwargs):
-        """Update Album /albums/{id}"""
-        album_id = kwargs['id']
-
-        try:
-            album = Album.objects.get(pk=album_id)
-            album.title = request.data.get('title')
-
-            serializer = UpdateAlbumSerializer(data=request.data)
-
-            if not serializer.is_valid():
-                return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
-
-            if album.user.username == request.user.username:
-                album.save()
-                return simple_album_object(album, request)
-
-            if request.user.username in [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ] and 'EDIT' in [
-                p.permissions
-                for p in PermissionsRelation.objects.filter(
-                    user__username=request.user.username
-                )
-            ]:
-                album.save()
-                return simple_album_object(album, request)
-
-            else:
-                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-
-        except Album.DoesNotExist:
-            return Response(
-                _('Album does not exist '),
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-    @extend_schema(
-        methods=['DELETE'],
-    )
-    def destroy(self, request, *args, **kwargs):
-        """Delete Album /albums/{id}"""
-        album_id = kwargs['id']
-        try:
-            album = Album.objects.get(pk=album_id)
-            if album.user.username == request.user.username:
-                album.delete()
-                return Response(
-                    _(f'Album {album.title} was deleted'),
-                    status=status.HTTP_200_OK,
-                )
-
-            if request.user.username in [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ] and 'EDIT' in [
-                p.permissions
-                for p in PermissionsRelation.objects.filter(
-                    user__username=request.user.username
-                )
-            ]:
-                album.delete()
-                return Response(
-                    _(f'Album {album.title} was deleted'),
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
         except (Album.DoesNotExist, ValueError):
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
