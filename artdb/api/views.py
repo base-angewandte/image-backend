@@ -20,7 +20,7 @@ from drf_spectacular.utils import (
 )
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view
-from rest_framework.exceptions import ParseError
+from rest_framework.exceptions import NotFound, ParseError
 from rest_framework.response import Response
 
 from django.conf import settings
@@ -203,14 +203,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def retrieve(self, request, pk=None, *args, **kwargs):
-        item_id = pk
         try:
-            artwork = self.get_queryset().get(pk=item_id)
-        except Artwork.DoesNotExist:
-            return Response(
-                _('Artwork does not exist'),
-                status=status.HTTP_404_NOT_FOUND,
-            )
+            artwork = self.get_queryset().get(pk=pk)
+        except Artwork.DoesNotExist as dne:
+            raise NotFound(_('Artwork does not exist')) from dne
 
         return Response(
             {
