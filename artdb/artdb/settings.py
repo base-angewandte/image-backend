@@ -452,6 +452,9 @@ SPECTACULAR_SETTINGS = {
     ],
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
+    'SWAGGER_UI_SETTINGS': {
+        'displayOperationId': True,
+    },
     # OTHER SETTINGS
     # set GLOBAL_PARAMS used in base_common_drf.openapi.AutoSchema
     'GLOBAL_PARAMS': [
