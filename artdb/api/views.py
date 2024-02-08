@@ -793,9 +793,6 @@ def filter_date(filter_values, q_objects, results):
 @extend_schema(tags=['albums'])
 class AlbumsViewSet(viewsets.ViewSet):
     """
-    list_folders:
-    List of all the users albums /folders (in anticipation that there will be folders later)
-
     list:
     GET all the users albums.
 
@@ -827,9 +824,6 @@ class AlbumsViewSet(viewsets.ViewSet):
     destroy_permissions
     DELETE /albums/{id}/permissions
 
-    create_folder:
-    POST
-
     update:
     PATCH specific album and album’s fields
 
@@ -843,73 +837,6 @@ class AlbumsViewSet(viewsets.ViewSet):
 
     queryset = Album.objects.all()
     filter_backends = (DjangoFilterBackend,)
-
-    @extend_schema(
-        tags=['folders'],
-        request=AlbumSerializer,
-        parameters=[
-            OpenApiParameter(
-                name='limit',
-                type=OpenApiTypes.INT,
-                required=False,
-                description='',
-            ),
-            OpenApiParameter(
-                name='offset',
-                type=OpenApiTypes.INT,
-                required=False,
-                description='',
-            ),
-        ],
-        responses={
-            200: OpenApiResponse(description='OK'),
-            403: ERROR_RESPONSES[403],
-            404: ERROR_RESPONSES[404],
-        },
-    )
-    def list_folders(self, request, *args, **kwargs):
-        """List of all the users albums /folders (in anticipation that there
-        will be folders later)"""
-
-        limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
-        offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
-
-        # TODO: to complete when folders are relevant
-        # todo also add checks folders user.username
-
-        dummy_data = [
-            {
-                'title': 'Some title',
-                'ID': 1111,
-                'shared_info': 'Some shared info',
-                '# of works': 89,
-                'thumbnail': 'https://www.thumbnail.com',
-            },
-            {
-                'title': 'Some title2',
-                'ID': 2222,
-                'shared_info': 'Some shared info2',
-                '# of works': 56,
-                'thumbnail': 'https://www.thumbnail.com',
-            },
-        ]
-        # TODO
-        # serializer = AlbumSerializer(self.queryset, many=True)
-
-        limit = limit if limit != 0 else None
-
-        if offset and limit:
-            end = offset + limit
-
-        elif limit and not offset:
-            end = limit
-
-        else:
-            end = None
-
-        results = dummy_data[offset:end]
-
-        return Response(results)
 
     @extend_schema(
         request=AlbumSerializer,
@@ -1393,50 +1320,6 @@ class AlbumsViewSet(viewsets.ViewSet):
 
         except (Album.DoesNotExist, ValueError):
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
-
-    @extend_schema(
-        tags=['folders'],
-        methods=['POST'],
-        parameters=[
-            OpenApiParameter(
-                name='create_folder',
-                type=OpenApiTypes.OBJECT,
-                required=False,
-                description='',
-                examples=[
-                    OpenApiExample(
-                        name='create_folder',
-                        value=[
-                            {
-                                'title': 'Some title',
-                                'ID': 1111,
-                                'shared_info': 'Some shared info',
-                                '# of works': 89,
-                                'thumbnail': 'https://www.thumbnail.com',
-                            }
-                        ],
-                    )
-                ],
-            ),
-        ],
-        responses={200: OpenApiTypes.OBJECT},
-    )
-    def create_folder(self, request, *args, **kwargs):
-        """Create Folder /albums/{id}"""
-        # todo
-        # Create folder with given data
-        # validate object
-        # check for user.username compatibility
-
-        dummy_data = {
-            'title': request.data.get('title'),
-            'ID': 1111,
-            'shared_info': 'Some shared info',
-            '# of works': 89,
-            'thumbnail': 'https://www.thumbnail.com',
-        }
-        # Todo: update response
-        return Response(dummy_data)
 
     @extend_schema(
         methods=['PATCH'],
