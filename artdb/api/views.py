@@ -33,7 +33,6 @@ from django.utils.translation import gettext_lazy as _
 
 from .serializers import (
     AlbumSerializer,
-    ArtworkSerializer,
     CreateAlbumSerializer,
     PermissionsSerializer,
     SearchRequestSerializer,
@@ -134,12 +133,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     """
 
-    serializer_class = ArtworkSerializer
     queryset = Artwork.objects.filter(published=True)
     filter_backends = (DjangoFilterBackend,)
 
     @extend_schema(
-        request=serializer_class,
         parameters=[
             OpenApiParameter(
                 name='limit',
@@ -213,7 +210,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         )
 
     @extend_schema(
-        request=serializer_class,
         responses={
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
@@ -269,7 +265,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         )
 
     @extend_schema(
-        request=serializer_class,
         responses={
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
@@ -314,7 +309,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         tags=['search'],
-        request=serializer_class,
         responses={
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
