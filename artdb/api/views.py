@@ -218,7 +218,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def retrieve(self, request, *args, **kwargs):
-        item_id = kwargs['id']
+        item_id = kwargs['pk']
         try:
             artwork = Artwork.objects.get(pk=item_id)
         except Artwork.DoesNotExist:
@@ -736,7 +736,7 @@ class AlbumsViewSet(viewsets.ViewSet):
     def retrieve(self, request, *args, **kwargs):  # TODO update
         """List of Works (Slides) in a specific Album /albums/{id}"""
 
-        album_id = kwargs['id']
+        album_id = kwargs['pk']
         try:
             album = Album.objects.get(pk=album_id)
             if album.user.username == request.user.username:
@@ -1145,7 +1145,7 @@ class AlbumsViewSet(viewsets.ViewSet):
     )
     def update(self, request, *args, **kwargs):
         """Update Album /albums/{id}"""
-        album_id = kwargs['id']
+        album_id = kwargs['pk']
 
         try:
             album = Album.objects.get(pk=album_id)
@@ -1186,7 +1186,7 @@ class AlbumsViewSet(viewsets.ViewSet):
     )
     def destroy(self, request, *args, **kwargs):
         """Delete Album /albums/{id}"""
-        album_id = kwargs['id']
+        album_id = kwargs['pk']
         try:
             album = Album.objects.get(pk=album_id)
             if album.user.username == request.user.username:
