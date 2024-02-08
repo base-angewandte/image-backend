@@ -264,6 +264,52 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             }
         )
 
+    # additional actions
+
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(description='OK'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
+    @action(detail=True, methods=['get'], url_path='albums')
+    def retrieve_albums(self, request, *args, **kwargs):
+        item_id = kwargs['id']
+        try:
+            artwork = Artwork.objects.get(pk=item_id)
+            albums = Album.objects.filter(slides__contains=[[{'id': artwork.pk}]])
+        except Artwork.DoesNotExist:
+            return Response(
+                _('Artwork does not exist'),
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        return Response(
+            [
+                {
+                    'id': album.id,
+                    'value': album.title,
+                }
+                for album in albums
+                if (album.user.username == request.user.username)
+                or (
+                    request.user.username
+                    in [
+                        p.user.username
+                        for p in PermissionsRelation.objects.filter(album__id=album.id)
+                    ]
+                    and 'VIEW'
+                    in [
+                        p.permissions
+                        for p in PermissionsRelation.objects.filter(
+                            user__username=request.user.username
+                        )
+                    ]
+                )
+            ]
+        )
+
     @extend_schema(
         responses={
             200: OpenApiResponse(description='OK'),
@@ -326,50 +372,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             return Response(
                 _(f'File for id {artwork_id} not found'), status.HTTP_404_NOT_FOUND
             )
-
-    @extend_schema(
-        responses={
-            200: OpenApiResponse(description='OK'),
-            403: ERROR_RESPONSES[403],
-            404: ERROR_RESPONSES[404],
-        },
-    )
-    @action(detail=True, methods=['get'], url_path='albums')
-    def retrieve_albums(self, request, *args, **kwargs):
-        item_id = kwargs['id']
-        try:
-            artwork = Artwork.objects.get(pk=item_id)
-            albums = Album.objects.filter(slides__contains=[[{'id': artwork.pk}]])
-        except Artwork.DoesNotExist:
-            return Response(
-                _('Artwork does not exist'),
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        return Response(
-            [
-                {
-                    'id': album.id,
-                    'value': album.title,
-                }
-                for album in albums
-                if (album.user.username == request.user.username)
-                or (
-                    request.user.username
-                    in [
-                        p.user.username
-                        for p in PermissionsRelation.objects.filter(album__id=album.id)
-                    ]
-                    and 'VIEW'
-                    in [
-                        p.permissions
-                        for p in PermissionsRelation.objects.filter(
-                            user__username=request.user.username
-                        )
-                    ]
-                )
-            ]
-        )
 
     @extend_schema(
         tags=['search'],
