@@ -32,7 +32,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .serializers import (
     AlbumSerializer,
-    CreateAlbumSerializer,
+    CreateAlbumRequestSerializer,
     PermissionsSerializer,
     SearchRequestSerializer,
     SearchResultSerializer,
@@ -646,7 +646,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         )
 
     @extend_schema(
-        request=CreateAlbumSerializer,  # todo fix serializers
+        request=CreateAlbumRequestSerializer,
         responses={201: AlbumSerializer},
     )
     def create(self, request, *args, **kwargs):

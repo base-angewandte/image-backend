@@ -147,7 +147,7 @@ class AlbumSerializer(serializers.ModelSerializer):
         depth = 1
 
 
-class CreateAlbumSerializer(serializers.ModelSerializer):
+class CreateAlbumRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
         fields = ('title',)
