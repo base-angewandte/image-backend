@@ -174,7 +174,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         except ValueError:
             return Response('Limit and offset should be int')
 
-        results = Artwork.objects.all()
+        results = self.get_queryset()
 
         limit = limit if limit != 0 else None
 
@@ -223,7 +223,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         item_id = kwargs['id']
         try:
-            artwork = Artwork.objects.get(pk=item_id)
+            artwork = self.get_queryset().get(pk=item_id)
         except Artwork.DoesNotExist:
             return Response(
                 _('Artwork does not exist'),
