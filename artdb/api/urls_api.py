@@ -42,17 +42,6 @@ urlpatterns = [
         views.ArtworksViewSet.as_view({'get': 'download'}),
         name='artwork-download',
     ),
-    # Folders
-    path(
-        'folders/',
-        views.AlbumsViewSet.as_view(
-            {
-                'get': 'list_folders',
-                'post': 'create_folder',
-            }
-        ),
-        name='folders',
-    ),
     # Albums
     path(
         'albums/<id>/slides/',
