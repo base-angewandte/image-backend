@@ -1488,9 +1488,9 @@ def search(request, *args, **kwargs):
             'results': [
                 {
                     'id': artwork.id,
-                    'image_original': [
-                        artwork.image_original.url if artwork.image_original else None
-                    ],
+                    'image_original': artwork.image_original.url
+                    if artwork.image_original
+                    else None,
                     'credits': artwork.credits,
                     'title': artwork.title,
                     'date': artwork.date,
