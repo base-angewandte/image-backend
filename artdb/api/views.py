@@ -1206,24 +1206,23 @@ class LabelsViewSet(viewsets.GenericViewSet):
         },
     )
     def list(self, request, *args, **kwargs):
-        data = {
-            'artworks': {
-                'artists': 'Artists',
-                'credits': 'Credits',
-                'date': 'Date of creation',
-                'description': 'Description',
-                'dimensions': 'Dimensions',
-                'keywords': 'Keywords',
-                'license': 'License',
-                'location_current': 'Current location',
-                'location_of_creation': 'Place of creation',
-                'material': 'Material/Technique',
-                'title': 'Title',
-                'title_notes': 'Notes on problematic terms',
-            },
-        }
+        ret = {}
 
-        return Response(data)
+        exclude = (
+            'id',
+            'created_at',
+            'updated_at',
+            'checked',
+            'published',
+        )
+
+        # Artworks
+        fields = Artwork._meta.get_fields()
+        for field in fields:
+            if field.name not in exclude and hasattr(field, 'verbose_name'):
+                ret[field.name] = field.verbose_name
+
+        return Response(ret)
 
 
 @extend_schema(tags=['permissions'])
