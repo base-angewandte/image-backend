@@ -142,9 +142,9 @@ def autocomplete(request, *args, **kwargs):
                     },
                 )
         elif t in ['albums', 'titles']:
-            data = MODEL_MAP[t].objects.filter(title__icontains=q_param)[:limit]
+            query = MODEL_MAP[t].objects.filter(title__icontains=q_param)[:limit]
 
-            for item in data:
+            for item in query:
                 d['data'].append(
                     {
                         'id': item.id,
@@ -152,9 +152,9 @@ def autocomplete(request, *args, **kwargs):
                     }
                 )
         else:
-            data = MODEL_MAP[t].objects.filter(name__icontains=q_param)[:limit]
+            query = MODEL_MAP[t].objects.filter(name__icontains=q_param)[:limit]
 
-            for item in data:
+            for item in query:
                 d['data'].append(
                     {
                         'id': item.id,
