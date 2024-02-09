@@ -27,6 +27,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import FloatField, Q, Value
 from django.http import HttpResponse
+from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
@@ -1403,6 +1404,15 @@ def search(request, *args, **kwargs):
 )
 @api_view(['get'])
 def search_filters(request, *args, **kwargs):
+    autocomplete_url = reverse('autocomplete')
+    labels = {
+        'title': _('Title'),
+        'artist': _('Artist'),
+        'place_of_production': _('Place of Production'),
+        'location': _('Location'),
+        'keywords': _('Keywords'),
+        'date': _('Date from, to'),
+    }
     data = {
         'title': {
             'type': 'array',
@@ -1413,14 +1423,14 @@ def search_filters(request, *args, **kwargs):
                     'source': {'type': 'string'},
                 },
             },
-            'title': 'title',
+            'label': labels['title'],
             'x-attrs': {
                 'field_format': 'half',
                 'field_type': 'chips',
                 'dynamic_autosuggest': True,
                 'allow_unknown_entries': True,
-                'source': '/autosuggest/v1/titles/',
-                'placeholder': 'enter title',
+                'source': f'{autocomplete_url}?type=titles',
+                'placeholder': f'{_("Enter")} {labels["title"]}',
                 'order': 1,
             },
         },
@@ -1433,14 +1443,14 @@ def search_filters(request, *args, **kwargs):
                     'source': {'type': 'string'},
                 },
             },
-            'title': 'artist',
+            'title': labels['artist'],
             'x-attrs': {
                 'field_format': 'half',
                 'field_type': 'chips',
                 'dynamic_autosuggest': True,
                 'allow_unknown_entries': True,
-                'source': '/autosuggest/v1/artists/',
-                'placeholder': 'enter artist',
+                'source': f'{autocomplete_url}?type=artists',
+                'placeholder': f'{_("Enter")} {labels["artist"]}',
                 'order': 2,
             },
         },
@@ -1453,18 +1463,18 @@ def search_filters(request, *args, **kwargs):
                     'source': {'type': 'string'},
                 },
             },
-            'title': 'place of production',
+            'title': labels['place_of_production'],
             'x-attrs': {
                 'field_format': 'half',
                 'field_type': 'chips',
                 'dynamic_autosuggest': True,
                 'allow_unknown_entries': True,
-                'source': '/autosuggest/v1/locations/',
-                'placeholder': 'enter place of production',
+                'source': f'{autocomplete_url}?type=locations',
+                'placeholder': f'{_("Enter")} {labels["place_of_production"]}',
                 'order': 3,
             },
         },
-        'current_location': {
+        'location': {
             'type': 'array',
             'items': {
                 'type': 'object',
@@ -1473,14 +1483,14 @@ def search_filters(request, *args, **kwargs):
                     'source': {'type': 'string'},
                 },
             },
-            'title': 'current location',
+            'title': labels['location'],
             'x-attrs': {
                 'field_format': 'half',
                 'field_type': 'chips',
                 'dynamic_autosuggest': True,
                 'allow_unknown_entries': True,
-                'source': '/autosuggest/v1/locations/',
-                'placeholder': 'enter current location',
+                'source': f'{autocomplete_url}?type=locations',
+                'placeholder': f'{_("Enter")} {labels["location"]}',
                 'order': 4,
             },
         },
@@ -1493,15 +1503,15 @@ def search_filters(request, *args, **kwargs):
                     'source': {'type': 'string'},
                 },
             },
-            'title': 'keywords',
+            'title': labels['keywords'],
             'x-attrs': {
-                'placeholder': 'enter keywords',
+                'placeholder': f'{_("Enter")} {labels["keywords"]}',
                 'order': 5,
                 'field_format': 'full',
                 'field_type': 'chips',
                 'allow_unknown_entries': False,
                 'dynamic_autosuggest': True,
-                'source': '/autosuggest/v1/keywords/',
+                'source': f'{autocomplete_url}?type=keywords',
             },
         },
         'date': {
@@ -1510,13 +1520,13 @@ def search_filters(request, *args, **kwargs):
                 'date_from': {'type': 'string'},
                 'date_to': {'type': 'string'},
             },
-            'title': 'date from, to',
+            'title': labels['date'],
             'additionalProperties': False,
             'x-attrs': {
                 'field_format': 'full',
                 'field_type': 'date',
                 'date_format': 'year',
-                'placeholder': {'date': 'enter date'},
+                'placeholder': {'date': f'{_("Enter")} {_("Date")}'},
                 'order': 6,
             },
         },
