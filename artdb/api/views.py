@@ -32,6 +32,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .serializers import (
     AlbumSerializer,
+    AlbumsRequestSerializer,
     CreateAlbumRequestSerializer,
     PermissionsSerializer,
     SearchRequestSerializer,
@@ -249,6 +250,33 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     # additional actions
 
     @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='owner',
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description='Boolean indicating to return albums owned by this user.',
+                default=True,
+            ),
+            OpenApiParameter(
+                name='permissions',
+                type={
+                    'type': 'array',
+                    'items': {'type': 'string', 'enum': settings.PERMISSIONS},
+                },
+                location=OpenApiParameter.QUERY,
+                required=False,
+                style='form',
+                explode=False,
+                description=(
+                    'If the response should also return shared albums, it\'s possible to define which permissions the '
+                    'user needs to have for the album. Since the default is `EDIT`, shared albums with `EDIT` '
+                    'permissions are inculuded in the response.'
+                ),
+                default='EDIT',
+            ),
+        ],
         responses={
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
@@ -257,38 +285,40 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     )
     @action(detail=True, methods=['get'], url_path='albums')
     def retrieve_albums(self, request, pk=None, *args, **kwargs):
-        item_id = pk
+        serializer = AlbumsRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
         try:
-            artwork = Artwork.objects.get(pk=item_id)
-            albums = Album.objects.filter(slides__contains=[[{'id': artwork.pk}]])
-        except Artwork.DoesNotExist:
-            return Response(
-                _('Artwork does not exist'),
-                status=status.HTTP_404_NOT_FOUND,
+            artwork = self.get_queryset().get(pk=pk)
+        except Artwork.DoesNotExist as dne:
+            raise NotFound(_('Artwork does not exist')) from dne
+
+        q_filters = Q()
+
+        if serializer.validated_data['owner']:
+            q_filters |= Q(user=request.user)
+
+        permissions = serializer.validated_data['permissions'].split(',')
+
+        if permissions:
+            q_filters |= Q(
+                pk__in=PermissionsRelation.objects.filter(
+                    user=request.user,
+                    permissions__in=permissions,
+                ).values_list('album__pk', flat=True)
             )
+
+        albums = Album.objects.filter(slides__contains=[[{'id': artwork.pk}]]).filter(
+            q_filters
+        )
 
         return Response(
             [
                 {
                     'id': album.id,
-                    'value': album.title,
+                    'title': album.title,
                 }
                 for album in albums
-                if (album.user.username == request.user.username)
-                or (
-                    request.user.username
-                    in [
-                        p.user.username
-                        for p in PermissionsRelation.objects.filter(album__id=album.id)
-                    ]
-                    and 'VIEW'
-                    in [
-                        p.permissions
-                        for p in PermissionsRelation.objects.filter(
-                            user__username=request.user.username
-                        )
-                    ]
-                )
             ]
         )
 
