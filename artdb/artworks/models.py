@@ -257,9 +257,16 @@ class Album(models.Model):
 class PermissionsRelation(models.Model):
     PERMISSION_CHOICES = ((p, _(p)) for p in settings.PERMISSIONS)
 
+    def default_permission(self):
+        return settings.DEFAULT_PERMISSIONS[0]
+
     album = models.ForeignKey(Album, related_name='album', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
-    permissions = models.CharField(max_length=20, choices=PERMISSION_CHOICES)
+    permissions = models.CharField(
+        max_length=20,
+        choices=PERMISSION_CHOICES,
+        default=default_permission,
+    )
 
 
 class AlbumMembership(OrderedModel):
