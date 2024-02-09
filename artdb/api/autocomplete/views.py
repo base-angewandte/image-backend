@@ -29,6 +29,7 @@ MODEL_MAP = {
     'artists': Artist,
     'keywords': Keyword,
     'locations': Location,
+    'users': get_user_model(),
 }
 
 LABELS_MAP = {
@@ -130,8 +131,7 @@ def autocomplete(request, *args, **kwargs):
         }
 
         if t == 'users':
-            UserModel = get_user_model()
-            query = UserModel.objects.filter(
+            query = MODEL_MAP[t].objects.filter(
                 Q(first_name__icontains=q_param) | Q(last_name__icontains=q_param)
             )[:limit]
             for user in query:
