@@ -21,6 +21,7 @@ import environ
 import requests
 from drf_spectacular.utils import OpenApiParameter
 
+from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
 
 # from django.utils.translation import ugettext_lazy as _
@@ -469,9 +470,17 @@ SPECTACULAR_SETTINGS = {
     ],
 }
 
-PERMISSIONS_DEFAULT = {
-    'VIEW': env.str('PERMISSIONS_DEFAULT_VIEW'),
-    'EDIT': env.str('PERMISSIONS_DEFAULT_EDIT'),
-}
+PERMISSIONS = (
+    'VIEW',
+    'EDIT',
+)
+
+DEFAULT_PERMISSIONS = env.list('DEFAULT_PERMISSIONS', default=['VIEW'])
+
+for permission in DEFAULT_PERMISSIONS:
+    if permission not in PERMISSIONS:
+        raise ImproperlyConfigured(
+            f'Permission {repr(permission)} not allowed in DEFAULT_PERMISSIONS'
+        )
 
 SEARCH_LIMIT = 30
