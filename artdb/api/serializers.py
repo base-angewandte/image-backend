@@ -253,3 +253,14 @@ class UserDataSerializer(serializers.Serializer):
     permissions = serializers.ListSerializer(
         child=serializers.CharField(), help_text='The permissions this user has.'
     )
+
+
+class AlbumsRequestSerializer(serializers.Serializer):
+    owner = serializers.BooleanField(required=False, default=True)
+    permissions = serializers.CharField(required=False, default='EDIT')
+
+    def validate_permissions(self, value):
+        for p in value.split(','):
+            if p not in settings.PERMISSIONS:
+                raise serializers.ValidationError(f'{p} is not a valid permission')
+        return value
