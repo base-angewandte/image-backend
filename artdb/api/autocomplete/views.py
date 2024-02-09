@@ -28,7 +28,6 @@ MODEL_MAP = {
     'titles': Artwork,
     'artists': Artist,
     'keywords': Keyword,
-    'origins': Location,
     'locations': Location,
 }
 
@@ -37,7 +36,6 @@ LABELS_MAP = {
     'titles': _('autocomplete_titles'),
     'artists': _('autocomplete_artists'),
     'keywords': _('autocomplete_keywords'),
-    'origins': _('autocomplete_origins'),
     'locations': _('autocomplete_locations'),
     'users': _('autocomplete_users'),
 }
