@@ -430,7 +430,7 @@ def filter_place_of_production(filter_values):
             locations = Location.objects.filter(name__icontains=val)
             q_objects |= Q(place_of_production__in=locations)
         elif isinstance(val, dict) and 'id' in val.keys():
-            location = Location.objects.filter(place_of_production__id=val.get('id'))
+            location = Location.objects.filter(id=val.get('id'))
             location_plus_descendants = Location.objects.get_queryset_descendants(
                 location,
                 include_self=True,
@@ -453,7 +453,7 @@ def filter_location(filter_values):
             locations = Location.objects.filter(name__icontains=val)
             q_objects |= Q(location__in=locations)
         elif isinstance(val, dict) and 'id' in val.keys():
-            location = Location.objects.filter(location__id=val.get('id'))
+            location = Location.objects.filter(id=val.get('id'))
             location_plus_descendants = Location.objects.get_queryset_descendants(
                 location,
                 include_self=True,
