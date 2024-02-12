@@ -1074,33 +1074,24 @@ class AlbumsViewSet(viewsets.ViewSet):
         will be deleted. If the user is just a user who this album is
         shared with, only their own sharing permission will be deleted.
         """
-        album_id = pk
         try:
-            album = Album.objects.get(pk=album_id)
-            shares_per_album = [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album_id)
-            ]
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .get()
+            )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
 
-            # If User is owner of Album
-            if album.user.username == request.user.username:
-                # all shares (permissions) per Album are deleted
-                perm_rel = PermissionsRelation.objects.filter(album__id=album_id)
-                for p in perm_rel:
-                    p.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+        # user is owner of the album
+        if album.user == request.user:
+            PermissionsRelation.objects.filter(album=album).delete()
 
-            # If User shares Album but is not owner
-            if request.user.username in shares_per_album:
-                # the user's share (permission) is deleted
-                PermissionsRelation.objects.filter(user=request.user).delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+        # album is shared with user
+        else:
+            PermissionsRelation.objects.filter(album=album, user=request.user).delete()
 
-            # User is not owner nor has shares (permissions)
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-        except (Album.DoesNotExist, ValueError):
-            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @extend_schema(
         parameters=[
