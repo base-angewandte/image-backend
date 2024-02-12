@@ -151,6 +151,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             ),
         ],
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
@@ -201,6 +202,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
@@ -281,6 +283,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             ),
         ],
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
@@ -327,6 +330,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         responses={
+            # TODO better response definition
+            # https://drf-spectacular.readthedocs.io/en/latest/faq.html#how-to-serve-in-memory-generated-files-or-files-in-general-outside-filefield
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
@@ -575,6 +580,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             ),
         ],
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
@@ -582,9 +588,13 @@ class AlbumsViewSet(viewsets.ViewSet):
     )
     def list(self, request, *args, **kwargs):
         """List of all Albums (used for getting latest Albums) /albums."""
+
+        # TODO check logic after /folders/root endpoint is implemented
+
         limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
         offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
 
+        # TODO don't query all albums here
         results = Album.objects.all()
 
         slides_ids = []
@@ -679,6 +689,7 @@ class AlbumsViewSet(viewsets.ViewSet):
     @extend_schema(
         request=CreateAlbumRequestSerializer,
         responses={
+            # TODO better response definition
             201: AlbumSerializer,
             403: ERROR_RESPONSES[403],
         },
@@ -698,13 +709,16 @@ class AlbumsViewSet(viewsets.ViewSet):
 
     @extend_schema(
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve(self, request, pk=None, *args, **kwargs):  # TODO update
+    def retrieve(self, request, pk=None, *args, **kwargs):
         """List of Works (Slides) in a specific Album /albums/{id}"""
+
+        # TODO update
 
         album_id = pk
         try:
@@ -729,6 +743,7 @@ class AlbumsViewSet(viewsets.ViewSet):
     @extend_schema(
         request=UpdateAlbumRequestSerializer,
         responses={
+            # TODO better response definition
             200: AlbumSerializer,
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
@@ -736,6 +751,9 @@ class AlbumsViewSet(viewsets.ViewSet):
     )
     def update(self, request, pk=None, *args, **kwargs):
         """Update Album /albums/{id}"""
+
+        # TODO update
+
         album_id = pk
 
         try:
@@ -772,8 +790,12 @@ class AlbumsViewSet(viewsets.ViewSet):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+    # TODO better response definition
     def destroy(self, request, pk=None, *args, **kwargs):
         """Delete Album /albums/{id}"""
+
+        # TODO update
+
         album_id = pk
         try:
             album = Album.objects.get(pk=album_id)
@@ -810,7 +832,9 @@ class AlbumsViewSet(viewsets.ViewSet):
     # additional actions
 
     @extend_schema(
+        # TODO better request definition
         responses={
+            # TODO better response definition
             200: AlbumSerializer,
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
@@ -820,6 +844,8 @@ class AlbumsViewSet(viewsets.ViewSet):
     def append_artwork(self, request, pk=None, *args, **kwargs):
         """/albums/{id}/append_artwork Append artwork to slides as singular
         slide [{'id': x}]"""
+
+        # TODO update
 
         album_id = pk
         try:
@@ -855,7 +881,9 @@ class AlbumsViewSet(viewsets.ViewSet):
             )
 
     @extend_schema(
+        # TODO better request defintion
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
@@ -864,6 +892,9 @@ class AlbumsViewSet(viewsets.ViewSet):
     @action(detail=True, methods=['get'])
     def slides(self, request, pk=None, *args, **kwargs):
         """/albums/{id}/slides LIST (GET) endpoint returns:"""
+
+        # TODO update
+
         album_id = pk
         try:
             album = Album.objects.get(pk=album_id)
@@ -886,6 +917,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
 
     @extend_schema(
+        # TODO better request definition
         request=SlidesSerializer,
         examples=[
             OpenApiExample(
@@ -894,6 +926,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             )
         ],
         responses={
+            # TODO better response defintion
             200: AlbumSerializer,
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
@@ -903,6 +936,8 @@ class AlbumsViewSet(viewsets.ViewSet):
     def create_slides(self, request, pk=None, *args, **kwargs):
         """/albums/{id}/slides Reorder Slides, Separate_slides, Reorder
         artworks within slides."""
+
+        # TODO update
 
         album_id = pk
         try:
@@ -1124,6 +1159,8 @@ class AlbumsViewSet(viewsets.ViewSet):
             ),
         ],
         responses={
+            # TODO better response definition
+            # https://drf-spectacular.readthedocs.io/en/latest/faq.html#how-to-serve-in-memory-generated-files-or-files-in-general-outside-filefield
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
@@ -1132,7 +1169,10 @@ class AlbumsViewSet(viewsets.ViewSet):
     )
     @action(detail=True, methods=['get'])
     def download(self, request, pk=None, *args, **kwargs):
-        # Todo: now only pptx, later also PDF
+        # TODO update
+
+        # TODO only 'pptx' is implemented at the moment, need to implement 'pdf' as well
+
         album_id = pk
         try:
             album = Album.objects.get(id=album_id)
@@ -1186,6 +1226,7 @@ class LabelsViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
@@ -1215,6 +1256,7 @@ class LabelsViewSet(viewsets.GenericViewSet):
 class PermissionsViewSet(viewsets.GenericViewSet):
     @extend_schema(
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
         },
