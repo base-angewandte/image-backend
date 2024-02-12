@@ -1409,8 +1409,8 @@ def search_filters(request, *args, **kwargs):
             'items': {
                 'type': 'object',
                 'properties': {
+                    'id': {'type': 'integer'},
                     'label': {'type': 'string'},
-                    'source': {'type': 'string'},
                 },
             },
             'label': labels['title'],
@@ -1429,8 +1429,8 @@ def search_filters(request, *args, **kwargs):
             'items': {
                 'type': 'object',
                 'properties': {
+                    'id': {'type': 'integer'},
                     'label': {'type': 'string'},
-                    'source': {'type': 'string'},
                 },
             },
             'title': labels['artist'],
@@ -1449,8 +1449,8 @@ def search_filters(request, *args, **kwargs):
             'items': {
                 'type': 'object',
                 'properties': {
+                    'id': {'type': 'integer'},
                     'label': {'type': 'string'},
-                    'source': {'type': 'string'},
                 },
             },
             'title': labels['place_of_production'],
@@ -1469,8 +1469,8 @@ def search_filters(request, *args, **kwargs):
             'items': {
                 'type': 'object',
                 'properties': {
+                    'id': {'type': 'integer'},
                     'label': {'type': 'string'},
-                    'source': {'type': 'string'},
                 },
             },
             'title': labels['location'],
@@ -1489,8 +1489,8 @@ def search_filters(request, *args, **kwargs):
             'items': {
                 'type': 'object',
                 'properties': {
+                    'id': {'type': 'integer'},
                     'label': {'type': 'string'},
-                    'source': {'type': 'string'},
                 },
             },
             'title': labels['keywords'],
