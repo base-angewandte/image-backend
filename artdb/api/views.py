@@ -770,44 +770,30 @@ class AlbumsViewSet(viewsets.ViewSet):
 
         raise PermissionDenied()
 
-    # TODO better response definition
+    @extend_schema(
+        responses={
+            204: OpenApiResponse(),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
     def destroy(self, request, pk=None, *args, **kwargs):
         """Delete Album /albums/{id}"""
 
-        # TODO update
-
-        album_id = pk
         try:
-            album = Album.objects.get(pk=album_id)
-            if album.user.username == request.user.username:
-                album.delete()
-                return Response(
-                    _('Album {album_title} was deleted').format(
-                        album_title=album.title
-                    ),
-                    status=status.HTTP_200_OK,
-                )
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .get()
+            )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
 
-            if request.user.username in [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ] and 'EDIT' in [
-                p.permissions
-                for p in PermissionsRelation.objects.filter(
-                    user__username=request.user.username
-                )
-            ]:
-                album.delete()
-                return Response(
-                    _('Album {album_title} was deleted').format(
-                        album_title=album.title
-                    ),
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-        except (Album.DoesNotExist, ValueError):
-            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+        if album.user == request.user:
+            album.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        raise PermissionDenied()
 
     # additional actions
 
