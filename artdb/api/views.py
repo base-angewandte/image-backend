@@ -694,7 +694,6 @@ class AlbumsViewSet(viewsets.ViewSet):
     @extend_schema(
         request=CreateAlbumRequestSerializer,
         responses={
-            # TODO better response definition
             201: AlbumResponseSerializer,
             403: ERROR_RESPONSES[403],
         },
@@ -715,8 +714,7 @@ class AlbumsViewSet(viewsets.ViewSet):
 
     @extend_schema(
         responses={
-            # TODO better response definition
-            200: OpenApiResponse(description='OK'),
+            200: AlbumResponseSerializer,
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
@@ -738,7 +736,6 @@ class AlbumsViewSet(viewsets.ViewSet):
     @extend_schema(
         request=UpdateAlbumRequestSerializer,
         responses={
-            # TODO better response definition
             200: AlbumResponseSerializer,
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
@@ -830,7 +827,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         # TODO better request definition
         responses={
             # TODO better response definition
-            200: AlbumResponseSerializer,
+            200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
@@ -922,7 +919,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         ],
         responses={
             # TODO better response definition
-            200: AlbumResponseSerializer,
+            200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
