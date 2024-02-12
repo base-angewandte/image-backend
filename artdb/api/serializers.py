@@ -294,3 +294,7 @@ class CreateAlbumRequestSerializer(serializers.ModelSerializer):
 
 class UpdateAlbumRequestSerializer(CreateAlbumRequestSerializer):
     pass
+
+
+class AppendArtworkRequestSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
