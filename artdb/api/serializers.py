@@ -298,3 +298,7 @@ class UpdateAlbumRequestSerializer(CreateAlbumRequestSerializer):
 
 class AppendArtworkRequestSerializer(serializers.Serializer):
     id = serializers.IntegerField()
+
+
+class SlidesRequestSerializer(serializers.Serializer):
+    details = serializers.BooleanField()
