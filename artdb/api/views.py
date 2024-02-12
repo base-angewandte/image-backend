@@ -37,12 +37,12 @@ from .serializers import (
     AlbumsRequestSerializer,
     AppendArtworkRequestSerializer,
     CreateAlbumRequestSerializer,
+    CreateSlidesRequestSerializer,
     PermissionsRequestSerializer,
     PermissionsResponseSerializer,
     SearchRequestSerializer,
     SearchResultSerializer,
     SlidesRequestSerializer,
-    SlidesSerializer,
     UpdateAlbumRequestSerializer,
     UserDataSerializer,
 )
@@ -881,13 +881,16 @@ class AlbumsViewSet(viewsets.ViewSet):
             return Response(album.slides)
 
     @extend_schema(
-        # TODO better request definition
-        request=SlidesSerializer,
-        examples=[
-            OpenApiExample(
-                name='slides',
-                value=[[{'id': 123}, {'id': 456}], [{'id': 789}], [{'id': 123}]],
-            )
+        request=CreateSlidesRequestSerializer,
+        parameters=[
+            OpenApiParameter(
+                name='details',
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description='Boolean indicating if the response should contain details of the artworks',
+                default=False,
+            ),
         ],
         responses={
             # TODO better response definition
@@ -901,66 +904,52 @@ class AlbumsViewSet(viewsets.ViewSet):
         """/albums/{id}/slides Reorder Slides, Separate_slides, Reorder
         artworks within slides."""
 
-        # TODO update
+        serializer = CreateSlidesRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        album_id = pk
+        query_params_serializer = SlidesRequestSerializer(data=request.query_params)
+        query_params_serializer.is_valid(raise_exception=True)
+
         try:
-            album = Album.objects.get(pk=album_id)
-            slides_serializer = SlidesSerializer(data=request.data)
-
-            # Validate slides object
-            if not slides_serializer.is_valid():
-                return Response(
-                    _('Slides format incorrect'), status=status.HTTP_400_BAD_REQUEST
-                )
-
-            slides = slides_serializer.data.get('slides')
-
-            # Check if artworks exist
-            artworks = []
-            for artworks_list in slides:
-                for slide in artworks_list:
-                    if len(artworks_list) <= 2:
-                        try:
-                            artworks.append(Artwork.objects.get(id=slide.get('id')))
-                        except Artwork.DoesNotExist:
-                            return Response(
-                                _(
-                                    f'There is no artwork associated with id {slide.get("id")}.'
-                                ),
-                                status=status.HTTP_404_NOT_FOUND,
-                            )
-                    else:
-                        return Response(
-                            _('No more than two artworks per slide.'),
-                            status=status.HTTP_400_BAD_REQUEST,
-                        )
-
-            album.slides = slides
-
-            if album.user.username == request.user.username:
-                album.save()
-                return Response(slides_with_details(album))
-            if request.user.username in [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ] and 'EDIT' in [
-                p.permissions
-                for p in PermissionsRelation.objects.filter(
-                    user__username=request.user.username
-                )
-            ]:
-                album.save()
-                return Response(slides_with_details(album))
-
-            else:
-                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-
-        except TypeError as e:
-            return Response(
-                _('Could not edit slides: {e}').format(e=e),
-                status=status.HTTP_404_NOT_FOUND,
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .get()
             )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
+
+        if (
+            album.user == request.user
+            or PermissionsRelation.objects.filter(
+                album=album,
+                user=request.user,
+                permissions='EDIT',
+            ).exists()
+        ):
+            slides_list = []
+            for slide in serializer.validated_data:
+                # check if only artworks per slide
+                if len(slide) > 2:
+                    raise ParseError(_('No more than two artworks per slide allowed'))
+                current_slide = []
+                for artwork in slide:
+                    # check if artwork exists
+                    try:
+                        Artwork.objects.get(id=artwork.get('id'))
+                    except Artwork.DoesNotExist as dne:
+                        raise NotFound(_('Artwork does not exist')) from dne
+                    current_slide.append({'id': artwork['id']})
+                slides_list.append(current_slide)
+            album.slides = slides_list
+            album.save()
+
+            if query_params_serializer.validated_data['details']:
+                return Response(slides_with_details(album))
+            else:
+                return Response(album.slides)
+
+        raise PermissionDenied()
 
     @extend_schema(
         responses={
