@@ -302,3 +302,11 @@ class AppendArtworkRequestSerializer(serializers.Serializer):
 
 class SlidesRequestSerializer(serializers.Serializer):
     details = serializers.BooleanField()
+
+
+class SlideSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+
+
+class CreateSlidesRequestSerializer(serializers.ListSerializer):
+    child = SlideSerializer(many=True)
