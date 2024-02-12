@@ -1235,13 +1235,13 @@ class PermissionsViewSet(viewsets.GenericViewSet):
     def list(self, request, *args, **kwargs):
         ret = []
         for permission_type in PermissionsRelation.PERMISSION_CHOICES:
-            ret.append(
-                {
-                    'id': permission_type[0],
-                    'label': permission_type[1],
-                    'default': settings.PERMISSIONS_DEFAULT.get(permission_type[0]),
-                }
-            )
+            permission = {
+                'id': permission_type[0],
+                'label': permission_type[1],
+            }
+            if permission_type[0] in settings.DEFAULT_PERMISSIONS:
+                permission['default'] = True
+            ret.append(permission)
         return Response(ret)
 
 
