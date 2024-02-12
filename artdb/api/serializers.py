@@ -269,3 +269,17 @@ class AlbumsRequestSerializer(serializers.Serializer):
             if p not in settings.PERMISSIONS:
                 raise serializers.ValidationError(f'{p} is not a valid permission')
         return value
+
+
+class PermissionItemSerializer(serializers.Serializer):
+    id = serializers.CharField()
+
+    def validate_id(self, value):
+        if value not in settings.PERMISSIONS:
+            raise serializers.ValidationError(f'{value} is not a valid permission id')
+        return value
+
+
+class PermissionsResponseSerializer(serializers.Serializer):
+    user = UserSerializer()
+    permissions = PermissionItemSerializer(many=True)
