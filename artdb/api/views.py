@@ -16,11 +16,13 @@ from drf_spectacular.utils import (
     OpenApiResponse,
     OpenApiTypes,
     extend_schema,
+    inline_serializer,
 )
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import NotFound, ParseError
 from rest_framework.response import Response
+from rest_framework.serializers import JSONField
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -1371,7 +1373,10 @@ def search(request, *args, **kwargs):
 @extend_schema(
     tags=['search'],
     responses={
-        200: OpenApiResponse(description='OK'),
+        200: inline_serializer(
+            name='SearchFiltersResponse',
+            fields={k: JSONField() for k in FILTERS_KEYS},
+        ),
         403: ERROR_RESPONSES[403],
         404: ERROR_RESPONSES[404],
     },
