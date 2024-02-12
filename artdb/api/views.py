@@ -985,7 +985,7 @@ class AlbumsViewSet(viewsets.ViewSet):
 
         # if the user is not the owner of the album, ony return the permissions of this user
         if album.user != request.user:
-            query.filter(user=request.user)
+            query = query.filter(user=request.user)
 
         return Response(
             [
