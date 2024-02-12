@@ -221,6 +221,11 @@ class SlidesSerializer(serializers.ModelSerializer):
         depth = 1
 
 
+class UserSerializer(serializers.Serializer):
+    id = serializers.CharField(help_text='The user id in the auth backend')
+    name = serializers.CharField(help_text='The display name of the user')
+
+
 @extend_schema_serializer(
     examples=[
         OpenApiExample(
