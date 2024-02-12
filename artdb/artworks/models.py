@@ -255,7 +255,7 @@ class Album(models.Model):
 
 
 class PermissionsRelation(models.Model):
-    PERMISSION_CHOICES = ((p, _(p)) for p in settings.PERMISSIONS)
+    PERMISSION_CHOICES = tuple((p, _(p)) for p in settings.PERMISSIONS)
 
     def default_permission(self):
         return settings.DEFAULT_PERMISSIONS[0]
