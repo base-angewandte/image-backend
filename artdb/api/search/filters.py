@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 def autocomplete_url(type_id):
-    return f'{reverse("autocomplete")}?type={type_id}'
+    return f'{reverse("autocomplete", kwargs={"version":"v1"})}?type={type_id}'
 
 
 autocomplete_url_lazy = lazy(autocomplete_url, str)
