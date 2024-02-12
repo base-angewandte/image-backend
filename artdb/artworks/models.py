@@ -278,7 +278,7 @@ class AlbumMembership(OrderedModel):
     """
 
     collection = models.ForeignKey(
-        Album, verbose_name=_('Folder'), on_delete=models.CASCADE
+        Album, verbose_name=_('Album'), on_delete=models.CASCADE
     )
     artwork = models.ForeignKey(
         Artwork, verbose_name=_('Artwork'), on_delete=models.CASCADE
@@ -289,8 +289,8 @@ class AlbumMembership(OrderedModel):
     )
 
     class Meta(OrderedModel.Meta):
-        verbose_name = _('Folder Membership')
-        verbose_name_plural = _('Folder Memberships')
+        verbose_name = _('Album Membership')
+        verbose_name_plural = _('Album Memberships')
 
     def move_left(self):
         # did the user click a single one or a connected one?
