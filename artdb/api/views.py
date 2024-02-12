@@ -1424,7 +1424,7 @@ def search_filters(request, *args, **kwargs):
                 'order': 1,
             },
         },
-        'artist': {
+        'artists': {
             'type': 'array',
             'items': {
                 'type': 'object',
