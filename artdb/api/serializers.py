@@ -168,33 +168,6 @@ class UpdateAlbumSerializer(serializers.ModelSerializer):
         depth = 1
 
 
-class PermissionsSerializer(UpdateAlbumSerializer):
-    permissions = PermissionsField(
-        label=_('Permissions'),
-        required=False,
-        allow_null=True,
-        default=[{'user': 'username', 'permissions': {'id': 'VIEW'}}],
-    )
-
-    def validate_permissions(self, value):
-        schema = {
-            'type': 'object',
-            'properties': {
-                'user': {'type': 'string'},
-                'permissions': {
-                    'type': 'object',
-                    'properties': {'id': {'type': 'string'}},
-                },
-            },
-        }
-        return validate_json_field(value, schema)
-
-    class Meta:
-        model = Album
-        fields = ('permissions',)
-        depth = 1
-
-
 class SlidesSerializer(serializers.ModelSerializer):
     slides = SlidesField(
         label=_('Slides'),
