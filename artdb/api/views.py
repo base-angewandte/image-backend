@@ -1,4 +1,3 @@
-import json
 import logging
 import re
 import zipfile
@@ -35,8 +34,8 @@ from .serializers import (
     AlbumSerializer,
     AlbumsRequestSerializer,
     CreateAlbumRequestSerializer,
+    PermissionsRequestSerializer,
     PermissionsResponseSerializer,
-    PermissionsSerializer,
     SearchRequestSerializer,
     SearchResultSerializer,
     SlidesSerializer,
@@ -985,7 +984,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         )
 
     @extend_schema(
-        request=PermissionsSerializer,
+        request=PermissionsRequestSerializer(many=True),
         examples=[
             OpenApiExample(
                 name='shared_info',
@@ -993,7 +992,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             )
         ],
         responses={
-            200: AlbumSerializer,
+            200: PermissionsResponseSerializer,
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
@@ -1001,57 +1000,56 @@ class AlbumsViewSet(viewsets.ViewSet):
     @permissions.mapping.post
     def create_permissions(self, request, pk=None, *args, **kwargs):
         """Post Permissions /albums/{id}/permissions."""
-        album_id = pk
+        serializer = PermissionsRequestSerializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+
         try:
-            album = Album.objects.get(pk=album_id)
-            serializer = PermissionsSerializer(data=request.data)
+            album = Album.objects.filter(pk=pk, user=request.user).get()
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
 
-            if not serializer.is_valid():
-                return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
+        users = []
 
-            perm = json.loads(request.data.get('permissions'))[0]
+        # update permissions
+        for item in serializer.validated_data:
+            user = item['user']
 
             try:
-                user = User.objects.get(username=perm.get('user'))
-            except User.DoesNotExist:
-                return Response(
-                    _(f'Invalid user ID: {perm.get("user")}'),
-                    status=status.HTTP_400_BAD_REQUEST,
+                user = User.objects.get(username=user)
+            except User.DoesNotExist as dne:
+                raise ParseError('User does not exist') from dne
+
+            permissions = item['permissions']
+
+            if permissions:
+                users.append(user.username)
+
+            for perm in permissions:
+                PermissionsRelation.objects.update_or_create(
+                    album=album,
+                    user=user,
+                    permissions=perm['id'],
                 )
 
-            permissions = perm.get('permissions').get('id')
+        # remove deleted permissions
+        PermissionsRelation.objects.filter(album=album).exclude(
+            user__username__in=users
+        ).delete()
 
-            if permissions.upper() not in ['VIEW', 'EDIT']:
-                return Response(
-                    _('Permission invalid. Permission can be either VIEW or EDIT'),
-                    status=status.HTTP_404_NOT_FOUND,
-                )
+        query = PermissionsRelation.objects.filter(album=album)
 
-            obj, created = PermissionsRelation.objects.update_or_create(
-                permissions=permissions.upper(),
-                album=album,
-                user=user,
-            )
-
-            return Response(
-                [
-                    {
-                        'user': {
-                            'id': p.user.id,
-                            'name': f'{p.user.first_name} {p.user.last_name}',
-                        },
-                        'permission': [
-                            {
-                                'id': p.permissions.upper()  # possible values: view | edit
-                            }
-                        ],
-                    }
-                    for p in PermissionsRelation.objects.filter(album__id=album.id)
-                ]
-            )
-
-        except Album.DoesNotExist:
-            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            [
+                {
+                    'user': {
+                        'id': p.user.username,
+                        'name': p.user.get_full_name(),
+                    },
+                    'permissions': [{'id': p.permissions}],
+                }
+                for p in query
+            ]
+        )
 
     @extend_schema(
         responses={
