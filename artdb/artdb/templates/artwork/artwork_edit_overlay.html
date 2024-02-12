@@ -24,7 +24,7 @@ when she clicks the EDIT button in the inspector
                     {{ form.image_original.label_tag }}
                     {{ form.image_original }}
                     {{ form.image_original.errors }}
-            </div>  
+            </div>
         </div>
     </div>
 </div>
@@ -78,9 +78,9 @@ when she clicks the EDIT button in the inspector
             {{ form.dimensions }}
         </div>
         <div>
-            {{ form.location_of_creation.errors }}
-            {{ form.location_of_creation.label_tag }}
-            {{ form.location_of_creation }}
+            {{ form.place_of_production.errors }}
+            {{ form.place_of_production.label_tag }}
+            {{ form.place_of_production }}
         </div>
         <div>
             {{ form.location_current.errors }}
@@ -129,13 +129,13 @@ $(document).ready(function() {
         }
         $('.image-big').attr('src', e.target.result);
     }
-   
+
     function readURL(input) {
         if (input.files && input.files[0]) {
             reader.readAsDataURL(input.files[0]);
         }
     }
-    
+
     $('.imageselector').change(function() {
         readURL(this);
     });

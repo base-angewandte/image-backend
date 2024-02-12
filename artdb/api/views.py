@@ -225,11 +225,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'material': artwork.material,
                 'dimensions': artwork.dimensions,
                 'description': artwork.description,
-                'location_of_creation': {
-                    'id': artwork.location_of_creation.id,
-                    'value': artwork.location_of_creation.name,
+                'place_of_production': {
+                    'id': artwork.place_of_production.id,
+                    'value': artwork.place_of_production.name,
                 }
-                if artwork.location_of_creation
+                if artwork.place_of_production
                 else {},
                 'location_current': {
                     'id': artwork.location_current.id,
@@ -354,7 +354,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
             metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]} \n'
             metadata_content += f'{artwork._meta.get_field("location_current").verbose_name.title()}: {artwork.location_current if artwork.location_current else ""} \n'
-            metadata_content += f'{artwork._meta.get_field("location_of_creation").verbose_name.title()}: {artwork.location_of_creation} \n'
+            metadata_content += f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {artwork.place_of_production} \n'
 
             #  image to zipfile & metadata
             with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as image_zip:
@@ -428,9 +428,9 @@ def filter_place_of_production(filter_values):
     for val in filter_values:
         if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val)
-            q_objects |= Q(location_of_creation__in=locations)
+            q_objects |= Q(place_of_production__in=locations)
         elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects |= Q(location_of_creation__id=val.get('id'))
+            q_objects |= Q(place_of_production__id=val.get('id'))
         else:
             raise ParseError(
                 'Invalid filter_value format. See example below for more information.',

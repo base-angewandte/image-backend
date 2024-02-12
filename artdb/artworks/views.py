@@ -39,7 +39,7 @@ def artworks_list(request):
     query_keyword = request.GET.get('keyword')
     query_date_from = request.GET.get('date_from')
     query_date_to = request.GET.get('date_to')
-    query_location_of_creation = request.GET.get('location_of_creation')
+    query_place_of_production = request.GET.get('place_of_production')
     query_location_current = request.GET.get('location_current')
     q_objects = Q()
     context = {}
@@ -47,15 +47,15 @@ def artworks_list(request):
 
     def get_expert_queryset_list():
         expert_list = Artwork.objects.filter(published=True)
-        if query_location_of_creation:
+        if query_place_of_production:
             locations = Location.objects.filter(
-                name__istartswith=query_location_of_creation
+                name__istartswith=query_place_of_production
             )
             locations_plus_descendants = Location.objects.get_queryset_descendants(
                 locations,
                 include_self=True,
             )
-            q_objects.add(Q(location_of_creation__in=locations_plus_descendants), Q.AND)
+            q_objects.add(Q(place_of_production__in=locations_plus_descendants), Q.AND)
         if query_location_current:
             locations = Location.objects.filter(
                 name__istartswith=query_location_current
@@ -105,12 +105,12 @@ def artworks_list(request):
             expert_list = expert_list.annotate(starts_with_title=is_match)
             expert_list = expert_list.filter(q_objects).order_by(
                 '-starts_with_title',
-                'location_of_creation',
+                'place_of_production',
             )
         else:
             expert_list = expert_list.filter(q_objects).order_by(
                 'title',
-                'location_of_creation',
+                'place_of_production',
             )
         return expert_list.distinct()
 
@@ -193,7 +193,7 @@ def artworks_list(request):
                             reduce(
                                 operator.or_,
                                 (
-                                    Q(location_of_creation__name__istartswith=term)
+                                    Q(place_of_production__name__istartswith=term)
                                     for term in terms
                                 ),
                             ),
@@ -252,7 +252,7 @@ def artworks_list(request):
     context['query_keyword'] = query_keyword
     context['query_date_from'] = query_date_from
     context['query_date_to'] = query_date_to
-    context['query_location_of_creation'] = query_location_of_creation
+    context['query_place_of_production'] = query_place_of_production
     context['query_location_current'] = query_location_current
     context['expert_search'] = expert_search
     return render(request, 'artwork/thumbnailbrowser.html', context)

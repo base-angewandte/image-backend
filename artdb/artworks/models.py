@@ -138,7 +138,7 @@ class Artwork(models.Model):
         verbose_name=_('Updated at'), auto_now=True, null=True
     )
     keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'), blank=True)
-    location_of_creation = TreeForeignKey(
+    place_of_production = TreeForeignKey(
         Location,
         verbose_name=_('Place of Production'),
         blank=True,

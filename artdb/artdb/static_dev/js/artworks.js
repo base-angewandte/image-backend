@@ -27,7 +27,7 @@ $(document).ready(function() {
         if (url) el.dataset.url = url;
         return el;
     }
-    
+
     updateInspector = function(elInspector) {
         const url = selectedThumbnail.dataset.url;
         const jsonUrl = url + '.json';
@@ -51,7 +51,7 @@ $(document).ready(function() {
                     elDetails.appendChild(rightButton);
                 };
             };
-            // build all the elements and append them to the DOM 
+            // build all the elements and append them to the DOM
             $.each( data, function( key, val ) {
                 if (!val) return;
                 var elKey, elVal;
@@ -78,12 +78,12 @@ $(document).ready(function() {
                             elEntry.appendChild(elVal);
                         }
                         break;
-                    case 'location_of_creation':
+                    case 'place_of_production':
                         if (val.length === 0) break;
-                        elKey = createEl('div', ['key'], gettext('location_of_creation'));
+                        elKey = createEl('div', ['key'], gettext('place_of_production'));
                         elEntry.appendChild(elKey);
                         elVal = createEl('div', ['value','tag'], val.name);
-                        elVal.dataset.location_of_creation = val.name;
+                        elVal.dataset.place_of_production = val.name;
                         elEntry.appendChild(elVal);
                         break;
                     case 'location_current':
@@ -111,7 +111,7 @@ $(document).ready(function() {
                         }
                 }
                 elDetails.appendChild(elEntry);
-            }); 
+            });
             var elShowAllDetailsButton = createEl('button', ['inspector-button','btn-show-all-details'], gettext('Show more'));
             elDetails.appendChild(elShowAllDetailsButton);
             elInspector.replaceChild(elDetails, elInspector.getElementsByTagName('div')[0]);
@@ -189,7 +189,7 @@ $(document).ready(function() {
         });
     }
 
-    // show the collect artwork overlay 
+    // show the collect artwork overlay
     showCollectOverlay = function(url) {
         var overlayUrl = url + '/collect_overlay/';
         $('#collect-overlay').load(overlayUrl, function() {
@@ -236,7 +236,7 @@ $(document).ready(function() {
         } else {
             $('#search-basic').addClass('hidden', 'fadeout');
             $('#search-expert').removeClass('hidden');
-            $('#search-expert').removeClass('fadeout');         
+            $('#search-expert').removeClass('fadeout');
             $('#search-expert-fold').addClass('unfolded-noanimation');
         }
     }
@@ -250,7 +250,7 @@ $(document).ready(function() {
         }
         $('#search-expert-fold').removeClass('unfolded')
         .one('transitionend', function() {
-            $('#search-basic').removeClass('fadeout'); 
+            $('#search-basic').removeClass('fadeout');
         });
     }
 
@@ -320,7 +320,7 @@ $(document).ready(function() {
                 return s;
             }
             var url = mainPath + "/?searchtype=expert&";
-    
+
             if (e.target.dataset.artist) {
                 var artist = getParameters(e.target.dataset.artist);
                 url += `artist=${artist}`;
@@ -329,9 +329,9 @@ $(document).ready(function() {
                 var keyword = getParameters(e.target.dataset.keyword);
                 url += `keyword=${keyword}`;
             }
-            if (e.target.dataset.location_of_creation) {
-                var location_of_creation = getParameters(e.target.dataset.location_of_creation);
-                url += `location_of_creation=${location_of_creation}`;
+            if (e.target.dataset.place_of_production) {
+                var place_of_production = getParameters(e.target.dataset.place_of_production);
+                url += `place_of_production=${place_of_production}`;
             }
             if (e.target.dataset.location_current) {
                 var location_current = getParameters(e.target.dataset.location_current);
@@ -374,9 +374,9 @@ $(document).ready(function() {
         var bActive = false; // a simple flag
         var evt; // to keep track of the last event
         var handler = function(){ // fired only when screen has refreshed
-          bActive = false; // release our flag 
+          bActive = false; // release our flag
           callback(evt);
-        } 
+        }
         return function handleEvent(e) { // the actual event handler
           evt = e; // save our event at each call
           if (!bActive) { // only if we weren't already doing it
