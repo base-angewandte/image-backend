@@ -140,40 +140,6 @@ class MembershipSerializer(serializers.ModelSerializer):
         fields = ('id', 'connected_with', 'artwork')
 
 
-class SlidesField(serializers.JSONField):
-    pass
-
-
-class PermissionsField(serializers.JSONField):
-    pass
-
-
-class SlidesSerializer(serializers.ModelSerializer):
-    slides = SlidesField(
-        label=_('Slides'),
-        required=False,
-        allow_null=True,
-        default=[[{'id': 18}, {'id': 456}], [{'id': 789}], [{'id': 432}]],
-    )
-
-    def validate_slides(self, value):
-        schema = {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'id': {'type': 'integer'},
-                },
-            },
-        }
-        return validate_json_field(value, schema)
-
-    class Meta:
-        model = Album
-        fields = ('slides',)
-        depth = 1
-
-
 class UserSerializer(serializers.Serializer):
     id = serializers.CharField(help_text='The user id in the auth backend')
     name = serializers.CharField(help_text='The display name of the user')
