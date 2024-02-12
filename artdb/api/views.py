@@ -84,33 +84,38 @@ def artworks_in_slides(album):
     return info_per_slide
 
 
-def simple_album_object(album):
-    return Response(
-        {
-            'id': album.id,
-            'title': album.title,
-            'number_of_artworks': album.artworks.all().count(),
-            'slides': [
-                artwork_in_slide for artwork_in_slide in artworks_in_slides(album)
-            ],
-            'owner': {
-                'id': album.user.id,
-                'name': f'{album.user.first_name} {album.user.last_name}',
-            },
-            'permissions': [
-                {
-                    'user': {
-                        'id': p.user.id,
-                        'name': f'{p.user.first_name} {p.user.last_name}',
-                    },
-                    'permission': [
-                        {'id': p.permissions}  # possible values: view | edit
-                    ],
-                }
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ],
-        }
-    )
+def album_object(album, request_user=None):
+    number_of_artworks = 0
+    slides = album.slides if album.slides else []
+
+    for slide in slides:
+        number_of_artworks += len(slide)
+
+    permissions_qs = PermissionsRelation.objects.filter(album=album)
+
+    if album.user != request_user:
+        permissions_qs = permissions_qs.filter(user=request_user)
+
+    return {
+        'id': album.id,
+        'title': album.title,
+        'number_of_artworks': number_of_artworks,
+        'slides': slides,
+        'owner': {
+            'id': album.user.username,
+            'name': album.user.get_full_name(),
+        },
+        'permissions': [
+            {
+                'user': {
+                    'id': p.user.username,
+                    'name': p.user.get_full_name(),
+                },
+                'permissions': [{'id': p.permissions}],
+            }
+            for p in permissions_qs
+        ],
+    }
 
 
 @extend_schema(tags=['artworks'])
@@ -703,9 +708,10 @@ class AlbumsViewSet(viewsets.ViewSet):
 
         album = Album.objects.create(title=title, user=request.user)
 
-        resp = simple_album_object(album)
-        resp.status_code = status.HTTP_201_CREATED
-        return resp
+        return Response(
+            album_object(album, request_user=request.user),
+            status=status.HTTP_201_CREATED,
+        )
 
     @extend_schema(
         responses={
@@ -727,7 +733,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         except Album.DoesNotExist as dne:
             raise NotFound(_('Album does not exist')) from dne
 
-        return simple_album_object(album)
+        return Response(album_object(album, request_user=request.user))
 
     @extend_schema(
         request=UpdateAlbumRequestSerializer,
@@ -756,7 +762,7 @@ class AlbumsViewSet(viewsets.ViewSet):
 
             if album.user.username == request.user.username:
                 album.save()
-                return simple_album_object(album)
+                return Response(album_object(album, request_user=request.user))
 
             if request.user.username in [
                 p.user.username
@@ -768,7 +774,7 @@ class AlbumsViewSet(viewsets.ViewSet):
                 )
             ]:
                 album.save()
-                return simple_album_object(album)
+                return Response(album_object(album, request_user=request.user))
 
             else:
                 return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
