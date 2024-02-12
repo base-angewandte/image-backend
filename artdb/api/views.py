@@ -430,30 +430,38 @@ def filter_place_of_production(filter_values):
             locations = Location.objects.filter(name__icontains=val)
             q_objects |= Q(place_of_production__in=locations)
         elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects |= Q(place_of_production__id=val.get('id'))
+            location = Location.objects.filter(place_of_production__id=val.get('id'))
+            location_plus_descendants = Location.objects.get_queryset_descendants(
+                location,
+                include_self=True,
+            )
+            q_objects |= Q(place_of_production__in=location_plus_descendants)
         else:
             raise ParseError(
-                'Invalid filter_value format. See example below for more information.',
-                400,
+                'Invalid filter_value format. See example below for more information.'
             )
 
     return q_objects
 
 
-def filter_current_location(filter_values):
-    """Should filter artworks whose current location includes the string if
-    given, AND the artworks for current location which has the given id."""
+def filter_location(filter_values):
+    """Should filter artworks whose location includes the string if given, AND
+    the artworks for location which has the given id."""
     q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val)
             q_objects |= Q(location__in=locations)
         elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects |= Q(location__id=val.get('id'))
+            location = Location.objects.filter(location__id=val.get('id'))
+            location_plus_descendants = Location.objects.get_queryset_descendants(
+                location,
+                include_self=True,
+            )
+            q_objects |= Q(location__in=location_plus_descendants)
         else:
             raise ParseError(
-                'Invalid filter_value format. See example below for more information.',
-                400,
+                'Invalid filter_value format. See example below for more information.'
             )
 
     return q_objects
@@ -1338,7 +1346,7 @@ def search(request, *args, **kwargs):
                 q_objects |= filter_place_of_production(i['filter_values'])
 
             elif i['id'] == 'current_location':
-                q_objects |= filter_current_location(i['filter_values'])
+                q_objects |= filter_location(i['filter_values'])
 
             elif i['id'] == 'keywords':
                 q_objects |= filter_keywords(i['filter_values'])
