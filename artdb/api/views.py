@@ -560,7 +560,6 @@ class AlbumsViewSet(viewsets.ViewSet):
     filter_backends = (DjangoFilterBackend,)
 
     @extend_schema(
-        request=AlbumSerializer,
         parameters=[
             OpenApiParameter(
                 name='limit',
@@ -679,7 +678,10 @@ class AlbumsViewSet(viewsets.ViewSet):
 
     @extend_schema(
         request=CreateAlbumRequestSerializer,
-        responses={201: AlbumSerializer},
+        responses={
+            201: AlbumSerializer,
+            403: ERROR_RESPONSES[403],
+        },
     )
     def create(self, request, *args, **kwargs):
         """Create Album /albums/{id}"""
@@ -695,7 +697,6 @@ class AlbumsViewSet(viewsets.ViewSet):
         return resp
 
     @extend_schema(
-        request=AlbumSerializer,
         responses={
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
@@ -1004,7 +1005,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         request=PermissionsRequestSerializer(many=True),
         examples=[
             OpenApiExample(
-                name='shared_info',
+                name='Set VIEW permissions',
                 value=[{'user': 'username', 'permissions': {'id': 'VIEW'}}],
             )
         ],
