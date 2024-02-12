@@ -277,7 +277,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 description=(
                     'If the response should also return shared albums, it\'s possible to define which permissions the '
                     'user needs to have for the album. Since the default is `EDIT`, shared albums with `EDIT` '
-                    'permissions are inculuded in the response.'
+                    'permissions are included in the response.'
                 ),
                 default='EDIT',
             ),
@@ -881,7 +881,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             )
 
     @extend_schema(
-        # TODO better request defintion
+        # TODO better request definition
         responses={
             # TODO better response definition
             200: OpenApiResponse(description='OK'),
@@ -926,7 +926,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             )
         ],
         responses={
-            # TODO better response defintion
+            # TODO better response definition
             200: AlbumSerializer,
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
