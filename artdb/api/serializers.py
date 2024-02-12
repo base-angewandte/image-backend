@@ -283,3 +283,8 @@ class PermissionItemSerializer(serializers.Serializer):
 class PermissionsResponseSerializer(serializers.Serializer):
     user = UserSerializer()
     permissions = PermissionItemSerializer(many=True)
+
+
+class PermissionsRequestSerializer(serializers.Serializer):
+    user = serializers.CharField()
+    permissions = PermissionItemSerializer(many=True)
