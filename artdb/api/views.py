@@ -779,7 +779,9 @@ class AlbumsViewSet(viewsets.ViewSet):
             if album.user.username == request.user.username:
                 album.delete()
                 return Response(
-                    _(f'Album {album.title} was deleted'),
+                    _('Album {album_title} was deleted').format(
+                        album_title=album.title
+                    ),
                     status=status.HTTP_200_OK,
                 )
 
@@ -794,7 +796,9 @@ class AlbumsViewSet(viewsets.ViewSet):
             ]:
                 album.delete()
                 return Response(
-                    _(f'Album {album.title} was deleted'),
+                    _('Album {album_title} was deleted').format(
+                        album_title=album.title
+                    ),
                     status=status.HTTP_200_OK,
                 )
             else:
@@ -954,7 +958,8 @@ class AlbumsViewSet(viewsets.ViewSet):
 
         except TypeError as e:
             return Response(
-                _(f'Could not edit slides: {e}'), status=status.HTTP_404_NOT_FOUND
+                _('Could not edit slides: {e}').format(e=e),
+                status=status.HTTP_404_NOT_FOUND,
             )
 
     @extend_schema(

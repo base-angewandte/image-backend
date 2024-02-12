@@ -19,11 +19,11 @@ def validate_json_field(value, schema):
         for v in value:
             validate(v, schema)
     except jsonschema.exceptions.ValidationError as e:
-        raise ValidationError(_(f'Well-formed but invalid JSON: {e}')) from e
+        raise ValidationError(_('Well-formed but invalid JSON: {e}').format(e=e)) from e
     except json.decoder.JSONDecodeError as e:
-        raise ValidationError(_(f'Poorly-formed text, not JSON: {e}')) from e
+        raise ValidationError(_('Poorly-formed text, not JSON: {e}').format(e=e)) from e
     except TypeError as e:
-        raise ValidationError(f'Invalid characters: {e}') from e
+        raise ValidationError(_('Invalid characters: {e}').format(e=e)) from e
 
     # check if it is slides, because in that case duplicates are allowed.
     # The validity of slidesis checked above
