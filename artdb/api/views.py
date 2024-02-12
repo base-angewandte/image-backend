@@ -26,10 +26,10 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import FloatField, Q, Value
 from django.http import HttpResponse
-from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
+from .search.filters import FILTERS
 from .serializers import (
     AlbumSerializer,
     AlbumsRequestSerializer,
@@ -1402,132 +1402,4 @@ def search(request, *args, **kwargs):
 )
 @api_view(['get'])
 def search_filters(request, *args, **kwargs):
-    autocomplete_url = reverse('autocomplete')
-    labels = {
-        'title': _('Title'),
-        'artist': _('Artist'),
-        'place_of_production': _('Place of Production'),
-        'location': _('Location'),
-        'keywords': _('Keywords'),
-        'date': _('Date from, to'),
-    }
-    data = {
-        'title': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'id': {'type': 'integer'},
-                    'label': {'type': 'string'},
-                },
-            },
-            'label': labels['title'],
-            'x-attrs': {
-                'field_format': 'half',
-                'field_type': 'chips',
-                'dynamic_autosuggest': True,
-                'allow_unknown_entries': True,
-                'source': f'{autocomplete_url}?type=titles',
-                'placeholder': f'{_("Enter")} {labels["title"]}',
-                'order': 1,
-            },
-        },
-        'artists': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'id': {'type': 'integer'},
-                    'label': {'type': 'string'},
-                },
-            },
-            'title': labels['artist'],
-            'x-attrs': {
-                'field_format': 'half',
-                'field_type': 'chips',
-                'dynamic_autosuggest': True,
-                'allow_unknown_entries': True,
-                'source': f'{autocomplete_url}?type=artists',
-                'placeholder': f'{_("Enter")} {labels["artist"]}',
-                'order': 2,
-            },
-        },
-        'place_of_production': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'id': {'type': 'integer'},
-                    'label': {'type': 'string'},
-                },
-            },
-            'title': labels['place_of_production'],
-            'x-attrs': {
-                'field_format': 'half',
-                'field_type': 'chips',
-                'dynamic_autosuggest': True,
-                'allow_unknown_entries': True,
-                'source': f'{autocomplete_url}?type=locations',
-                'placeholder': f'{_("Enter")} {labels["place_of_production"]}',
-                'order': 3,
-            },
-        },
-        'location': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'id': {'type': 'integer'},
-                    'label': {'type': 'string'},
-                },
-            },
-            'title': labels['location'],
-            'x-attrs': {
-                'field_format': 'half',
-                'field_type': 'chips',
-                'dynamic_autosuggest': True,
-                'allow_unknown_entries': True,
-                'source': f'{autocomplete_url}?type=locations',
-                'placeholder': f'{_("Enter")} {labels["location"]}',
-                'order': 4,
-            },
-        },
-        'keywords': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'id': {'type': 'integer'},
-                    'label': {'type': 'string'},
-                },
-            },
-            'title': labels['keywords'],
-            'x-attrs': {
-                'placeholder': f'{_("Enter")} {labels["keywords"]}',
-                'order': 5,
-                'field_format': 'full',
-                'field_type': 'chips',
-                'allow_unknown_entries': False,
-                'dynamic_autosuggest': True,
-                'source': f'{autocomplete_url}?type=keywords',
-            },
-        },
-        'date': {
-            'type': 'object',
-            'properties': {
-                'date_from': {'type': 'string'},
-                'date_to': {'type': 'string'},
-            },
-            'title': labels['date'],
-            'additionalProperties': False,
-            'x-attrs': {
-                'field_format': 'full',
-                'field_type': 'date',
-                'date_format': 'year',
-                'placeholder': {'date': f'{_("Enter")} {_("Date")}'},
-                'order': 6,
-            },
-        },
-    }
-
-    return Response(data)
+    return Response(FILTERS)
