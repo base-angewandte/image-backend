@@ -41,7 +41,7 @@ from .serializers import (
     SearchRequestSerializer,
     SearchResultSerializer,
     SlidesSerializer,
-    UpdateAlbumSerializer,
+    UpdateAlbumRequestSerializer,
     UserDataSerializer,
 )
 
@@ -726,7 +726,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
 
     @extend_schema(
-        request=UpdateAlbumSerializer,
+        request=UpdateAlbumRequestSerializer,
         responses={
             200: AlbumSerializer,
             403: ERROR_RESPONSES[403],
@@ -741,7 +741,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             album = Album.objects.get(pk=album_id)
             album.title = request.data.get('title')
 
-            serializer = UpdateAlbumSerializer(data=request.data)
+            serializer = UpdateAlbumRequestSerializer(data=request.data)
 
             if not serializer.is_valid():
                 return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)

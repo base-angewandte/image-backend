@@ -153,19 +153,16 @@ class CreateAlbumRequestSerializer(serializers.ModelSerializer):
         fields = ('title',)
 
 
+class UpdateAlbumRequestSerializer(CreateAlbumRequestSerializer):
+    pass
+
+
 class SlidesField(serializers.JSONField):
     pass
 
 
 class PermissionsField(serializers.JSONField):
     pass
-
-
-class UpdateAlbumSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Album
-        fields = ('title',)
-        depth = 1
 
 
 class SlidesSerializer(serializers.ModelSerializer):
