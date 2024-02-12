@@ -16,7 +16,7 @@
             "created_at": "2009-07-27T10:49:10Z",
             "updated_at": "2021-06-22T20:00:09.402Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -47,7 +47,7 @@
             "created_at": "2009-08-07T08:43:38Z",
             "updated_at": "2020-01-09T21:21:10.049Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -81,7 +81,7 @@
             "created_at": "2009-08-07T08:43:51Z",
             "updated_at": "2020-01-09T21:20:20.651Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -115,7 +115,7 @@
             "created_at": "2009-08-07T08:44:03Z",
             "updated_at": "2020-01-09T21:20:31.946Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -149,7 +149,7 @@
             "created_at": "2009-08-07T08:44:15Z",
             "updated_at": "2020-01-09T21:20:08.464Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -183,7 +183,7 @@
             "created_at": "2009-08-07T11:40:09Z",
             "updated_at": "2022-02-04T09:18:39.251Z",
             "place_of_production": 210,
-            "location_current": 2998,
+            "location": 2998,
             "checked": true,
             "published": true,
             "artists": [
@@ -214,7 +214,7 @@
             "created_at": "2009-08-11T09:05:15Z",
             "updated_at": "2020-05-12T09:29:08.456Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -247,7 +247,7 @@
             "created_at": "2009-08-11T09:06:25Z",
             "updated_at": "2020-05-12T09:18:22.551Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -282,7 +282,7 @@
             "created_at": "2009-08-12T13:32:38Z",
             "updated_at": "2020-01-09T15:55:16.276Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -315,7 +315,7 @@
             "created_at": "2009-08-12T13:32:50Z",
             "updated_at": "2020-01-09T15:57:11.017Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -348,7 +348,7 @@
             "created_at": "2009-08-12T13:33:43Z",
             "updated_at": "2020-01-09T17:02:51.328Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -381,7 +381,7 @@
             "created_at": "2009-08-18T17:21:31Z",
             "updated_at": "2021-06-09T09:39:21.784Z",
             "place_of_production": 16,
-            "location_current": 2624,
+            "location": 2624,
             "checked": true,
             "published": true,
             "artists": [
@@ -414,7 +414,7 @@
             "created_at": "2009-09-19T17:24:33Z",
             "updated_at": "2021-05-06T08:38:37.213Z",
             "place_of_production": 210,
-            "location_current": 210,
+            "location": 210,
             "checked": true,
             "published": true,
             "artists": [
@@ -445,7 +445,7 @@
             "created_at": "2009-09-19T19:27:55Z",
             "updated_at": "2021-04-21T12:51:58.968Z",
             "place_of_production": null,
-            "location_current": 1085,
+            "location": 1085,
             "checked": true,
             "published": true,
             "artists": [
@@ -477,7 +477,7 @@
             "created_at": "2009-09-21T08:32:06Z",
             "updated_at": "2021-05-26T08:25:32.623Z",
             "place_of_production": 1496,
-            "location_current": 1936,
+            "location": 1936,
             "checked": true,
             "published": true,
             "artists": [
@@ -506,7 +506,7 @@
             "created_at": "2009-09-23T11:03:36Z",
             "updated_at": "2023-07-06T08:29:07.695Z",
             "place_of_production": 1086,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -539,7 +539,7 @@
             "created_at": "2009-09-25T17:38:22Z",
             "updated_at": "2021-10-14T11:12:53.823Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -571,7 +571,7 @@
             "created_at": "2009-09-25T17:41:17Z",
             "updated_at": "2021-10-20T09:30:34.445Z",
             "place_of_production": 21,
-            "location_current": 653,
+            "location": 653,
             "checked": true,
             "published": true,
             "artists": [
@@ -603,7 +603,7 @@
             "created_at": "2009-09-25T17:43:50Z",
             "updated_at": "2021-10-14T11:22:20.481Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -635,7 +635,7 @@
             "created_at": "2009-09-25T17:46:55Z",
             "updated_at": "2021-10-14T11:24:09.806Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -667,7 +667,7 @@
             "created_at": "2009-09-25T17:49:12Z",
             "updated_at": "2021-10-14T11:25:51.546Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -698,7 +698,7 @@
             "created_at": "2009-09-25T17:53:19Z",
             "updated_at": "2021-10-14T11:31:28.637Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -729,7 +729,7 @@
             "created_at": "2009-09-25T17:57:45Z",
             "updated_at": "2021-10-14T11:36:50.120Z",
             "place_of_production": 21,
-            "location_current": 223,
+            "location": 223,
             "checked": true,
             "published": true,
             "artists": [
@@ -761,7 +761,7 @@
             "created_at": "2009-09-25T18:10:16Z",
             "updated_at": "2021-10-14T11:38:12.393Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -793,7 +793,7 @@
             "created_at": "2009-09-25T18:11:31Z",
             "updated_at": "2021-10-14T11:41:57.293Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -825,7 +825,7 @@
             "created_at": "2009-09-25T18:18:43Z",
             "updated_at": "2021-10-14T11:43:06.524Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -857,7 +857,7 @@
             "created_at": "2009-09-25T18:20:33Z",
             "updated_at": "2021-10-14T11:44:02.824Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -889,7 +889,7 @@
             "created_at": "2009-09-25T18:22:23Z",
             "updated_at": "2021-10-14T11:44:56.356Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -920,7 +920,7 @@
             "created_at": "2009-09-25T18:23:24Z",
             "updated_at": "2021-10-14T11:46:15.853Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -952,7 +952,7 @@
             "created_at": "2009-09-25T18:26:22Z",
             "updated_at": "2021-10-14T11:46:59.529Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -983,7 +983,7 @@
             "created_at": "2009-09-25T18:28:46Z",
             "updated_at": "2021-10-06T11:38:13.393Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1014,7 +1014,7 @@
             "created_at": "2009-09-25T18:42:43Z",
             "updated_at": "2021-10-06T11:37:24.763Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1046,7 +1046,7 @@
             "created_at": "2009-09-25T18:47:24Z",
             "updated_at": "2021-10-06T11:39:21.115Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1078,7 +1078,7 @@
             "created_at": "2009-09-25T18:49:50Z",
             "updated_at": "2021-10-06T11:42:26.853Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1109,7 +1109,7 @@
             "created_at": "2009-09-25T18:52:52Z",
             "updated_at": "2021-10-06T11:43:01.167Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1141,7 +1141,7 @@
             "created_at": "2009-09-25T18:56:32Z",
             "updated_at": "2021-10-06T11:45:52.354Z",
             "place_of_production": 21,
-            "location_current": 3238,
+            "location": 3238,
             "checked": true,
             "published": true,
             "artists": [
@@ -1172,7 +1172,7 @@
             "created_at": "2009-09-25T18:59:14Z",
             "updated_at": "2021-10-06T11:50:45.524Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1203,7 +1203,7 @@
             "created_at": "2009-09-25T19:01:47Z",
             "updated_at": "2021-10-06T11:48:26.780Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1234,7 +1234,7 @@
             "created_at": "2009-09-25T19:03:46Z",
             "updated_at": "2021-10-06T11:49:50.708Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1265,7 +1265,7 @@
             "created_at": "2009-09-25T19:06:13Z",
             "updated_at": "2021-10-06T11:51:51.570Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1296,7 +1296,7 @@
             "created_at": "2009-09-25T19:08:34Z",
             "updated_at": "2021-10-06T11:54:20.638Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1328,7 +1328,7 @@
             "created_at": "2009-09-25T19:11:04Z",
             "updated_at": "2021-10-06T11:56:05.022Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1359,7 +1359,7 @@
             "created_at": "2009-09-25T19:14:52Z",
             "updated_at": "2021-10-06T11:56:43.256Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1390,7 +1390,7 @@
             "created_at": "2009-09-25T19:16:24Z",
             "updated_at": "2021-10-06T11:58:19.115Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1421,7 +1421,7 @@
             "created_at": "2009-09-25T21:04:07Z",
             "updated_at": "2021-10-06T12:01:08.905Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1452,7 +1452,7 @@
             "created_at": "2009-10-15T13:18:17Z",
             "updated_at": "2019-10-31T10:38:47.722Z",
             "place_of_production": null,
-            "location_current": 25,
+            "location": 25,
             "checked": true,
             "published": true,
             "artists": [
@@ -1481,7 +1481,7 @@
             "created_at": "2009-10-19T14:05:29Z",
             "updated_at": "2019-11-08T13:12:11.822Z",
             "place_of_production": null,
-            "location_current": 508,
+            "location": 508,
             "checked": true,
             "published": true,
             "artists": [
@@ -1511,7 +1511,7 @@
             "created_at": "2009-10-19T14:05:31Z",
             "updated_at": "2021-06-22T20:04:07.029Z",
             "place_of_production": 177,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1541,7 +1541,7 @@
             "created_at": "2009-10-19T14:05:34Z",
             "updated_at": "2021-06-22T20:03:15.809Z",
             "place_of_production": 177,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1572,7 +1572,7 @@
             "created_at": "2009-10-19T14:05:41Z",
             "updated_at": "2021-09-23T13:00:33.495Z",
             "place_of_production": 1470,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1602,7 +1602,7 @@
             "created_at": "2009-10-19T14:05:43Z",
             "updated_at": "2019-11-08T13:13:43.807Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1632,7 +1632,7 @@
             "created_at": "2009-10-19T14:05:45Z",
             "updated_at": "2019-11-08T13:17:14.068Z",
             "place_of_production": null,
-            "location_current": 2312,
+            "location": 2312,
             "checked": true,
             "published": true,
             "artists": [
@@ -1661,7 +1661,7 @@
             "created_at": "2009-10-19T14:05:47Z",
             "updated_at": "2021-09-23T12:55:56.795Z",
             "place_of_production": 2315,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1691,7 +1691,7 @@
             "created_at": "2009-10-19T14:05:50Z",
             "updated_at": "2021-06-22T19:58:02.260Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1721,7 +1721,7 @@
             "created_at": "2009-10-19T14:05:52Z",
             "updated_at": "2021-09-23T12:24:25.606Z",
             "place_of_production": 2315,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1751,7 +1751,7 @@
             "created_at": "2009-10-19T14:05:55Z",
             "updated_at": "2021-06-22T20:02:09.077Z",
             "place_of_production": 177,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1781,7 +1781,7 @@
             "created_at": "2009-10-19T14:05:58Z",
             "updated_at": "2021-06-22T20:01:49.478Z",
             "place_of_production": 177,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1811,7 +1811,7 @@
             "created_at": "2009-10-19T14:06:00Z",
             "updated_at": "2021-09-23T12:36:08.791Z",
             "place_of_production": 1086,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1842,7 +1842,7 @@
             "created_at": "2009-10-24T10:32:49Z",
             "updated_at": "2021-09-29T09:29:18.980Z",
             "place_of_production": 702,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1873,7 +1873,7 @@
             "created_at": "2009-10-24T10:32:51Z",
             "updated_at": "2021-09-23T12:43:04.308Z",
             "place_of_production": 842,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1903,7 +1903,7 @@
             "created_at": "2009-10-24T10:32:54Z",
             "updated_at": "2021-09-23T12:41:06.918Z",
             "place_of_production": 177,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1934,7 +1934,7 @@
             "created_at": "2009-10-25T16:35:42Z",
             "updated_at": "2019-12-06T15:33:37.697Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1965,7 +1965,7 @@
             "created_at": "2009-10-25T16:35:44Z",
             "updated_at": "2023-07-06T08:30:54.068Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -1996,7 +1996,7 @@
             "created_at": "2009-10-25T16:35:46Z",
             "updated_at": "2019-12-06T15:31:16.343Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2029,7 +2029,7 @@
             "created_at": "2009-10-25T16:35:49Z",
             "updated_at": "2023-07-06T08:31:04.256Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2060,7 +2060,7 @@
             "created_at": "2009-10-25T16:35:51Z",
             "updated_at": "2023-07-06T11:23:41.008Z",
             "place_of_production": 14,
-            "location_current": 573,
+            "location": 573,
             "checked": true,
             "published": true,
             "artists": [
@@ -2092,7 +2092,7 @@
             "created_at": "2009-10-25T16:35:53Z",
             "updated_at": "2023-07-06T11:23:51.853Z",
             "place_of_production": 14,
-            "location_current": 573,
+            "location": 573,
             "checked": true,
             "published": true,
             "artists": [
@@ -2124,7 +2124,7 @@
             "created_at": "2009-10-25T16:35:56Z",
             "updated_at": "2019-11-07T14:56:01.628Z",
             "place_of_production": 14,
-            "location_current": 573,
+            "location": 573,
             "checked": true,
             "published": true,
             "artists": [
@@ -2156,7 +2156,7 @@
             "created_at": "2009-10-25T16:35:58Z",
             "updated_at": "2019-12-06T15:27:18.546Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2188,7 +2188,7 @@
             "created_at": "2009-10-31T17:08:55Z",
             "updated_at": "2019-12-06T15:19:45.206Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2218,7 +2218,7 @@
             "created_at": "2009-10-31T18:05:56Z",
             "updated_at": "2019-12-06T15:15:32.540Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2248,7 +2248,7 @@
             "created_at": "2009-10-31T18:06:47Z",
             "updated_at": "2022-02-02T15:13:56.076Z",
             "place_of_production": 210,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2280,7 +2280,7 @@
             "created_at": "2009-10-31T18:10:11Z",
             "updated_at": "2019-12-06T15:00:03.258Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2310,7 +2310,7 @@
             "created_at": "2009-10-31T18:12:46Z",
             "updated_at": "2019-12-06T14:58:40.539Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2340,7 +2340,7 @@
             "created_at": "2009-10-31T18:13:23Z",
             "updated_at": "2019-12-06T14:57:50.075Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2370,7 +2370,7 @@
             "created_at": "2009-10-31T18:13:56Z",
             "updated_at": "2019-12-06T14:53:12.160Z",
             "place_of_production": 14,
-            "location_current": 14,
+            "location": 14,
             "checked": true,
             "published": true,
             "artists": [
@@ -2401,7 +2401,7 @@
             "created_at": "2009-10-31T18:16:20Z",
             "updated_at": "2019-12-06T14:50:26.093Z",
             "place_of_production": 14,
-            "location_current": 329,
+            "location": 329,
             "checked": true,
             "published": true,
             "artists": [
@@ -2431,7 +2431,7 @@
             "created_at": "2009-10-31T18:19:44Z",
             "updated_at": "2019-12-06T14:45:23.681Z",
             "place_of_production": 14,
-            "location_current": 210,
+            "location": 210,
             "checked": true,
             "published": true,
             "artists": [
@@ -2461,7 +2461,7 @@
             "created_at": "2009-10-31T18:20:30Z",
             "updated_at": "2019-12-06T14:45:55.072Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2491,7 +2491,7 @@
             "created_at": "2009-10-31T18:22:45Z",
             "updated_at": "2023-07-06T08:27:32.873Z",
             "place_of_production": 468,
-            "location_current": 468,
+            "location": 468,
             "checked": true,
             "published": true,
             "artists": [
@@ -2521,7 +2521,7 @@
             "created_at": "2009-10-31T18:27:58Z",
             "updated_at": "2019-12-06T14:37:36.034Z",
             "place_of_production": 210,
-            "location_current": 210,
+            "location": 210,
             "checked": true,
             "published": true,
             "artists": [
@@ -2549,7 +2549,7 @@
             "created_at": "2009-10-31T18:29:29Z",
             "updated_at": "2019-12-06T14:33:39.005Z",
             "place_of_production": 210,
-            "location_current": 210,
+            "location": 210,
             "checked": true,
             "published": true,
             "artists": [
@@ -2579,7 +2579,7 @@
             "created_at": "2009-10-31T18:31:56Z",
             "updated_at": "2019-12-06T14:31:05.869Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2609,7 +2609,7 @@
             "created_at": "2009-10-31T18:35:20Z",
             "updated_at": "2019-12-06T14:28:15.445Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2639,7 +2639,7 @@
             "created_at": "2009-10-31T18:36:00Z",
             "updated_at": "2019-12-06T14:26:52.918Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2668,7 +2668,7 @@
             "created_at": "2009-10-31T18:41:48Z",
             "updated_at": "2019-12-06T14:23:31.423Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2697,7 +2697,7 @@
             "created_at": "2009-10-31T18:46:25Z",
             "updated_at": "2019-12-06T14:05:10.656Z",
             "place_of_production": 210,
-            "location_current": 210,
+            "location": 210,
             "checked": true,
             "published": true,
             "artists": [
@@ -2726,7 +2726,7 @@
             "created_at": "2009-10-31T18:48:29Z",
             "updated_at": "2019-12-06T13:59:13.682Z",
             "place_of_production": 210,
-            "location_current": 210,
+            "location": 210,
             "checked": true,
             "published": true,
             "artists": [
@@ -2755,7 +2755,7 @@
             "created_at": "2009-10-31T18:51:19Z",
             "updated_at": "2019-12-06T13:58:45.125Z",
             "place_of_production": 210,
-            "location_current": 210,
+            "location": 210,
             "checked": true,
             "published": true,
             "artists": [
@@ -2784,7 +2784,7 @@
             "created_at": "2009-10-31T18:51:36Z",
             "updated_at": "2019-12-06T13:58:19.267Z",
             "place_of_production": 210,
-            "location_current": 210,
+            "location": 210,
             "checked": true,
             "published": true,
             "artists": [
@@ -2813,7 +2813,7 @@
             "created_at": "2009-10-31T18:52:02Z",
             "updated_at": "2019-12-06T13:57:43.083Z",
             "place_of_production": 210,
-            "location_current": 210,
+            "location": 210,
             "checked": true,
             "published": true,
             "artists": [
@@ -2842,7 +2842,7 @@
             "created_at": "2009-10-31T18:52:19Z",
             "updated_at": "2023-07-06T08:28:00.664Z",
             "place_of_production": 210,
-            "location_current": 210,
+            "location": 210,
             "checked": true,
             "published": true,
             "artists": [
@@ -2874,7 +2874,7 @@
             "created_at": "2009-11-02T12:49:29Z",
             "updated_at": "2023-07-06T08:55:12.156Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2905,7 +2905,7 @@
             "created_at": "2009-11-02T12:49:31Z",
             "updated_at": "2023-07-06T08:16:34.421Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2937,7 +2937,7 @@
             "created_at": "2009-11-02T12:49:34Z",
             "updated_at": "2023-07-06T08:16:47.450Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -2969,7 +2969,7 @@
             "created_at": "2009-11-02T12:49:36Z",
             "updated_at": "2019-11-07T14:58:20.042Z",
             "place_of_production": 14,
-            "location_current": 573,
+            "location": 573,
             "checked": true,
             "published": true,
             "artists": [
@@ -3001,7 +3001,7 @@
             "created_at": "2009-11-02T12:49:38Z",
             "updated_at": "2023-07-06T08:33:14.209Z",
             "place_of_production": 12,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3034,7 +3034,7 @@
             "created_at": "2009-11-02T12:49:41Z",
             "updated_at": "2023-07-06T08:54:26.911Z",
             "place_of_production": 12,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3067,7 +3067,7 @@
             "created_at": "2009-11-02T12:49:43Z",
             "updated_at": "2023-07-06T08:54:36.846Z",
             "place_of_production": 12,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3099,7 +3099,7 @@
             "created_at": "2009-11-02T12:49:46Z",
             "updated_at": "2023-07-06T08:54:46.112Z",
             "place_of_production": 12,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3132,7 +3132,7 @@
             "created_at": "2009-11-02T12:49:48Z",
             "updated_at": "2019-12-05T14:20:21.424Z",
             "place_of_production": 12,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3163,7 +3163,7 @@
             "created_at": "2009-11-02T12:49:51Z",
             "updated_at": "2023-07-06T09:02:54.493Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3194,7 +3194,7 @@
             "created_at": "2009-11-02T12:49:53Z",
             "updated_at": "2023-07-06T09:03:03.103Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3225,7 +3225,7 @@
             "created_at": "2009-11-02T12:49:55Z",
             "updated_at": "2023-07-06T09:18:08.900Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3257,7 +3257,7 @@
             "created_at": "2009-11-02T12:49:58Z",
             "updated_at": "2023-07-06T08:24:07.876Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3289,7 +3289,7 @@
             "created_at": "2009-11-02T12:50:00Z",
             "updated_at": "2023-07-06T08:36:14.832Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3323,7 +3323,7 @@
             "created_at": "2009-11-02T12:50:03Z",
             "updated_at": "2023-07-06T09:17:01.852Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3355,7 +3355,7 @@
             "created_at": "2009-11-02T12:50:05Z",
             "updated_at": "2023-07-06T08:36:47.547Z",
             "place_of_production": 210,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3387,7 +3387,7 @@
             "created_at": "2009-11-02T12:50:07Z",
             "updated_at": "2019-12-05T13:17:50.181Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3418,7 +3418,7 @@
             "created_at": "2009-11-02T12:50:09Z",
             "updated_at": "2019-12-05T11:44:16.414Z",
             "place_of_production": 210,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3448,7 +3448,7 @@
             "created_at": "2009-11-02T12:50:12Z",
             "updated_at": "2019-12-05T11:37:52.692Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3479,7 +3479,7 @@
             "created_at": "2009-11-02T12:50:14Z",
             "updated_at": "2022-03-29T14:09:25.171Z",
             "place_of_production": 14,
-            "location_current": 210,
+            "location": 210,
             "checked": true,
             "published": true,
             "artists": [
@@ -3511,7 +3511,7 @@
             "created_at": "2009-11-02T12:50:16Z",
             "updated_at": "2023-07-06T09:04:25.041Z",
             "place_of_production": 210,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3542,7 +3542,7 @@
             "created_at": "2009-11-02T12:50:18Z",
             "updated_at": "2023-07-06T11:24:06.291Z",
             "place_of_production": 14,
-            "location_current": 573,
+            "location": 573,
             "checked": true,
             "published": true,
             "artists": [
@@ -3574,7 +3574,7 @@
             "created_at": "2009-11-02T12:50:21Z",
             "updated_at": "2023-07-06T08:22:07.455Z",
             "place_of_production": 210,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3606,7 +3606,7 @@
             "created_at": "2009-11-02T12:50:24Z",
             "updated_at": "2023-07-06T09:09:57.378Z",
             "place_of_production": 210,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3637,7 +3637,7 @@
             "created_at": "2009-11-02T12:50:25Z",
             "updated_at": "2019-12-05T11:27:50.982Z",
             "place_of_production": 210,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3668,7 +3668,7 @@
             "created_at": "2009-11-02T12:50:27Z",
             "updated_at": "2019-12-05T11:12:56.081Z",
             "place_of_production": 210,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3701,7 +3701,7 @@
             "created_at": "2009-11-02T12:50:30Z",
             "updated_at": "2023-07-06T09:06:55.121Z",
             "place_of_production": 210,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3733,7 +3733,7 @@
             "created_at": "2009-11-02T12:50:33Z",
             "updated_at": "2023-07-06T08:22:55.605Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3765,7 +3765,7 @@
             "created_at": "2009-11-02T12:50:36Z",
             "updated_at": "2023-07-06T08:27:46.736Z",
             "place_of_production": 210,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3797,7 +3797,7 @@
             "created_at": "2009-11-02T12:50:38Z",
             "updated_at": "2023-07-06T08:21:52.457Z",
             "place_of_production": 210,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3829,7 +3829,7 @@
             "created_at": "2009-11-02T12:50:40Z",
             "updated_at": "2023-07-06T08:33:53.382Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -3864,7 +3864,7 @@
             "created_at": "2009-11-02T12:50:43Z",
             "updated_at": "2023-07-06T11:11:30.802Z",
             "place_of_production": 14,
-            "location_current": 573,
+            "location": 573,
             "checked": true,
             "published": true,
             "artists": [
@@ -3896,7 +3896,7 @@
             "created_at": "2009-11-02T12:50:45Z",
             "updated_at": "2023-07-06T11:11:40.556Z",
             "place_of_production": 14,
-            "location_current": 573,
+            "location": 573,
             "checked": true,
             "published": true,
             "artists": [
@@ -3928,7 +3928,7 @@
             "created_at": "2009-11-02T12:50:47Z",
             "updated_at": "2023-07-06T11:11:49.395Z",
             "place_of_production": 14,
-            "location_current": 573,
+            "location": 573,
             "checked": true,
             "published": true,
             "artists": [
@@ -3960,7 +3960,7 @@
             "created_at": "2009-11-02T14:10:26Z",
             "updated_at": "2023-07-06T11:24:16.683Z",
             "place_of_production": 14,
-            "location_current": 573,
+            "location": 573,
             "checked": true,
             "published": true,
             "artists": [
@@ -3992,7 +3992,7 @@
             "created_at": "2009-11-02T14:10:28Z",
             "updated_at": "2023-07-06T08:34:13.408Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4024,7 +4024,7 @@
             "created_at": "2009-11-02T14:10:30Z",
             "updated_at": "2023-07-06T09:04:09.601Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4056,7 +4056,7 @@
             "created_at": "2009-11-28T09:21:35Z",
             "updated_at": "2023-01-19T08:51:58.372Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4090,7 +4090,7 @@
             "created_at": "2009-12-19T15:54:50Z",
             "updated_at": "2019-12-02T16:11:28.529Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4120,7 +4120,7 @@
             "created_at": "2010-01-13T15:38:18Z",
             "updated_at": "2019-10-03T13:18:30.825Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4150,7 +4150,7 @@
             "created_at": "2010-01-13T15:38:21Z",
             "updated_at": "2019-11-21T14:18:20.267Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4180,7 +4180,7 @@
             "created_at": "2010-01-17T11:39:24Z",
             "updated_at": "2023-07-06T09:20:38.868Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4212,7 +4212,7 @@
             "created_at": "2010-01-17T11:39:27Z",
             "updated_at": "2023-07-06T08:24:33.432Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4244,7 +4244,7 @@
             "created_at": "2010-01-17T11:39:29Z",
             "updated_at": "2023-07-06T08:29:38.577Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4276,7 +4276,7 @@
             "created_at": "2010-01-17T11:39:31Z",
             "updated_at": "2019-11-21T14:09:53.859Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4307,7 +4307,7 @@
             "created_at": "2010-01-17T11:39:33Z",
             "updated_at": "2019-06-04T09:38:53.167Z",
             "place_of_production": 14,
-            "location_current": 2715,
+            "location": 2715,
             "checked": true,
             "published": true,
             "artists": [
@@ -4338,7 +4338,7 @@
             "created_at": "2010-01-17T11:39:35Z",
             "updated_at": "2019-06-04T09:39:00.441Z",
             "place_of_production": 14,
-            "location_current": 2715,
+            "location": 2715,
             "checked": true,
             "published": true,
             "artists": [
@@ -4370,7 +4370,7 @@
             "created_at": "2010-01-17T11:39:38Z",
             "updated_at": "2019-11-21T14:10:58.871Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4402,7 +4402,7 @@
             "created_at": "2010-01-17T11:39:40Z",
             "updated_at": "2019-11-21T14:06:08.221Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4432,7 +4432,7 @@
             "created_at": "2010-01-27T15:28:39Z",
             "updated_at": "2021-10-14T11:48:21.710Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4464,7 +4464,7 @@
             "created_at": "2010-01-27T15:28:41Z",
             "updated_at": "2021-10-14T11:48:53.685Z",
             "place_of_production": 21,
-            "location_current": 702,
+            "location": 702,
             "checked": true,
             "published": true,
             "artists": [
@@ -4495,7 +4495,7 @@
             "created_at": "2010-01-27T15:28:44Z",
             "updated_at": "2021-10-28T08:29:53.897Z",
             "place_of_production": 1549,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4526,7 +4526,7 @@
             "created_at": "2010-01-27T15:28:47Z",
             "updated_at": "2021-09-23T12:31:52.336Z",
             "place_of_production": 21,
-            "location_current": 3287,
+            "location": 3287,
             "checked": true,
             "published": true,
             "artists": [
@@ -4557,7 +4557,7 @@
             "created_at": "2010-01-27T15:28:50Z",
             "updated_at": "2021-10-14T11:50:57.689Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4588,7 +4588,7 @@
             "created_at": "2010-01-27T15:28:53Z",
             "updated_at": "2021-06-22T19:57:09.455Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4618,7 +4618,7 @@
             "created_at": "2010-02-17T15:13:08Z",
             "updated_at": "2019-12-03T15:10:26.136Z",
             "place_of_production": 14,
-            "location_current": 329,
+            "location": 329,
             "checked": true,
             "published": true,
             "artists": [
@@ -4648,7 +4648,7 @@
             "created_at": "2010-02-17T15:13:10Z",
             "updated_at": "2019-12-03T15:17:56.576Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4678,7 +4678,7 @@
             "created_at": "2010-02-17T15:13:13Z",
             "updated_at": "2019-12-03T15:18:38.209Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4708,7 +4708,7 @@
             "created_at": "2010-02-17T15:13:16Z",
             "updated_at": "2019-12-03T15:09:00.412Z",
             "place_of_production": 14,
-            "location_current": 2696,
+            "location": 2696,
             "checked": true,
             "published": true,
             "artists": [
@@ -4738,7 +4738,7 @@
             "created_at": "2010-02-17T15:13:19Z",
             "updated_at": "2019-12-03T15:09:30.482Z",
             "place_of_production": 14,
-            "location_current": 2696,
+            "location": 2696,
             "checked": true,
             "published": true,
             "artists": [
@@ -4768,7 +4768,7 @@
             "created_at": "2010-02-17T15:13:21Z",
             "updated_at": "2019-12-03T15:28:32.474Z",
             "place_of_production": 14,
-            "location_current": 2696,
+            "location": 2696,
             "checked": true,
             "published": true,
             "artists": [
@@ -4798,7 +4798,7 @@
             "created_at": "2010-02-17T15:13:24Z",
             "updated_at": "2019-12-03T15:19:42.763Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4828,7 +4828,7 @@
             "created_at": "2010-02-17T15:13:26Z",
             "updated_at": "2019-12-03T15:07:04.350Z",
             "place_of_production": 14,
-            "location_current": 1449,
+            "location": 1449,
             "checked": true,
             "published": true,
             "artists": [
@@ -4858,7 +4858,7 @@
             "created_at": "2010-02-17T15:13:29Z",
             "updated_at": "2019-12-03T15:17:17.913Z",
             "place_of_production": 14,
-            "location_current": 1081,
+            "location": 1081,
             "checked": true,
             "published": true,
             "artists": [
@@ -4888,7 +4888,7 @@
             "created_at": "2010-02-17T16:16:10Z",
             "updated_at": "2023-07-06T08:33:24.847Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4920,7 +4920,7 @@
             "created_at": "2010-03-15T10:13:43Z",
             "updated_at": "2019-12-03T15:15:45.481Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4950,7 +4950,7 @@
             "created_at": "2010-03-20T14:35:57Z",
             "updated_at": "2019-05-09T09:25:17.654Z",
             "place_of_production": 270,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -4981,7 +4981,7 @@
             "created_at": "2010-03-20T14:36:00Z",
             "updated_at": "2019-05-09T09:21:38.223Z",
             "place_of_production": 270,
-            "location_current": 852,
+            "location": 852,
             "checked": true,
             "published": true,
             "artists": [
@@ -5011,7 +5011,7 @@
             "created_at": "2010-03-20T14:36:02Z",
             "updated_at": "2019-11-06T12:31:25.025Z",
             "place_of_production": 270,
-            "location_current": 853,
+            "location": 853,
             "checked": true,
             "published": true,
             "artists": [
@@ -5040,7 +5040,7 @@
             "created_at": "2010-03-20T14:36:05Z",
             "updated_at": "2019-05-09T08:05:39.889Z",
             "place_of_production": 270,
-            "location_current": 855,
+            "location": 855,
             "checked": true,
             "published": true,
             "artists": [
@@ -5070,7 +5070,7 @@
             "created_at": "2010-03-20T14:36:07Z",
             "updated_at": "2019-05-09T09:18:09.767Z",
             "place_of_production": 270,
-            "location_current": 855,
+            "location": 855,
             "checked": true,
             "published": true,
             "artists": [
@@ -5100,7 +5100,7 @@
             "created_at": "2010-03-20T14:36:09Z",
             "updated_at": "2019-05-09T09:26:12.086Z",
             "place_of_production": 270,
-            "location_current": 856,
+            "location": 856,
             "checked": true,
             "published": true,
             "artists": [
@@ -5129,7 +5129,7 @@
             "created_at": "2010-03-20T14:36:11Z",
             "updated_at": "2019-11-06T12:44:26.161Z",
             "place_of_production": 270,
-            "location_current": 25,
+            "location": 25,
             "checked": true,
             "published": true,
             "artists": [
@@ -5159,7 +5159,7 @@
             "created_at": "2010-03-20T14:36:14Z",
             "updated_at": "2019-05-08T15:04:44.089Z",
             "place_of_production": 270,
-            "location_current": 855,
+            "location": 855,
             "checked": true,
             "published": true,
             "artists": [
@@ -5189,7 +5189,7 @@
             "created_at": "2010-03-20T14:36:16Z",
             "updated_at": "2019-05-08T15:03:52.790Z",
             "place_of_production": 270,
-            "location_current": 855,
+            "location": 855,
             "checked": true,
             "published": true,
             "artists": [
@@ -5219,7 +5219,7 @@
             "created_at": "2010-04-09T10:02:58Z",
             "updated_at": "2019-11-21T14:03:00.284Z",
             "place_of_production": 210,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -5250,7 +5250,7 @@
             "created_at": "2010-04-11T13:02:19Z",
             "updated_at": "2023-07-06T08:55:31.794Z",
             "place_of_production": 177,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -5282,7 +5282,7 @@
             "created_at": "2010-04-11T13:02:22Z",
             "updated_at": "2023-07-06T08:55:41.514Z",
             "place_of_production": 177,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -5314,7 +5314,7 @@
             "created_at": "2010-05-29T17:47:20Z",
             "updated_at": "2022-09-01T13:53:53.678Z",
             "place_of_production": 8,
-            "location_current": 2880,
+            "location": 2880,
             "checked": true,
             "published": true,
             "artists": [
@@ -5343,7 +5343,7 @@
             "created_at": "2010-07-07T14:32:17Z",
             "updated_at": "2019-05-09T09:41:13.729Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -5373,7 +5373,7 @@
             "created_at": "2010-11-28T14:20:31Z",
             "updated_at": "2019-12-03T15:12:56.250Z",
             "place_of_production": 14,
-            "location_current": 1364,
+            "location": 1364,
             "checked": true,
             "published": true,
             "artists": [
@@ -5402,7 +5402,7 @@
             "created_at": "2010-11-28T14:20:33Z",
             "updated_at": "2019-04-11T09:44:00.265Z",
             "place_of_production": 14,
-            "location_current": 1364,
+            "location": 1364,
             "checked": true,
             "published": true,
             "artists": [
@@ -5431,7 +5431,7 @@
             "created_at": "2010-11-28T14:20:36Z",
             "updated_at": "2019-11-29T21:00:22.195Z",
             "place_of_production": 14,
-            "location_current": 1364,
+            "location": 1364,
             "checked": true,
             "published": true,
             "artists": [
@@ -5460,7 +5460,7 @@
             "created_at": "2010-11-28T14:20:38Z",
             "updated_at": "2019-12-03T15:11:40.461Z",
             "place_of_production": 14,
-            "location_current": 1364,
+            "location": 1364,
             "checked": true,
             "published": true,
             "artists": [
@@ -5489,7 +5489,7 @@
             "created_at": "2010-11-28T14:20:41Z",
             "updated_at": "2019-12-03T15:12:07.258Z",
             "place_of_production": 14,
-            "location_current": 1364,
+            "location": 1364,
             "checked": true,
             "published": true,
             "artists": [
@@ -5518,7 +5518,7 @@
             "created_at": "2010-11-28T14:20:43Z",
             "updated_at": "2019-12-03T15:13:25.918Z",
             "place_of_production": 14,
-            "location_current": 1364,
+            "location": 1364,
             "checked": true,
             "published": true,
             "artists": [
@@ -5547,7 +5547,7 @@
             "created_at": "2010-11-28T14:20:46Z",
             "updated_at": "2019-12-03T15:24:08.274Z",
             "place_of_production": 14,
-            "location_current": 1364,
+            "location": 1364,
             "checked": true,
             "published": true,
             "artists": [
@@ -5576,7 +5576,7 @@
             "created_at": "2010-11-28T14:20:49Z",
             "updated_at": "2019-12-03T15:14:10.467Z",
             "place_of_production": 14,
-            "location_current": 1364,
+            "location": 1364,
             "checked": true,
             "published": true,
             "artists": [
@@ -5605,7 +5605,7 @@
             "created_at": "2011-01-03T10:37:18Z",
             "updated_at": "2019-04-09T14:42:53.715Z",
             "place_of_production": 14,
-            "location_current": 1364,
+            "location": 1364,
             "checked": true,
             "published": true,
             "artists": [
@@ -5634,7 +5634,7 @@
             "created_at": "2011-01-03T10:37:21Z",
             "updated_at": "2019-11-07T17:25:40.078Z",
             "place_of_production": 14,
-            "location_current": 1364,
+            "location": 1364,
             "checked": true,
             "published": true,
             "artists": [
@@ -5663,7 +5663,7 @@
             "created_at": "2011-01-29T14:36:05Z",
             "updated_at": "2019-11-21T14:01:32.102Z",
             "place_of_production": 14,
-            "location_current": 1364,
+            "location": 1364,
             "checked": true,
             "published": true,
             "artists": [
@@ -5694,7 +5694,7 @@
             "created_at": "2011-03-14T14:25:16Z",
             "updated_at": "2019-12-03T15:18:51.113Z",
             "place_of_production": 14,
-            "location_current": 1432,
+            "location": 1432,
             "checked": true,
             "published": true,
             "artists": [
@@ -5723,7 +5723,7 @@
             "created_at": "2011-03-21T15:49:03Z",
             "updated_at": "2019-11-13T14:15:30.976Z",
             "place_of_production": 14,
-            "location_current": 1432,
+            "location": 1432,
             "checked": true,
             "published": true,
             "artists": [
@@ -5753,7 +5753,7 @@
             "created_at": "2011-03-21T15:49:59Z",
             "updated_at": "2023-04-27T07:52:51.938Z",
             "place_of_production": 171,
-            "location_current": 1432,
+            "location": 1432,
             "checked": true,
             "published": true,
             "artists": [
@@ -5786,7 +5786,7 @@
             "created_at": "2011-03-26T08:35:24Z",
             "updated_at": "2019-11-13T14:12:54.031Z",
             "place_of_production": 14,
-            "location_current": 573,
+            "location": 573,
             "checked": true,
             "published": true,
             "artists": [
@@ -5816,7 +5816,7 @@
             "created_at": "2011-03-26T08:35:26Z",
             "updated_at": "2019-11-21T13:59:02.024Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -5846,7 +5846,7 @@
             "created_at": "2011-11-09T14:42:25Z",
             "updated_at": "2019-08-22T08:00:55.558Z",
             "place_of_production": 13,
-            "location_current": 1240,
+            "location": 1240,
             "checked": true,
             "published": true,
             "artists": [
@@ -5874,7 +5874,7 @@
             "created_at": "2011-11-09T14:42:29Z",
             "updated_at": "2019-04-11T14:07:32.605Z",
             "place_of_production": 13,
-            "location_current": 902,
+            "location": 902,
             "checked": true,
             "published": true,
             "artists": [
@@ -5902,7 +5902,7 @@
             "created_at": "2011-11-09T14:42:32Z",
             "updated_at": "2022-04-21T07:32:44.015Z",
             "place_of_production": 13,
-            "location_current": 1640,
+            "location": 1640,
             "checked": true,
             "published": true,
             "artists": [
@@ -5932,7 +5932,7 @@
             "created_at": "2011-11-09T14:42:35Z",
             "updated_at": "2023-03-06T10:03:20.808Z",
             "place_of_production": 13,
-            "location_current": 508,
+            "location": 508,
             "checked": true,
             "published": true,
             "artists": [
@@ -5961,7 +5961,7 @@
             "created_at": "2011-11-09T14:42:38Z",
             "updated_at": "2021-08-19T08:34:12.358Z",
             "place_of_production": 13,
-            "location_current": 1640,
+            "location": 1640,
             "checked": true,
             "published": true,
             "artists": [
@@ -5989,7 +5989,7 @@
             "created_at": "2011-11-09T14:42:41Z",
             "updated_at": "2019-05-08T13:40:42.303Z",
             "place_of_production": 13,
-            "location_current": 539,
+            "location": 539,
             "checked": true,
             "published": true,
             "artists": [
@@ -6017,7 +6017,7 @@
             "created_at": "2011-11-09T14:42:44Z",
             "updated_at": "2022-09-14T09:23:49.258Z",
             "place_of_production": 13,
-            "location_current": 905,
+            "location": 905,
             "checked": true,
             "published": true,
             "artists": [
@@ -6048,7 +6048,7 @@
             "created_at": "2011-11-09T14:42:47Z",
             "updated_at": "2022-04-21T07:13:20.825Z",
             "place_of_production": 13,
-            "location_current": 1658,
+            "location": 1658,
             "checked": true,
             "published": true,
             "artists": [
@@ -6078,7 +6078,7 @@
             "created_at": "2011-11-09T14:42:54Z",
             "updated_at": "2020-11-10T11:26:31.300Z",
             "place_of_production": 13,
-            "location_current": 1660,
+            "location": 1660,
             "checked": true,
             "published": true,
             "artists": [
@@ -6106,7 +6106,7 @@
             "created_at": "2011-11-09T14:42:56Z",
             "updated_at": "2022-04-21T07:35:28.100Z",
             "place_of_production": 903,
-            "location_current": 269,
+            "location": 269,
             "checked": true,
             "published": true,
             "artists": [
@@ -6136,7 +6136,7 @@
             "created_at": "2011-11-09T14:43:00Z",
             "updated_at": "2022-04-21T07:37:03.893Z",
             "place_of_production": 13,
-            "location_current": 1642,
+            "location": 1642,
             "checked": true,
             "published": true,
             "artists": [
@@ -6165,7 +6165,7 @@
             "created_at": "2011-11-09T14:43:03Z",
             "updated_at": "2022-12-01T14:22:07.934Z",
             "place_of_production": 13,
-            "location_current": 2395,
+            "location": 2395,
             "checked": true,
             "published": true,
             "artists": [
@@ -6195,7 +6195,7 @@
             "created_at": "2011-11-09T14:43:06Z",
             "updated_at": "2020-11-10T10:48:54.032Z",
             "place_of_production": 13,
-            "location_current": 1316,
+            "location": 1316,
             "checked": true,
             "published": true,
             "artists": [
@@ -6223,7 +6223,7 @@
             "created_at": "2011-11-09T14:43:09Z",
             "updated_at": "2020-11-03T12:38:02.111Z",
             "place_of_production": 13,
-            "location_current": 904,
+            "location": 904,
             "checked": true,
             "published": true,
             "artists": [
@@ -6251,7 +6251,7 @@
             "created_at": "2011-11-09T14:43:12Z",
             "updated_at": "2020-11-10T11:32:44.640Z",
             "place_of_production": 13,
-            "location_current": 2597,
+            "location": 2597,
             "checked": true,
             "published": true,
             "artists": [
@@ -6280,7 +6280,7 @@
             "created_at": "2011-11-09T14:43:16Z",
             "updated_at": "2019-04-25T14:10:44.837Z",
             "place_of_production": 13,
-            "location_current": 638,
+            "location": 638,
             "checked": true,
             "published": true,
             "artists": [
@@ -6308,7 +6308,7 @@
             "created_at": "2011-11-09T14:43:19Z",
             "updated_at": "2022-04-21T07:20:22.066Z",
             "place_of_production": 13,
-            "location_current": 490,
+            "location": 490,
             "checked": true,
             "published": true,
             "artists": [
@@ -6338,7 +6338,7 @@
             "created_at": "2011-11-09T14:43:21Z",
             "updated_at": "2020-11-10T11:36:07.341Z",
             "place_of_production": 13,
-            "location_current": 370,
+            "location": 370,
             "checked": true,
             "published": true,
             "artists": [
@@ -6366,7 +6366,7 @@
             "created_at": "2011-11-09T14:43:23Z",
             "updated_at": "2022-04-21T07:28:23.819Z",
             "place_of_production": 13,
-            "location_current": 1647,
+            "location": 1647,
             "checked": true,
             "published": true,
             "artists": [
@@ -6396,7 +6396,7 @@
             "created_at": "2011-11-09T14:43:25Z",
             "updated_at": "2022-04-21T07:15:40.457Z",
             "place_of_production": 13,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -6426,7 +6426,7 @@
             "created_at": "2011-11-09T14:43:28Z",
             "updated_at": "2022-04-21T07:39:03.602Z",
             "place_of_production": 13,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -6454,7 +6454,7 @@
             "created_at": "2013-03-09T17:52:34Z",
             "updated_at": "2023-07-06T09:16:26.458Z",
             "place_of_production": 270,
-            "location_current": 178,
+            "location": 178,
             "checked": true,
             "published": true,
             "artists": [
@@ -6484,7 +6484,7 @@
             "created_at": "2013-05-03T15:31:53Z",
             "updated_at": "2023-07-06T09:19:21.179Z",
             "place_of_production": 270,
-            "location_current": 853,
+            "location": 853,
             "checked": true,
             "published": true,
             "artists": [
@@ -6514,7 +6514,7 @@
             "created_at": "2013-05-03T15:31:53Z",
             "updated_at": "2023-07-06T09:19:12.286Z",
             "place_of_production": 270,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -6544,7 +6544,7 @@
             "created_at": "2013-05-03T15:31:53Z",
             "updated_at": "2023-07-06T09:20:46.774Z",
             "place_of_production": 270,
-            "location_current": 2083,
+            "location": 2083,
             "checked": true,
             "published": true,
             "artists": [
@@ -6574,7 +6574,7 @@
             "created_at": "2013-05-03T15:31:53Z",
             "updated_at": "2019-11-06T12:45:05.460Z",
             "place_of_production": 270,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -6606,7 +6606,7 @@
             "created_at": "2013-05-03T15:31:53Z",
             "updated_at": "2023-07-06T09:20:08.100Z",
             "place_of_production": 270,
-            "location_current": 855,
+            "location": 855,
             "checked": true,
             "published": true,
             "artists": [
@@ -6636,7 +6636,7 @@
             "created_at": "2013-05-03T15:31:53Z",
             "updated_at": "2019-05-09T10:13:41.422Z",
             "place_of_production": 270,
-            "location_current": 2083,
+            "location": 2083,
             "checked": true,
             "published": true,
             "artists": [
@@ -6666,7 +6666,7 @@
             "created_at": "2013-05-03T15:31:53Z",
             "updated_at": "2023-07-06T09:20:17.185Z",
             "place_of_production": 270,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -6696,7 +6696,7 @@
             "created_at": "2013-05-03T15:31:53Z",
             "updated_at": "2023-07-06T09:18:34.179Z",
             "place_of_production": 270,
-            "location_current": 2083,
+            "location": 2083,
             "checked": true,
             "published": true,
             "artists": [
@@ -6726,7 +6726,7 @@
             "created_at": "2013-05-03T15:31:53Z",
             "updated_at": "2023-07-06T09:09:01.751Z",
             "place_of_production": 270,
-            "location_current": 2085,
+            "location": 2085,
             "checked": true,
             "published": true,
             "artists": [
@@ -6756,7 +6756,7 @@
             "created_at": "2013-05-03T15:31:53Z",
             "updated_at": "2023-07-06T08:31:25.535Z",
             "place_of_production": 270,
-            "location_current": 715,
+            "location": 715,
             "checked": true,
             "published": true,
             "artists": [
@@ -6786,7 +6786,7 @@
             "created_at": "2013-05-03T15:31:53Z",
             "updated_at": "2023-07-06T09:18:54.056Z",
             "place_of_production": 270,
-            "location_current": 25,
+            "location": 25,
             "checked": true,
             "published": true,
             "artists": [
@@ -6816,7 +6816,7 @@
             "created_at": "2013-05-03T15:31:53Z",
             "updated_at": "2023-07-06T09:19:01.681Z",
             "place_of_production": 270,
-            "location_current": 25,
+            "location": 25,
             "checked": true,
             "published": true,
             "artists": [
@@ -6846,7 +6846,7 @@
             "created_at": "2013-09-29T19:07:20Z",
             "updated_at": "2023-01-12T08:45:12.622Z",
             "place_of_production": null,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -6876,7 +6876,7 @@
             "created_at": "2013-12-14T14:38:07Z",
             "updated_at": "2019-06-04T10:09:55.739Z",
             "place_of_production": null,
-            "location_current": 2265,
+            "location": 2265,
             "checked": true,
             "published": true,
             "artists": [
@@ -6905,7 +6905,7 @@
             "created_at": "2013-12-14T14:38:07Z",
             "updated_at": "2019-06-04T10:10:04.186Z",
             "place_of_production": null,
-            "location_current": 2265,
+            "location": 2265,
             "checked": true,
             "published": true,
             "artists": [
@@ -6934,7 +6934,7 @@
             "created_at": "2013-12-14T14:38:07Z",
             "updated_at": "2019-06-04T10:10:13.597Z",
             "place_of_production": null,
-            "location_current": 2265,
+            "location": 2265,
             "checked": true,
             "published": true,
             "artists": [
@@ -6963,7 +6963,7 @@
             "created_at": "2013-12-14T14:38:07Z",
             "updated_at": "2019-06-04T10:10:24.581Z",
             "place_of_production": null,
-            "location_current": 2265,
+            "location": 2265,
             "checked": true,
             "published": true,
             "artists": [
@@ -6992,7 +6992,7 @@
             "created_at": "2013-12-14T14:38:07Z",
             "updated_at": "2019-06-04T10:10:46.635Z",
             "place_of_production": null,
-            "location_current": 2265,
+            "location": 2265,
             "checked": true,
             "published": true,
             "artists": [
@@ -7021,7 +7021,7 @@
             "created_at": "2013-12-14T14:38:07Z",
             "updated_at": "2019-06-04T10:11:13.049Z",
             "place_of_production": null,
-            "location_current": 2265,
+            "location": 2265,
             "checked": true,
             "published": true,
             "artists": [
@@ -7050,7 +7050,7 @@
             "created_at": "2013-12-14T14:38:07Z",
             "updated_at": "2019-06-04T10:11:23.240Z",
             "place_of_production": null,
-            "location_current": 2265,
+            "location": 2265,
             "checked": true,
             "published": true,
             "artists": [
@@ -7079,7 +7079,7 @@
             "created_at": "2013-12-14T14:38:07Z",
             "updated_at": "2019-06-04T10:11:35.434Z",
             "place_of_production": null,
-            "location_current": 2265,
+            "location": 2265,
             "checked": true,
             "published": true,
             "artists": [
@@ -7108,7 +7108,7 @@
             "created_at": "2013-12-14T14:38:07Z",
             "updated_at": "2019-06-04T10:11:47.869Z",
             "place_of_production": null,
-            "location_current": 2265,
+            "location": 2265,
             "checked": true,
             "published": true,
             "artists": [
@@ -7137,7 +7137,7 @@
             "created_at": "2013-12-14T14:38:07Z",
             "updated_at": "2019-06-04T10:11:59.297Z",
             "place_of_production": null,
-            "location_current": 2265,
+            "location": 2265,
             "checked": true,
             "published": true,
             "artists": [
@@ -7166,7 +7166,7 @@
             "created_at": "2013-12-14T14:38:07Z",
             "updated_at": "2019-06-04T10:12:08.482Z",
             "place_of_production": null,
-            "location_current": 2265,
+            "location": 2265,
             "checked": true,
             "published": true,
             "artists": [
@@ -7195,7 +7195,7 @@
             "created_at": "2013-12-14T14:38:07Z",
             "updated_at": "2019-06-04T10:12:21.909Z",
             "place_of_production": null,
-            "location_current": 2265,
+            "location": 2265,
             "checked": true,
             "published": true,
             "artists": [
@@ -7224,7 +7224,7 @@
             "created_at": "2013-12-14T14:38:07Z",
             "updated_at": "2019-06-04T10:12:30.447Z",
             "place_of_production": null,
-            "location_current": 2265,
+            "location": 2265,
             "checked": true,
             "published": true,
             "artists": [
@@ -7253,7 +7253,7 @@
             "created_at": "2013-12-14T14:38:07Z",
             "updated_at": "2019-06-04T10:12:40.550Z",
             "place_of_production": null,
-            "location_current": 2265,
+            "location": 2265,
             "checked": true,
             "published": true,
             "artists": [
@@ -7282,7 +7282,7 @@
             "created_at": "2014-02-01T15:14:31Z",
             "updated_at": "2019-12-03T15:13:50.739Z",
             "place_of_production": null,
-            "location_current": 573,
+            "location": 573,
             "checked": true,
             "published": true,
             "artists": [
@@ -7312,7 +7312,7 @@
             "created_at": "2014-02-01T15:14:31Z",
             "updated_at": "2019-04-11T10:01:57.237Z",
             "place_of_production": 14,
-            "location_current": 1364,
+            "location": 1364,
             "checked": true,
             "published": true,
             "artists": [
@@ -7342,7 +7342,7 @@
             "created_at": "2014-08-26T15:30:26Z",
             "updated_at": "2019-11-21T13:57:50.569Z",
             "place_of_production": 14,
-            "location_current": 824,
+            "location": 824,
             "checked": true,
             "published": true,
             "artists": [
@@ -7372,7 +7372,7 @@
             "created_at": "2014-08-26T15:30:26Z",
             "updated_at": "2019-11-21T13:56:12.141Z",
             "place_of_production": 14,
-            "location_current": 824,
+            "location": 824,
             "checked": true,
             "published": true,
             "artists": [
@@ -7402,7 +7402,7 @@
             "created_at": "2014-08-26T15:30:26Z",
             "updated_at": "2019-11-21T13:57:09.761Z",
             "place_of_production": 14,
-            "location_current": 824,
+            "location": 824,
             "checked": true,
             "published": true,
             "artists": [
@@ -7432,7 +7432,7 @@
             "created_at": "2014-08-26T15:30:26Z",
             "updated_at": "2019-11-21T13:56:33.474Z",
             "place_of_production": 14,
-            "location_current": 824,
+            "location": 824,
             "checked": true,
             "published": true,
             "artists": [
@@ -7462,7 +7462,7 @@
             "created_at": "2014-11-26T19:55:17Z",
             "updated_at": "2020-01-09T17:02:13.960Z",
             "place_of_production": 16,
-            "location_current": 532,
+            "location": 532,
             "checked": true,
             "published": true,
             "artists": [
@@ -7497,7 +7497,7 @@
             "created_at": "2014-11-26T19:55:17Z",
             "updated_at": "2022-12-02T08:42:28.762Z",
             "place_of_production": 16,
-            "location_current": 1753,
+            "location": 1753,
             "checked": true,
             "published": true,
             "artists": [
@@ -7530,7 +7530,7 @@
             "created_at": "2014-11-26T19:55:17Z",
             "updated_at": "2022-03-30T09:48:58.771Z",
             "place_of_production": 1,
-            "location_current": 171,
+            "location": 171,
             "checked": true,
             "published": true,
             "artists": [
@@ -7560,7 +7560,7 @@
             "created_at": "2014-11-26T19:55:17Z",
             "updated_at": "2022-03-30T09:48:03.329Z",
             "place_of_production": 1,
-            "location_current": 171,
+            "location": 171,
             "checked": true,
             "published": true,
             "artists": [
@@ -7590,7 +7590,7 @@
             "created_at": "2014-11-26T19:55:17Z",
             "updated_at": "2022-03-30T09:48:30.889Z",
             "place_of_production": 1,
-            "location_current": 171,
+            "location": 171,
             "checked": true,
             "published": true,
             "artists": [
@@ -7620,7 +7620,7 @@
             "created_at": "2014-11-26T19:55:17Z",
             "updated_at": "2021-03-25T14:12:53.949Z",
             "place_of_production": 1,
-            "location_current": 171,
+            "location": 171,
             "checked": true,
             "published": true,
             "artists": [
@@ -7648,7 +7648,7 @@
             "created_at": "2015-02-24T17:38:47Z",
             "updated_at": "2021-01-26T13:30:10.480Z",
             "place_of_production": 2373,
-            "location_current": 2373,
+            "location": 2373,
             "checked": true,
             "published": true,
             "artists": [
@@ -7677,7 +7677,7 @@
             "created_at": "2015-02-24T17:39:15Z",
             "updated_at": "2020-01-14T13:57:15.847Z",
             "place_of_production": 472,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -7705,7 +7705,7 @@
             "created_at": "2015-02-24T17:39:15Z",
             "updated_at": "2022-03-30T10:59:33.878Z",
             "place_of_production": 282,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -7735,7 +7735,7 @@
             "created_at": "2015-02-24T17:39:15Z",
             "updated_at": "2020-02-10T09:01:34.242Z",
             "place_of_production": 282,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -7765,7 +7765,7 @@
             "created_at": "2015-02-24T17:39:15Z",
             "updated_at": "2021-01-26T13:39:11.255Z",
             "place_of_production": 2374,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -7794,7 +7794,7 @@
             "created_at": "2015-02-24T17:39:15Z",
             "updated_at": "2020-01-14T13:51:16.939Z",
             "place_of_production": 2374,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -7822,7 +7822,7 @@
             "created_at": "2015-02-24T17:39:15Z",
             "updated_at": "2020-01-14T13:51:38.676Z",
             "place_of_production": 2374,
-            "location_current": 2376,
+            "location": 2376,
             "checked": true,
             "published": true,
             "artists": [
@@ -7850,7 +7850,7 @@
             "created_at": "2015-02-24T17:39:15Z",
             "updated_at": "2023-04-25T08:53:31.492Z",
             "place_of_production": 281,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -7879,7 +7879,7 @@
             "created_at": "2015-02-24T17:39:15Z",
             "updated_at": "2023-04-25T07:52:57.804Z",
             "place_of_production": 282,
-            "location_current": 2373,
+            "location": 2373,
             "checked": true,
             "published": true,
             "artists": [
@@ -7908,7 +7908,7 @@
             "created_at": "2015-03-11T12:19:00Z",
             "updated_at": "2019-06-04T08:59:58.340Z",
             "place_of_production": 282,
-            "location_current": 2373,
+            "location": 2373,
             "checked": true,
             "published": true,
             "artists": [
@@ -7936,7 +7936,7 @@
             "created_at": "2015-03-11T12:19:00Z",
             "updated_at": "2019-06-04T09:00:16.687Z",
             "place_of_production": 282,
-            "location_current": 2373,
+            "location": 2373,
             "checked": true,
             "published": true,
             "artists": [
@@ -7964,7 +7964,7 @@
             "created_at": "2015-03-11T12:19:00Z",
             "updated_at": "2020-01-14T13:55:24.862Z",
             "place_of_production": 282,
-            "location_current": 2373,
+            "location": 2373,
             "checked": true,
             "published": true,
             "artists": [
@@ -7992,7 +7992,7 @@
             "created_at": "2015-03-11T12:19:00Z",
             "updated_at": "2023-04-25T07:53:06.322Z",
             "place_of_production": 282,
-            "location_current": 2373,
+            "location": 2373,
             "checked": true,
             "published": true,
             "artists": [
@@ -8021,7 +8021,7 @@
             "created_at": "2015-03-11T12:19:00Z",
             "updated_at": "2023-04-25T09:22:31.830Z",
             "place_of_production": 282,
-            "location_current": 2378,
+            "location": 2378,
             "checked": true,
             "published": true,
             "artists": [
@@ -8051,7 +8051,7 @@
             "created_at": "2015-03-11T12:19:00Z",
             "updated_at": "2023-04-25T07:52:07.753Z",
             "place_of_production": 1111,
-            "location_current": 2379,
+            "location": 2379,
             "checked": true,
             "published": true,
             "artists": [
@@ -8080,7 +8080,7 @@
             "created_at": "2015-03-11T12:19:00Z",
             "updated_at": "2020-01-14T13:55:43.964Z",
             "place_of_production": 282,
-            "location_current": 2373,
+            "location": 2373,
             "checked": true,
             "published": true,
             "artists": [
@@ -8108,7 +8108,7 @@
             "created_at": "2015-03-11T12:19:00Z",
             "updated_at": "2023-04-25T07:19:57.387Z",
             "place_of_production": 282,
-            "location_current": 2373,
+            "location": 2373,
             "checked": true,
             "published": true,
             "artists": [
@@ -8137,7 +8137,7 @@
             "created_at": "2015-05-24T21:13:54Z",
             "updated_at": "2021-06-22T19:56:12.450Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -8168,7 +8168,7 @@
             "created_at": "2016-01-12T23:00:24Z",
             "updated_at": "2020-11-02T13:32:45.276Z",
             "place_of_production": 8,
-            "location_current": 789,
+            "location": 789,
             "checked": true,
             "published": true,
             "artists": [
@@ -8199,7 +8199,7 @@
             "created_at": "2016-01-12T23:00:24Z",
             "updated_at": "2021-07-29T12:27:33.154Z",
             "place_of_production": 19,
-            "location_current": 25,
+            "location": 25,
             "checked": true,
             "published": true,
             "artists": [
@@ -8230,7 +8230,7 @@
             "created_at": "2016-04-18T21:47:10Z",
             "updated_at": "2019-12-03T15:15:19.792Z",
             "place_of_production": 14,
-            "location_current": 1138,
+            "location": 1138,
             "checked": true,
             "published": true,
             "artists": [
@@ -8260,7 +8260,7 @@
             "created_at": "2017-11-20T22:27:48Z",
             "updated_at": "2021-02-22T16:13:18.447Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -8291,7 +8291,7 @@
             "created_at": "2018-01-09T22:03:20Z",
             "updated_at": "2019-04-11T10:12:23.331Z",
             "place_of_production": 14,
-            "location_current": 573,
+            "location": 573,
             "checked": true,
             "published": true,
             "artists": [
@@ -8320,7 +8320,7 @@
             "created_at": "2018-01-09T22:03:20Z",
             "updated_at": "2019-11-29T20:59:14.353Z",
             "place_of_production": 14,
-            "location_current": 2696,
+            "location": 2696,
             "checked": true,
             "published": true,
             "artists": [
@@ -8350,7 +8350,7 @@
             "created_at": "2018-01-09T22:03:20Z",
             "updated_at": "2019-12-03T15:19:28.350Z",
             "place_of_production": 14,
-            "location_current": 17,
+            "location": 17,
             "checked": true,
             "published": true,
             "artists": [
@@ -8379,7 +8379,7 @@
             "created_at": "2018-01-09T22:03:20Z",
             "updated_at": "2019-12-03T15:17:34.861Z",
             "place_of_production": 14,
-            "location_current": 2696,
+            "location": 2696,
             "checked": true,
             "published": true,
             "artists": [
@@ -8409,7 +8409,7 @@
             "created_at": "2018-01-09T22:03:20Z",
             "updated_at": "2019-12-03T15:14:34.068Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -8437,7 +8437,7 @@
             "created_at": "2018-03-27T20:37:59Z",
             "updated_at": "2020-01-21T09:54:33.614Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -8470,7 +8470,7 @@
             "created_at": "2018-03-27T20:37:59Z",
             "updated_at": "2020-01-21T13:42:56.382Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -8505,7 +8505,7 @@
             "created_at": "2018-04-03T20:49:09Z",
             "updated_at": "2019-06-21T08:14:59.535Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -8535,7 +8535,7 @@
             "created_at": "2018-04-03T20:49:09Z",
             "updated_at": "2019-06-21T08:14:29.162Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -8565,7 +8565,7 @@
             "created_at": "2018-04-03T20:49:09Z",
             "updated_at": "2023-07-06T11:00:58.852Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -8598,7 +8598,7 @@
             "created_at": "2018-04-03T20:49:09Z",
             "updated_at": "2023-07-06T11:01:07.275Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -8627,7 +8627,7 @@
             "created_at": "2018-04-03T20:49:09Z",
             "updated_at": "2020-05-12T09:16:49.646Z",
             "place_of_production": 16,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -8662,7 +8662,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-12-03T15:26:59.820Z",
             "place_of_production": 14,
-            "location_current": 2696,
+            "location": 2696,
             "checked": true,
             "published": true,
             "artists": [
@@ -8690,7 +8690,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-10-31T10:01:10.215Z",
             "place_of_production": 14,
-            "location_current": 1331,
+            "location": 1331,
             "checked": true,
             "published": true,
             "artists": [
@@ -8718,7 +8718,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-12-03T15:16:13.514Z",
             "place_of_production": 14,
-            "location_current": 975,
+            "location": 975,
             "checked": true,
             "published": true,
             "artists": [
@@ -8747,7 +8747,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2023-07-06T09:54:44.338Z",
             "place_of_production": 14,
-            "location_current": 2589,
+            "location": 2589,
             "checked": true,
             "published": true,
             "artists": [
@@ -8776,7 +8776,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-04-09T14:46:57.211Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -8804,7 +8804,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2022-10-18T09:28:27.302Z",
             "place_of_production": 14,
-            "location_current": 806,
+            "location": 806,
             "checked": true,
             "published": true,
             "artists": [
@@ -8832,7 +8832,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-12-03T15:08:31.827Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -8860,7 +8860,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-12-03T15:14:54.263Z",
             "place_of_production": 14,
-            "location_current": 975,
+            "location": 975,
             "checked": true,
             "published": true,
             "artists": [
@@ -8889,7 +8889,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-12-03T15:16:49.518Z",
             "place_of_production": 14,
-            "location_current": 975,
+            "location": 975,
             "checked": true,
             "published": true,
             "artists": [
@@ -8918,7 +8918,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-11-29T21:00:06.461Z",
             "place_of_production": 14,
-            "location_current": 2696,
+            "location": 2696,
             "checked": true,
             "published": true,
             "artists": [
@@ -8947,7 +8947,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-12-03T15:10:45.801Z",
             "place_of_production": 14,
-            "location_current": 975,
+            "location": 975,
             "checked": true,
             "published": true,
             "artists": [
@@ -8975,7 +8975,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2023-07-06T11:39:12.971Z",
             "place_of_production": 14,
-            "location_current": 975,
+            "location": 975,
             "checked": true,
             "published": true,
             "artists": [
@@ -9004,7 +9004,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-12-03T21:28:36.548Z",
             "place_of_production": 14,
-            "location_current": 975,
+            "location": 975,
             "checked": true,
             "published": true,
             "artists": [
@@ -9034,7 +9034,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-12-03T15:21:34.132Z",
             "place_of_production": 14,
-            "location_current": 975,
+            "location": 975,
             "checked": true,
             "published": true,
             "artists": [
@@ -9063,7 +9063,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-12-03T21:28:23.520Z",
             "place_of_production": 14,
-            "location_current": 975,
+            "location": 975,
             "checked": true,
             "published": true,
             "artists": [
@@ -9093,7 +9093,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-12-03T15:22:18.504Z",
             "place_of_production": 14,
-            "location_current": 975,
+            "location": 975,
             "checked": true,
             "published": true,
             "artists": [
@@ -9122,7 +9122,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-11-29T20:59:49.470Z",
             "place_of_production": 14,
-            "location_current": 975,
+            "location": 975,
             "checked": true,
             "published": true,
             "artists": [
@@ -9151,7 +9151,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-04-09T14:02:15.703Z",
             "place_of_production": 14,
-            "location_current": 2696,
+            "location": 2696,
             "checked": true,
             "published": true,
             "artists": [
@@ -9180,7 +9180,7 @@
             "created_at": "2018-06-05T21:56:57Z",
             "updated_at": "2019-10-16T07:02:11.320Z",
             "place_of_production": 14,
-            "location_current": 975,
+            "location": 975,
             "checked": true,
             "published": true,
             "artists": [
@@ -9208,7 +9208,7 @@
             "created_at": "2019-09-23T19:15:59.952Z",
             "updated_at": "2019-12-03T15:12:32.004Z",
             "place_of_production": 14,
-            "location_current": 1449,
+            "location": 1449,
             "checked": true,
             "published": true,
             "artists": [
@@ -9237,7 +9237,7 @@
             "created_at": "2019-09-23T19:16:07.125Z",
             "updated_at": "2019-12-03T15:08:15.434Z",
             "place_of_production": 14,
-            "location_current": 2953,
+            "location": 2953,
             "checked": true,
             "published": true,
             "artists": [
@@ -9266,7 +9266,7 @@
             "created_at": "2019-09-23T19:16:16.268Z",
             "updated_at": "2019-12-03T15:19:08.060Z",
             "place_of_production": 14,
-            "location_current": 17,
+            "location": 17,
             "checked": true,
             "published": true,
             "artists": [
@@ -9295,7 +9295,7 @@
             "created_at": "2019-09-23T19:16:25.385Z",
             "updated_at": "2019-12-03T15:11:11.974Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -9324,7 +9324,7 @@
             "created_at": "2019-10-18T16:39:20.551Z",
             "updated_at": "2019-10-30T14:09:42.475Z",
             "place_of_production": 21,
-            "location_current": 370,
+            "location": 370,
             "checked": true,
             "published": true,
             "artists": [
@@ -9352,7 +9352,7 @@
             "created_at": "2019-10-18T16:39:27.550Z",
             "updated_at": "2019-10-30T14:10:19.664Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -9380,7 +9380,7 @@
             "created_at": "2019-10-18T16:39:35.093Z",
             "updated_at": "2019-10-30T14:10:39.133Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -9408,7 +9408,7 @@
             "created_at": "2019-10-24T17:42:24.896Z",
             "updated_at": "2019-10-30T14:19:34.676Z",
             "place_of_production": 171,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9437,7 +9437,7 @@
             "created_at": "2019-10-24T17:42:40.037Z",
             "updated_at": "2019-10-30T14:15:19.490Z",
             "place_of_production": 171,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9466,7 +9466,7 @@
             "created_at": "2019-10-24T17:42:48.604Z",
             "updated_at": "2019-10-30T14:22:34.257Z",
             "place_of_production": 1,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9495,7 +9495,7 @@
             "created_at": "2019-10-24T17:43:11.459Z",
             "updated_at": "2019-10-30T14:15:19.462Z",
             "place_of_production": 171,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9524,7 +9524,7 @@
             "created_at": "2019-10-24T17:43:19.816Z",
             "updated_at": "2019-10-30T14:15:19.440Z",
             "place_of_production": 171,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9553,7 +9553,7 @@
             "created_at": "2019-10-24T17:43:26.524Z",
             "updated_at": "2019-10-30T14:15:19.427Z",
             "place_of_production": 171,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9581,7 +9581,7 @@
             "created_at": "2019-10-24T17:43:34.744Z",
             "updated_at": "2019-10-30T14:15:19.412Z",
             "place_of_production": 171,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9609,7 +9609,7 @@
             "created_at": "2019-10-24T17:43:41.856Z",
             "updated_at": "2019-10-30T14:15:19.399Z",
             "place_of_production": 171,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9638,7 +9638,7 @@
             "created_at": "2019-10-24T17:44:44.527Z",
             "updated_at": "2019-10-30T14:15:19.385Z",
             "place_of_production": 171,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -9667,7 +9667,7 @@
             "created_at": "2019-10-24T17:44:52.054Z",
             "updated_at": "2019-10-30T14:15:19.371Z",
             "place_of_production": 177,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -9696,7 +9696,7 @@
             "created_at": "2019-10-24T17:45:00.110Z",
             "updated_at": "2019-10-30T14:15:19.356Z",
             "place_of_production": 186,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9725,7 +9725,7 @@
             "created_at": "2019-10-24T17:45:08.395Z",
             "updated_at": "2019-10-30T14:15:19.342Z",
             "place_of_production": 186,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9754,7 +9754,7 @@
             "created_at": "2019-10-24T17:45:17.808Z",
             "updated_at": "2019-10-30T14:15:19.331Z",
             "place_of_production": 2958,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9783,7 +9783,7 @@
             "created_at": "2019-10-24T17:45:35.757Z",
             "updated_at": "2019-10-30T14:15:19.318Z",
             "place_of_production": 2959,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9811,7 +9811,7 @@
             "created_at": "2019-10-24T17:45:48.466Z",
             "updated_at": "2022-02-13T18:45:48.800Z",
             "place_of_production": 1153,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9839,7 +9839,7 @@
             "created_at": "2019-10-24T17:45:55.592Z",
             "updated_at": "2022-04-06T07:58:15.066Z",
             "place_of_production": 1153,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9868,7 +9868,7 @@
             "created_at": "2019-10-24T17:46:02.232Z",
             "updated_at": "2019-10-30T14:15:19.278Z",
             "place_of_production": 2961,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9896,7 +9896,7 @@
             "created_at": "2019-10-24T17:46:09.466Z",
             "updated_at": "2019-10-30T14:15:19.261Z",
             "place_of_production": 2962,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9924,7 +9924,7 @@
             "created_at": "2019-10-24T17:46:25.520Z",
             "updated_at": "2021-05-26T08:28:44.281Z",
             "place_of_production": 2963,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9953,7 +9953,7 @@
             "created_at": "2019-10-24T17:46:33.861Z",
             "updated_at": "2019-10-30T14:15:19.227Z",
             "place_of_production": 2964,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -9982,7 +9982,7 @@
             "created_at": "2019-10-24T17:46:44.110Z",
             "updated_at": "2019-10-30T14:31:52.829Z",
             "place_of_production": 2964,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -10011,7 +10011,7 @@
             "created_at": "2019-10-24T17:46:52.257Z",
             "updated_at": "2019-10-30T14:15:19.188Z",
             "place_of_production": 2964,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -10040,7 +10040,7 @@
             "created_at": "2019-10-24T17:47:01.130Z",
             "updated_at": "2019-10-30T14:31:36.111Z",
             "place_of_production": 2964,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -10069,7 +10069,7 @@
             "created_at": "2019-11-15T20:49:19.735Z",
             "updated_at": "2020-12-03T09:04:40.527Z",
             "place_of_production": 21,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -10098,7 +10098,7 @@
             "created_at": "2019-11-21T18:47:21.481Z",
             "updated_at": "2019-12-03T15:07:58.730Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -10127,7 +10127,7 @@
             "created_at": "2019-11-21T18:47:29.596Z",
             "updated_at": "2019-12-03T15:07:22.535Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -10156,7 +10156,7 @@
             "created_at": "2019-12-18T06:49:57.062Z",
             "updated_at": "2023-04-25T08:37:00.768Z",
             "place_of_production": 1154,
-            "location_current": 1154,
+            "location": 1154,
             "checked": true,
             "published": true,
             "artists": [
@@ -10186,7 +10186,7 @@
             "created_at": "2019-12-18T06:50:08.260Z",
             "updated_at": "2023-04-25T08:37:10.844Z",
             "place_of_production": 1154,
-            "location_current": 1154,
+            "location": 1154,
             "checked": true,
             "published": true,
             "artists": [
@@ -10216,7 +10216,7 @@
             "created_at": "2019-12-18T06:50:19.882Z",
             "updated_at": "2023-04-25T08:37:19.370Z",
             "place_of_production": 1154,
-            "location_current": 1154,
+            "location": 1154,
             "checked": true,
             "published": true,
             "artists": [
@@ -10246,7 +10246,7 @@
             "created_at": "2019-12-18T06:50:32.510Z",
             "updated_at": "2023-04-25T08:37:29.056Z",
             "place_of_production": 1154,
-            "location_current": 1154,
+            "location": 1154,
             "checked": true,
             "published": true,
             "artists": [
@@ -10276,7 +10276,7 @@
             "created_at": "2019-12-18T06:50:45.021Z",
             "updated_at": "2023-04-25T08:37:38.092Z",
             "place_of_production": 1154,
-            "location_current": 1154,
+            "location": 1154,
             "checked": true,
             "published": true,
             "artists": [
@@ -10306,7 +10306,7 @@
             "created_at": "2019-12-19T10:39:47.961Z",
             "updated_at": "2019-12-19T10:43:08.934Z",
             "place_of_production": 14,
-            "location_current": 2700,
+            "location": 2700,
             "checked": true,
             "published": true,
             "artists": [
@@ -10335,7 +10335,7 @@
             "created_at": "2019-12-19T10:49:28.687Z",
             "updated_at": "2019-12-19T10:49:28.695Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -10364,7 +10364,7 @@
             "created_at": "2020-01-07T13:55:33.195Z",
             "updated_at": "2023-04-25T08:35:12.129Z",
             "place_of_production": 177,
-            "location_current": 732,
+            "location": 732,
             "checked": true,
             "published": true,
             "artists": [
@@ -10394,7 +10394,7 @@
             "created_at": "2020-01-07T13:55:41.803Z",
             "updated_at": "2023-04-25T08:35:49.154Z",
             "place_of_production": 177,
-            "location_current": 732,
+            "location": 732,
             "checked": true,
             "published": true,
             "artists": [
@@ -10424,7 +10424,7 @@
             "created_at": "2020-01-07T13:55:51.656Z",
             "updated_at": "2023-04-25T08:35:57.207Z",
             "place_of_production": 177,
-            "location_current": 732,
+            "location": 732,
             "checked": true,
             "published": true,
             "artists": [
@@ -10454,7 +10454,7 @@
             "created_at": "2020-01-07T13:56:04.462Z",
             "updated_at": "2023-04-25T08:36:06.259Z",
             "place_of_production": 177,
-            "location_current": 732,
+            "location": 732,
             "checked": true,
             "published": true,
             "artists": [
@@ -10484,7 +10484,7 @@
             "created_at": "2020-01-07T13:56:15.490Z",
             "updated_at": "2023-04-25T08:36:14.816Z",
             "place_of_production": 177,
-            "location_current": 732,
+            "location": 732,
             "checked": true,
             "published": true,
             "artists": [
@@ -10514,7 +10514,7 @@
             "created_at": "2020-01-07T13:56:24.371Z",
             "updated_at": "2023-04-25T08:36:24.857Z",
             "place_of_production": 177,
-            "location_current": 732,
+            "location": 732,
             "checked": true,
             "published": true,
             "artists": [
@@ -10544,7 +10544,7 @@
             "created_at": "2020-01-07T13:56:33.814Z",
             "updated_at": "2023-04-25T08:36:34.641Z",
             "place_of_production": 177,
-            "location_current": 732,
+            "location": 732,
             "checked": true,
             "published": true,
             "artists": [
@@ -10574,7 +10574,7 @@
             "created_at": "2020-01-07T13:56:45.947Z",
             "updated_at": "2023-04-25T08:36:43.136Z",
             "place_of_production": 177,
-            "location_current": 732,
+            "location": 732,
             "checked": true,
             "published": true,
             "artists": [
@@ -10604,7 +10604,7 @@
             "created_at": "2020-01-07T13:56:55.013Z",
             "updated_at": "2023-04-25T08:36:51.074Z",
             "place_of_production": 177,
-            "location_current": 732,
+            "location": 732,
             "checked": true,
             "published": true,
             "artists": [
@@ -10634,7 +10634,7 @@
             "created_at": "2020-01-07T14:02:02.233Z",
             "updated_at": "2023-04-25T08:34:17.776Z",
             "place_of_production": 1088,
-            "location_current": 3019,
+            "location": 3019,
             "checked": true,
             "published": true,
             "artists": [
@@ -10664,7 +10664,7 @@
             "created_at": "2020-01-07T14:02:10.810Z",
             "updated_at": "2023-04-25T08:34:25.208Z",
             "place_of_production": 1088,
-            "location_current": 3019,
+            "location": 3019,
             "checked": true,
             "published": true,
             "artists": [
@@ -10694,7 +10694,7 @@
             "created_at": "2020-01-07T14:02:19.584Z",
             "updated_at": "2023-04-25T08:34:34.916Z",
             "place_of_production": 1088,
-            "location_current": 3019,
+            "location": 3019,
             "checked": true,
             "published": true,
             "artists": [
@@ -10724,7 +10724,7 @@
             "created_at": "2020-01-07T14:02:28.726Z",
             "updated_at": "2023-04-25T08:34:43.240Z",
             "place_of_production": 1088,
-            "location_current": 3019,
+            "location": 3019,
             "checked": true,
             "published": true,
             "artists": [
@@ -10754,7 +10754,7 @@
             "created_at": "2020-01-07T14:02:37.246Z",
             "updated_at": "2023-04-25T08:34:52.294Z",
             "place_of_production": 1088,
-            "location_current": 3019,
+            "location": 3019,
             "checked": true,
             "published": true,
             "artists": [
@@ -10784,7 +10784,7 @@
             "created_at": "2020-01-07T14:02:48.509Z",
             "updated_at": "2023-04-25T08:35:04.001Z",
             "place_of_production": 1088,
-            "location_current": 3019,
+            "location": 3019,
             "checked": true,
             "published": true,
             "artists": [
@@ -10814,7 +10814,7 @@
             "created_at": "2020-02-24T16:28:01.557Z",
             "updated_at": "2020-03-20T10:01:23.226Z",
             "place_of_production": 14,
-            "location_current": 25,
+            "location": 25,
             "checked": true,
             "published": true,
             "artists": [
@@ -10842,7 +10842,7 @@
             "created_at": "2020-02-24T16:28:31.977Z",
             "updated_at": "2020-03-20T10:01:23.214Z",
             "place_of_production": 14,
-            "location_current": 2696,
+            "location": 2696,
             "checked": true,
             "published": true,
             "artists": [
@@ -10870,7 +10870,7 @@
             "created_at": "2020-02-24T16:28:41.474Z",
             "updated_at": "2020-03-20T10:01:23.201Z",
             "place_of_production": 14,
-            "location_current": 2696,
+            "location": 2696,
             "checked": true,
             "published": true,
             "artists": [
@@ -10899,7 +10899,7 @@
             "created_at": "2020-02-24T16:28:48.734Z",
             "updated_at": "2020-03-20T10:01:23.189Z",
             "place_of_production": 14,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -10928,7 +10928,7 @@
             "created_at": "2020-02-24T16:29:00.742Z",
             "updated_at": "2020-03-20T10:01:23.175Z",
             "place_of_production": 14,
-            "location_current": 25,
+            "location": 25,
             "checked": true,
             "published": true,
             "artists": [
@@ -10957,7 +10957,7 @@
             "created_at": "2020-02-24T16:29:12.068Z",
             "updated_at": "2020-03-20T10:01:23.162Z",
             "place_of_production": 14,
-            "location_current": 2696,
+            "location": 2696,
             "checked": true,
             "published": true,
             "artists": [
@@ -10986,7 +10986,7 @@
             "created_at": "2020-02-24T16:29:18.433Z",
             "updated_at": "2020-03-20T10:01:23.148Z",
             "place_of_production": 14,
-            "location_current": 975,
+            "location": 975,
             "checked": true,
             "published": true,
             "artists": [
@@ -11015,7 +11015,7 @@
             "created_at": "2020-02-24T16:29:25.034Z",
             "updated_at": "2020-03-20T10:01:23.117Z",
             "place_of_production": 14,
-            "location_current": 1502,
+            "location": 1502,
             "checked": true,
             "published": true,
             "artists": [
@@ -11044,7 +11044,7 @@
             "created_at": "2020-02-24T16:29:37.079Z",
             "updated_at": "2020-03-20T10:01:23.103Z",
             "place_of_production": 14,
-            "location_current": 2696,
+            "location": 2696,
             "checked": true,
             "published": true,
             "artists": [
@@ -11073,7 +11073,7 @@
             "created_at": "2020-02-24T16:29:44.034Z",
             "updated_at": "2020-03-20T10:01:23.088Z",
             "place_of_production": 14,
-            "location_current": 2998,
+            "location": 2998,
             "checked": true,
             "published": true,
             "artists": [
@@ -11102,7 +11102,7 @@
             "created_at": "2020-02-24T16:30:06.671Z",
             "updated_at": "2020-03-20T10:01:23.042Z",
             "place_of_production": 14,
-            "location_current": 2696,
+            "location": 2696,
             "checked": true,
             "published": true,
             "artists": [
@@ -11131,7 +11131,7 @@
             "created_at": "2020-07-17T18:30:28.249Z",
             "updated_at": "2023-04-20T11:51:03.089Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -11162,7 +11162,7 @@
             "created_at": "2020-07-17T18:30:42.668Z",
             "updated_at": "2023-04-20T11:51:03.077Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -11193,7 +11193,7 @@
             "created_at": "2020-07-17T18:30:49.866Z",
             "updated_at": "2023-04-20T11:51:03.059Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -11224,7 +11224,7 @@
             "created_at": "2020-07-17T18:30:57.697Z",
             "updated_at": "2023-04-20T11:51:03.046Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -11255,7 +11255,7 @@
             "created_at": "2020-07-17T18:31:05.273Z",
             "updated_at": "2023-04-20T11:51:03.025Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -11286,7 +11286,7 @@
             "created_at": "2020-07-17T18:31:12.382Z",
             "updated_at": "2023-04-20T11:51:03.010Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -11317,7 +11317,7 @@
             "created_at": "2020-07-17T18:31:20.740Z",
             "updated_at": "2023-04-20T11:51:02.996Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -11348,7 +11348,7 @@
             "created_at": "2020-07-17T18:40:12.201Z",
             "updated_at": "2023-04-20T11:51:02.985Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -11379,7 +11379,7 @@
             "created_at": "2020-07-17T18:40:19.587Z",
             "updated_at": "2023-04-20T11:51:02.973Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -11410,7 +11410,7 @@
             "created_at": "2020-07-17T18:40:26.288Z",
             "updated_at": "2023-04-20T11:51:02.961Z",
             "place_of_production": null,
-            "location_current": 25,
+            "location": 25,
             "checked": true,
             "published": true,
             "artists": [
@@ -11441,7 +11441,7 @@
             "created_at": "2020-07-17T18:40:34.485Z",
             "updated_at": "2023-04-20T11:51:02.947Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -11472,7 +11472,7 @@
             "created_at": "2020-07-17T18:40:42.270Z",
             "updated_at": "2023-04-20T11:51:02.936Z",
             "place_of_production": null,
-            "location_current": 25,
+            "location": 25,
             "checked": true,
             "published": true,
             "artists": [
@@ -11503,7 +11503,7 @@
             "created_at": "2020-07-17T18:40:50.083Z",
             "updated_at": "2023-04-20T11:51:02.922Z",
             "place_of_production": null,
-            "location_current": 2598,
+            "location": 2598,
             "checked": true,
             "published": true,
             "artists": [
@@ -11534,7 +11534,7 @@
             "created_at": "2020-07-17T18:40:57.012Z",
             "updated_at": "2023-04-20T11:51:02.908Z",
             "place_of_production": null,
-            "location_current": 3061,
+            "location": 3061,
             "checked": true,
             "published": true,
             "artists": [
@@ -11565,7 +11565,7 @@
             "created_at": "2020-07-17T18:41:06.472Z",
             "updated_at": "2023-04-27T08:03:11.251Z",
             "place_of_production": null,
-            "location_current": 2598,
+            "location": 2598,
             "checked": true,
             "published": true,
             "artists": [
@@ -11596,7 +11596,7 @@
             "created_at": "2021-01-14T18:15:15.338Z",
             "updated_at": "2023-04-25T08:54:34.308Z",
             "place_of_production": 282,
-            "location_current": 282,
+            "location": 282,
             "checked": true,
             "published": true,
             "artists": [
@@ -11625,7 +11625,7 @@
             "created_at": "2021-01-14T18:15:22.354Z",
             "updated_at": "2023-04-25T09:19:14.541Z",
             "place_of_production": 282,
-            "location_current": 282,
+            "location": 282,
             "checked": true,
             "published": true,
             "artists": [
@@ -11654,7 +11654,7 @@
             "created_at": "2021-01-14T18:16:02.428Z",
             "updated_at": "2023-04-25T09:19:24.662Z",
             "place_of_production": 282,
-            "location_current": 282,
+            "location": 282,
             "checked": true,
             "published": true,
             "artists": [
@@ -11683,7 +11683,7 @@
             "created_at": "2021-03-06T21:37:47.362Z",
             "updated_at": "2021-06-21T13:39:34.513Z",
             "place_of_production": 21,
-            "location_current": 25,
+            "location": 25,
             "checked": true,
             "published": true,
             "artists": [
@@ -11713,7 +11713,7 @@
             "created_at": "2021-03-06T21:42:27.447Z",
             "updated_at": "2021-06-21T13:32:41.550Z",
             "place_of_production": 21,
-            "location_current": 25,
+            "location": 25,
             "checked": true,
             "published": true,
             "artists": [
@@ -11742,7 +11742,7 @@
             "created_at": "2021-03-06T21:44:34.243Z",
             "updated_at": "2021-06-21T12:09:30.730Z",
             "place_of_production": 21,
-            "location_current": 1239,
+            "location": 1239,
             "checked": true,
             "published": true,
             "artists": [
@@ -11768,7 +11768,7 @@
             "created_at": "2021-11-18T20:59:49.613Z",
             "updated_at": "2023-01-11T09:44:25.570Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -11798,7 +11798,7 @@
             "created_at": "2021-11-18T20:59:56.863Z",
             "updated_at": "2023-01-12T08:44:20.022Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -11828,7 +11828,7 @@
             "created_at": "2021-11-18T21:00:04.066Z",
             "updated_at": "2023-01-11T09:44:52.317Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -11858,7 +11858,7 @@
             "created_at": "2021-11-18T21:00:11.174Z",
             "updated_at": "2023-01-11T09:45:03.781Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -11888,7 +11888,7 @@
             "created_at": "2022-03-05T14:21:19.884Z",
             "updated_at": "2022-03-11T14:44:11.894Z",
             "place_of_production": 171,
-            "location_current": 1124,
+            "location": 1124,
             "checked": true,
             "published": true,
             "artists": [
@@ -11917,7 +11917,7 @@
             "created_at": "2022-03-06T11:05:04.488Z",
             "updated_at": "2022-10-18T09:28:34.031Z",
             "place_of_production": null,
-            "location_current": 806,
+            "location": 806,
             "checked": true,
             "published": true,
             "artists": [
@@ -11945,7 +11945,7 @@
             "created_at": "2022-09-26T16:26:04.734Z",
             "updated_at": "2022-10-20T12:56:32.509Z",
             "place_of_production": 14,
-            "location_current": 3030,
+            "location": 3030,
             "checked": true,
             "published": true,
             "artists": [
@@ -11978,7 +11978,7 @@
             "created_at": "2022-09-26T16:26:20.034Z",
             "updated_at": "2022-10-20T12:55:59.995Z",
             "place_of_production": 14,
-            "location_current": 3030,
+            "location": 3030,
             "checked": true,
             "published": true,
             "artists": [
@@ -12011,7 +12011,7 @@
             "created_at": "2022-09-26T16:26:27.648Z",
             "updated_at": "2022-10-20T12:55:02.853Z",
             "place_of_production": 14,
-            "location_current": 3030,
+            "location": 3030,
             "checked": true,
             "published": true,
             "artists": [
@@ -12044,7 +12044,7 @@
             "created_at": "2022-10-10T18:02:02.264Z",
             "updated_at": "2022-10-19T15:57:28.085Z",
             "place_of_production": 270,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -12074,7 +12074,7 @@
             "created_at": "2023-01-11T09:26:59.995Z",
             "updated_at": "2023-01-24T11:15:35.176Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12104,7 +12104,7 @@
             "created_at": "2023-01-11T09:27:11.123Z",
             "updated_at": "2023-01-24T11:15:22.065Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12134,7 +12134,7 @@
             "created_at": "2023-01-11T09:27:21.292Z",
             "updated_at": "2023-01-24T11:15:08.166Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12164,7 +12164,7 @@
             "created_at": "2023-01-11T09:27:30.192Z",
             "updated_at": "2023-01-24T11:14:39.649Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12194,7 +12194,7 @@
             "created_at": "2023-01-11T09:27:42.128Z",
             "updated_at": "2023-01-24T11:13:50.517Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12224,7 +12224,7 @@
             "created_at": "2023-01-11T09:28:02.482Z",
             "updated_at": "2023-01-24T11:13:30.100Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12254,7 +12254,7 @@
             "created_at": "2023-01-11T09:28:11.144Z",
             "updated_at": "2023-01-24T11:13:16.868Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12284,7 +12284,7 @@
             "created_at": "2023-01-11T09:28:21.681Z",
             "updated_at": "2023-01-24T11:13:02.019Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12314,7 +12314,7 @@
             "created_at": "2023-01-11T09:28:46.691Z",
             "updated_at": "2023-01-24T11:12:45.669Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12344,7 +12344,7 @@
             "created_at": "2023-01-11T09:28:57.368Z",
             "updated_at": "2023-01-24T11:12:32.308Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12374,7 +12374,7 @@
             "created_at": "2023-01-11T09:29:08.211Z",
             "updated_at": "2023-01-24T11:11:14.843Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12404,7 +12404,7 @@
             "created_at": "2023-01-11T09:29:39.920Z",
             "updated_at": "2023-01-24T11:10:57.030Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12434,7 +12434,7 @@
             "created_at": "2023-01-11T09:29:53.241Z",
             "updated_at": "2023-01-24T11:07:13.903Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12464,7 +12464,7 @@
             "created_at": "2023-01-11T09:30:01.732Z",
             "updated_at": "2023-01-24T11:06:57.265Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12494,7 +12494,7 @@
             "created_at": "2023-01-11T09:30:19.678Z",
             "updated_at": "2023-01-24T11:06:38.212Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12524,7 +12524,7 @@
             "created_at": "2023-01-11T09:31:01.457Z",
             "updated_at": "2023-01-24T11:06:22.753Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12554,7 +12554,7 @@
             "created_at": "2023-01-11T09:31:10.710Z",
             "updated_at": "2023-01-24T11:06:08.616Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12584,7 +12584,7 @@
             "created_at": "2023-01-11T09:31:19.484Z",
             "updated_at": "2023-01-24T11:05:49.758Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12614,7 +12614,7 @@
             "created_at": "2023-01-11T09:31:28.755Z",
             "updated_at": "2023-01-24T11:05:20.684Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12644,7 +12644,7 @@
             "created_at": "2023-01-11T09:31:41.085Z",
             "updated_at": "2023-01-24T11:05:02.833Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12674,7 +12674,7 @@
             "created_at": "2023-01-11T09:32:11.421Z",
             "updated_at": "2023-01-24T11:02:44.716Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12704,7 +12704,7 @@
             "created_at": "2023-01-11T09:32:21.896Z",
             "updated_at": "2023-01-24T11:02:33.517Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12734,7 +12734,7 @@
             "created_at": "2023-01-11T09:32:33.204Z",
             "updated_at": "2023-01-24T11:02:19.579Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12764,7 +12764,7 @@
             "created_at": "2023-01-11T09:32:44.917Z",
             "updated_at": "2023-01-24T11:01:53.068Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12794,7 +12794,7 @@
             "created_at": "2023-01-11T09:33:12.881Z",
             "updated_at": "2023-01-24T11:01:40.511Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12824,7 +12824,7 @@
             "created_at": "2023-01-11T09:33:21.951Z",
             "updated_at": "2023-01-24T11:01:23.212Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12854,7 +12854,7 @@
             "created_at": "2023-01-11T09:33:32.141Z",
             "updated_at": "2023-01-24T11:00:43.215Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12884,7 +12884,7 @@
             "created_at": "2023-01-11T09:33:43.067Z",
             "updated_at": "2023-01-24T11:00:28.544Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12914,7 +12914,7 @@
             "created_at": "2023-01-11T09:34:14.803Z",
             "updated_at": "2023-01-24T11:00:12.786Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12944,7 +12944,7 @@
             "created_at": "2023-01-11T09:34:27.978Z",
             "updated_at": "2023-01-24T10:59:58.275Z",
             "place_of_production": 527,
-            "location_current": 3406,
+            "location": 3406,
             "checked": true,
             "published": true,
             "artists": [
@@ -12974,7 +12974,7 @@
             "created_at": "2023-03-14T19:34:15.217Z",
             "updated_at": "2023-03-28T10:01:50.963Z",
             "place_of_production": 8,
-            "location_current": 671,
+            "location": 671,
             "checked": true,
             "published": true,
             "artists": [
@@ -13004,7 +13004,7 @@
             "created_at": "2023-03-14T19:34:27.336Z",
             "updated_at": "2023-03-28T10:01:36.475Z",
             "place_of_production": 8,
-            "location_current": 2159,
+            "location": 2159,
             "checked": true,
             "published": true,
             "artists": [
@@ -13034,7 +13034,7 @@
             "created_at": "2023-03-31T09:06:46.720Z",
             "updated_at": "2023-04-12T12:41:59.470Z",
             "place_of_production": 8,
-            "location_current": 3835,
+            "location": 3835,
             "checked": true,
             "published": true,
             "artists": [
@@ -13064,7 +13064,7 @@
             "created_at": "2023-03-31T09:12:49.545Z",
             "updated_at": "2023-05-10T08:05:34.882Z",
             "place_of_production": 8,
-            "location_current": 364,
+            "location": 364,
             "checked": true,
             "published": true,
             "artists": [
@@ -13094,7 +13094,7 @@
             "created_at": "2023-03-31T09:28:34.806Z",
             "updated_at": "2023-05-11T08:10:07.143Z",
             "place_of_production": 13,
-            "location_current": 902,
+            "location": 902,
             "checked": true,
             "published": true,
             "artists": [
@@ -13124,7 +13124,7 @@
             "created_at": "2023-03-31T09:33:29.734Z",
             "updated_at": "2023-05-11T08:10:53.128Z",
             "place_of_production": 13,
-            "location_current": 902,
+            "location": 902,
             "checked": true,
             "published": true,
             "artists": [
@@ -13154,7 +13154,7 @@
             "created_at": "2023-03-31T09:45:45.100Z",
             "updated_at": "2023-04-18T08:01:04.065Z",
             "place_of_production": null,
-            "location_current": 794,
+            "location": 794,
             "checked": true,
             "published": true,
             "artists": [
@@ -13185,7 +13185,7 @@
             "created_at": "2023-04-13T07:47:15.181Z",
             "updated_at": "2023-05-08T09:48:51.913Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13216,7 +13216,7 @@
             "created_at": "2023-04-13T07:47:21.928Z",
             "updated_at": "2023-05-08T09:44:22.459Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13247,7 +13247,7 @@
             "created_at": "2023-04-13T07:47:28.645Z",
             "updated_at": "2023-05-08T09:44:10.874Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13278,7 +13278,7 @@
             "created_at": "2023-04-13T07:47:36.037Z",
             "updated_at": "2023-05-08T09:43:08.386Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13309,7 +13309,7 @@
             "created_at": "2023-04-13T07:47:43.850Z",
             "updated_at": "2023-05-08T09:42:55.351Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13340,7 +13340,7 @@
             "created_at": "2023-04-13T07:48:39.557Z",
             "updated_at": "2023-05-08T09:42:44.023Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13371,7 +13371,7 @@
             "created_at": "2023-04-13T07:48:52.747Z",
             "updated_at": "2023-05-08T09:42:33.179Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13402,7 +13402,7 @@
             "created_at": "2023-04-13T07:48:59.188Z",
             "updated_at": "2023-05-08T09:42:21.920Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13433,7 +13433,7 @@
             "created_at": "2023-04-13T07:49:06.173Z",
             "updated_at": "2023-05-08T09:41:56.909Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13464,7 +13464,7 @@
             "created_at": "2023-04-13T07:51:36.973Z",
             "updated_at": "2023-05-08T09:41:42.489Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13495,7 +13495,7 @@
             "created_at": "2023-04-13T07:51:55.104Z",
             "updated_at": "2023-05-08T09:41:30.509Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13526,7 +13526,7 @@
             "created_at": "2023-04-13T07:52:03.456Z",
             "updated_at": "2023-05-08T09:40:52.171Z",
             "place_of_production": 773,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13557,7 +13557,7 @@
             "created_at": "2023-04-13T07:52:11.073Z",
             "updated_at": "2023-05-08T09:41:13.252Z",
             "place_of_production": 773,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13588,7 +13588,7 @@
             "created_at": "2023-04-13T07:52:18.748Z",
             "updated_at": "2023-05-08T09:38:15.693Z",
             "place_of_production": 3087,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13619,7 +13619,7 @@
             "created_at": "2023-04-13T07:52:25.219Z",
             "updated_at": "2023-05-08T09:37:57.076Z",
             "place_of_production": 3087,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13650,7 +13650,7 @@
             "created_at": "2023-04-13T07:52:31.366Z",
             "updated_at": "2023-05-08T09:35:08.001Z",
             "place_of_production": 3862,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13681,7 +13681,7 @@
             "created_at": "2023-04-13T07:52:37.350Z",
             "updated_at": "2023-05-08T09:34:38.929Z",
             "place_of_production": 3862,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13712,7 +13712,7 @@
             "created_at": "2023-04-13T07:52:43.785Z",
             "updated_at": "2023-05-08T09:34:00.974Z",
             "place_of_production": 3863,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13743,7 +13743,7 @@
             "created_at": "2023-04-13T09:40:53.383Z",
             "updated_at": "2023-05-08T09:31:45.573Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13774,7 +13774,7 @@
             "created_at": "2023-04-13T09:41:22.763Z",
             "updated_at": "2023-05-08T09:31:33.166Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13805,7 +13805,7 @@
             "created_at": "2023-04-13T09:41:29.546Z",
             "updated_at": "2023-05-08T09:31:19.556Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -13836,7 +13836,7 @@
             "created_at": "2023-04-13T09:41:37.529Z",
             "updated_at": "2023-05-08T09:30:53.542Z",
             "place_of_production": null,
-            "location_current": 2598,
+            "location": 2598,
             "checked": true,
             "published": true,
             "artists": [
@@ -13867,7 +13867,7 @@
             "created_at": "2023-04-13T09:41:44.313Z",
             "updated_at": "2023-05-08T09:30:43.314Z",
             "place_of_production": null,
-            "location_current": 25,
+            "location": 25,
             "checked": true,
             "published": true,
             "artists": [
@@ -13898,7 +13898,7 @@
             "created_at": "2023-04-13T09:41:51.592Z",
             "updated_at": "2023-05-08T09:30:29.862Z",
             "place_of_production": null,
-            "location_current": 25,
+            "location": 25,
             "checked": true,
             "published": true,
             "artists": [
@@ -13929,7 +13929,7 @@
             "created_at": "2023-04-13T09:41:57.887Z",
             "updated_at": "2023-05-08T09:30:20.487Z",
             "place_of_production": null,
-            "location_current": 3864,
+            "location": 3864,
             "checked": true,
             "published": true,
             "artists": [
@@ -13960,7 +13960,7 @@
             "created_at": "2023-04-13T09:42:11.536Z",
             "updated_at": "2023-05-08T09:30:07.526Z",
             "place_of_production": null,
-            "location_current": 25,
+            "location": 25,
             "checked": true,
             "published": true,
             "artists": [
@@ -13991,7 +13991,7 @@
             "created_at": "2023-04-13T09:42:17.466Z",
             "updated_at": "2023-05-08T09:29:48.719Z",
             "place_of_production": null,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14022,7 +14022,7 @@
             "created_at": "2023-04-19T12:32:37.457Z",
             "updated_at": "2023-05-10T09:12:30.970Z",
             "place_of_production": 3875,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -14053,7 +14053,7 @@
             "created_at": "2023-04-20T19:52:03.643Z",
             "updated_at": "2023-05-10T09:12:23.807Z",
             "place_of_production": 2964,
-            "location_current": 2956,
+            "location": 2956,
             "checked": true,
             "published": true,
             "artists": [
@@ -14081,7 +14081,7 @@
             "created_at": "2023-04-23T15:59:50.714Z",
             "updated_at": "2023-05-15T09:01:55.218Z",
             "place_of_production": 2416,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14110,7 +14110,7 @@
             "created_at": "2023-05-02T09:56:34.440Z",
             "updated_at": "2023-05-02T11:17:28.391Z",
             "place_of_production": 8,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14140,7 +14140,7 @@
             "created_at": "2023-05-02T09:56:43.679Z",
             "updated_at": "2023-05-02T11:21:08.726Z",
             "place_of_production": 281,
-            "location_current": 2373,
+            "location": 2373,
             "checked": true,
             "published": true,
             "artists": [
@@ -14170,7 +14170,7 @@
             "created_at": "2023-05-02T09:56:50.082Z",
             "updated_at": "2023-05-02T11:31:37.819Z",
             "place_of_production": 281,
-            "location_current": 282,
+            "location": 282,
             "checked": true,
             "published": true,
             "artists": [
@@ -14200,7 +14200,7 @@
             "created_at": "2023-05-02T09:56:55.988Z",
             "updated_at": "2023-05-02T11:31:24.548Z",
             "place_of_production": 281,
-            "location_current": 282,
+            "location": 282,
             "checked": true,
             "published": true,
             "artists": [
@@ -14230,7 +14230,7 @@
             "created_at": "2023-05-02T09:57:01.773Z",
             "updated_at": "2023-05-02T11:36:34.096Z",
             "place_of_production": 281,
-            "location_current": 2373,
+            "location": 2373,
             "checked": true,
             "published": true,
             "artists": [
@@ -14260,7 +14260,7 @@
             "created_at": "2023-05-02T09:57:08.140Z",
             "updated_at": "2023-05-02T11:37:58.326Z",
             "place_of_production": 281,
-            "location_current": 2373,
+            "location": 2373,
             "checked": true,
             "published": true,
             "artists": [
@@ -14290,7 +14290,7 @@
             "created_at": "2023-05-02T09:57:14.029Z",
             "updated_at": "2023-05-02T11:49:42.609Z",
             "place_of_production": 281,
-            "location_current": 2373,
+            "location": 2373,
             "checked": true,
             "published": true,
             "artists": [
@@ -14320,7 +14320,7 @@
             "created_at": "2023-05-02T09:57:20.654Z",
             "updated_at": "2023-05-02T11:49:31.135Z",
             "place_of_production": 281,
-            "location_current": 2373,
+            "location": 2373,
             "checked": true,
             "published": true,
             "artists": [
@@ -14350,7 +14350,7 @@
             "created_at": "2023-05-02T09:57:27.186Z",
             "updated_at": "2023-05-02T11:49:00.516Z",
             "place_of_production": 281,
-            "location_current": 3899,
+            "location": 3899,
             "checked": true,
             "published": true,
             "artists": [
@@ -14381,7 +14381,7 @@
             "created_at": "2023-05-02T09:57:33.144Z",
             "updated_at": "2023-05-02T11:51:04.577Z",
             "place_of_production": 281,
-            "location_current": 3899,
+            "location": 3899,
             "checked": true,
             "published": true,
             "artists": [
@@ -14411,7 +14411,7 @@
             "created_at": "2023-05-02T09:57:39.635Z",
             "updated_at": "2023-05-02T11:52:57.206Z",
             "place_of_production": 281,
-            "location_current": 2378,
+            "location": 2378,
             "checked": true,
             "published": true,
             "artists": [
@@ -14441,7 +14441,7 @@
             "created_at": "2023-05-02T09:57:46.014Z",
             "updated_at": "2023-05-02T11:54:50.347Z",
             "place_of_production": 281,
-            "location_current": 2378,
+            "location": 2378,
             "checked": true,
             "published": true,
             "artists": [
@@ -14471,7 +14471,7 @@
             "created_at": "2023-05-02T09:57:51.919Z",
             "updated_at": "2023-05-02T11:56:39.691Z",
             "place_of_production": 281,
-            "location_current": 2378,
+            "location": 2378,
             "checked": true,
             "published": true,
             "artists": [
@@ -14501,7 +14501,7 @@
             "created_at": "2023-05-02T09:57:57.642Z",
             "updated_at": "2023-05-02T12:04:14.371Z",
             "place_of_production": 281,
-            "location_current": 282,
+            "location": 282,
             "checked": true,
             "published": true,
             "artists": [
@@ -14531,7 +14531,7 @@
             "created_at": "2023-05-02T12:36:11.767Z",
             "updated_at": "2023-05-02T12:52:02.152Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14561,7 +14561,7 @@
             "created_at": "2023-05-02T12:36:19.192Z",
             "updated_at": "2023-05-02T13:03:56.162Z",
             "place_of_production": 171,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14591,7 +14591,7 @@
             "created_at": "2023-05-02T12:36:42.609Z",
             "updated_at": "2023-05-02T13:04:59.226Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14621,7 +14621,7 @@
             "created_at": "2023-05-02T12:36:48.334Z",
             "updated_at": "2023-05-02T13:07:02.588Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14651,7 +14651,7 @@
             "created_at": "2023-05-02T12:36:53.856Z",
             "updated_at": "2023-05-02T13:08:21.937Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14681,7 +14681,7 @@
             "created_at": "2023-05-02T12:37:22.588Z",
             "updated_at": "2023-05-02T13:09:22.339Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14711,7 +14711,7 @@
             "created_at": "2023-05-02T12:37:28.748Z",
             "updated_at": "2023-05-02T13:11:51.117Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14741,7 +14741,7 @@
             "created_at": "2023-05-02T12:37:35.082Z",
             "updated_at": "2023-05-02T13:15:59.096Z",
             "place_of_production": 1,
-            "location_current": 3900,
+            "location": 3900,
             "checked": true,
             "published": true,
             "artists": [
@@ -14772,7 +14772,7 @@
             "created_at": "2023-05-02T12:37:42.807Z",
             "updated_at": "2023-05-02T13:17:03.574Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14802,7 +14802,7 @@
             "created_at": "2023-05-02T12:37:51.112Z",
             "updated_at": "2023-05-02T13:24:57.001Z",
             "place_of_production": 3901,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14833,7 +14833,7 @@
             "created_at": "2023-05-02T12:37:56.967Z",
             "updated_at": "2023-05-03T06:26:08.706Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14863,7 +14863,7 @@
             "created_at": "2023-05-02T12:38:02.503Z",
             "updated_at": "2023-05-03T06:27:38.422Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14893,7 +14893,7 @@
             "created_at": "2023-05-02T12:38:08.216Z",
             "updated_at": "2023-05-03T06:29:42.727Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14923,7 +14923,7 @@
             "created_at": "2023-05-02T12:38:16.087Z",
             "updated_at": "2023-05-03T06:31:37.915Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14953,7 +14953,7 @@
             "created_at": "2023-05-02T12:38:29.684Z",
             "updated_at": "2023-05-03T06:33:14.833Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -14983,7 +14983,7 @@
             "created_at": "2023-05-02T12:38:35.057Z",
             "updated_at": "2023-05-03T06:36:33.612Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15013,7 +15013,7 @@
             "created_at": "2023-05-02T12:38:42.369Z",
             "updated_at": "2023-05-03T06:37:38.569Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15043,7 +15043,7 @@
             "created_at": "2023-05-02T12:38:58.276Z",
             "updated_at": "2023-05-03T06:40:40.125Z",
             "place_of_production": 1,
-            "location_current": 736,
+            "location": 736,
             "checked": true,
             "published": true,
             "artists": [
@@ -15073,7 +15073,7 @@
             "created_at": "2023-05-02T12:39:03.352Z",
             "updated_at": "2023-05-03T14:05:18.160Z",
             "place_of_production": 532,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15103,7 +15103,7 @@
             "created_at": "2023-05-02T12:39:09.070Z",
             "updated_at": "2023-05-03T14:05:26.351Z",
             "place_of_production": 532,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15133,7 +15133,7 @@
             "created_at": "2023-05-02T12:39:14.630Z",
             "updated_at": "2023-05-03T06:48:55.200Z",
             "place_of_production": 840,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15162,7 +15162,7 @@
             "created_at": "2023-05-02T12:39:20.088Z",
             "updated_at": "2023-05-03T06:52:22.579Z",
             "place_of_production": 1,
-            "location_current": 3902,
+            "location": 3902,
             "checked": true,
             "published": true,
             "artists": [
@@ -15192,7 +15192,7 @@
             "created_at": "2023-05-02T12:39:26.355Z",
             "updated_at": "2023-05-03T06:53:18.106Z",
             "place_of_production": 1,
-            "location_current": 3902,
+            "location": 3902,
             "checked": true,
             "published": true,
             "artists": [
@@ -15222,7 +15222,7 @@
             "created_at": "2023-05-02T12:39:32.378Z",
             "updated_at": "2023-05-03T07:24:54.194Z",
             "place_of_production": 171,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15251,7 +15251,7 @@
             "created_at": "2023-05-03T06:57:55.795Z",
             "updated_at": "2023-05-03T07:24:31.082Z",
             "place_of_production": 171,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15280,7 +15280,7 @@
             "created_at": "2023-05-03T06:58:01.979Z",
             "updated_at": "2023-05-03T07:25:27.917Z",
             "place_of_production": 171,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15310,7 +15310,7 @@
             "created_at": "2023-05-03T06:58:07.682Z",
             "updated_at": "2023-05-03T07:25:11.342Z",
             "place_of_production": 171,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15340,7 +15340,7 @@
             "created_at": "2023-05-03T06:58:13.485Z",
             "updated_at": "2023-05-03T07:09:30.558Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15370,7 +15370,7 @@
             "created_at": "2023-05-03T06:58:20.436Z",
             "updated_at": "2023-05-03T12:47:42.074Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15400,7 +15400,7 @@
             "created_at": "2023-05-03T07:29:03.329Z",
             "updated_at": "2023-05-03T12:47:32.517Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15430,7 +15430,7 @@
             "created_at": "2023-05-03T07:29:09.062Z",
             "updated_at": "2023-05-03T12:47:22.311Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15460,7 +15460,7 @@
             "created_at": "2023-05-03T07:29:15.197Z",
             "updated_at": "2023-05-03T12:47:10.268Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15490,7 +15490,7 @@
             "created_at": "2023-05-03T07:29:20.992Z",
             "updated_at": "2023-05-03T08:22:08.493Z",
             "place_of_production": 1,
-            "location_current": 3906,
+            "location": 3906,
             "checked": true,
             "published": true,
             "artists": [
@@ -15521,7 +15521,7 @@
             "created_at": "2023-05-03T07:29:26.372Z",
             "updated_at": "2023-05-03T12:46:57.670Z",
             "place_of_production": 1,
-            "location_current": 3906,
+            "location": 3906,
             "checked": true,
             "published": true,
             "artists": [
@@ -15552,7 +15552,7 @@
             "created_at": "2023-05-03T07:29:31.947Z",
             "updated_at": "2023-05-03T12:46:46.240Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15582,7 +15582,7 @@
             "created_at": "2023-05-03T07:29:37.566Z",
             "updated_at": "2023-05-03T12:46:34.306Z",
             "place_of_production": 3907,
-            "location_current": 3908,
+            "location": 3908,
             "checked": true,
             "published": true,
             "artists": [
@@ -15613,7 +15613,7 @@
             "created_at": "2023-05-03T07:29:43.696Z",
             "updated_at": "2023-05-03T12:46:20.298Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15643,7 +15643,7 @@
             "created_at": "2023-05-03T07:29:55.166Z",
             "updated_at": "2023-05-03T12:45:49.627Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15673,7 +15673,7 @@
             "created_at": "2023-05-03T08:30:51.033Z",
             "updated_at": "2023-05-03T08:30:51.043Z",
             "place_of_production": 1,
-            "location_current": 3906,
+            "location": 3906,
             "checked": true,
             "published": true,
             "artists": [
@@ -15704,7 +15704,7 @@
             "created_at": "2023-05-03T08:32:20.083Z",
             "updated_at": "2023-05-03T08:32:20.091Z",
             "place_of_production": 1,
-            "location_current": 3906,
+            "location": 3906,
             "checked": true,
             "published": true,
             "artists": [
@@ -15735,7 +15735,7 @@
             "created_at": "2023-05-03T08:34:44.749Z",
             "updated_at": "2023-05-03T08:34:44.758Z",
             "place_of_production": 1,
-            "location_current": 3906,
+            "location": 3906,
             "checked": true,
             "published": true,
             "artists": [
@@ -15766,7 +15766,7 @@
             "created_at": "2023-05-03T08:37:04.033Z",
             "updated_at": "2023-05-03T08:37:04.041Z",
             "place_of_production": 1,
-            "location_current": 3906,
+            "location": 3906,
             "checked": true,
             "published": true,
             "artists": [
@@ -15797,7 +15797,7 @@
             "created_at": "2023-05-03T08:39:55.412Z",
             "updated_at": "2023-05-03T08:39:55.424Z",
             "place_of_production": 1,
-            "location_current": 3906,
+            "location": 3906,
             "checked": true,
             "published": true,
             "artists": [
@@ -15828,7 +15828,7 @@
             "created_at": "2023-05-03T08:44:30.812Z",
             "updated_at": "2023-05-03T08:44:30.822Z",
             "place_of_production": 1,
-            "location_current": 3906,
+            "location": 3906,
             "checked": true,
             "published": true,
             "artists": [
@@ -15859,7 +15859,7 @@
             "created_at": "2023-05-03T09:54:32.792Z",
             "updated_at": "2023-05-03T12:45:05.008Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15889,7 +15889,7 @@
             "created_at": "2023-05-03T09:54:38.796Z",
             "updated_at": "2023-05-03T12:44:51.991Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15919,7 +15919,7 @@
             "created_at": "2023-05-03T09:54:44.643Z",
             "updated_at": "2023-05-03T12:44:30.211Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15949,7 +15949,7 @@
             "created_at": "2023-05-03T09:54:51.189Z",
             "updated_at": "2023-05-03T12:43:59.874Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -15979,7 +15979,7 @@
             "created_at": "2023-05-03T09:54:57.224Z",
             "updated_at": "2023-05-03T12:43:19.809Z",
             "place_of_production": 274,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -16009,7 +16009,7 @@
             "created_at": "2023-05-03T09:55:03.457Z",
             "updated_at": "2023-05-03T12:42:56.994Z",
             "place_of_production": 186,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -16039,7 +16039,7 @@
             "created_at": "2023-05-03T09:55:19.757Z",
             "updated_at": "2023-05-03T12:42:27.955Z",
             "place_of_production": 17,
-            "location_current": 3909,
+            "location": 3909,
             "checked": true,
             "published": true,
             "artists": [
@@ -16069,7 +16069,7 @@
             "created_at": "2023-05-03T09:55:26.904Z",
             "updated_at": "2023-05-03T12:42:18.967Z",
             "place_of_production": 17,
-            "location_current": 3909,
+            "location": 3909,
             "checked": true,
             "published": true,
             "artists": [
@@ -16099,7 +16099,7 @@
             "created_at": "2023-05-03T09:55:32.631Z",
             "updated_at": "2023-05-03T12:41:48.609Z",
             "place_of_production": 17,
-            "location_current": 3909,
+            "location": 3909,
             "checked": true,
             "published": true,
             "artists": [
@@ -16130,7 +16130,7 @@
             "created_at": "2023-05-03T09:55:39.934Z",
             "updated_at": "2023-05-03T12:41:34.535Z",
             "place_of_production": 17,
-            "location_current": 3909,
+            "location": 3909,
             "checked": true,
             "published": true,
             "artists": [
@@ -16161,7 +16161,7 @@
             "created_at": "2023-05-03T09:56:09.176Z",
             "updated_at": "2023-05-03T12:41:20.658Z",
             "place_of_production": 17,
-            "location_current": 3909,
+            "location": 3909,
             "checked": true,
             "published": true,
             "artists": [
@@ -16191,7 +16191,7 @@
             "created_at": "2023-05-03T09:56:14.510Z",
             "updated_at": "2023-05-03T12:41:06.284Z",
             "place_of_production": 17,
-            "location_current": 3909,
+            "location": 3909,
             "checked": true,
             "published": true,
             "artists": [
@@ -16222,7 +16222,7 @@
             "created_at": "2023-05-03T09:56:20.429Z",
             "updated_at": "2023-05-03T12:40:51.251Z",
             "place_of_production": 17,
-            "location_current": 3909,
+            "location": 3909,
             "checked": true,
             "published": true,
             "artists": [
@@ -16253,7 +16253,7 @@
             "created_at": "2023-05-03T09:56:25.794Z",
             "updated_at": "2023-05-03T12:40:33.975Z",
             "place_of_production": 17,
-            "location_current": 3909,
+            "location": 3909,
             "checked": true,
             "published": true,
             "artists": [
@@ -16284,7 +16284,7 @@
             "created_at": "2023-05-03T09:56:35.208Z",
             "updated_at": "2023-05-03T12:39:48.476Z",
             "place_of_production": 1,
-            "location_current": 3910,
+            "location": 3910,
             "checked": true,
             "published": true,
             "artists": [
@@ -16315,7 +16315,7 @@
             "created_at": "2023-05-03T09:56:43.891Z",
             "updated_at": "2023-05-03T12:39:38.554Z",
             "place_of_production": 1,
-            "location_current": 3910,
+            "location": 3910,
             "checked": true,
             "published": true,
             "artists": [
@@ -16346,7 +16346,7 @@
             "created_at": "2023-05-03T09:56:51.848Z",
             "updated_at": "2023-05-03T12:39:22.672Z",
             "place_of_production": 1111,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -16376,7 +16376,7 @@
             "created_at": "2023-05-03T12:31:44.812Z",
             "updated_at": "2023-05-03T13:15:42.763Z",
             "place_of_production": 1,
-            "location_current": 3911,
+            "location": 3911,
             "checked": true,
             "published": true,
             "artists": [
@@ -16406,7 +16406,7 @@
             "created_at": "2023-05-03T12:31:50.548Z",
             "updated_at": "2023-05-03T13:15:26.458Z",
             "place_of_production": 1,
-            "location_current": 3911,
+            "location": 3911,
             "checked": true,
             "published": true,
             "artists": [
@@ -16436,7 +16436,7 @@
             "created_at": "2023-05-03T12:31:56.617Z",
             "updated_at": "2023-05-03T13:04:35.817Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -16467,7 +16467,7 @@
             "created_at": "2023-05-03T12:32:03.257Z",
             "updated_at": "2023-05-03T13:06:02.444Z",
             "place_of_production": 1,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -16498,7 +16498,7 @@
             "created_at": "2023-05-03T12:32:08.545Z",
             "updated_at": "2023-05-03T13:11:25.252Z",
             "place_of_production": 1,
-            "location_current": 3911,
+            "location": 3911,
             "checked": true,
             "published": true,
             "artists": [
@@ -16528,7 +16528,7 @@
             "created_at": "2023-05-03T12:32:15.056Z",
             "updated_at": "2023-05-03T13:16:27.313Z",
             "place_of_production": 1,
-            "location_current": 3911,
+            "location": 3911,
             "checked": true,
             "published": true,
             "artists": [
@@ -16558,7 +16558,7 @@
             "created_at": "2023-05-03T12:32:21.093Z",
             "updated_at": "2023-05-03T13:16:54.173Z",
             "place_of_production": 1,
-            "location_current": 3911,
+            "location": 3911,
             "checked": true,
             "published": true,
             "artists": [
@@ -16588,7 +16588,7 @@
             "created_at": "2023-05-04T16:04:58.163Z",
             "updated_at": "2023-05-15T08:57:21.895Z",
             "place_of_production": 2373,
-            "location_current": null,
+            "location": null,
             "checked": true,
             "published": true,
             "artists": [
@@ -16618,7 +16618,7 @@
             "created_at": "2023-05-05T14:11:15.371Z",
             "updated_at": "2023-05-15T08:38:08.575Z",
             "place_of_production": null,
-            "location_current": 178,
+            "location": 178,
             "checked": true,
             "published": true,
             "artists": [
@@ -16644,7 +16644,7 @@
             "created_at": "2023-05-05T14:17:44.374Z",
             "updated_at": "2023-05-15T10:08:33.915Z",
             "place_of_production": null,
-            "location_current": 2598,
+            "location": 2598,
             "checked": true,
             "published": true,
             "artists": [
@@ -16676,7 +16676,7 @@
             "created_at": "2023-05-05T15:02:04.302Z",
             "updated_at": "2023-05-15T08:31:16.006Z",
             "place_of_production": null,
-            "location_current": 3921,
+            "location": 3921,
             "checked": true,
             "published": true,
             "artists": [
@@ -16706,7 +16706,7 @@
             "created_at": "2023-05-08T11:27:59.660Z",
             "updated_at": "2023-05-10T11:52:30.164Z",
             "place_of_production": null,
-            "location_current": 2700,
+            "location": 2700,
             "checked": true,
             "published": true,
             "artists": [
@@ -16738,7 +16738,7 @@
             "created_at": "2023-05-08T11:29:58.951Z",
             "updated_at": "2023-05-10T11:52:03.981Z",
             "place_of_production": null,
-            "location_current": 3923,
+            "location": 3923,
             "checked": true,
             "published": true,
             "artists": [
@@ -16769,7 +16769,7 @@
             "created_at": "2023-06-12T13:44:26.088Z",
             "updated_at": "2023-06-14T12:15:15.128Z",
             "place_of_production": null,
-            "location_current": 670,
+            "location": 670,
             "checked": true,
             "published": true,
             "artists": [
@@ -16800,7 +16800,7 @@
             "created_at": "2023-06-12T13:52:43.410Z",
             "updated_at": "2023-06-14T12:10:38.318Z",
             "place_of_production": null,
-            "location_current": 3932,
+            "location": 3932,
             "checked": true,
             "published": true,
             "artists": [
@@ -16830,7 +16830,7 @@
             "created_at": "2023-06-12T13:55:14.218Z",
             "updated_at": "2023-06-14T12:08:35.408Z",
             "place_of_production": null,
-            "location_current": 3835,
+            "location": 3835,
             "checked": true,
             "published": true,
             "artists": [
@@ -16860,7 +16860,7 @@
             "created_at": "2023-06-12T14:01:11.102Z",
             "updated_at": "2023-06-14T12:06:37.672Z",
             "place_of_production": null,
-            "location_current": 670,
+            "location": 670,
             "checked": false,
             "published": false,
             "artists": [
@@ -16890,7 +16890,7 @@
             "created_at": "2023-06-12T14:05:24.539Z",
             "updated_at": "2023-06-14T11:59:00.160Z",
             "place_of_production": null,
-            "location_current": 2159,
+            "location": 2159,
             "checked": true,
             "published": true,
             "artists": [
@@ -16921,7 +16921,7 @@
             "created_at": "2023-06-12T14:14:24.956Z",
             "updated_at": "2023-06-14T11:47:13.370Z",
             "place_of_production": null,
-            "location_current": 3935,
+            "location": 3935,
             "checked": true,
             "published": true,
             "artists": [
@@ -16952,7 +16952,7 @@
             "created_at": "2023-06-12T14:19:10.579Z",
             "updated_at": "2023-06-14T11:42:15.573Z",
             "place_of_production": null,
-            "location_current": 3932,
+            "location": 3932,
             "checked": true,
             "published": true,
             "artists": [
@@ -16982,7 +16982,7 @@
             "created_at": "2023-06-12T14:21:13.909Z",
             "updated_at": "2023-06-14T11:38:09.060Z",
             "place_of_production": null,
-            "location_current": 3935,
+            "location": 3935,
             "checked": true,
             "published": true,
             "artists": [
@@ -17012,7 +17012,7 @@
             "created_at": "2023-06-12T14:22:34.343Z",
             "updated_at": "2023-06-14T11:37:11.196Z",
             "place_of_production": null,
-            "location_current": 3935,
+            "location": 3935,
             "checked": true,
             "published": true,
             "artists": [
@@ -17043,7 +17043,7 @@
             "created_at": "2023-06-12T14:24:17.595Z",
             "updated_at": "2023-06-14T11:33:08.564Z",
             "place_of_production": null,
-            "location_current": 847,
+            "location": 847,
             "checked": true,
             "published": true,
             "artists": [
@@ -17074,7 +17074,7 @@
             "created_at": "2023-06-12T14:26:34.042Z",
             "updated_at": "2023-06-14T11:31:37.754Z",
             "place_of_production": null,
-            "location_current": 670,
+            "location": 670,
             "checked": true,
             "published": true,
             "artists": [
@@ -17105,7 +17105,7 @@
             "created_at": "2023-06-12T14:29:45.204Z",
             "updated_at": "2023-06-14T11:24:55.621Z",
             "place_of_production": null,
-            "location_current": 989,
+            "location": 989,
             "checked": true,
             "published": true,
             "artists": [
@@ -17136,7 +17136,7 @@
             "created_at": "2023-06-12T14:32:15.311Z",
             "updated_at": "2023-06-14T11:22:28.738Z",
             "place_of_production": null,
-            "location_current": 472,
+            "location": 472,
             "checked": true,
             "published": true,
             "artists": [
@@ -17166,7 +17166,7 @@
             "created_at": "2023-06-12T14:34:50.944Z",
             "updated_at": "2023-06-14T11:13:09.045Z",
             "place_of_production": null,
-            "location_current": 3941,
+            "location": 3941,
             "checked": true,
             "published": true,
             "artists": [
@@ -17195,7 +17195,7 @@
             "created_at": "2023-06-12T14:36:57.271Z",
             "updated_at": "2023-06-14T11:11:54.156Z",
             "place_of_production": null,
-            "location_current": 3941,
+            "location": 3941,
             "checked": true,
             "published": true,
             "artists": [
@@ -17225,7 +17225,7 @@
             "created_at": "2023-06-12T14:38:58.012Z",
             "updated_at": "2023-06-14T11:07:16.029Z",
             "place_of_production": null,
-            "location_current": 3941,
+            "location": 3941,
             "checked": true,
             "published": true,
             "artists": [
@@ -17254,7 +17254,7 @@
             "created_at": "2023-06-12T14:40:28.946Z",
             "updated_at": "2023-06-14T11:06:04.359Z",
             "place_of_production": null,
-            "location_current": 3941,
+            "location": 3941,
             "checked": true,
             "published": true,
             "artists": [
@@ -17283,7 +17283,7 @@
             "created_at": "2023-06-12T14:42:10.019Z",
             "updated_at": "2023-06-14T11:03:56.504Z",
             "place_of_production": null,
-            "location_current": 3941,
+            "location": 3941,
             "checked": true,
             "published": true,
             "artists": [
@@ -17312,7 +17312,7 @@
             "created_at": "2023-06-12T14:44:37.870Z",
             "updated_at": "2023-06-14T10:55:10.739Z",
             "place_of_production": null,
-            "location_current": 2881,
+            "location": 2881,
             "checked": true,
             "published": true,
             "artists": [
@@ -17344,7 +17344,7 @@
             "created_at": "2023-06-12T14:47:50.027Z",
             "updated_at": "2023-06-14T10:51:44.233Z",
             "place_of_production": null,
-            "location_current": 670,
+            "location": 670,
             "checked": true,
             "published": true,
             "artists": [
@@ -17375,7 +17375,7 @@
             "created_at": "2023-06-12T14:54:50.987Z",
             "updated_at": "2023-06-14T10:49:46.435Z",
             "place_of_production": null,
-            "location_current": 3936,
+            "location": 3936,
             "checked": true,
             "published": true,
             "artists": [
@@ -17406,7 +17406,7 @@
             "created_at": "2023-06-12T14:57:49.040Z",
             "updated_at": "2023-06-14T10:48:28.669Z",
             "place_of_production": null,
-            "location_current": 267,
+            "location": 267,
             "checked": true,
             "published": true,
             "artists": [
@@ -17438,7 +17438,7 @@
             "created_at": "2023-06-12T15:01:42.062Z",
             "updated_at": "2023-06-14T10:46:30.613Z",
             "place_of_production": null,
-            "location_current": 789,
+            "location": 789,
             "checked": true,
             "published": true,
             "artists": [
@@ -17470,7 +17470,7 @@
             "created_at": "2023-06-12T15:03:43.786Z",
             "updated_at": "2023-06-14T10:44:47.218Z",
             "place_of_production": null,
-            "location_current": 789,
+            "location": 789,
             "checked": true,
             "published": true,
             "artists": [
@@ -17502,7 +17502,7 @@
             "created_at": "2023-06-12T15:08:24.320Z",
             "updated_at": "2023-06-14T10:37:20.836Z",
             "place_of_production": null,
-            "location_current": 3835,
+            "location": 3835,
             "checked": true,
             "published": true,
             "artists": [
@@ -17533,7 +17533,7 @@
             "created_at": "2023-06-12T15:19:26.242Z",
             "updated_at": "2023-06-14T10:19:28.376Z",
             "place_of_production": null,
-            "location_current": 789,
+            "location": 789,
             "checked": true,
             "published": true,
             "artists": [
@@ -17564,7 +17564,7 @@
             "created_at": "2023-06-12T15:20:57.008Z",
             "updated_at": "2023-06-14T10:12:31.909Z",
             "place_of_production": null,
-            "location_current": 364,
+            "location": 364,
             "checked": true,
             "published": true,
             "artists": [
@@ -17594,7 +17594,7 @@
             "created_at": "2023-06-12T15:22:25.004Z",
             "updated_at": "2023-06-14T10:09:24.379Z",
             "place_of_production": null,
-            "location_current": 2159,
+            "location": 2159,
             "checked": true,
             "published": true,
             "artists": [
@@ -17624,7 +17624,7 @@
             "created_at": "2023-06-12T15:24:15.972Z",
             "updated_at": "2023-06-14T09:59:55.786Z",
             "place_of_production": null,
-            "location_current": 646,
+            "location": 646,
             "checked": true,
             "published": true,
             "artists": [
@@ -17653,7 +17653,7 @@
             "created_at": "2023-06-12T15:25:55.953Z",
             "updated_at": "2023-06-14T09:58:05.490Z",
             "place_of_production": null,
-            "location_current": 3848,
+            "location": 3848,
             "checked": true,
             "published": true,
             "artists": [
@@ -17682,7 +17682,7 @@
             "created_at": "2023-06-12T15:27:33.470Z",
             "updated_at": "2023-06-14T09:56:40.559Z",
             "place_of_production": null,
-            "location_current": 2352,
+            "location": 2352,
             "checked": true,
             "published": true,
             "artists": [
@@ -17712,7 +17712,7 @@
             "created_at": "2023-06-12T15:29:09.396Z",
             "updated_at": "2023-06-14T09:53:24.525Z",
             "place_of_production": null,
-            "location_current": 679,
+            "location": 679,
             "checked": true,
             "published": true,
             "artists": [

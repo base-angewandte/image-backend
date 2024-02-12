@@ -19,8 +19,8 @@ search_vectors = (
         StringAgg('place_of_production__synonyms', delimiter=' '),
         weight='B',
     )
-    + SearchVector(StringAgg('location_current__name', delimiter=' '), weight='B')
-    + SearchVector(StringAgg('location_current__synonyms', delimiter=' '), weight='B')
+    + SearchVector(StringAgg('location__name', delimiter=' '), weight='B')
+    + SearchVector(StringAgg('location__synonyms', delimiter=' '), weight='B')
     + SearchVector('credits', weight='C')
     + SearchVector('material', weight='C')
     + SearchVector('dimensions', weight='C')

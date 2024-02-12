@@ -146,7 +146,7 @@ class Artwork(models.Model):
         on_delete=models.SET_NULL,
         related_name='artworks_created_here',
     )
-    location_current = TreeForeignKey(
+    location = TreeForeignKey(
         Location,
         verbose_name=_('Location'),
         blank=True,

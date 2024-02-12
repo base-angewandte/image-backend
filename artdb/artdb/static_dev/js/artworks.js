@@ -86,12 +86,12 @@ $(document).ready(function() {
                         elVal.dataset.place_of_production = val.name;
                         elEntry.appendChild(elVal);
                         break;
-                    case 'location_current':
+                    case 'location':
                         if (val.length === 0) break;
-                        elKey = createEl('div', ['key'], gettext('location_current'));
+                        elKey = createEl('div', ['key'], gettext('location'));
                         elEntry.appendChild(elKey);
                         elVal = createEl('div', ['value','tag'], val.name);
-                        elVal.dataset.location_current = val.name;
+                        elVal.dataset.location = val.name;
                         elEntry.appendChild(elVal);
                         break;
                     case 'published':
@@ -333,9 +333,9 @@ $(document).ready(function() {
                 var place_of_production = getParameters(e.target.dataset.place_of_production);
                 url += `place_of_production=${place_of_production}`;
             }
-            if (e.target.dataset.location_current) {
-                var location_current = getParameters(e.target.dataset.location_current);
-                url += `location_current=${location_current}`;
+            if (e.target.dataset.location) {
+                var location = getParameters(e.target.dataset.location);
+                url += `location=${location}`;
             }
             window.location.href = url;
         } else if ($(e.target).hasClass('button-collect')) {

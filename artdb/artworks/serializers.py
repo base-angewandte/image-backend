@@ -25,7 +25,7 @@ class ArtworkSerializer(serializers.ModelSerializer):
     artists = ArtistSerializer(read_only=True, many=True)
     keywords = KeywordSerializer(read_only=True, many=True)
     place_of_production = LocationSerializer(read_only=True, many=False)
-    location_current = LocationSerializer(read_only=True, many=False)
+    location = LocationSerializer(read_only=True, many=False)
 
     class Meta:
         model = Artwork
@@ -34,7 +34,7 @@ class ArtworkSerializer(serializers.ModelSerializer):
             'title_english',
             'artists',
             'place_of_production',
-            'location_current',
+            'location',
             'date',
             'material',
             'dimensions',

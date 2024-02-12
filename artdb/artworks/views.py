@@ -40,7 +40,7 @@ def artworks_list(request):
     query_date_from = request.GET.get('date_from')
     query_date_to = request.GET.get('date_to')
     query_place_of_production = request.GET.get('place_of_production')
-    query_location_current = request.GET.get('location_current')
+    query_location = request.GET.get('location')
     q_objects = Q()
     context = {}
     expert_search = False
@@ -56,15 +56,13 @@ def artworks_list(request):
                 include_self=True,
             )
             q_objects.add(Q(place_of_production__in=locations_plus_descendants), Q.AND)
-        if query_location_current:
-            locations = Location.objects.filter(
-                name__istartswith=query_location_current
-            )
+        if query_location:
+            locations = Location.objects.filter(name__istartswith=query_location)
             locations_plus_descendants = Location.objects.get_queryset_descendants(
                 locations,
                 include_self=True,
             )
-            q_objects.add(Q(location_current__in=locations_plus_descendants), Q.AND)
+            q_objects.add(Q(location__in=locations_plus_descendants), Q.AND)
         if query_artist_name:
             terms = [term.strip() for term in query_artist_name.split()]
             for term in terms:
@@ -253,7 +251,7 @@ def artworks_list(request):
     context['query_date_from'] = query_date_from
     context['query_date_to'] = query_date_to
     context['query_place_of_production'] = query_place_of_production
-    context['query_location_current'] = query_location_current
+    context['query_location'] = query_location
     context['expert_search'] = expert_search
     return render(request, 'artwork/thumbnailbrowser.html', context)
 

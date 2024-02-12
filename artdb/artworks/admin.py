@@ -73,14 +73,14 @@ class ArtworkAdmin(admin.ModelAdmin):
         'dimensions',
         'keywords',
         'place_of_production',
-        'location_current',
+        'location',
         'description',
         'credits',
         'created_at',
         'updated_at',
     )
     readonly_fields = ('created_at', 'updated_at', 'thumbnail_image')
-    autocomplete_fields = ('place_of_production', 'location_current')
+    autocomplete_fields = ('place_of_production', 'location')
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'size': '80'})},
         models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 80})},

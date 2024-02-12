@@ -231,11 +231,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 }
                 if artwork.place_of_production
                 else {},
-                'location_current': {
-                    'id': artwork.location_current.id,
-                    'value': artwork.location_current.name,
+                'location': {
+                    'id': artwork.location.id,
+                    'value': artwork.location.name,
                 }
-                if artwork.location_current
+                if artwork.location
                 else {},
                 'artists': [
                     {'id': artist.id, 'value': artist.name}
@@ -353,7 +353,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             metadata_content += f'{artwork._meta.get_field("description").verbose_name.title()}: {artwork.description} \n'
             metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
             metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]} \n'
-            metadata_content += f'{artwork._meta.get_field("location_current").verbose_name.title()}: {artwork.location_current if artwork.location_current else ""} \n'
+            metadata_content += f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location if artwork.location else ""} \n'
             metadata_content += f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {artwork.place_of_production} \n'
 
             #  image to zipfile & metadata
@@ -447,9 +447,9 @@ def filter_current_location(filter_values):
     for val in filter_values:
         if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val)
-            q_objects |= Q(location_current__in=locations)
+            q_objects |= Q(location__in=locations)
         elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects |= Q(location_current__id=val.get('id'))
+            q_objects |= Q(location__id=val.get('id'))
         else:
             raise ParseError(
                 'Invalid filter_value format. See example below for more information.',
