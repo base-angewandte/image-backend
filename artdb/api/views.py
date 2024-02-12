@@ -981,11 +981,11 @@ class AlbumsViewSet(viewsets.ViewSet):
         except Album.DoesNotExist as dne:
             raise NotFound(_('Album does not exist')) from dne
 
-        query = PermissionsRelation.objects.filter(album=album)
+        qs = PermissionsRelation.objects.filter(album=album)
 
         # if the user is not the owner of the album, ony return the permissions of this user
         if album.user != request.user:
-            query = query.filter(user=request.user)
+            qs = qs.filter(user=request.user)
 
         return Response(
             [
@@ -996,7 +996,7 @@ class AlbumsViewSet(viewsets.ViewSet):
                     },
                     'permissions': [{'id': p.permissions}],
                 }
-                for p in query
+                for p in qs
             ]
         )
 
@@ -1053,7 +1053,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             user__username__in=users
         ).delete()
 
-        query = PermissionsRelation.objects.filter(album=album)
+        qs = PermissionsRelation.objects.filter(album=album)
 
         return Response(
             [
@@ -1064,7 +1064,7 @@ class AlbumsViewSet(viewsets.ViewSet):
                     },
                     'permissions': [{'id': p.permissions}],
                 }
-                for p in query
+                for p in qs
             ]
         )
 
