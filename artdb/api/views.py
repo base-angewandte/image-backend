@@ -20,7 +20,7 @@ from drf_spectacular.utils import (
 )
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view
-from rest_framework.exceptions import NotFound, ParseError
+from rest_framework.exceptions import NotFound, ParseError, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.serializers import JSONField
 
@@ -744,43 +744,31 @@ class AlbumsViewSet(viewsets.ViewSet):
     def update(self, request, pk=None, *args, **kwargs):
         """Update Album /albums/{id}"""
 
-        # TODO update
-
-        album_id = pk
+        serializer = UpdateAlbumRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
         try:
-            album = Album.objects.get(pk=album_id)
-            album.title = request.data.get('title')
-
-            serializer = UpdateAlbumRequestSerializer(data=request.data)
-
-            if not serializer.is_valid():
-                return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
-
-            if album.user.username == request.user.username:
-                album.save()
-                return Response(album_object(album, request_user=request.user))
-
-            if request.user.username in [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ] and 'EDIT' in [
-                p.permissions
-                for p in PermissionsRelation.objects.filter(
-                    user__username=request.user.username
-                )
-            ]:
-                album.save()
-                return Response(album_object(album, request_user=request.user))
-
-            else:
-                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-
-        except Album.DoesNotExist:
-            return Response(
-                _('Album does not exist '),
-                status=status.HTTP_404_NOT_FOUND,
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .get()
             )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
+
+        if (
+            album.user == request.user
+            or PermissionsRelation.objects.filter(
+                album=album,
+                user=request.user,
+                permissions='EDIT',
+            ).exists()
+        ):
+            album.title = serializer.validated_data['title']
+            album.save()
+            return Response(album_object(album, request_user=request.user))
+
+        raise PermissionDenied()
 
     # TODO better response definition
     def destroy(self, request, pk=None, *args, **kwargs):
