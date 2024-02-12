@@ -331,7 +331,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     @extend_schema(
         responses={
             # TODO better response definition
-            # https://drf-spectacular.readthedocs.io/en/latest/faq.html#how-to-serve-in-memory-generated-files-or-files-in-general-outside-filefield
+            #   https://drf-spectacular.readthedocs.io/en/latest/faq.html#how-to-serve-in-memory-generated-files-or-files-in-general-outside-filefield
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
@@ -1160,7 +1160,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         ],
         responses={
             # TODO better response definition
-            # https://drf-spectacular.readthedocs.io/en/latest/faq.html#how-to-serve-in-memory-generated-files-or-files-in-general-outside-filefield
+            #   https://drf-spectacular.readthedocs.io/en/latest/faq.html#how-to-serve-in-memory-generated-files-or-files-in-general-outside-filefield
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
