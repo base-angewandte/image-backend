@@ -405,7 +405,7 @@ def filter_title(filter_values):
     return q_objects
 
 
-def filter_artist(filter_values):
+def filter_artists(filter_values):
     """Should filter artworks whose artist name includes the string if given,
     AND the artworks for artist which has the given id."""
     q_objects = Q()
@@ -1340,31 +1340,11 @@ def search(request, *args, **kwargs):
     if filters:
         q_objects = Q()
 
-        for i in filters:
-            if i['id'] == 'title':
-                q_objects |= filter_title(i['filter_values'])
+        for f in filters:
+            if f['id'] not in FILTERS_KEYS:
+                raise ParseError(f'Invalid filter id {repr(f["id"])}')
 
-            elif i['id'] == 'artist':
-                q_objects |= filter_artist(i['filter_values'])
-
-            elif i['id'] == 'place_of_production':
-                q_objects |= filter_place_of_production(i['filter_values'])
-
-            elif i['id'] == 'current_location':
-                q_objects |= filter_location(i['filter_values'])
-
-            elif i['id'] == 'keywords':
-                q_objects |= filter_keywords(i['filter_values'])
-
-            elif i['id'] == 'date':
-                q_objects |= filter_date(i['filter_values'])
-
-            else:
-                raise ParseError(
-                    'Invalid filter id. Filter id can only be title, artist, place_of_production, '
-                    'current_location, keywords, or date.',
-                    400,
-                )
+            q_objects |= FILTERS_MAP[f['id']](f['filter_values'])
 
         qs = qs.filter(q_objects)
 
