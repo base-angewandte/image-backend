@@ -35,6 +35,7 @@ from .serializers import (
     AlbumSerializer,
     AlbumsRequestSerializer,
     CreateAlbumRequestSerializer,
+    PermissionsResponseSerializer,
     PermissionsSerializer,
     SearchRequestSerializer,
     SearchResultSerializer,
@@ -947,7 +948,7 @@ class AlbumsViewSet(viewsets.ViewSet):
 
     @extend_schema(
         responses={
-            200: PermissionsSerializer,
+            200: PermissionsResponseSerializer,
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
@@ -955,39 +956,31 @@ class AlbumsViewSet(viewsets.ViewSet):
     @action(detail=True, methods=['get'])
     def permissions(self, request, pk=None, *args, **kwargs):
         """Get Permissions /albums/{id}/permissions."""
-        album_id = pk
         try:
-            album = Album.objects.get(pk=album_id)
-        except (Album.DoesNotExist, ValueError):
-            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .get()
+            )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
+
+        query = PermissionsRelation.objects.filter(album=album)
+
+        # if the user is not the owner of the album, ony return the permissions of this user
+        if album.user != request.user:
+            query.filter(user=request.user)
 
         return Response(
             [
                 {
                     'user': {
-                        'id': p.user.id,
-                        'name': f'{p.user.first_name} {p.user.last_name}',
+                        'id': p.user.username,
+                        'name': p.user.get_full_name(),
                     },
-                    'permission': [
-                        {'id': p.permissions.upper()}  # possible values: view | edit
-                    ],
+                    'permissions': [{'id': p.permissions}],
                 }
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-                if (album.user.username == request.user.username)
-                or (
-                    request.user.username
-                    in [
-                        p.user.username
-                        for p in PermissionsRelation.objects.filter(album__id=album.id)
-                    ]
-                    and 'VIEW'
-                    in [
-                        p.permissions
-                        for p in PermissionsRelation.objects.filter(
-                            user__username=request.user.username
-                        )
-                    ]
-                )
+                for p in query
             ]
         )
 
