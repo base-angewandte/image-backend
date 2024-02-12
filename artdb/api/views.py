@@ -41,6 +41,7 @@ from .serializers import (
     PermissionsResponseSerializer,
     SearchRequestSerializer,
     SearchResultSerializer,
+    SlidesRequestSerializer,
     SlidesSerializer,
     UpdateAlbumRequestSerializer,
     UserDataSerializer,
@@ -844,7 +845,16 @@ class AlbumsViewSet(viewsets.ViewSet):
         raise PermissionDenied()
 
     @extend_schema(
-        # TODO better request definition
+        parameters=[
+            OpenApiParameter(
+                name='details',
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description='Boolean indicating if the response should contain details of the artworks',
+                default=False,
+            ),
+        ],
         responses={
             # TODO better response definition
             200: OpenApiResponse(description='OK'),
@@ -856,28 +866,22 @@ class AlbumsViewSet(viewsets.ViewSet):
     def slides(self, request, pk=None, *args, **kwargs):
         """/albums/{id}/slides LIST (GET) endpoint returns:"""
 
-        # TODO update
+        serializer = SlidesRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
 
-        album_id = pk
         try:
-            album = Album.objects.get(pk=album_id)
-        except (Album.DoesNotExist, ValueError):
-            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
-
-        if album.user.username == request.user.username:
-            return Response(artworks_in_slides(album))
-        if request.user.username in [
-            p.user.username
-            for p in PermissionsRelation.objects.filter(album__id=album.id)
-        ] and 'VIEW' in [
-            p.permissions
-            for p in PermissionsRelation.objects.filter(
-                user__username=request.user.username
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .get()
             )
-        ]:
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
+
+        if serializer.validated_data['details']:
             return Response(artworks_in_slides(album))
         else:
-            return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
+            return Response(album.slides)
 
     @extend_schema(
         # TODO better request definition
