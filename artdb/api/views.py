@@ -35,6 +35,7 @@ from .search.filters import FILTERS, FILTERS_KEYS
 from .serializers import (
     AlbumResponseSerializer,
     AlbumsRequestSerializer,
+    AppendArtworkRequestSerializer,
     CreateAlbumRequestSerializer,
     PermissionsRequestSerializer,
     PermissionsResponseSerializer,
@@ -798,10 +799,9 @@ class AlbumsViewSet(viewsets.ViewSet):
     # additional actions
 
     @extend_schema(
-        # TODO better request definition
+        request=AppendArtworkRequestSerializer,
         responses={
-            # TODO better response definition
-            200: OpenApiResponse(description='OK'),
+            204: OpenApiResponse(),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
@@ -811,40 +811,41 @@ class AlbumsViewSet(viewsets.ViewSet):
         """/albums/{id}/append_artwork Append artwork to slides as singular
         slide [{'id': x}]"""
 
-        # TODO update
+        serializer = AppendArtworkRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        album_id = pk
         try:
-            album = Album.objects.get(pk=album_id)
-            if not album.slides:
-                album.slides = []
-
-            # Check if artwork exists
-            artwork = Artwork.objects.get(pk=int(request.GET.get('artwork_id')))
-
-            album.slides.append([{'id': artwork.id}])
-            if album.user.username == request.user.username:
-                album.save()
-                return Response(_('Artwork added.'), status=status.HTTP_200_OK)
-            if request.user.username in [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ] and 'EDIT' in [
-                p.permissions
-                for p in PermissionsRelation.objects.filter(
-                    user__username=request.user.username
-                )
-            ]:
-                album.save()
-                return Response(_('Artwork added.'), status=status.HTTP_200_OK)
-            else:
-                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-
-        except Artwork.DoesNotExist:
-            return Response(
-                _('There is no artwork associated with the given id.'),
-                status=status.HTTP_404_NOT_FOUND,
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .get()
             )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
+
+        # check if artwork exists
+        try:
+            Artwork.objects.get(pk=serializer.validated_data['id'])
+        except Artwork.DoesNotExist as dne:
+            raise NotFound(_('Artwork does not exist')) from dne
+
+        if (
+            album.user == request.user
+            or PermissionsRelation.objects.filter(
+                album=album,
+                user=request.user,
+                permissions='EDIT',
+            ).exists()
+        ):
+            slide = [serializer.validated_data]
+            if album.slides:
+                album.slides.append(slide)
+            else:
+                album.slides = [slide]
+            album.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        raise PermissionDenied()
 
     @extend_schema(
         # TODO better request definition
