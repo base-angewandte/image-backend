@@ -1184,20 +1184,6 @@ class LabelsViewSet(viewsets.GenericViewSet):
     """
 
     @extend_schema(
-        parameters=[
-            OpenApiParameter(
-                name='limit',
-                type=OpenApiTypes.INT,
-                required=False,
-                description='',
-            ),
-            OpenApiParameter(
-                name='offset',
-                type=OpenApiTypes.INT,
-                required=False,
-                description='',
-            ),
-        ],
         responses={
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
