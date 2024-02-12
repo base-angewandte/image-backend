@@ -50,40 +50,37 @@ from .serializers import (
 logger = logging.getLogger(__name__)
 
 
-def artworks_in_slides(album):
-    info_per_slide = []
-    if album.slides:
-        for slide in album.slides:
-            artwork_info = []
-            for artwork_in_slide in slide:
-                try:
-                    artwork = Artwork.objects.get(id=artwork_in_slide.get('id'))
-                except Artwork.DoesNotExist:
-                    return Response(
-                        _(
-                            f'There is no artwork associated with id {artwork_in_slide.get("id")}.'
-                        ),
-                        status=status.HTTP_404_NOT_FOUND,
-                    )
+def slides_with_details(album):
+    ret = []
+    for slide in album.slides:
+        slide_info = []
+        for artwork in slide:
+            try:
+                artwork = Artwork.objects.get(id=artwork.get('id'))
+            except Artwork.DoesNotExist as dne:
+                raise NotFound(_('Artwork does not exist')) from dne
 
-                artwork_info.append(
-                    {
-                        'id': artwork.id,
-                        'image_original': f'{settings.SITE_URL}{Artwork.objects.get(id=artwork.id).image_original}'
-                        if Artwork.objects.get(id=artwork.id).image_original
-                        else None,
-                        'credits': artwork.credits,
-                        'title': artwork.title,
-                        'date': artwork.date,
-                        'artists': [
-                            {'value': artist.name, 'id': artist.id}
-                            for artist in artwork.artists.all()
-                        ],
-                    }
-                )
-            info_per_slide.append(artwork_info)
+            slide_info.append(
+                {
+                    'id': artwork.id,
+                    'image_original': artwork.image_original.url
+                    if artwork.image_original
+                    else None,
+                    'title': artwork.title,
+                    'credits': artwork.credits,
+                    'date': artwork.date,
+                    'artists': [
+                        {
+                            'id': artist.id,
+                            'name': artist.name,
+                        }
+                        for artist in artwork.artists.all()
+                    ],
+                }
+            )
+        ret.append(slide_info)
 
-    return info_per_slide
+    return ret
 
 
 def album_object(album, request_user=None):
@@ -879,7 +876,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             raise NotFound(_('Album does not exist')) from dne
 
         if serializer.validated_data['details']:
-            return Response(artworks_in_slides(album))
+            return Response(slides_with_details(album))
         else:
             return Response(album.slides)
 
@@ -943,7 +940,7 @@ class AlbumsViewSet(viewsets.ViewSet):
 
             if album.user.username == request.user.username:
                 album.save()
-                return Response(artworks_in_slides(album))
+                return Response(slides_with_details(album))
             if request.user.username in [
                 p.user.username
                 for p in PermissionsRelation.objects.filter(album__id=album.id)
@@ -954,7 +951,7 @@ class AlbumsViewSet(viewsets.ViewSet):
                 )
             ]:
                 album.save()
-                return Response(artworks_in_slides(album))
+                return Response(slides_with_details(album))
 
             else:
                 return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
