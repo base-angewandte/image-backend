@@ -87,9 +87,8 @@ def artworks_in_slides(album):
 
 def album_object(album, request_user=None):
     number_of_artworks = 0
-    slides = album.slides if album.slides else []
 
-    for slide in slides:
+    for slide in album.slides:
         number_of_artworks += len(slide)
 
     permissions_qs = PermissionsRelation.objects.filter(album=album)
@@ -101,7 +100,7 @@ def album_object(album, request_user=None):
         'id': album.id,
         'title': album.title,
         'number_of_artworks': number_of_artworks,
-        'slides': slides,
+        'slides': album.slides,
         'owner': {
             'id': album.user.username,
             'name': album.user.get_full_name(),
@@ -838,10 +837,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             ).exists()
         ):
             slide = [serializer.validated_data]
-            if album.slides:
-                album.slides.append(slide)
-            else:
-                album.slides = [slide]
+            album.slides.append(slide)
             album.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
