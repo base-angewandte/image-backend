@@ -29,7 +29,7 @@ from django.http import HttpResponse
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from .search.filters import FILTERS
+from .search.filters import FILTERS, FILTERS_KEYS
 from .serializers import (
     AlbumSerializer,
     AlbumsRequestSerializer,
@@ -1264,6 +1264,11 @@ def get_user_data(request, *args, **kwargs):
         'permissions': attributes.get('permissions'),
     }
     return Response(ret, status=200)
+
+
+FILTERS_MAP = {}
+for filter_id in FILTERS_KEYS:
+    FILTERS_MAP[filter_id] = globals()[f'filter_{filter_id}']
 
 
 @extend_schema(
