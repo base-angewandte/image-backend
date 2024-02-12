@@ -718,27 +718,16 @@ class AlbumsViewSet(viewsets.ViewSet):
     def retrieve(self, request, pk=None, *args, **kwargs):
         """List of Works (Slides) in a specific Album /albums/{id}"""
 
-        # TODO update
-
-        album_id = pk
         try:
-            album = Album.objects.get(pk=album_id)
-            if album.user.username == request.user.username:
-                return simple_album_object(album)
-            if request.user.username in [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ] and 'VIEW' in [
-                p.permissions
-                for p in PermissionsRelation.objects.filter(
-                    user__username=request.user.username
-                )
-            ]:
-                return simple_album_object(album)
-            else:
-                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-        except (Album.DoesNotExist, ValueError):
-            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .get()
+            )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
+
+        return simple_album_object(album)
 
     @extend_schema(
         request=UpdateAlbumRequestSerializer,
