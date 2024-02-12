@@ -33,7 +33,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .search.filters import FILTERS, FILTERS_KEYS
 from .serializers import (
-    AlbumSerializer,
+    AlbumResponseSerializer,
     AlbumsRequestSerializer,
     CreateAlbumRequestSerializer,
     PermissionsRequestSerializer,
@@ -695,7 +695,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         request=CreateAlbumRequestSerializer,
         responses={
             # TODO better response definition
-            201: AlbumSerializer,
+            201: AlbumResponseSerializer,
             403: ERROR_RESPONSES[403],
         },
     )
@@ -739,7 +739,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         request=UpdateAlbumRequestSerializer,
         responses={
             # TODO better response definition
-            200: AlbumSerializer,
+            200: AlbumResponseSerializer,
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
@@ -830,7 +830,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         # TODO better request definition
         responses={
             # TODO better response definition
-            200: AlbumSerializer,
+            200: AlbumResponseSerializer,
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
@@ -922,7 +922,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         ],
         responses={
             # TODO better response definition
-            200: AlbumSerializer,
+            200: AlbumResponseSerializer,
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },

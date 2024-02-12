@@ -140,23 +140,6 @@ class MembershipSerializer(serializers.ModelSerializer):
         fields = ('id', 'connected_with', 'artwork')
 
 
-class AlbumSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Album
-        fields = '__all__'
-        depth = 1
-
-
-class CreateAlbumRequestSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Album
-        fields = ('title',)
-
-
-class UpdateAlbumRequestSerializer(CreateAlbumRequestSerializer):
-    pass
-
-
 class SlidesField(serializers.JSONField):
     pass
 
@@ -258,3 +241,56 @@ class PermissionsResponseSerializer(serializers.Serializer):
 class PermissionsRequestSerializer(serializers.Serializer):
     user = serializers.CharField()
     permissions = PermissionItemSerializer(many=True)
+
+
+@extend_schema_serializer(
+    examples=[
+        OpenApiExample(
+            name='example album',
+            value={
+                'id': 2,
+                'title': 'Example Album',
+                'number_of_artworks': 3,
+                'slides': [[{'id': 123}], [{'id': 234}, {'id': 345}]],
+                'owner': {
+                    'id': '0123456789ABCDEF0123456789ABCDEF',
+                    'name': 'Firstname Lastname',
+                },
+                'permissions': [
+                    {
+                        'user': {
+                            'id': '123456789ABCDEF0123456789ABCDEFG',
+                            'name': 'Robin Smith',
+                        },
+                        'permissions': [{'id': 'VIEW'}],
+                    },
+                ],
+            },
+        ),
+    ],
+)
+class AlbumResponseSerializer(serializers.ModelSerializer):
+    number_of_artworks = serializers.IntegerField()
+    owner = UserSerializer()
+    permissions = PermissionsResponseSerializer(many=True)
+
+    class Meta:
+        model = Album
+        fields = [
+            'id',
+            'title',
+            'number_of_artworks',
+            'slides',
+            'owner',
+            'permissions',
+        ]
+
+
+class CreateAlbumRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Album
+        fields = ('title',)
+
+
+class UpdateAlbumRequestSerializer(CreateAlbumRequestSerializer):
+    pass
