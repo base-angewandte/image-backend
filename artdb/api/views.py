@@ -73,7 +73,7 @@ def check_offset(offset):
     return offset
 
 
-def slides_with_details(album):
+def slides_with_details(album, request):
     ret = []
     for slide in album.slides:
         slide_info = []
@@ -86,7 +86,9 @@ def slides_with_details(album):
             slide_info.append(
                 {
                     'id': artwork.id,
-                    'image_original': artwork.image_original.url
+                    'image_original': request.build_absolute_uri(
+                        artwork.image_original.url
+                    )
                     if artwork.image_original
                     else None,
                     'title': artwork.title,
@@ -192,7 +194,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'results': [
                     {
                         'id': artwork.id,
-                        'image_original': artwork.image_original.url
+                        'image_original': request.build_absolute_uri(
+                            artwork.image_original.url
+                        )
                         if artwork.image_original
                         else None,
                         'credits': artwork.credits,
@@ -225,7 +229,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         return Response(
             {
                 'id': artwork.id,
-                'image_original': artwork.image_original.url
+                'image_original': request.build_absolute_uri(artwork.image_original.url)
                 if artwork.image_original
                 else None,
                 'credits': artwork.credits,
@@ -886,7 +890,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             raise NotFound(_('Album does not exist')) from dne
 
         if serializer.validated_data['details']:
-            return Response(slides_with_details(album))
+            return Response(slides_with_details(album, request))
         else:
             return Response(album.slides)
 
@@ -956,7 +960,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             album.save()
 
             if query_params_serializer.validated_data['details']:
-                return Response(slides_with_details(album))
+                return Response(slides_with_details(album, request))
             else:
                 return Response(album.slides)
 
@@ -1350,7 +1354,9 @@ def search(request, *args, **kwargs):
             'results': [
                 {
                     'id': artwork.id,
-                    'image_original': artwork.image_original.url
+                    'image_original': request.build_absolute_uri(
+                        artwork.image_original.url
+                    )
                     if artwork.image_original
                     else None,
                     'credits': artwork.credits,
