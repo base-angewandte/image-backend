@@ -26,6 +26,7 @@ from rest_framework.serializers import JSONField
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.db import transaction
 from django.db.models import FloatField, Q, Value
 from django.http import HttpResponse
 from django.utils.text import slugify
@@ -1032,11 +1033,13 @@ class AlbumsViewSet(viewsets.ViewSet):
                 users.append(user.username)
 
             for perm in permissions:
-                PermissionsRelation.objects.update_or_create(
-                    album=album,
-                    user=user,
-                    permissions=perm['id'],
-                )
+                with transaction.atomic():
+                    pr = PermissionsRelation.objects.get_or_create(
+                        album=album,
+                        user=user,
+                    )
+                    pr.permissions = perm['id']
+                    pr.save()
 
         # remove deleted permissions
         PermissionsRelation.objects.filter(album=album).exclude(
