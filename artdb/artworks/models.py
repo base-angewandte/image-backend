@@ -268,6 +268,9 @@ class PermissionsRelation(models.Model):
         default=default_permission,
     )
 
+    class Meta:
+        unique_together = ['album', 'user']
+
 
 class AlbumMembership(OrderedModel):
     """Users can create collections of artworks and put them into a specific
