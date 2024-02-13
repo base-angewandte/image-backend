@@ -1264,7 +1264,7 @@ for filter_id in FILTERS_KEYS:
 
 @extend_schema(
     tags=['search'],
-    request={'application/json': SearchRequestSerializer},
+    request=SearchRequestSerializer,
     examples=[
         OpenApiExample(
             name='search with filter type title, artist, place_of_production, current_location, keywords',
