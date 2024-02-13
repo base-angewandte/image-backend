@@ -165,14 +165,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 name='limit',
                 type=OpenApiTypes.INT,
                 required=False,
-                description='',
                 default=100,
             ),
             OpenApiParameter(
                 name='offset',
                 type=OpenApiTypes.INT,
                 required=False,
-                description='',
                 default=0,
             ),
         ],
@@ -184,19 +182,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def list(self, request, *args, **kwargs):
-        try:
-            limit = int(request.query_params.get('limit', 100))
-            if limit <= 0:
-                raise ValueError
-        except ValueError as e:
-            raise ParseError(_('limit must be a positive integer')) from e
-
-        try:
-            offset = int(request.query_params.get('offset', 0))
-            if offset < 0:
-                raise ParseError(_('negative offset is not allowed'))
-        except ValueError as e:
-            raise ParseError(_('offset must be an integer')) from e
+        limit = check_limit(request.query_params.get('limit', 100))
+        offset = check_offset(request.query_params.get('offset', 0))
 
         results = self.get_queryset()
 
@@ -596,13 +583,13 @@ class AlbumsViewSet(viewsets.ViewSet):
                 name='limit',
                 type=OpenApiTypes.INT,
                 required=False,
-                description='',
+                default=10,
             ),
             OpenApiParameter(
                 name='offset',
                 type=OpenApiTypes.INT,
                 required=False,
-                description='',
+                default=0,
             ),
         ],
         responses={
@@ -1329,8 +1316,8 @@ def search(request, *args, **kwargs):
     serializer = SearchRequestSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    limit = serializer.validated_data.get('limit', settings.SEARCH_LIMIT)
-    offset = serializer.validated_data.get('offset', 0)
+    limit = check_limit(serializer.validated_data.get('limit'))
+    offset = check_offset(serializer.validated_data.get('offset'))
     filters = serializer.validated_data.get('filters', [])
     q_param = serializer.validated_data.get('q')
     exclude = serializer.validated_data.get('exclude', [])
