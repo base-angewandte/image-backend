@@ -3,10 +3,7 @@ import re
 import zipfile
 from io import BytesIO
 
-from artworks.exports import (
-    collection_download_as_pptx_de,
-    collection_download_as_pptx_en,
-)
+from artworks.exports import collection_download_as_pptx
 from artworks.models import Album, Artwork, Keyword, Location, PermissionsRelation
 from base_common_drf.openapi.responses import ERROR_RESPONSES
 from django_filters.rest_framework import DjangoFilterBackend
@@ -35,6 +32,7 @@ from django.utils.translation import gettext_lazy as _
 from .search.filters import FILTERS, FILTERS_KEYS
 from .serializers import (
     AlbumResponseSerializer,
+    AlbumsDownloadRequestSerializer,
     AlbumsListRequestSerializer,
     AlbumsRequestSerializer,
     AppendArtworkRequestSerializer,
@@ -1103,22 +1101,19 @@ class AlbumsViewSet(viewsets.ViewSet):
 
     @extend_schema(
         parameters=[
+            AlbumsDownloadRequestSerializer,
             OpenApiParameter(
                 name='language',
                 type=OpenApiTypes.STR,
-                location=OpenApiParameter.HEADER,
-                required=True,
                 enum=['de', 'en'],
-                default='en',
-                description='de or en. The default value is en',
+                default='de',
             ),
             OpenApiParameter(
                 name='download_format',
                 type=OpenApiTypes.STR,
-                enum=['pptx', 'pdf'],  # Todo: PDF will be made functional later
+                enum=['pptx', 'pdf'],
                 default='pptx',
-                description="At the moment, only 'pptx' is available. Later on, 'PDF' will also be available",
-                required=True,
+                description='At the moment, only "pptx" is available. Later on, "pdf" will also be available',
             ),
         ],
         responses={
@@ -1132,52 +1127,34 @@ class AlbumsViewSet(viewsets.ViewSet):
     )
     @action(detail=True, methods=['get'])
     def download(self, request, pk=None, *args, **kwargs):
-        # TODO update
-
         # TODO only 'pptx' is implemented at the moment, need to implement 'pdf' as well
 
-        album_id = pk
+        serializer = AlbumsDownloadRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
         try:
-            album = Album.objects.get(id=album_id)
-            # If user is the owner or has VIEW permissions, allow the download. Otherwise, throw a 403
-            if (album.user.username == request.user.username) or (
-                request.user.username
-                in [
-                    p.user.username
-                    for p in PermissionsRelation.objects.filter(album__id=album.id)
-                ]
-                and 'VIEW'
-                in [
-                    p.permissions
-                    for p in PermissionsRelation.objects.filter(
-                        user__username=request.user.username
-                    )
-                ]
-            ):
-                download_format = request.GET.get('download_format')
-                lang = request.headers.get('Language')
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
+                .get()
+            )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
 
-                if download_format == 'pptx' and lang == 'en':
-                    return collection_download_as_pptx_en(request, id=album_id)
-                if download_format == 'pptx' and lang == 'de':
-                    return collection_download_as_pptx_de(request, id=album_id)
-                if download_format == 'pdf' and lang == 'en':
-                    # Todo to implement
-                    return Response(
-                        _('Not implemented yet'),
-                        status.HTTP_501_NOT_IMPLEMENTED,
-                    )
-                if download_format == 'pdf' and lang == 'de':
-                    # Todo to implement
-                    return Response(
-                        _('Not implemented yet'),
-                        status.HTTP_501_NOT_IMPLEMENTED,
-                    )
-                return Response(_('Wrong parameters.'), status.HTTP_400_BAD_REQUEST)
+        download_format = serializer.validated_data['download_format']
+        language = serializer.validated_data['language']
 
-            return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-        except Album.DoesNotExist:
-            return Response(_("Album doesn't exist"), status.HTTP_404_NOT_FOUND)
+        if download_format == 'pptx':
+            return collection_download_as_pptx(request, id=album.id, language=language)
+        elif download_format == 'pdf':
+            # TODO implement pdf creation
+            return Response(
+                _('Not implemented yet'),
+                status.HTTP_501_NOT_IMPLEMENTED,
+            )
+        else:
+            raise ParseError(_('Invalid format'))
 
 
 @extend_schema(tags=['labels'])
