@@ -35,6 +35,7 @@ from django.utils.translation import gettext_lazy as _
 from .search.filters import FILTERS, FILTERS_KEYS
 from .serializers import (
     AlbumResponseSerializer,
+    AlbumsListRequestSerializer,
     AlbumsRequestSerializer,
     AppendArtworkRequestSerializer,
     CreateAlbumRequestSerializer,
@@ -605,7 +606,33 @@ class AlbumsViewSet(viewsets.ViewSet):
     filter_backends = (DjangoFilterBackend,)
 
     @extend_schema(
+        request=AlbumsListRequestSerializer,
         parameters=[
+            OpenApiParameter(
+                name='owner',
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description='Boolean indicating to return albums owned by this user.',
+                default=True,
+            ),
+            OpenApiParameter(
+                name='permissions',
+                type={
+                    'type': 'array',
+                    'items': {'type': 'string', 'enum': settings.PERMISSIONS},
+                },
+                location=OpenApiParameter.QUERY,
+                required=False,
+                style='form',
+                explode=False,
+                description=(
+                    'If the response should also return shared albums, it\'s possible to define which permissions the '
+                    'user needs to have for the album. Since the default is `EDIT`, shared albums with `EDIT` '
+                    'permissions are included in the response.'
+                ),
+                default='EDIT',
+            ),
             OpenApiParameter(
                 name='limit',
                 type=OpenApiTypes.INT,
@@ -631,35 +658,32 @@ class AlbumsViewSet(viewsets.ViewSet):
 
         # TODO check logic after /folders/root endpoint is implemented
 
-        limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
-        offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
+        serializer = AlbumsListRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
 
-        # TODO don't query all albums here
-        results = Album.objects.all()
+        limit = check_limit(serializer.validated_data['limit'])
+        offset = check_offset(serializer.validated_data['offset'])
 
-        slides_ids = []
+        q_filters = Q()
 
-        for album in results:
-            if album.slides:
-                for artworks_list in album.slides:
-                    for slides in artworks_list:
-                        if Artwork.objects.filter(id=slides.get('id')).first():
-                            slides_ids.append(slides.get('id'))
+        if serializer.validated_data['owner']:
+            q_filters |= Q(user=request.user)
 
-        total = len(results)
+        permissions = serializer.validated_data['permissions'].split(',')
 
-        limit = limit if limit != 0 else None
+        if permissions:
+            q_filters |= Q(
+                pk__in=PermissionsRelation.objects.filter(
+                    user=request.user,
+                    permissions__in=permissions,
+                ).values_list('album__pk', flat=True)
+            )
 
-        if offset and limit:
-            end = offset + limit
+        albums = Album.objects.filter(q_filters)
 
-        elif limit and not offset:
-            end = limit
+        total = albums.count()
 
-        else:
-            end = None
-
-        results = results[offset:end]
+        albums = albums[offset : offset + limit]
 
         return Response(
             {
@@ -668,60 +692,32 @@ class AlbumsViewSet(viewsets.ViewSet):
                     {
                         'id': album.id,
                         'title': album.title,
-                        'number_of_artworks': album.artworks.all().count(),  # number of artworks in a specific album
-                        'artworks': [
-                            # the first 4 artworks from all slides: [[{"id":1}], [2,3], [4,5]] -> 1,2,3,4,max 4 objects
-                            {
-                                'id': artwork_id,
-                                'image_original': f'{settings.SITE_URL}{Artwork.objects.get(id=artwork_id).image_original}'
-                                if Artwork.objects.get(id=artwork_id).image_original
-                                else None,
-                                'title': Artwork.objects.get(id=artwork_id).title,
-                            }
-                            for artwork_id in slides_ids
-                            if artwork_id
-                        ][:4]
-                        if album.slides
-                        else [],
+                        'number_of_artworks': sum(
+                            [len(slide) for slide in album.slides]
+                        ),
+                        'featured_artworks': featured_artworks(album, request),
                         'owner': {
-                            'id': album.user.id,
-                            'name': f'{album.user.first_name} {album.user.last_name}',
+                            'id': album.user.username,
+                            'name': album.user.get_full_name(),
                         },
                         'permissions': [
                             {
                                 'user': {
-                                    'id': p.user.id,
-                                    'name': f'{p.user.first_name} {p.user.last_name}',
+                                    'id': p.user.username,
+                                    'name': p.user.get_full_name(),
                                 },
-                                'permission': [
-                                    {
-                                        'id': p.permissions  # possible values: view | edit
-                                    }
-                                ],
+                                'permissions': [{'id': p.permissions}],
                             }
                             for p in PermissionsRelation.objects.filter(
-                                album__id=album.id
+                                album=album
+                            ).filter(
+                                **{}
+                                if album.user == request.user
+                                else {'user': request.user}
                             )
                         ],
                     }
-                    for album in results
-                    if (album.user.username == request.user.username)
-                    or (
-                        request.user.username
-                        in [
-                            p.user.username
-                            for p in PermissionsRelation.objects.filter(
-                                album__id=album.id
-                            )
-                        ]
-                        and 'VIEW'
-                        in [
-                            p.permissions
-                            for p in PermissionsRelation.objects.filter(
-                                user__username=request.user.username
-                            )
-                        ]
-                    )
+                    for album in albums
                 ],
             }
         )
