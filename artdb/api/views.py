@@ -1038,7 +1038,7 @@ class AlbumsViewSet(viewsets.ViewSet):
 
             for perm in permissions:
                 with transaction.atomic():
-                    pr = PermissionsRelation.objects.get_or_create(
+                    pr, created = PermissionsRelation.objects.get_or_create(
                         album=album,
                         user=user,
                     )

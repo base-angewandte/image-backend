@@ -254,18 +254,19 @@ class Album(models.Model):
         verbose_name_plural = _('Albums')
 
 
+def get_default_permissions():
+    return settings.DEFAULT_PERMISSIONS[0]
+
+
 class PermissionsRelation(models.Model):
     PERMISSION_CHOICES = tuple((p, _(p)) for p in settings.PERMISSIONS)
-
-    def default_permission(self):
-        return settings.DEFAULT_PERMISSIONS[0]
 
     album = models.ForeignKey(Album, related_name='album', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
     permissions = models.CharField(
         max_length=20,
         choices=PERMISSION_CHOICES,
-        default=default_permission,
+        default=get_default_permissions,
     )
 
     class Meta:
