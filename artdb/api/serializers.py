@@ -1,11 +1,10 @@
 import json
 
 import jsonschema
-from artworks.models import Album, AlbumMembership, Artist, Artwork, Keyword, Location
+from artworks.models import Album
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from jsonschema import validate
 from rest_framework import serializers
-from versatileimagefield.serializers import VersatileImageFieldSerializer
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -38,30 +37,6 @@ def validate_json_field(value, schema):
         raise ValidationError(_('Data contains duplicate entries'))
 
     return value
-
-
-class LocationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Location
-        fields = 'id', 'name'
-
-
-class ArtistSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Artist
-        fields = 'id', 'name'
-
-
-class KeywordSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Keyword
-        fields = 'id', 'name'
-
-
-class ArtworkSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Artwork
-        fields = '__all__'
 
 
 class SearchFilterSerializer(serializers.Serializer):
@@ -121,25 +96,6 @@ class SearchResultSerializer(serializers.Serializer):
     label = serializers.CharField()
     total = serializers.IntegerField()
     data = SearchItemSerializer(many=True)
-
-
-class ThumbnailSerializer(serializers.ModelSerializer):
-    artists = ArtistSerializer(read_only=True, many=True)
-    image_original = VersatileImageFieldSerializer(
-        sizes=[('thumbnail', 'thumbnail__180x180')]
-    )
-
-    class Meta:
-        model = Artwork
-        fields = ('id', 'title', 'artists', 'image_original')
-
-
-class MembershipSerializer(serializers.ModelSerializer):
-    artwork = ThumbnailSerializer(read_only=True, many=False)
-
-    class Meta:
-        model = AlbumMembership
-        fields = ('id', 'connected_with', 'artwork')
 
 
 class UserSerializer(serializers.Serializer):
