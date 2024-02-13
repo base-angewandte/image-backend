@@ -182,7 +182,11 @@ class UserDataSerializer(serializers.Serializer):
 
 
 class AlbumsRequestSerializer(serializers.Serializer):
-    owner = serializers.BooleanField(required=False, default=True)
+    owner = serializers.BooleanField(
+        required=False,
+        default=True,
+        help_text='Boolean indicating to return albums owned by this user.',
+    )
     permissions = serializers.CharField(required=False, default='EDIT')
 
     def validate_permissions(self, value):
