@@ -998,12 +998,6 @@ class AlbumsViewSet(viewsets.ViewSet):
 
     @extend_schema(
         request=PermissionsRequestSerializer(many=True),
-        examples=[
-            OpenApiExample(
-                name='Set VIEW permissions',
-                value=[{'user': 'username', 'permissions': {'id': 'VIEW'}}],
-            )
-        ],
         responses={
             200: PermissionsResponseSerializer,
             403: ERROR_RESPONSES[403],
