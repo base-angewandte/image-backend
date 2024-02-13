@@ -297,3 +297,20 @@ class SlideSerializer(serializers.Serializer):
 
 class CreateSlidesRequestSerializer(serializers.ListSerializer):
     child = SlideSerializer(many=True)
+
+
+class AlbumsDownloadRequestSerializer(serializers.Serializer):
+    download_format = serializers.CharField(
+        default='pptx', allow_null=False, allow_blank=False
+    )
+    language = serializers.CharField(default='de', allow_null=False, allow_blank=False)
+
+    def validate_download_format(self, value):
+        if value not in ['pptx', 'pdf']:
+            raise serializers.ValidationError(f'{value} is not a valid format')
+        return value
+
+    def validate_language(self, value):
+        if value not in ['de', 'en']:
+            raise serializers.ValidationError(f'{value} is not a valid language')
+        return value
