@@ -1,7 +1,6 @@
 from artworks.models import Album
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
-from rest_framework.exceptions import ParseError
 
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
@@ -225,7 +224,9 @@ class CreateSlidesRequestSerializer(serializers.ListSerializer):
     def validate(self, data):
         for item in data:
             if len(item) > 2:
-                raise ParseError(_('No more than two artworks per slide allowed'))
+                raise serializers.ValidationError(
+                    _('No more than two artworks per slide allowed')
+                )
         return data
 
 
