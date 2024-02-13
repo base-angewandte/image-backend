@@ -1,43 +1,10 @@
-import json
-
-import jsonschema
 from artworks.models import Album
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
-from jsonschema import validate
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-
-
-def validate_json_field(value, schema):
-    try:
-        if not isinstance(value, list):
-            value = [value]
-        for v in value:
-            validate(v, schema)
-    except jsonschema.exceptions.ValidationError as e:
-        raise ValidationError(_('Well-formed but invalid JSON: {e}').format(e=e)) from e
-    except json.decoder.JSONDecodeError as e:
-        raise ValidationError(_('Poorly-formed text, not JSON: {e}').format(e=e)) from e
-    except TypeError as e:
-        raise ValidationError(_('Invalid characters: {e}').format(e=e)) from e
-
-    # check if it is slides, because in that case duplicates are allowed.
-    # The validity of slidesis checked above
-    if isinstance(value, list):
-        for i in value:
-            if isinstance(i, list):
-                if 'id' in i:  # then it is slides
-                    pass
-        return value
-
-    if len(value) > len({json.dumps(d, sort_keys=True) for d in value}):
-        raise ValidationError(_('Data contains duplicate entries'))
-
-    return value
 
 
 class SearchFilterSerializer(serializers.Serializer):
