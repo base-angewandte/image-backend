@@ -5,6 +5,7 @@ from artworks.models import Album
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from jsonschema import validate
 from rest_framework import serializers
+from rest_framework.exceptions import ParseError
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -253,6 +254,12 @@ class SlideSerializer(serializers.Serializer):
 
 class CreateSlidesRequestSerializer(serializers.ListSerializer):
     child = SlideSerializer(many=True)
+
+    def validate(self, data):
+        for item in data:
+            if len(item) > 2:
+                raise ParseError(_('No more than two artworks per slide allowed'))
+        return data
 
 
 class AlbumsDownloadRequestSerializer(serializers.Serializer):

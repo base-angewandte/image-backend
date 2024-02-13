@@ -939,9 +939,6 @@ class AlbumsViewSet(viewsets.ViewSet):
         ):
             slides_list = []
             for slide in serializer.validated_data:
-                # check if only artworks per slide
-                if len(slide) > 2:
-                    raise ParseError(_('No more than two artworks per slide allowed'))
                 current_slide = []
                 for artwork in slide:
                     # check if artwork exists
