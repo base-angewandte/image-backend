@@ -269,14 +269,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(
-                name='owner',
-                type=OpenApiTypes.BOOL,
-                location=OpenApiParameter.QUERY,
-                required=False,
-                description='Boolean indicating to return albums owned by this user.',
-                default=True,
-            ),
+            AlbumsRequestSerializer,
             OpenApiParameter(
                 name='permissions',
                 type={
@@ -606,16 +599,8 @@ class AlbumsViewSet(viewsets.ViewSet):
     filter_backends = (DjangoFilterBackend,)
 
     @extend_schema(
-        request=AlbumsListRequestSerializer,
         parameters=[
-            OpenApiParameter(
-                name='owner',
-                type=OpenApiTypes.BOOL,
-                location=OpenApiParameter.QUERY,
-                required=False,
-                description='Boolean indicating to return albums owned by this user.',
-                default=True,
-            ),
+            AlbumsListRequestSerializer,
             OpenApiParameter(
                 name='permissions',
                 type={
@@ -632,18 +617,6 @@ class AlbumsViewSet(viewsets.ViewSet):
                     'permissions are included in the response.'
                 ),
                 default='EDIT',
-            ),
-            OpenApiParameter(
-                name='limit',
-                type=OpenApiTypes.INT,
-                required=False,
-                default=10,
-            ),
-            OpenApiParameter(
-                name='offset',
-                type=OpenApiTypes.INT,
-                required=False,
-                default=0,
             ),
         ],
         responses={
