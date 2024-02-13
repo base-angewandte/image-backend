@@ -107,11 +107,6 @@ def slides_with_details(album):
 
 
 def album_object(album, request_user=None):
-    number_of_artworks = 0
-
-    for slide in album.slides:
-        number_of_artworks += len(slide)
-
     permissions_qs = PermissionsRelation.objects.filter(album=album)
 
     if album.user != request_user:
@@ -120,7 +115,7 @@ def album_object(album, request_user=None):
     return {
         'id': album.id,
         'title': album.title,
-        'number_of_artworks': number_of_artworks,
+        'number_of_artworks': sum([len(slide) for slide in album.slides]),
         'slides': album.slides,
         'owner': {
             'id': album.user.username,
