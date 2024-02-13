@@ -66,7 +66,7 @@ class ArtworkSerializer(serializers.ModelSerializer):
 
 class SearchFilterSerializer(serializers.Serializer):
     id = serializers.CharField(
-        help_text='id of the filter as obtained from the /filters endpoint'
+        help_text='id of the filter as obtained from the /search/filters endpoint'
     )
     filter_values = serializers.JSONField(
         help_text='Filters as defined in the /search/filters endpoint'
