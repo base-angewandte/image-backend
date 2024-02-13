@@ -51,6 +51,17 @@ from .serializers import (
 logger = logging.getLogger(__name__)
 
 
+def check_limit(limit):
+    try:
+        limit = int(limit)
+        if limit <= 0:
+            raise ValueError
+    except ValueError as e:
+        raise ParseError(_('limit must be a positive integer')) from e
+
+    return limit
+
+
 def slides_with_details(album):
     ret = []
     for slide in album.slides:
