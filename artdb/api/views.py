@@ -6,7 +6,6 @@ from io import BytesIO
 from artworks.exports import collection_download_as_pptx
 from artworks.models import Album, Artwork, Keyword, Location, PermissionsRelation
 from base_common_drf.openapi.responses import ERROR_RESPONSES
-from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiExample,
     OpenApiParameter,
@@ -153,7 +152,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     """
 
     queryset = Artwork.objects.filter(published=True)
-    filter_backends = (DjangoFilterBackend,)
 
     @extend_schema(
         parameters=[
@@ -594,7 +592,6 @@ class AlbumsViewSet(viewsets.ViewSet):
     """
 
     queryset = Album.objects.all()
-    filter_backends = (DjangoFilterBackend,)
 
     @extend_schema(
         parameters=[
