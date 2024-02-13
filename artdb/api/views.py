@@ -62,6 +62,17 @@ def check_limit(limit):
     return limit
 
 
+def check_offset(offset):
+    try:
+        offset = int(offset)
+        if offset < 0:
+            raise ParseError(_('negative offset is not allowed'))
+    except ValueError as e:
+        raise ParseError(_('offset must be an integer')) from e
+
+    return offset
+
+
 def slides_with_details(album):
     ret = []
     for slide in album.slides:
