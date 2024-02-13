@@ -724,6 +724,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             album = (
                 Album.objects.filter(pk=pk)
                 .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
                 .get()
             )
         except Album.DoesNotExist as dne:
@@ -749,6 +750,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             album = (
                 Album.objects.filter(pk=pk)
                 .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
                 .get()
             )
         except Album.DoesNotExist as dne:
@@ -782,6 +784,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             album = (
                 Album.objects.filter(pk=pk)
                 .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
                 .get()
             )
         except Album.DoesNotExist as dne:
@@ -815,6 +818,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             album = (
                 Album.objects.filter(pk=pk)
                 .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
                 .get()
             )
         except Album.DoesNotExist as dne:
@@ -870,6 +874,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             album = (
                 Album.objects.filter(pk=pk)
                 .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
                 .get()
             )
         except Album.DoesNotExist as dne:
@@ -914,6 +919,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             album = (
                 Album.objects.filter(pk=pk)
                 .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
                 .get()
             )
         except Album.DoesNotExist as dne:
@@ -965,6 +971,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             album = (
                 Album.objects.filter(pk=pk)
                 .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
                 .get()
             )
         except Album.DoesNotExist as dne:
@@ -1076,6 +1083,7 @@ class AlbumsViewSet(viewsets.ViewSet):
             album = (
                 Album.objects.filter(pk=pk)
                 .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
                 .get()
             )
         except Album.DoesNotExist as dne:
