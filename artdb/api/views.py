@@ -528,6 +528,34 @@ def filter_date(filter_values):
     return q_objects
 
 
+def featured_artworks(album, request, num_artworks=4):
+    artworks = []
+
+    for slide in album.slides:
+        for item in slide:
+            try:
+                artwork = Artwork.objects.get(id=item['id'])
+            except Artwork.DoesNotExist as dne:
+                raise NotFound(_('Artwork does not exist')) from dne
+
+            artworks.append(
+                {
+                    'id': artwork.pk,
+                    'image_original': request.build_absolute_uri(
+                        artwork.image_original.url
+                    )
+                    if artwork.image_original
+                    else None,
+                    'title': artwork.title,
+                }
+            )
+
+            if len(artworks) == num_artworks:
+                return artworks
+
+    return artworks
+
+
 @extend_schema(tags=['albums'])
 class AlbumsViewSet(viewsets.ViewSet):
     """
