@@ -1275,8 +1275,8 @@ for filter_id in FILTERS_KEYS:
                 'q': 'query string',  # the string from general search
                 'filters': [
                     {
-                        'id': 'artist',
-                        'filter_values': ['rubens', {'id': 786}],
+                        'id': 'artists',
+                        'filter_values': ['lassnig', {'id': 1192}],
                     }
                 ],
             },
