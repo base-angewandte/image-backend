@@ -91,10 +91,14 @@ class SearchRequestSerializer(serializers.Serializer):
     )
     limit = serializers.IntegerField(
         required=False,
+        default=settings.SEARCH_LIMIT,
+        allow_null=False,
         help_text=f'Limit the number of results. Default: {settings.SEARCH_LIMIT}',
     )
     offset = serializers.IntegerField(
         required=False,
+        default=0,
+        allow_null=False,
         help_text='Offset for the first item in the results set.',
     )
 
