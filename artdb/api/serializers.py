@@ -192,6 +192,21 @@ class AlbumsRequestSerializer(serializers.Serializer):
         return value
 
 
+class AlbumsListRequestSerializer(AlbumsRequestSerializer):
+    limit = serializers.IntegerField(
+        required=False,
+        default=10,
+        allow_null=False,
+        help_text='Limit the number of results.',
+    )
+    offset = serializers.IntegerField(
+        required=False,
+        default=0,
+        allow_null=False,
+        help_text='Offset for the first item in the results set.',
+    )
+
+
 class PermissionItemSerializer(serializers.Serializer):
     id = serializers.CharField()
 
