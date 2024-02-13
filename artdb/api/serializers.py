@@ -68,10 +68,8 @@ class SearchFilterSerializer(serializers.Serializer):
     id = serializers.CharField(
         help_text='id of the filter as obtained from the /filters endpoint'
     )
-    filter_values = serializers.ListField(
-        child=serializers.JSONField(),
-        help_text='Array of either strings, dates, date ranges or a chips options.'
-        + ' Multiple values will be combined in a logical OR.',
+    filter_values = serializers.JSONField(
+        help_text='Filters as defined in the /search/filters endpoint'
     )
 
 
