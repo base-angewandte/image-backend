@@ -37,7 +37,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
         slide = prs.slides.add_slide(blank_slide_layout)
         fill = slide.background.fill
         fill.solid()
-        fill.fore_color.rgb = RGBColor(128, 128, 128)
+        fill.fore_color.rgb = RGBColor(217, 217, 217)
         return slide
 
     def add_description(slide, description, width, left):
