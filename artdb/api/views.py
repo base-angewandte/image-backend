@@ -25,6 +25,7 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import FloatField, Q, Value
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
@@ -35,6 +36,7 @@ from .serializers import (
     AlbumsListRequestSerializer,
     AlbumsRequestSerializer,
     AppendArtworkRequestSerializer,
+    ArtworksImageRequestSerializer,
     CreateAlbumRequestSerializer,
     CreateSlidesRequestSerializer,
     PermissionsRequestSerializer,
@@ -262,6 +264,64 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         )
 
     # additional actions
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='method',
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.PATH,
+                enum=(
+                    'crop',
+                    'resize',
+                ),
+            ),
+            OpenApiParameter(
+                name='width',
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.PATH,
+                required=True,
+            ),
+            OpenApiParameter(
+                name='height',
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.PATH,
+                required=True,
+            ),
+        ],
+        responses={
+            # TODO better response definition
+            302: OpenApiResponse(),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
+    @action(
+        detail=True,
+        methods=['get'],
+        url_path='image/(?P<method>[a-z]+)/(?P<width>[0-9]+)x(?P<height>[0-9]+)',
+    )
+    def image(self, request, pk=None, *args, **kwargs):
+        serializer = ArtworksImageRequestSerializer(data=kwargs)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            artwork = self.get_queryset().get(pk=pk)
+        except Artwork.DoesNotExist as dne:
+            raise NotFound(_('Artwork does not exist')) from dne
+
+        method = serializer.validated_data['method']
+        size = f'{serializer.validated_data["width"]}x{serializer.validated_data["height"]}'
+
+        match method:
+            case 'resize':
+                url = artwork.image_original.thumbnail[size].url
+            case 'crop':
+                url = artwork.image_original.crop[size].url
+            case _:
+                url = artwork.image_original.url
+
+        return redirect(request.build_absolute_uri(url))
 
     @extend_schema(
         parameters=[
