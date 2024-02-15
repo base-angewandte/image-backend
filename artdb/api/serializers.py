@@ -245,3 +245,14 @@ class AlbumsDownloadRequestSerializer(serializers.Serializer):
         if value not in ['de', 'en']:
             raise serializers.ValidationError(f'{value} is not a valid language')
         return value
+
+
+class ArtworksImageRequestSerializer(serializers.Serializer):
+    method = serializers.CharField()
+    width = serializers.IntegerField(min_value=1)
+    height = serializers.IntegerField(min_value=1)
+
+    def validate_method(self, value):
+        if value not in ['crop', 'resize']:
+            raise serializers.ValidationError(f'{value} is not a valid method')
+        return value
