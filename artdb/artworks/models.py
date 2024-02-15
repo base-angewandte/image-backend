@@ -138,7 +138,7 @@ class Artwork(models.Model):
         verbose_name=_('Updated at'), auto_now=True, null=True
     )
     keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'), blank=True)
-    location_of_creation = TreeForeignKey(
+    place_of_production = TreeForeignKey(
         Location,
         verbose_name=_('Place of Production'),
         blank=True,
@@ -146,7 +146,7 @@ class Artwork(models.Model):
         on_delete=models.SET_NULL,
         related_name='artworks_created_here',
     )
-    location_current = TreeForeignKey(
+    location = TreeForeignKey(
         Location,
         verbose_name=_('Location'),
         blank=True,
@@ -233,7 +233,7 @@ class Album(models.Model):
     )
     created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now=True)
-    slides = JSONField(verbose_name=_('Slides'), blank=True, null=True)
+    slides = JSONField(verbose_name=_('Slides'), default=list)
     permissions = models.ManyToManyField(
         User,
         verbose_name=_('Permissions'),
@@ -254,15 +254,23 @@ class Album(models.Model):
         verbose_name_plural = _('Albums')
 
 
+def get_default_permissions():
+    return settings.DEFAULT_PERMISSIONS[0]
+
+
 class PermissionsRelation(models.Model):
-    PERMISSION_CHOICES = (
-        ('VIEW', _('View')),
-        ('EDIT', _('Edit')),
-    )
+    PERMISSION_CHOICES = tuple((p, _(p)) for p in settings.PERMISSIONS)
 
     album = models.ForeignKey(Album, related_name='album', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
-    permissions = models.CharField(max_length=20, choices=PERMISSION_CHOICES)
+    permissions = models.CharField(
+        max_length=20,
+        choices=PERMISSION_CHOICES,
+        default=get_default_permissions,
+    )
+
+    class Meta:
+        unique_together = ['album', 'user']
 
 
 class AlbumMembership(OrderedModel):
@@ -274,7 +282,7 @@ class AlbumMembership(OrderedModel):
     """
 
     collection = models.ForeignKey(
-        Album, verbose_name=_('Folder'), on_delete=models.CASCADE
+        Album, verbose_name=_('Album'), on_delete=models.CASCADE
     )
     artwork = models.ForeignKey(
         Artwork, verbose_name=_('Artwork'), on_delete=models.CASCADE
@@ -285,8 +293,8 @@ class AlbumMembership(OrderedModel):
     )
 
     class Meta(OrderedModel.Meta):
-        verbose_name = _('Folder Membership')
-        verbose_name_plural = _('Folder Memberships')
+        verbose_name = _('Album Membership')
+        verbose_name_plural = _('Album Memberships')
 
     def move_left(self):
         # did the user click a single one or a connected one?

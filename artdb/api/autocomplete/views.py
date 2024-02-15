@@ -28,8 +28,8 @@ MODEL_MAP = {
     'titles': Artwork,
     'artists': Artist,
     'keywords': Keyword,
-    'origins': Location,
     'locations': Location,
+    'users': get_user_model(),
 }
 
 LABELS_MAP = {
@@ -37,7 +37,6 @@ LABELS_MAP = {
     'titles': _('autocomplete_titles'),
     'artists': _('autocomplete_artists'),
     'keywords': _('autocomplete_keywords'),
-    'origins': _('autocomplete_origins'),
     'locations': _('autocomplete_locations'),
     'users': _('autocomplete_users'),
 }
@@ -132,8 +131,7 @@ def autocomplete(request, *args, **kwargs):
         }
 
         if t == 'users':
-            UserModel = get_user_model()
-            query = UserModel.objects.filter(
+            query = MODEL_MAP[t].objects.filter(
                 Q(first_name__icontains=q_param) | Q(last_name__icontains=q_param)
             )[:limit]
             for user in query:
@@ -144,9 +142,9 @@ def autocomplete(request, *args, **kwargs):
                     },
                 )
         elif t in ['albums', 'titles']:
-            data = MODEL_MAP[t].objects.filter(title__icontains=q_param)[:limit]
+            query = MODEL_MAP[t].objects.filter(title__icontains=q_param)[:limit]
 
-            for item in data:
+            for item in query:
                 d['data'].append(
                     {
                         'id': item.id,
@@ -154,9 +152,9 @@ def autocomplete(request, *args, **kwargs):
                     }
                 )
         else:
-            data = MODEL_MAP[t].objects.filter(name__icontains=q_param)[:limit]
+            query = MODEL_MAP[t].objects.filter(name__icontains=q_param)[:limit]
 
-            for item in data:
+            for item in query:
                 d['data'].append(
                     {
                         'id': item.id,

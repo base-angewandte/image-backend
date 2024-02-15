@@ -4,7 +4,7 @@
 {% comment %}
 ---------------------------------------------------------
 This template defines how the default artworks browser
-is rendered. It brings its own javascript, needed for the 
+is rendered. It brings its own javascript, needed for the
 basic and the extended search.
 ---------------------------------------------------------
 {% endcomment %}
@@ -45,10 +45,10 @@ basic and the extended search.
                         <label>{% trans 'Date To' %}</label><input placeholder="{% trans 'YYYY' %}" name="date_to" value="{{ query_date_to|default:''}}" autocomplete="off" role="date_to search"/>
                     </div>
                     <div>
-                        <label>{% trans 'Location_of_creation' %}</label><input placeholder="" name="location_of_creation" value="{{ query_location_of_creation|default:''}}" autocomplete="off" role="location_of_creation search"/>
+                        <label>{% trans 'Place of Production' %}</label><input placeholder="" name="place_of_production" value="{{ query_place_of_production|default:''}}" autocomplete="off" role="place_of_production search"/>
                     </div>
                     <div>
-                        <label>{% trans 'Location_current' %}</label><input placeholder="" name="location_current" value="{{ query_location_current|default:''}}" autocomplete="off" role="location_current search"/>
+                        <label>{% trans 'Location' %}</label><input placeholder="" name="location" value="{{ query_location|default:''}}" autocomplete="off" role="location search"/>
                     </div>
                 </div>
                 <div class="column col-3">
@@ -194,4 +194,4 @@ $(document).ready(function() {
     });
 });
 </script>
-{% endblock extra_scripts %} 
+{% endblock extra_scripts %}

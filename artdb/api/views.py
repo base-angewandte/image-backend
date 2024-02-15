@@ -1,115 +1,137 @@
-import json
 import logging
 import re
 import zipfile
 from io import BytesIO
 
-from artworks.exports import (
-    collection_download_as_pptx_de,
-    collection_download_as_pptx_en,
-)
+from artworks.exports import collection_download_as_pptx
 from artworks.models import Album, Artwork, Keyword, Location, PermissionsRelation
 from base_common_drf.openapi.responses import ERROR_RESPONSES
-from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiExample,
     OpenApiParameter,
     OpenApiResponse,
     OpenApiTypes,
     extend_schema,
+    inline_serializer,
 )
 from rest_framework import status, viewsets
-from rest_framework.decorators import api_view
-from rest_framework.exceptions import ParseError
-from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
+from rest_framework.decorators import action, api_view
+from rest_framework.exceptions import NotFound, ParseError, PermissionDenied
 from rest_framework.response import Response
+from rest_framework.serializers import JSONField
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
+from django.db import transaction
 from django.db.models import FloatField, Q, Value
 from django.http import HttpResponse
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
+from .search.filters import FILTERS, FILTERS_KEYS
 from .serializers import (
-    AlbumSerializer,
-    ArtworkSerializer,
-    CreateAlbumSerializer,
-    PermissionsSerializer,
+    AlbumResponseSerializer,
+    AlbumsDownloadRequestSerializer,
+    AlbumsListRequestSerializer,
+    AlbumsRequestSerializer,
+    AppendArtworkRequestSerializer,
+    CreateAlbumRequestSerializer,
+    CreateSlidesRequestSerializer,
+    PermissionsRequestSerializer,
+    PermissionsResponseSerializer,
     SearchRequestSerializer,
     SearchResultSerializer,
-    SlidesSerializer,
-    UpdateAlbumSerializer,
+    SlidesRequestSerializer,
+    UpdateAlbumRequestSerializer,
     UserDataSerializer,
 )
 
 logger = logging.getLogger(__name__)
 
 
-def artworks_in_slides(album):
-    info_per_slide = []
-    if album.slides:
-        for slide in album.slides:
-            artwork_info = []
-            for artwork_in_slide in slide:
-                try:
-                    artwork = Artwork.objects.get(id=artwork_in_slide.get('id'))
-                except Artwork.DoesNotExist:
-                    return Response(
-                        _(
-                            f'There is no artwork associated with id {artwork_in_slide.get("id")}.'
-                        ),
-                        status=status.HTTP_404_NOT_FOUND,
-                    )
+def check_limit(limit):
+    try:
+        limit = int(limit)
+        if limit <= 0:
+            raise ValueError
+    except ValueError as e:
+        raise ParseError(_('limit must be a positive integer')) from e
 
-                artwork_info.append(
-                    {
-                        'id': artwork.id,
-                        'image_original': f'{settings.SITE_URL}{Artwork.objects.get(id=artwork.id).image_original}'
-                        if Artwork.objects.get(id=artwork.id).image_original
-                        else None,
-                        'credits': artwork.credits,
-                        'title': artwork.title,
-                        'date': artwork.date,
-                        'artists': [
-                            {'value': artist.name, 'id': artist.id}
-                            for artist in artwork.artists.all()
-                        ],
-                    }
-                )
-            info_per_slide.append(artwork_info)
-
-    return info_per_slide
+    return limit
 
 
-def simple_album_object(album, request):
-    return Response(
-        {
-            'id': album.id,
-            'title': album.title,
-            'number_of_artworks': album.artworks.all().count(),
-            'slides': [
-                artwork_in_slide for artwork_in_slide in artworks_in_slides(album)
-            ],
-            'owner': {
-                'id': album.user.id,
-                'name': f'{album.user.first_name} {album.user.last_name}',
-            },
-            'permissions': [
+def check_offset(offset):
+    try:
+        offset = int(offset)
+        if offset < 0:
+            raise ParseError(_('negative offset is not allowed'))
+    except ValueError as e:
+        raise ParseError(_('offset must be an integer')) from e
+
+    return offset
+
+
+def slides_with_details(album, request):
+    ret = []
+    for slide in album.slides:
+        slide_info = []
+        for artwork in slide:
+            try:
+                artwork = Artwork.objects.get(id=artwork.get('id'))
+            except Artwork.DoesNotExist as dne:
+                raise NotFound(_('Artwork does not exist')) from dne
+
+            slide_info.append(
                 {
-                    'user': {
-                        'id': p.user.id,
-                        'name': f'{p.user.first_name} {p.user.last_name}',
-                    },
-                    'permission': [
-                        {'id': p.permissions}  # possible values: view | edit
+                    'id': artwork.id,
+                    'image_original': request.build_absolute_uri(
+                        artwork.image_original.url
+                    )
+                    if artwork.image_original
+                    else None,
+                    'title': artwork.title,
+                    'credits': artwork.credits,
+                    'date': artwork.date,
+                    'artists': [
+                        {
+                            'id': artist.id,
+                            'name': artist.name,
+                        }
+                        for artist in artwork.artists.all()
                     ],
                 }
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ],
-        }
-    )
+            )
+        ret.append(slide_info)
+
+    return ret
+
+
+def album_object(album, request_user=None):
+    permissions_qs = PermissionsRelation.objects.filter(album=album)
+
+    if album.user != request_user:
+        permissions_qs = permissions_qs.filter(user=request_user)
+
+    return {
+        'id': album.id,
+        'title': album.title,
+        'number_of_artworks': sum([len(slide) for slide in album.slides]),
+        'slides': album.slides,
+        'owner': {
+            'id': album.user.username,
+            'name': album.user.get_full_name(),
+        },
+        'permissions': [
+            {
+                'user': {
+                    'id': p.user.username,
+                    'name': p.user.get_full_name(),
+                },
+                'permissions': [{'id': p.permissions}],
+            }
+            for p in permissions_qs
+        ],
+    }
 
 
 @extend_schema(tags=['artworks'])
@@ -124,68 +146,44 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     retrieve_albums:
     GET albums the current user has added this artwork to.
 
-    download_artwork:
+    download:
     GET Download artwork + metadata
 
     """
 
-    serializer_class = ArtworkSerializer
-    queryset = Artwork.objects.all()
-    parser_classes = (FormParser, MultiPartParser, JSONParser)
-    filter_backends = (DjangoFilterBackend,)
-    UserModel = get_user_model()
+    queryset = Artwork.objects.filter(published=True)
 
     @extend_schema(
-        request=serializer_class,
         parameters=[
             OpenApiParameter(
                 name='limit',
                 type=OpenApiTypes.INT,
                 required=False,
-                description='',
                 default=100,
             ),
             OpenApiParameter(
                 name='offset',
                 type=OpenApiTypes.INT,
                 required=False,
-                description='',
+                default=0,
             ),
         ],
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
     )
     def list(self, request, *args, **kwargs):
-        try:
-            limit = (
-                int(request.GET.get('limit'))
-                if request.GET.get('limit')
-                else 100  # default limit
-            )
-            offset = (
-                int(request.GET.get('offset')) if request.GET.get('offset') else None
-            )
-        except ValueError:
-            return Response('Limit and offset should be int')
+        limit = check_limit(request.query_params.get('limit', 100))
+        offset = check_offset(request.query_params.get('offset', 0))
 
-        results = Artwork.objects.all()
-
-        limit = limit if limit != 0 else None
-
-        if offset and limit:
-            end = offset + limit
-
-        elif limit and not offset:
-            end = limit
-
-        else:
-            end = None
+        results = self.get_queryset()
 
         total = results.count()
-        results = results[offset:end]
+
+        results = results[offset : offset + limit]
 
         return Response(
             {
@@ -193,7 +191,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'results': [
                     {
                         'id': artwork.id,
-                        'image_original': artwork.image_original.url
+                        'image_original': request.build_absolute_uri(
+                            artwork.image_original.url
+                        )
                         if artwork.image_original
                         else None,
                         'credits': artwork.credits,
@@ -210,27 +210,23 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         )
 
     @extend_schema(
-        request=serializer_class,
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve(self, request, *args, **kwargs):
-        item_id = kwargs['pk']
+    def retrieve(self, request, pk=None, *args, **kwargs):
         try:
-            artwork = Artwork.objects.get(pk=item_id)
-        except Artwork.DoesNotExist:
-            return Response(
-                _('Artwork does not exist'),
-                status=status.HTTP_404_NOT_FOUND,
-            )
+            artwork = self.get_queryset().get(pk=pk)
+        except Artwork.DoesNotExist as dne:
+            raise NotFound(_('Artwork does not exist')) from dne
 
         return Response(
             {
                 'id': artwork.id,
-                'image_original': artwork.image_original.url
+                'image_original': request.build_absolute_uri(artwork.image_original.url)
                 if artwork.image_original
                 else None,
                 'credits': artwork.credits,
@@ -242,17 +238,17 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'material': artwork.material,
                 'dimensions': artwork.dimensions,
                 'description': artwork.description,
-                'location_of_creation': {
-                    'id': artwork.location_of_creation.id,
-                    'value': artwork.location_of_creation.name,
+                'place_of_production': {
+                    'id': artwork.place_of_production.id,
+                    'value': artwork.place_of_production.name,
                 }
-                if artwork.location_of_creation
+                if artwork.place_of_production
                 else {},
-                'location_current': {
-                    'id': artwork.location_current.id,
-                    'value': artwork.location_current.name,
+                'location': {
+                    'id': artwork.location.id,
+                    'value': artwork.location.name,
                 }
-                if artwork.location_current
+                if artwork.location
                 else {},
                 'artists': [
                     {'id': artist.id, 'value': artist.name}
@@ -265,110 +261,140 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             }
         )
 
+    # additional actions
+
     @extend_schema(
-        request=serializer_class,
+        parameters=[
+            AlbumsRequestSerializer,
+            OpenApiParameter(
+                name='permissions',
+                type={
+                    'type': 'array',
+                    'items': {'type': 'string', 'enum': settings.PERMISSIONS},
+                },
+                location=OpenApiParameter.QUERY,
+                required=False,
+                style='form',
+                explode=False,
+                description=(
+                    'If the response should also return shared albums, it\'s possible to define which permissions the '
+                    'user needs to have for the album. Since the default is `EDIT`, shared albums with `EDIT` '
+                    'permissions are included in the response.'
+                ),
+                default='EDIT',
+            ),
+        ],
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve_albums(self, request, *args, **kwargs):
-        item_id = kwargs['id']
+    @action(detail=True, methods=['get'], url_path='albums')
+    def retrieve_albums(self, request, pk=None, *args, **kwargs):
+        serializer = AlbumsRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
         try:
-            artwork = Artwork.objects.get(pk=item_id)
-            albums = Album.objects.filter(slides__contains=[[{'id': artwork.pk}]])
-        except Artwork.DoesNotExist:
-            return Response(
-                _('Artwork does not exist'),
-                status=status.HTTP_404_NOT_FOUND,
+            artwork = self.get_queryset().get(pk=pk)
+        except Artwork.DoesNotExist as dne:
+            raise NotFound(_('Artwork does not exist')) from dne
+
+        q_filters = Q()
+
+        if serializer.validated_data['owner']:
+            q_filters |= Q(user=request.user)
+
+        permissions = serializer.validated_data['permissions'].split(',')
+
+        if permissions:
+            q_filters |= Q(
+                pk__in=PermissionsRelation.objects.filter(
+                    user=request.user,
+                    permissions__in=permissions,
+                ).values_list('album__pk', flat=True)
             )
+
+        albums = Album.objects.filter(slides__contains=[[{'id': artwork.pk}]]).filter(
+            q_filters
+        )
 
         return Response(
             [
                 {
                     'id': album.id,
-                    'value': album.title,
+                    'title': album.title,
                 }
                 for album in albums
-                if (album.user.username == request.user.username)
-                or (
-                    request.user.username
-                    in [
-                        p.user.username
-                        for p in PermissionsRelation.objects.filter(album__id=album.id)
-                    ]
-                    and 'VIEW'
-                    in [
-                        p.permissions
-                        for p in PermissionsRelation.objects.filter(
-                            user__username=request.user.username
-                        )
-                    ]
-                )
             ]
         )
 
     @extend_schema(
         responses={
+            # TODO better response definition
+            #   https://drf-spectacular.readthedocs.io/en/latest/faq.html#how-to-serve-in-memory-generated-files-or-files-in-general-outside-filefield
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
+            500: OpenApiResponse(description='Internal Server Error'),
         },
     )
-    def download(self, request, *args, **kwargs):
-        artwork_id = kwargs['id']
+    @action(detail=True, methods=['get'])
+    def download(self, request, pk=None, *args, **kwargs):
         try:
-            artwork = Artwork.objects.get(id=artwork_id)
+            artwork = self.get_queryset().get(pk=pk)
+        except Artwork.DoesNotExist as dne:
+            raise NotFound(_('Artwork does not exist')) from dne
 
-            output_zip = BytesIO()
+        # create metadata file content
+        metadata_content = ''
+        metadata_content += f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n'
+        if len(artwork.artists.all()) > 1:
+            metadata_content += f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n'
+        else:
+            metadata_content += f'Artist: {artwork.artists.all()[0]} \n'
+        metadata_content += (
+            f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n'
+        )
+        metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
+        metadata_content += f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n'
+        metadata_content += f'{artwork._meta.get_field("description").verbose_name.title()}: {artwork.description} \n'
+        metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
+        metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]} \n'
+        metadata_content += f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location if artwork.location else ""} \n'
+        metadata_content += f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {artwork.place_of_production} \n'
 
-            # create metadata file
-            artwork_title = slugify(artwork.title)
+        output_zip = BytesIO()
 
-            metadata_content = ''
-            metadata_content += f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n'
-            if len(artwork.artists.all()) > 1:
-                metadata_content += f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n'
-            else:
-                metadata_content += f'Artist: {artwork.artists.all()[0]} \n'
-            metadata_content += f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n'
-            metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
-            metadata_content += f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n'
-            metadata_content += f'{artwork._meta.get_field("description").verbose_name.title()}: {artwork.description} \n'
-            metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
-            metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]} \n'
-            metadata_content += f'{artwork._meta.get_field("location_current").verbose_name.title()}: {artwork.location_current if artwork.location_current else ""} \n'
-            metadata_content += f'{artwork._meta.get_field("location_of_creation").verbose_name.title()}: {artwork.location_of_creation} \n'
+        #  image to zipfile & metadata
+        with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as image_zip:
+            # create zip file
 
-            #  image to zipfile & metadata
-            with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as image_zip:
-                # create zip file
-
+            try:
                 image_zip.write(
                     artwork.image_original.path,
                     arcname=artwork.image_original.name,
                 )
-                image_zip.writestr(f'{artwork_title}_metadata.txt', metadata_content)
-                image_zip.close()
-
-                response = HttpResponse(
-                    output_zip.getvalue(),
-                    content_type='application/x-zip-compressed',
+            except FileNotFoundError:
+                error_info = _('File for artwork {pk} not found')
+                logger.exception(error_info.format(pk=pk))
+                return Response(
+                    error_info.format(pk=pk),
+                    status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
-                response[
-                    'Content-Disposition'
-                ] = f'attachment; filename={artwork_title}.zip'
 
-                return response
+            artwork_title = slugify(artwork.title)
 
-        except Artwork.DoesNotExist:
-            return Response(_("Artwork doesn't exist"), status.HTTP_404_NOT_FOUND)
+            image_zip.writestr(f'{artwork_title}_metadata.txt', metadata_content)
+            image_zip.close()
 
-        except FileNotFoundError:
-            logger.error(f'File for id {artwork_id} not found')
-            return Response(
-                _(f'File for id {artwork_id} not found'), status.HTTP_404_NOT_FOUND
+            return HttpResponse(
+                output_zip.getvalue(),
+                content_type='application/x-zip-compressed',
+                headers={
+                    'Content-Disposition': f'attachment; filename={artwork_title}.zip',
+                },
             )
 
 
@@ -390,7 +416,7 @@ def filter_title(filter_values):
     return q_objects
 
 
-def filter_artist(filter_values):
+def filter_artists(filter_values):
     """Should filter artworks whose artist name includes the string if given,
     AND the artworks for artist which has the given id."""
     q_objects = Q()
@@ -413,32 +439,40 @@ def filter_place_of_production(filter_values):
     for val in filter_values:
         if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val)
-            q_objects |= Q(location_of_creation__in=locations)
+            q_objects |= Q(place_of_production__in=locations)
         elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects |= Q(location_of_creation__id=val.get('id'))
+            location = Location.objects.filter(id=val.get('id'))
+            location_plus_descendants = Location.objects.get_queryset_descendants(
+                location,
+                include_self=True,
+            )
+            q_objects |= Q(place_of_production__in=location_plus_descendants)
         else:
             raise ParseError(
-                'Invalid filter_value format. See example below for more information.',
-                400,
+                'Invalid filter_value format. See example below for more information.'
             )
 
     return q_objects
 
 
-def filter_current_location(filter_values):
-    """Should filter artworks whose current location includes the string if
-    given, AND the artworks for current location which has the given id."""
+def filter_location(filter_values):
+    """Should filter artworks whose location includes the string if given, AND
+    the artworks for location which has the given id."""
     q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
             locations = Location.objects.filter(name__icontains=val)
-            q_objects |= Q(location_current__in=locations)
+            q_objects |= Q(location__in=locations)
         elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects |= Q(location_current__id=val.get('id'))
+            location = Location.objects.filter(id=val.get('id'))
+            location_plus_descendants = Location.objects.get_queryset_descendants(
+                location,
+                include_self=True,
+            )
+            q_objects |= Q(location__in=location_plus_descendants)
         else:
             raise ParseError(
-                'Invalid filter_value format. See example below for more information.',
-                400,
+                'Invalid filter_value format. See example below for more information.'
             )
 
     return q_objects
@@ -484,45 +518,45 @@ def filter_date(filter_values):
     return q_objects
 
 
+def featured_artworks(album, request, num_artworks=4):
+    artworks = []
+
+    for slide in album.slides:
+        for item in slide:
+            try:
+                artwork = Artwork.objects.get(id=item['id'])
+            except Artwork.DoesNotExist as dne:
+                raise NotFound(_('Artwork does not exist')) from dne
+
+            artworks.append(
+                {
+                    'id': artwork.pk,
+                    'image_original': request.build_absolute_uri(
+                        artwork.image_original.url
+                    )
+                    if artwork.image_original
+                    else None,
+                    'title': artwork.title,
+                }
+            )
+
+            if len(artworks) == num_artworks:
+                return artworks
+
+    return artworks
+
+
 @extend_schema(tags=['albums'])
 class AlbumsViewSet(viewsets.ViewSet):
     """
-    list_folders:
-    List of all the users albums /folders (in anticipation that there will be folders later)
-
     list:
     GET all the users albums.
-
-    retrieve:
-    GET specific album.
-
-    retrieve_slides:
-    GET /albums/{id}/slides LIST (GET) endpoint
-
-    retrieve_permissions:
-    GET /albums/{id}/permissions
 
     create:
     POST new album with given title.
 
-    create_slides:
-    POST /albums/{id}/slides
-    Reorder Slides
-    Separate_slides
-    Reorder artworks within slides
-
-    append_artwork
-    POST /albums/{id}/append_artwork
-    Append artwork to slides as singular slide [{'id': x}]
-
-    create_permissions
-    POST /albums/{id}/permissions
-
-    destroy_permissions
-    DELETE /albums/{id}/permissions
-
-    create_folder:
-    POST
+    retrieve:
+    GET specific album.
 
     update:
     PATCH specific album and album’s fields
@@ -530,100 +564,58 @@ class AlbumsViewSet(viewsets.ViewSet):
     destroy:
     DELETE specific album
 
+    append_artwork
+    POST /albums/{id}/append_artwork
+    Append artwork to slides as singular slide [{'id': x}]
+
+    slides:
+    GET /albums/{id}/slides LIST (GET) endpoint
+
+    create_slides:
+    POST /albums/{id}/slides
+    Reorder Slides
+    Separate_slides
+    Reorder artworks within slides
+
+    permissions:
+    GET /albums/{id}/permissions
+
+    create_permissions
+    POST /albums/{id}/permissions
+
+    destroy_permissions
+    DELETE /albums/{id}/permissions
+
     download:
     GET Download album as pptx or PDF
 
     """
 
     queryset = Album.objects.all()
-    parser_classes = (FormParser, MultiPartParser)
-    filter_backends = (DjangoFilterBackend,)
-    UserModel = get_user_model()
 
     @extend_schema(
-        tags=['folders'],
-        request=AlbumSerializer,
         parameters=[
+            AlbumsListRequestSerializer,
             OpenApiParameter(
-                name='limit',
-                type=OpenApiTypes.INT,
+                name='permissions',
+                type={
+                    'type': 'array',
+                    'items': {'type': 'string', 'enum': settings.PERMISSIONS},
+                },
+                location=OpenApiParameter.QUERY,
                 required=False,
-                description='',
-            ),
-            OpenApiParameter(
-                name='offset',
-                type=OpenApiTypes.INT,
-                required=False,
-                description='',
+                style='form',
+                explode=False,
+                description=(
+                    'If the response should also return shared albums, it\'s possible to define which permissions the '
+                    'user needs to have for the album. Since the default is `EDIT`, shared albums with `EDIT` '
+                    'permissions are included in the response.'
+                ),
+                default='EDIT',
             ),
         ],
         responses={
-            200: OpenApiResponse(description='OK'),
-            403: ERROR_RESPONSES[403],
-            404: ERROR_RESPONSES[404],
-        },
-    )
-    def list_folders(self, request, *args, **kwargs):
-        """List of all the users albums /folders (in anticipation that there
-        will be folders later)"""
-
-        limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
-        offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
-
-        # TODO: to complete when folders are relevant
-        # todo also add checks folders user.username
-
-        dummy_data = [
-            {
-                'title': 'Some title',
-                'ID': 1111,
-                'shared_info': 'Some shared info',
-                '# of works': 89,
-                'thumbnail': 'https://www.thumbnail.com',
-            },
-            {
-                'title': 'Some title2',
-                'ID': 2222,
-                'shared_info': 'Some shared info2',
-                '# of works': 56,
-                'thumbnail': 'https://www.thumbnail.com',
-            },
-        ]
-        # TODO
-        # serializer = AlbumSerializer(self.queryset, many=True)
-
-        limit = limit if limit != 0 else None
-
-        if offset and limit:
-            end = offset + limit
-
-        elif limit and not offset:
-            end = limit
-
-        else:
-            end = None
-
-        results = dummy_data[offset:end]
-
-        return Response(results)
-
-    @extend_schema(
-        request=AlbumSerializer,
-        parameters=[
-            OpenApiParameter(
-                name='limit',
-                type=OpenApiTypes.INT,
-                required=False,
-                description='',
-            ),
-            OpenApiParameter(
-                name='offset',
-                type=OpenApiTypes.INT,
-                required=False,
-                description='',
-            ),
-        ],
-        responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
@@ -631,34 +623,35 @@ class AlbumsViewSet(viewsets.ViewSet):
     )
     def list(self, request, *args, **kwargs):
         """List of all Albums (used for getting latest Albums) /albums."""
-        limit = int(request.GET.get('limit')) if request.GET.get('limit') else None
-        offset = int(request.GET.get('offset')) if request.GET.get('offset') else None
 
-        results = Album.objects.all()
+        # TODO check logic after /folders/root endpoint is implemented
 
-        slides_ids = []
+        serializer = AlbumsListRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
 
-        for album in results:
-            if album.slides:
-                for artworks_list in album.slides:
-                    for slides in artworks_list:
-                        if Artwork.objects.filter(id=slides.get('id')).first():
-                            slides_ids.append(slides.get('id'))
+        limit = check_limit(serializer.validated_data['limit'])
+        offset = check_offset(serializer.validated_data['offset'])
 
-        total = len(results)
+        q_filters = Q()
 
-        limit = limit if limit != 0 else None
+        if serializer.validated_data['owner']:
+            q_filters |= Q(user=request.user)
 
-        if offset and limit:
-            end = offset + limit
+        permissions = serializer.validated_data['permissions'].split(',')
 
-        elif limit and not offset:
-            end = limit
+        if permissions:
+            q_filters |= Q(
+                pk__in=PermissionsRelation.objects.filter(
+                    user=request.user,
+                    permissions__in=permissions,
+                ).values_list('album__pk', flat=True)
+            )
 
-        else:
-            end = None
+        albums = Album.objects.filter(q_filters)
 
-        results = results[offset:end]
+        total = albums.count()
+
+        albums = albums[offset : offset + limit]
 
         return Response(
             {
@@ -667,626 +660,495 @@ class AlbumsViewSet(viewsets.ViewSet):
                     {
                         'id': album.id,
                         'title': album.title,
-                        'number_of_artworks': album.artworks.all().count(),  # number of artworks in a specific album
-                        'artworks': [
-                            # the first 4 artworks from all slides: [[{"id":1}], [2,3], [4,5]] -> 1,2,3,4,max 4 objects
-                            {
-                                'id': artwork_id,
-                                'image_original': f'{settings.SITE_URL}{Artwork.objects.get(id=artwork_id).image_original}'
-                                if Artwork.objects.get(id=artwork_id).image_original
-                                else None,
-                                'title': Artwork.objects.get(id=artwork_id).title,
-                            }
-                            for artwork_id in slides_ids
-                            if artwork_id
-                        ][:4]
-                        if album.slides
-                        else [],
+                        'number_of_artworks': sum(
+                            [len(slide) for slide in album.slides]
+                        ),
+                        'featured_artworks': featured_artworks(album, request),
                         'owner': {
-                            'id': album.user.id,
-                            'name': f'{album.user.first_name} {album.user.last_name}',
+                            'id': album.user.username,
+                            'name': album.user.get_full_name(),
                         },
                         'permissions': [
                             {
                                 'user': {
-                                    'id': p.user.id,
-                                    'name': f'{p.user.first_name} {p.user.last_name}',
+                                    'id': p.user.username,
+                                    'name': p.user.get_full_name(),
                                 },
-                                'permission': [
-                                    {
-                                        'id': p.permissions  # possible values: view | edit
-                                    }
-                                ],
+                                'permissions': [{'id': p.permissions}],
                             }
                             for p in PermissionsRelation.objects.filter(
-                                album__id=album.id
+                                album=album
+                            ).filter(
+                                **{}
+                                if album.user == request.user
+                                else {'user': request.user}
                             )
                         ],
                     }
-                    for album in results
-                    if (album.user.username == request.user.username)
-                    or (
-                        request.user.username
-                        in [
-                            p.user.username
-                            for p in PermissionsRelation.objects.filter(
-                                album__id=album.id
-                            )
-                        ]
-                        and 'VIEW'
-                        in [
-                            p.permissions
-                            for p in PermissionsRelation.objects.filter(
-                                user__username=request.user.username
-                            )
-                        ]
-                    )
+                    for album in albums
                 ],
             }
         )
 
     @extend_schema(
-        request=AlbumSerializer,
+        request=CreateAlbumRequestSerializer,
         responses={
-            200: OpenApiResponse(description='OK'),
+            201: AlbumResponseSerializer,
             403: ERROR_RESPONSES[403],
-            404: ERROR_RESPONSES[404],
         },
-    )
-    def retrieve(self, request, *args, **kwargs):  # TODO update
-        """List of Works (Slides) in a specific Album /albums/{id}"""
-
-        album_id = kwargs['pk']
-        try:
-            album = Album.objects.get(pk=album_id)
-            if album.user.username == request.user.username:
-                return simple_album_object(album, request)
-            if request.user.username in [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ] and 'VIEW' in [
-                p.permissions
-                for p in PermissionsRelation.objects.filter(
-                    user__username=request.user.username
-                )
-            ]:
-                return simple_album_object(album, request)
-            else:
-                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-        except (Album.DoesNotExist, ValueError):
-            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
-
-    @extend_schema(
-        responses={
-            200: OpenApiResponse(description='OK'),
-            403: ERROR_RESPONSES[403],
-            404: ERROR_RESPONSES[404],
-        },
-    )
-    def retrieve_slides(self, request, *args, **kwargs):
-        """/albums/{id}/slides LIST (GET) endpoint returns:"""
-        album_id = kwargs['id']
-        try:
-            album = Album.objects.get(pk=album_id)
-        except (Album.DoesNotExist, ValueError):
-            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
-
-        if album.user.username == request.user.username:
-            return Response(artworks_in_slides(album))
-        if request.user.username in [
-            p.user.username
-            for p in PermissionsRelation.objects.filter(album__id=album.id)
-        ] and 'VIEW' in [
-            p.permissions
-            for p in PermissionsRelation.objects.filter(
-                user__username=request.user.username
-            )
-        ]:
-            return Response(artworks_in_slides(album))
-        else:
-            return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-
-    @extend_schema(
-        methods=['POST'],
-        request=CreateAlbumSerializer,  # todo fix serializers
-        responses={200: AlbumSerializer},
     )
     def create(self, request, *args, **kwargs):
         """Create Album /albums/{id}"""
-        try:
-            title = request.data.get('title')
-            album = Album.objects.create(title=title, user=request.user)
+        serializer = CreateAlbumRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
+        title = serializer.validated_data['title']
+
+        album = Album.objects.create(title=title, user=request.user)
+
+        return Response(
+            album_object(album, request_user=request.user),
+            status=status.HTTP_201_CREATED,
+        )
+
+    @extend_schema(
+        responses={
+            200: AlbumResponseSerializer,
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
+    def retrieve(self, request, pk=None, *args, **kwargs):
+        """List of Works (Slides) in a specific Album /albums/{id}"""
+
+        try:
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
+                .get()
+            )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
+
+        return Response(album_object(album, request_user=request.user))
+
+    @extend_schema(
+        request=UpdateAlbumRequestSerializer,
+        responses={
+            200: AlbumResponseSerializer,
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
+    def update(self, request, pk=None, *args, **kwargs):
+        """Update Album /albums/{id}"""
+
+        serializer = UpdateAlbumRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
+                .get()
+            )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
+
+        if (
+            album.user == request.user
+            or PermissionsRelation.objects.filter(
+                album=album,
+                user=request.user,
+                permissions='EDIT',
+            ).exists()
+        ):
+            album.title = serializer.validated_data['title']
             album.save()
+            return Response(album_object(album, request_user=request.user))
 
-            return simple_album_object(album, request)
-        except ValueError:
-            return Response(
-                _('Album user must be a user instance'),
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        raise PermissionDenied()
 
     @extend_schema(
-        methods=['POST'],
-        request=SlidesSerializer,
-        examples=[
-            OpenApiExample(
-                name='slides',
-                value=[[{'id': 123}, {'id': 456}], [{'id': 789}], [{'id': 123}]],
-            )
-        ],
         responses={
-            200: AlbumSerializer,
+            204: OpenApiResponse(),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
     )
-    def create_slides(self, request, *args, **kwargs):
-        """/albums/{id}/slides Reorder Slides, Separate_slides, Reorder
-        artworks within slides."""
+    def destroy(self, request, pk=None, *args, **kwargs):
+        """Delete Album /albums/{id}"""
 
-        album_id = kwargs['id']
         try:
-            album = Album.objects.get(pk=album_id)
-            slides_serializer = SlidesSerializer(data=request.data)
-
-            # Validate slides object
-            if not slides_serializer.is_valid():
-                return Response(
-                    _('Slides format incorrect'), status=status.HTTP_400_BAD_REQUEST
-                )
-
-            slides = slides_serializer.data.get('slides')
-
-            # Check if artworks exist
-            artworks = []
-            for artworks_list in slides:
-                for slide in artworks_list:
-                    if len(artworks_list) <= 2:
-                        try:
-                            artworks.append(Artwork.objects.get(id=slide.get('id')))
-                        except Artwork.DoesNotExist:
-                            return Response(
-                                _(
-                                    f'There is no artwork associated with id {slide.get("id")}.'
-                                ),
-                                status=status.HTTP_404_NOT_FOUND,
-                            )
-                    else:
-                        return Response(
-                            _('No more than two artworks per slide.'),
-                            status=status.HTTP_400_BAD_REQUEST,
-                        )
-
-            album.slides = slides
-
-            if album.user.username == request.user.username:
-                album.save()
-                return Response(artworks_in_slides(album))
-            if request.user.username in [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ] and 'EDIT' in [
-                p.permissions
-                for p in PermissionsRelation.objects.filter(
-                    user__username=request.user.username
-                )
-            ]:
-                album.save()
-                return Response(artworks_in_slides(album))
-
-            else:
-                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-
-        except TypeError as e:
-            return Response(
-                _(f'Could not edit slides: {e}'), status=status.HTTP_404_NOT_FOUND
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
+                .get()
             )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
+
+        if album.user == request.user:
+            album.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        raise PermissionDenied()
+
+    # additional actions
 
     @extend_schema(
-        methods=['POST'],
-        parameters=[
-            OpenApiParameter(
-                name='artwork_id',
-                type=OpenApiTypes.INT,
-                required=True,
-                description='',
-                default=0,
-            )
-        ],
+        request=AppendArtworkRequestSerializer,
         responses={
-            200: AlbumSerializer,
+            204: OpenApiResponse(),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
     )
-    def append_artwork(self, request, *args, **kwargs):
+    @action(detail=True, methods=['post'], url_path='append-artwork')
+    def append_artwork(self, request, pk=None, *args, **kwargs):
         """/albums/{id}/append_artwork Append artwork to slides as singular
         slide [{'id': x}]"""
 
-        album_id = kwargs['id']
+        serializer = AppendArtworkRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         try:
-            album = Album.objects.get(pk=album_id)
-            if not album.slides:
-                album.slides = []
-
-            # Check if artwork exists
-            artwork = Artwork.objects.get(pk=int(request.GET.get('artwork_id')))
-
-            album.slides.append([{'id': artwork.id}])
-            if album.user.username == request.user.username:
-                album.save()
-                return Response(_('Artwork added.'), status=status.HTTP_200_OK)
-            if request.user.username in [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ] and 'EDIT' in [
-                p.permissions
-                for p in PermissionsRelation.objects.filter(
-                    user__username=request.user.username
-                )
-            ]:
-                album.save()
-                return Response(_('Artwork added.'), status=status.HTTP_200_OK)
-            else:
-                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-
-        except Artwork.DoesNotExist:
-            return Response(
-                _('There is no artwork associated with the given id.'),
-                status=status.HTTP_404_NOT_FOUND,
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
+                .get()
             )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
+
+        # check if artwork exists
+        try:
+            Artwork.objects.get(pk=serializer.validated_data['id'])
+        except Artwork.DoesNotExist as dne:
+            raise NotFound(_('Artwork does not exist')) from dne
+
+        if (
+            album.user == request.user
+            or PermissionsRelation.objects.filter(
+                album=album,
+                user=request.user,
+                permissions='EDIT',
+            ).exists()
+        ):
+            slide = [serializer.validated_data]
+            album.slides.append(slide)
+            album.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        raise PermissionDenied()
 
     @extend_schema(
-        methods=['GET'],
+        parameters=[
+            OpenApiParameter(
+                name='details',
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description='Boolean indicating if the response should contain details of the artworks',
+                default=False,
+            ),
+        ],
         responses={
-            200: PermissionsSerializer,
+            # TODO better response definition
+            200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve_permissions(self, request, *args, **kwargs):
-        """Get Permissions /albums/{id}/permissions."""
-        album_id = kwargs['id']
+    @action(detail=True, methods=['get'])
+    def slides(self, request, pk=None, *args, **kwargs):
+        """/albums/{id}/slides LIST (GET) endpoint returns:"""
+
+        serializer = SlidesRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
         try:
-            album = Album.objects.get(pk=album_id)
-        except (Album.DoesNotExist, ValueError):
-            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
+                .get()
+            )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
+
+        if serializer.validated_data['details']:
+            return Response(slides_with_details(album, request))
+        else:
+            return Response(album.slides)
+
+    @extend_schema(
+        request=CreateSlidesRequestSerializer,
+        parameters=[
+            OpenApiParameter(
+                name='details',
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description='Boolean indicating if the response should contain details of the artworks',
+                default=False,
+            ),
+        ],
+        responses={
+            # TODO better response definition
+            200: OpenApiResponse(description='OK'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
+    @slides.mapping.post
+    def create_slides(self, request, pk=None, *args, **kwargs):
+        """/albums/{id}/slides Reorder Slides, Separate_slides, Reorder
+        artworks within slides."""
+
+        serializer = CreateSlidesRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        query_params_serializer = SlidesRequestSerializer(data=request.query_params)
+        query_params_serializer.is_valid(raise_exception=True)
+
+        try:
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
+                .get()
+            )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
+
+        if (
+            album.user == request.user
+            or PermissionsRelation.objects.filter(
+                album=album,
+                user=request.user,
+                permissions='EDIT',
+            ).exists()
+        ):
+            slides_list = []
+            for slide in serializer.validated_data:
+                current_slide = []
+                for artwork in slide:
+                    # check if artwork exists
+                    try:
+                        Artwork.objects.get(id=artwork.get('id'))
+                    except Artwork.DoesNotExist as dne:
+                        raise NotFound(_('Artwork does not exist')) from dne
+                    current_slide.append({'id': artwork['id']})
+                slides_list.append(current_slide)
+            album.slides = slides_list
+            album.save()
+
+            if query_params_serializer.validated_data['details']:
+                return Response(slides_with_details(album, request))
+            else:
+                return Response(album.slides)
+
+        raise PermissionDenied()
+
+    @extend_schema(
+        responses={
+            200: PermissionsResponseSerializer,
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
+    @action(detail=True, methods=['get'])
+    def permissions(self, request, pk=None, *args, **kwargs):
+        """Get Permissions /albums/{id}/permissions."""
+        try:
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
+                .get()
+            )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
+
+        qs = PermissionsRelation.objects.filter(album=album)
+
+        # if the user is not the owner of the album, ony return the permissions of this user
+        if album.user != request.user:
+            qs = qs.filter(user=request.user)
 
         return Response(
             [
                 {
                     'user': {
-                        'id': p.user.id,
-                        'name': f'{p.user.first_name} {p.user.last_name}',
+                        'id': p.user.username,
+                        'name': p.user.get_full_name(),
                     },
-                    'permission': [
-                        {'id': p.permissions.upper()}  # possible values: view | edit
-                    ],
+                    'permissions': [{'id': p.permissions}],
                 }
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-                if (album.user.username == request.user.username)
-                or (
-                    request.user.username
-                    in [
-                        p.user.username
-                        for p in PermissionsRelation.objects.filter(album__id=album.id)
-                    ]
-                    and 'VIEW'
-                    in [
-                        p.permissions
-                        for p in PermissionsRelation.objects.filter(
-                            user__username=request.user.username
-                        )
-                    ]
-                )
+                for p in qs
             ]
         )
 
     @extend_schema(
-        methods=['POST'],
-        request=PermissionsSerializer,
-        examples=[
-            OpenApiExample(
-                name='shared_info',
-                value=[{'user': 'username', 'permissions': {'id': 'VIEW'}}],
-            )
-        ],
+        request=PermissionsRequestSerializer(many=True),
         responses={
-            200: AlbumSerializer,
+            200: PermissionsResponseSerializer,
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
     )
-    def create_permissions(self, request, *args, **kwargs):
+    @permissions.mapping.post
+    def create_permissions(self, request, pk=None, *args, **kwargs):
         """Post Permissions /albums/{id}/permissions."""
-        album_id = kwargs['id']
+        serializer = PermissionsRequestSerializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+
         try:
-            album = Album.objects.get(pk=album_id)
-            serializer = PermissionsSerializer(data=request.data)
+            album = Album.objects.filter(pk=pk, user=request.user).get()
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
 
-            if not serializer.is_valid():
-                return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
+        users = []
 
-            perm = json.loads(request.data.get('permissions'))[0]
+        # update permissions
+        for item in serializer.validated_data:
+            user = item['user']
 
             try:
-                user = User.objects.get(username=perm.get('user'))
-            except User.DoesNotExist:
-                return Response(
-                    _(f'Invalid user ID: {perm.get("user")}'),
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                user = User.objects.get(username=user)
+            except User.DoesNotExist as dne:
+                raise ParseError('User does not exist') from dne
 
-            permissions = perm.get('permissions').get('id')
+            permissions = item['permissions']
 
-            if permissions.upper() not in ['VIEW', 'EDIT']:
-                return Response(
-                    _('Permission invalid. Permission can be either VIEW or EDIT'),
-                    status=status.HTTP_404_NOT_FOUND,
-                )
+            if permissions:
+                users.append(user.username)
 
-            obj, created = PermissionsRelation.objects.update_or_create(
-                permissions=permissions.upper(),
-                album=album,
-                user=user,
-            )
+            for perm in permissions:
+                with transaction.atomic():
+                    pr, created = PermissionsRelation.objects.get_or_create(
+                        album=album,
+                        user=user,
+                    )
+                    pr.permissions = perm['id']
+                    pr.save()
 
-            return Response(
-                [
-                    {
-                        'user': {
-                            'id': p.user.id,
-                            'name': f'{p.user.first_name} {p.user.last_name}',
-                        },
-                        'permission': [
-                            {
-                                'id': p.permissions.upper()  # possible values: view | edit
-                            }
-                        ],
-                    }
-                    for p in PermissionsRelation.objects.filter(album__id=album.id)
-                ]
-            )
+        # remove deleted permissions
+        PermissionsRelation.objects.filter(album=album).exclude(
+            user__username__in=users
+        ).delete()
 
-        except Album.DoesNotExist:
-            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
+        qs = PermissionsRelation.objects.filter(album=album)
+
+        return Response(
+            [
+                {
+                    'user': {
+                        'id': p.user.username,
+                        'name': p.user.get_full_name(),
+                    },
+                    'permissions': [{'id': p.permissions}],
+                }
+                for p in qs
+            ]
+        )
 
     @extend_schema(
-        methods=['DELETE'],
+        responses={
+            204: OpenApiResponse(),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
     )
-    def destroy_permissions(self, request, *args, **kwargs):
+    @permissions.mapping.delete
+    def destroy_permissions(self, request, pk=None, *args, **kwargs):
         """Delete Permissions /albums/{id}/permissions/ "Unshare" album.
 
         If the user is the owner of the album, all sharing permissions
         will be deleted. If the user is just a user who this album is
         shared with, only their own sharing permission will be deleted.
         """
-        album_id = kwargs['id']
         try:
-            album = Album.objects.get(pk=album_id)
-            shares_per_album = [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album_id)
-            ]
-
-            # If User is owner of Album
-            if album.user.username == request.user.username:
-                # all shares (permissions) per Album are deleted
-                perm_rel = PermissionsRelation.objects.filter(album__id=album_id)
-                for p in perm_rel:
-                    p.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-
-            # If User shares Album but is not owner
-            if request.user.username in shares_per_album:
-                # the user's share (permission) is deleted
-                PermissionsRelation.objects.filter(user=request.user).delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-
-            # User is not owner nor has shares (permissions)
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-        except (Album.DoesNotExist, ValueError):
-            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
-
-    @extend_schema(
-        tags=['folders'],
-        methods=['POST'],
-        parameters=[
-            OpenApiParameter(
-                name='create_folder',
-                type=OpenApiTypes.OBJECT,
-                required=False,
-                description='',
-                examples=[
-                    OpenApiExample(
-                        name='create_folder',
-                        value=[
-                            {
-                                'title': 'Some title',
-                                'ID': 1111,
-                                'shared_info': 'Some shared info',
-                                '# of works': 89,
-                                'thumbnail': 'https://www.thumbnail.com',
-                            }
-                        ],
-                    )
-                ],
-            ),
-        ],
-        responses={200: OpenApiTypes.OBJECT},
-    )
-    def create_folder(self, request, *args, **kwargs):
-        """Create Folder /albums/{id}"""
-        # todo
-        # Create folder with given data
-        # validate object
-        # check for user.username compatibility
-
-        dummy_data = {
-            'title': request.data.get('title'),
-            'ID': 1111,
-            'shared_info': 'Some shared info',
-            '# of works': 89,
-            'thumbnail': 'https://www.thumbnail.com',
-        }
-        # Todo: update response
-        return Response(dummy_data)
-
-    @extend_schema(
-        methods=['PATCH'],
-        request=UpdateAlbumSerializer,
-        responses={
-            200: AlbumSerializer,
-            403: ERROR_RESPONSES[403],
-            404: ERROR_RESPONSES[404],
-        },
-    )
-    def update(self, request, *args, **kwargs):
-        """Update Album /albums/{id}"""
-        album_id = kwargs['pk']
-
-        try:
-            album = Album.objects.get(pk=album_id)
-            album.title = request.data.get('title')
-
-            serializer = UpdateAlbumSerializer(data=request.data)
-
-            if not serializer.is_valid():
-                return Response(_('Format incorrect'), status=status.HTTP_404_NOT_FOUND)
-
-            if album.user.username == request.user.username:
-                album.save()
-                return simple_album_object(album, request)
-
-            if request.user.username in [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ] and 'EDIT' in [
-                p.permissions
-                for p in PermissionsRelation.objects.filter(
-                    user__username=request.user.username
-                )
-            ]:
-                album.save()
-                return simple_album_object(album, request)
-
-            else:
-                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-
-        except Album.DoesNotExist:
-            return Response(
-                _('Album does not exist '),
-                status=status.HTTP_404_NOT_FOUND,
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
+                .get()
             )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
+
+        # user is owner of the album
+        if album.user == request.user:
+            PermissionsRelation.objects.filter(album=album).delete()
+
+        # album is shared with user
+        else:
+            PermissionsRelation.objects.filter(album=album, user=request.user).delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @extend_schema(
-        methods=['DELETE'],
-    )
-    def destroy(self, request, *args, **kwargs):
-        """Delete Album /albums/{id}"""
-        album_id = kwargs['pk']
-        try:
-            album = Album.objects.get(pk=album_id)
-            if album.user.username == request.user.username:
-                album.delete()
-                return Response(
-                    _(f'Album {album.title} was deleted'),
-                    status=status.HTTP_200_OK,
-                )
-
-            if request.user.username in [
-                p.user.username
-                for p in PermissionsRelation.objects.filter(album__id=album.id)
-            ] and 'EDIT' in [
-                p.permissions
-                for p in PermissionsRelation.objects.filter(
-                    user__username=request.user.username
-                )
-            ]:
-                album.delete()
-                return Response(
-                    _(f'Album {album.title} was deleted'),
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-        except (Album.DoesNotExist, ValueError):
-            return Response(_('Album does not exist'), status=status.HTTP_404_NOT_FOUND)
-
-    @extend_schema(
-        methods=['GET'],
         parameters=[
+            AlbumsDownloadRequestSerializer,
             OpenApiParameter(
                 name='language',
                 type=OpenApiTypes.STR,
-                location=OpenApiParameter.HEADER,
-                required=True,
                 enum=['de', 'en'],
-                default='en',
-                description='de or en. The default value is en',
+                default='de',
             ),
             OpenApiParameter(
                 name='download_format',
                 type=OpenApiTypes.STR,
-                enum=['pptx', 'pdf'],  # Todo: PDF will be made functional later
+                enum=['pptx', 'pdf'],
                 default='pptx',
-                description="At the moment, only 'pptx' is available. Later on, 'PDF' will also be available",
-                required=True,
+                description='At the moment, only "pptx" is available. Later on, "pdf" will also be available',
             ),
         ],
         responses={
+            # TODO better response definition
+            #   https://drf-spectacular.readthedocs.io/en/latest/faq.html#how-to-serve-in-memory-generated-files-or-files-in-general-outside-filefield
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
             501: OpenApiResponse(description='Not implemented yet'),
         },
     )
-    def download(self, request, *args, **kwargs):
-        # Todo: now only pptx, later also PDF
-        album_id = kwargs['id']
+    @action(detail=True, methods=['get'])
+    def download(self, request, pk=None, *args, **kwargs):
+        # TODO only 'pptx' is implemented at the moment, need to implement 'pdf' as well
+
+        serializer = AlbumsDownloadRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
         try:
-            album = Album.objects.get(id=album_id)
-            # If user is the owner or has VIEW permissions, allow the download. Otherwise, throw a 403
-            if (album.user.username == request.user.username) or (
-                request.user.username
-                in [
-                    p.user.username
-                    for p in PermissionsRelation.objects.filter(album__id=album.id)
-                ]
-                and 'VIEW'
-                in [
-                    p.permissions
-                    for p in PermissionsRelation.objects.filter(
-                        user__username=request.user.username
-                    )
-                ]
-            ):
-                download_format = request.GET.get('download_format')
-                lang = request.headers.get('Language')
+            album = (
+                Album.objects.filter(pk=pk)
+                .filter(Q(user=request.user) | Q(permissions=request.user))
+                .distinct('id')
+                .get()
+            )
+        except Album.DoesNotExist as dne:
+            raise NotFound(_('Album does not exist')) from dne
 
-                if download_format == 'pptx' and lang == 'en':
-                    return collection_download_as_pptx_en(request, id=album_id)
-                if download_format == 'pptx' and lang == 'de':
-                    return collection_download_as_pptx_de(request, id=album_id)
-                if download_format == 'pdf' and lang == 'en':
-                    # Todo to implement
-                    return Response(
-                        _('Not implemented yet'),
-                        status.HTTP_501_NOT_IMPLEMENTED,
-                    )
-                if download_format == 'pdf' and lang == 'de':
-                    # Todo to implement
-                    return Response(
-                        _('Not implemented yet'),
-                        status.HTTP_501_NOT_IMPLEMENTED,
-                    )
-                return Response(_('Wrong parameters.'), status.HTTP_400_BAD_REQUEST)
+        download_format = serializer.validated_data['download_format']
+        language = serializer.validated_data['language']
 
-            return Response(_('Not allowed'), status.HTTP_403_FORBIDDEN)
-        except Album.DoesNotExist:
-            return Response(_("Album doesn't exist"), status.HTTP_404_NOT_FOUND)
+        if download_format == 'pptx':
+            return collection_download_as_pptx(request, id=album.id, language=language)
+        elif download_format == 'pdf':
+            # TODO implement pdf creation
+            return Response(
+                _('Not implemented yet'),
+                status.HTTP_501_NOT_IMPLEMENTED,
+            )
+        else:
+            raise ParseError(_('Invalid format'))
 
 
 @extend_schema(tags=['labels'])
@@ -1297,51 +1159,38 @@ class LabelsViewSet(viewsets.GenericViewSet):
     """
 
     @extend_schema(
-        parameters=[
-            OpenApiParameter(
-                name='limit',
-                type=OpenApiTypes.INT,
-                required=False,
-                description='',
-            ),
-            OpenApiParameter(
-                name='offset',
-                type=OpenApiTypes.INT,
-                required=False,
-                description='',
-            ),
-        ],
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
     )
     def list(self, request, *args, **kwargs):
-        data = {
-            'artworks': {
-                'artists': 'Artists',
-                'credits': 'Credits',
-                'date': 'Date of creation',
-                'description': 'Description',
-                'dimensions': 'Dimensions',
-                'keywords': 'Keywords',
-                'license': 'License',
-                'location_current': 'Current location',
-                'location_of_creation': 'Place of creation',
-                'material': 'Material/Technique',
-                'title': 'Title',
-                'title_notes': 'Notes on problematic terms',
-            },
-        }
+        ret = {}
 
-        return Response(data)
+        exclude = (
+            'id',
+            'created_at',
+            'updated_at',
+            'checked',
+            'published',
+        )
+
+        # Artworks
+        fields = Artwork._meta.get_fields()
+        for field in fields:
+            if field.name not in exclude and hasattr(field, 'verbose_name'):
+                ret[field.name] = field.verbose_name
+
+        return Response(ret)
 
 
 @extend_schema(tags=['permissions'])
 class PermissionsViewSet(viewsets.GenericViewSet):
     @extend_schema(
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
         },
@@ -1349,13 +1198,13 @@ class PermissionsViewSet(viewsets.GenericViewSet):
     def list(self, request, *args, **kwargs):
         ret = []
         for permission_type in PermissionsRelation.PERMISSION_CHOICES:
-            ret.append(
-                {
-                    'id': permission_type[0],
-                    'label': permission_type[1],
-                    'default': settings.PERMISSIONS_DEFAULT.get(permission_type[0]),
-                }
-            )
+            permission = {
+                'id': permission_type[0],
+                'label': permission_type[1],
+            }
+            if permission_type[0] in settings.DEFAULT_PERMISSIONS:
+                permission['default'] = True
+            ret.append(permission)
         return Response(ret)
 
 
@@ -1380,9 +1229,14 @@ def get_user_data(request, *args, **kwargs):
     return Response(ret, status=200)
 
 
+FILTERS_MAP = {}
+for filter_id in FILTERS_KEYS:
+    FILTERS_MAP[filter_id] = globals()[f'filter_{filter_id}']
+
+
 @extend_schema(
     tags=['search'],
-    request={'application/json': SearchRequestSerializer},
+    request=SearchRequestSerializer,
     examples=[
         OpenApiExample(
             name='search with filter type title, artist, place_of_production, current_location, keywords',
@@ -1393,8 +1247,8 @@ def get_user_data(request, *args, **kwargs):
                 'q': 'query string',  # the string from general search
                 'filters': [
                     {
-                        'id': 'artist',
-                        'filter_values': ['rubens', {'id': 786}],
+                        'id': 'artists',
+                        'filter_values': ['lassnig', {'id': 1192}],
                     }
                 ],
             },
@@ -1429,8 +1283,8 @@ def search(request, *args, **kwargs):
     serializer = SearchRequestSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    limit = serializer.validated_data.get('limit', settings.SEARCH_LIMIT)
-    offset = serializer.validated_data.get('offset', 0)
+    limit = check_limit(serializer.validated_data.get('limit'))
+    offset = check_offset(serializer.validated_data.get('offset'))
     filters = serializer.validated_data.get('filters', [])
     q_param = serializer.validated_data.get('q')
     exclude = serializer.validated_data.get('exclude', [])
@@ -1449,31 +1303,11 @@ def search(request, *args, **kwargs):
     if filters:
         q_objects = Q()
 
-        for i in filters:
-            if i['id'] == 'title':
-                q_objects |= filter_title(i['filter_values'])
+        for f in filters:
+            if f['id'] not in FILTERS_KEYS:
+                raise ParseError(f'Invalid filter id {repr(f["id"])}')
 
-            elif i['id'] == 'artist':
-                q_objects |= filter_artist(i['filter_values'])
-
-            elif i['id'] == 'place_of_production':
-                q_objects |= filter_place_of_production(i['filter_values'])
-
-            elif i['id'] == 'current_location':
-                q_objects |= filter_current_location(i['filter_values'])
-
-            elif i['id'] == 'keywords':
-                q_objects |= filter_keywords(i['filter_values'])
-
-            elif i['id'] == 'date':
-                q_objects |= filter_date(i['filter_values'])
-
-            else:
-                raise ParseError(
-                    'Invalid filter id. Filter id can only be title, artist, place_of_production, '
-                    'current_location, keywords, or date.',
-                    400,
-                )
+            q_objects |= FILTERS_MAP[f['id']](f['filter_values'])
 
         qs = qs.filter(q_objects)
 
@@ -1488,7 +1322,9 @@ def search(request, *args, **kwargs):
             'results': [
                 {
                     'id': artwork.id,
-                    'image_original': artwork.image_original.url
+                    'image_original': request.build_absolute_uri(
+                        artwork.image_original.url
+                    )
                     if artwork.image_original
                     else None,
                     'credits': artwork.credits,
@@ -1509,130 +1345,14 @@ def search(request, *args, **kwargs):
 @extend_schema(
     tags=['search'],
     responses={
-        200: OpenApiResponse(description='OK'),
+        200: inline_serializer(
+            name='SearchFiltersResponse',
+            fields={k: JSONField() for k in FILTERS_KEYS},
+        ),
         403: ERROR_RESPONSES[403],
         404: ERROR_RESPONSES[404],
     },
 )
 @api_view(['get'])
 def search_filters(request, *args, **kwargs):
-    data = {
-        'title': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'label': {'type': 'string'},
-                    'source': {'type': 'string'},
-                },
-            },
-            'title': 'title',
-            'x-attrs': {
-                'field_format': 'half',
-                'field_type': 'chips',
-                'dynamic_autosuggest': True,
-                'allow_unknown_entries': True,
-                'source': '/autosuggest/v1/titles/',
-                'placeholder': 'enter title',
-                'order': 1,
-            },
-        },
-        'artist': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'label': {'type': 'string'},
-                    'source': {'type': 'string'},
-                },
-            },
-            'title': 'artist',
-            'x-attrs': {
-                'field_format': 'half',
-                'field_type': 'chips',
-                'dynamic_autosuggest': True,
-                'allow_unknown_entries': True,
-                'source': '/autosuggest/v1/artists/',
-                'placeholder': 'enter artist',
-                'order': 2,
-            },
-        },
-        'place_of_production': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'label': {'type': 'string'},
-                    'source': {'type': 'string'},
-                },
-            },
-            'title': 'place of production',
-            'x-attrs': {
-                'field_format': 'half',
-                'field_type': 'chips',
-                'dynamic_autosuggest': True,
-                'allow_unknown_entries': True,
-                'source': '/autosuggest/v1/locations/',
-                'placeholder': 'enter place of production',
-                'order': 3,
-            },
-        },
-        'current_location': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'label': {'type': 'string'},
-                    'source': {'type': 'string'},
-                },
-            },
-            'title': 'current location',
-            'x-attrs': {
-                'field_format': 'half',
-                'field_type': 'chips',
-                'dynamic_autosuggest': True,
-                'allow_unknown_entries': True,
-                'source': '/autosuggest/v1/locations/',
-                'placeholder': 'enter current location',
-                'order': 4,
-            },
-        },
-        'keywords': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'label': {'type': 'string'},
-                    'source': {'type': 'string'},
-                },
-            },
-            'title': 'keywords',
-            'x-attrs': {
-                'placeholder': 'enter keywords',
-                'order': 5,
-                'field_format': 'full',
-                'field_type': 'chips',
-                'allow_unknown_entries': False,
-                'dynamic_autosuggest': True,
-                'source': '/autosuggest/v1/keywords/',
-            },
-        },
-        'date': {
-            'type': 'object',
-            'properties': {
-                'date_from': {'type': 'string'},
-                'date_to': {'type': 'string'},
-            },
-            'title': 'date from, to',
-            'additionalProperties': False,
-            'x-attrs': {
-                'field_format': 'full',
-                'field_type': 'date',
-                'date_format': 'year',
-                'placeholder': {'date': 'enter date'},
-                'order': 6,
-            },
-        },
-    }
-
-    return Response(data)
+    return Response(FILTERS)

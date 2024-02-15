@@ -6,7 +6,6 @@ SOURCES = [
     'titles',
     'artists',
     'keywords',
-    'origins',
     'locations',
 ]
 

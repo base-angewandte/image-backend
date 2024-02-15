@@ -23,60 +23,6 @@ urlpatterns = [
     # Search
     path('search/', views.search, name='search'),
     path('search/filters/', views.search_filters, name='search-filters'),
-    # Artworks
-    path(
-        'artworks/<id>/albums/',
-        views.ArtworksViewSet.as_view({'get': 'retrieve_albums'}),
-        name='artwork-albums',
-    ),
-    path(
-        'artworks/<id>/download/',
-        views.ArtworksViewSet.as_view({'get': 'download'}),
-        name='artwork-download',
-    ),
-    # Folders
-    path(
-        'folders/',
-        views.AlbumsViewSet.as_view(
-            {
-                'get': 'list_folders',
-                'post': 'create_folder',
-            }
-        ),
-        name='folders',
-    ),
-    # Albums
-    path(
-        'albums/<id>/slides/',
-        views.AlbumsViewSet.as_view(
-            {
-                'get': 'retrieve_slides',
-                'post': 'create_slides',
-            }
-        ),
-        name='album-slides',
-    ),
-    path(
-        'albums/<id>/append-artwork/',
-        views.AlbumsViewSet.as_view({'post': 'append_artwork'}),
-        name='album-append-artwork',
-    ),
-    path(
-        'albums/<id>/permissions/',
-        views.AlbumsViewSet.as_view(
-            {
-                'get': 'retrieve_permissions',
-                'post': 'create_permissions',
-                'delete': 'destroy_permissions',
-            }
-        ),
-        name='album-permissions',
-    ),
-    path(
-        'albums/<id>/download/',
-        views.AlbumsViewSet.as_view({'get': 'download'}),
-        name='album-download',
-    ),
     # Autocomplete
     path('autocomplete/', include(autocomplete_urls)),
     # Schema

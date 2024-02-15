@@ -21,9 +21,8 @@ import environ
 import requests
 from drf_spectacular.utils import OpenApiParameter
 
+from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
-
-# from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import gettext_lazy as _
 
 env = environ.Env()
@@ -426,13 +425,15 @@ BASE_HEADER = '{}{}'.format(
 )
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'base_common_drf.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'base_common_drf.authentication.SessionAuthentication',
     ),
+    'DEFAULT_PARSER_CLASSES': ('rest_framework.parsers.JSONParser',),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
     'DEFAULT_VERSION': 'v1',
+    'DEFAULT_SCHEMA_CLASS': 'base_common_drf.openapi.AutoSchema',
 }
 
 SPECTACULAR_SETTINGS = {
@@ -450,6 +451,9 @@ SPECTACULAR_SETTINGS = {
     ],
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
+    'SWAGGER_UI_SETTINGS': {
+        'displayOperationId': True,
+    },
     # OTHER SETTINGS
     # set GLOBAL_PARAMS used in base_common_drf.openapi.AutoSchema
     'GLOBAL_PARAMS': [
@@ -464,9 +468,17 @@ SPECTACULAR_SETTINGS = {
     ],
 }
 
-PERMISSIONS_DEFAULT = {
-    'VIEW': env.str('PERMISSIONS_DEFAULT_VIEW'),
-    'EDIT': env.str('PERMISSIONS_DEFAULT_EDIT'),
-}
+PERMISSIONS = (
+    'VIEW',
+    'EDIT',
+)
+
+DEFAULT_PERMISSIONS = env.list('DEFAULT_PERMISSIONS', default=['VIEW'])
+
+for permission in DEFAULT_PERMISSIONS:
+    if permission not in PERMISSIONS:
+        raise ImproperlyConfigured(
+            f'Permission {repr(permission)} not allowed in DEFAULT_PERMISSIONS'
+        )
 
 SEARCH_LIMIT = 30
