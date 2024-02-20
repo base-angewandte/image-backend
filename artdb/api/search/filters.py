@@ -71,7 +71,7 @@ FILTERS = {
         },
         'title': FILTER_LABELS['place_of_production'],
         'x-attrs': {
-            'field_format': 'half',
+            'field_format': 'third',
             'field_type': 'chips',
             'dynamic_autosuggest': True,
             'allow_unknown_entries': True,
@@ -91,7 +91,7 @@ FILTERS = {
         },
         'title': FILTER_LABELS['location'],
         'x-attrs': {
-            'field_format': 'half',
+            'field_format': 'third',
             'field_type': 'chips',
             'dynamic_autosuggest': True,
             'allow_unknown_entries': True,
@@ -113,7 +113,7 @@ FILTERS = {
         'x-attrs': {
             'placeholder': f'{_("Enter")} {FILTER_LABELS["keywords"]}',
             'order': 5,
-            'field_format': 'full',
+            'field_format': 'third',
             'field_type': 'chips',
             'allow_unknown_entries': False,
             'dynamic_autosuggest': True,
