@@ -29,7 +29,7 @@ FILTERS = {
                 'label': {'type': 'string'},
             },
         },
-        'label': FILTER_LABELS['title'],
+        'title': FILTER_LABELS['title'],
         'x-attrs': {
             'field_format': 'half',
             'field_type': 'chips',
