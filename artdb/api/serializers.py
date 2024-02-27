@@ -1,4 +1,4 @@
-from artworks.models import Album
+from artworks.models import Album, Folder
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
 
@@ -68,6 +68,12 @@ class SearchResultSerializer(serializers.Serializer):
 class UserSerializer(serializers.Serializer):
     id = serializers.CharField(help_text='The user id in the auth backend')
     name = serializers.CharField(help_text='The display name of the user')
+
+
+class FolderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Folder
+        fields = '__all__'
 
 
 @extend_schema_serializer(

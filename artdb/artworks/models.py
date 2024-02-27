@@ -1,8 +1,10 @@
 import logging
 import os
 
+from base_common.models import AbstractBaseModel
 from mptt.models import MPTTModel, TreeForeignKey
 from ordered_model.models import OrderedModel
+from shortuuid.django_fields import ShortUUIDField
 from versatileimagefield.fields import VersatileImageField
 
 from django.conf import settings
@@ -229,7 +231,10 @@ class Album(models.Model):
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     user = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
     artworks = models.ManyToManyField(
-        Artwork, verbose_name=_('Artworks'), through='AlbumMembership'
+        Artwork,
+        verbose_name=_('Artworks'),
+        through='AlbumMembership',
+        related_name='artwork_to_artworks',
     )
     created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now=True)
@@ -390,3 +395,55 @@ User.add_to_class('__str__', string_representation)
 
 # Monkey patch ManyToManyDescriptor
 ManyToManyDescriptor.get_queryset = lambda self: self.rel.model.objects.get_queryset()
+
+
+class Folder(AbstractBaseModel):
+    # unique id
+    id = ShortUUIDField(
+        length=22,
+        primary_key=True,
+    )
+    title = models.CharField(verbose_name=_('Title'), max_length=255)
+    owner = models.ForeignKey(
+        User,
+        verbose_name=_('User'),
+        on_delete=models.CASCADE,
+        related_name='folder_owner',
+    )
+    albums = models.ManyToManyField(
+        Album,
+        verbose_name=_('Albums'),
+        through='FolderAlbumRelation',
+        related_name='folder_to_albums',
+    )
+    parent = models.ForeignKey(
+        'Folder',
+        on_delete=models.CASCADE,
+        related_name='folder_to_parent',
+        null=True,
+    )
+
+    @property
+    def is_root(self):
+        return self.parent is None
+
+    @staticmethod
+    def root_folder_for_user(user):
+        # All albums should be related to it. If no album exists, then folder is empty
+        folder, created = Folder.objects.get_or_create(owner=user, parent=None)
+        if created:
+            user_albums = user.album_set.all()
+            for a in user_albums:
+                # Add relation to albums
+                FolderAlbumRelation(album=a, user=user, folder=folder).save()
+        return folder
+
+
+class FolderAlbumRelation(models.Model):
+    album = models.ForeignKey(
+        Album, related_name='rel_to_album', on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(User, related_name='rel_to_user', on_delete=models.CASCADE)
+    folder = models.ForeignKey(
+        Folder, related_name='rel_to_folder', on_delete=models.CASCADE
+    )

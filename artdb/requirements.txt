@@ -183,7 +183,9 @@ rpds-py==0.10.6
     #   jsonschema
     #   referencing
 shortuuid==1.0.11
-    # via base-common
+    # via
+    #   -r artdb/requirements.in
+    #   base-common
 six==1.16.0
     # via
     #   -r artdb/requirements.in

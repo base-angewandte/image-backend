@@ -4,7 +4,14 @@ import zipfile
 from io import BytesIO
 
 from artworks.exports import collection_download_as_pptx
-from artworks.models import Album, Artwork, Keyword, Location, PermissionsRelation
+from artworks.models import (
+    Album,
+    Artwork,
+    Folder,
+    Keyword,
+    Location,
+    PermissionsRelation,
+)
 from base_common_drf.openapi.responses import ERROR_RESPONSES
 from drf_spectacular.utils import (
     OpenApiExample,
@@ -39,6 +46,7 @@ from .serializers import (
     ArtworksImageRequestSerializer,
     CreateAlbumRequestSerializer,
     CreateSlidesRequestSerializer,
+    FolderSerializer,
     PermissionsRequestSerializer,
     PermissionsResponseSerializer,
     SearchRequestSerializer,
@@ -304,15 +312,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     def image(self, request, pk=None, *args, **kwargs):
         serializer = ArtworksImageRequestSerializer(data=kwargs)
         serializer.is_valid(raise_exception=True)
-
         try:
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
-
         method = serializer.validated_data['method']
         size = f'{serializer.validated_data["width"]}x{serializer.validated_data["height"]}'
-
         match method:
             case 'resize':
                 url = artwork.image_original.thumbnail[size].url
@@ -320,7 +325,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 url = artwork.image_original.crop[size].url
             case _:
                 url = artwork.image_original.url
-
         return redirect(request.build_absolute_uri(url))
 
     @extend_schema(
@@ -1209,6 +1213,195 @@ class AlbumsViewSet(viewsets.ViewSet):
             )
         else:
             raise ParseError(_('Invalid format'))
+
+
+class FoldersViewSet(viewsets.ViewSet):
+    """
+    list:
+    GET /folders/
+    List of all the user's folders (in anticipation that there will be folders later)
+
+    create: # Note: to be implemented
+    POST /folders/
+    Create a new folder
+
+    retrieve:
+    GET /folders/<id>/
+    Get folder with given id if it belongs to the user;
+    if folder_id == 'root', return the content of the root folder for the current user
+    """
+
+    serializer_class = FolderSerializer
+    queryset = Folder.objects.all()
+
+    @extend_schema(
+        tags=['folders'],
+        request=FolderSerializer,
+        parameters=[
+            OpenApiParameter(
+                name='limit',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+                default=100,
+            ),
+            OpenApiParameter(
+                name='offset',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(description='OK'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
+    def list(self, request, *args, **kwargs):
+        """List of all the users albums /folders (in anticipation that there
+        will be folders later)"""
+
+        limit = check_limit(request.query_params.get('limit', 100))
+        offset = check_offset(request.query_params.get('offset', 0))
+
+        results = self.queryset.filter(owner=request.user)
+
+        results = results[offset : offset + limit]
+
+        return Response(
+            [
+                {
+                    'id': folder.id,
+                    'title': folder.title,
+                    'content': {
+                        'total': sum(
+                            [
+                                folder.albums.all().count(),
+                                Folder.objects.filter(
+                                    owner=request.user, parent=folder
+                                ).count(),
+                            ]
+                        ),  # number of albums + subfolders
+                        'data': [
+                            {
+                                'id': item.id,
+                                'title': item.title,
+                                'type': item._meta.object_name,
+                            }
+                            for item in list(folder.albums.all())
+                            + list(
+                                Folder.objects.filter(owner=request.user).filter(
+                                    parent=folder
+                                )
+                            )
+                        ],
+                    },
+                }
+                for folder in results
+            ]
+        )
+
+    @extend_schema(
+        tags=['folders'],
+        request=FolderSerializer,
+        responses={
+            200: OpenApiResponse(description='OK'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """Get folder with given id if it belongs to the user; if folder_id ==
+        'root', return the content of the root folder for the current user."""
+        folder_id = kwargs['pk']
+
+        # Retrieve folder by id
+        if folder_id == 'root':
+            folder = Folder.root_folder_for_user(request.user)
+        else:
+            try:
+                folder = Folder.objects.get(owner=request.user, id=folder_id)
+            except Folder.DoesNotExist as dne:
+                raise NotFound(_('Folder does not exist')) from dne
+
+        return Response(
+            {
+                'id': folder.id,
+                'title': folder.title,
+                'content': {
+                    'total': sum(
+                        [
+                            folder.albums.all().count(),
+                            Folder.objects.filter(
+                                owner=request.user, parent=folder
+                            ).count(),
+                        ]
+                    ),  # number of albums + subfolders
+                    'data': [
+                        {
+                            'id': item.id,
+                            'title': item.title,
+                            'type': item._meta.object_name,
+                        }
+                        for item in list(folder.albums.all())
+                        + list(
+                            Folder.objects.filter(owner=request.user).filter(
+                                parent=folder.id
+                            )
+                        )
+                    ],
+                },
+            }
+        )
+
+    @extend_schema(
+        methods=['POST'],
+        parameters=[
+            OpenApiParameter(
+                name='create_folder',
+                type=OpenApiTypes.OBJECT,
+                required=False,
+                description='',
+                examples=[
+                    OpenApiExample(
+                        name='create_folder',
+                        value=[
+                            {
+                                'title': 'Some title',
+                                'ID': 1111,
+                                'shared_info': 'Some shared info',
+                                '# of works': 89,
+                                'thumbnail': 'https://www.thumbnail.com',
+                            }
+                        ],
+                    )
+                ],
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(description='OK'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
+    def create_folder(self, request, *args, **kwargs):
+        """Create Folder /albums/{id}"""
+        # Note: this is a placeholder
+        # todo
+        # Create folder with given data
+        # validate object
+        # check for user.username compatibility
+
+        dummy_data = {
+            'title': request.data.get('title'),
+            'ID': 1111,
+            'shared_info': 'Some shared info',
+            '# of works': 89,
+            'thumbnail': 'https://www.thumbnail.com',
+        }
+        # Todo: update response
+        return Response(dummy_data)
 
 
 @extend_schema(tags=['labels'])
