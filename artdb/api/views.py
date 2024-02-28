@@ -81,8 +81,7 @@ def check_offset(offset):
     return offset
 
 
-def check_sorting(sorting):
-    ordering_fields = FoldersViewSet().ordering_fields
+def check_sorting(sorting, ordering_fields):
     try:
         sorting = str(sorting)
         if sorting not in ordering_fields + [f'-{i}' for i in ordering_fields]:
@@ -668,10 +667,17 @@ class AlbumsViewSet(viewsets.ViewSet):
     """
 
     queryset = Album.objects.all()
+    ordering_fields = ['title', 'created_at', 'updated_at']
 
     @extend_schema(
         parameters=[
             AlbumsListRequestSerializer,
+            OpenApiParameter(
+                name='sort_by',
+                type=OpenApiTypes.STR,
+                required=False,
+                enum=ordering_fields + [f'-{i}' for i in ordering_fields],
+            ),
             OpenApiParameter(
                 name='permissions',
                 type={
@@ -707,6 +713,9 @@ class AlbumsViewSet(viewsets.ViewSet):
 
         limit = check_limit(serializer.validated_data['limit'])
         offset = check_offset(serializer.validated_data['offset'])
+        sorting = check_sorting(
+            request.query_params.get('sort_by'), self.ordering_fields
+        )
 
         q_filters = Q()
 
@@ -723,7 +732,7 @@ class AlbumsViewSet(viewsets.ViewSet):
                 ).values_list('album__pk', flat=True)
             )
 
-        albums = Album.objects.filter(q_filters)
+        albums = Album.objects.filter(q_filters).order_by(sorting)
 
         total = albums.count()
 
@@ -1032,6 +1041,14 @@ class AlbumsViewSet(viewsets.ViewSet):
         raise PermissionDenied()
 
     @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='sort_by',
+                type=OpenApiTypes.STR,
+                required=False,
+                description='last_name or -last_name',
+            )
+        ],
         responses={
             200: PermissionsResponseSerializer,
             403: ERROR_RESPONSES[403],
@@ -1041,6 +1058,10 @@ class AlbumsViewSet(viewsets.ViewSet):
     @action(detail=True, methods=['get'])
     def permissions(self, request, pk=None, *args, **kwargs):
         """Get Permissions /albums/{id}/permissions."""
+
+        sorting = check_sorting(
+            request.query_params.get('sort_by'), ['last_name', '-last_name']
+        )
         try:
             album = (
                 Album.objects.filter(pk=pk)
@@ -1057,6 +1078,12 @@ class AlbumsViewSet(viewsets.ViewSet):
         if album.user != request.user:
             qs = qs.filter(user=request.user)
 
+        sorting = (
+            f'user__{sorting}'
+            if '-' not in sorting
+            else f'-user__{sorting.replace("-", "")}'
+        )
+
         return Response(
             [
                 {
@@ -1066,7 +1093,7 @@ class AlbumsViewSet(viewsets.ViewSet):
                     },
                     'permissions': [{'id': p.permissions}],
                 }
-                for p in qs
+                for p in qs.order_by(sorting)
             ]
         )
 
@@ -1284,7 +1311,9 @@ class FoldersViewSet(viewsets.ViewSet):
 
         limit = check_limit(request.query_params.get('limit', 100))
         offset = check_offset(request.query_params.get('offset', 0))
-        sorting = check_sorting(request.query_params.get('sort_by'))
+        sorting = check_sorting(
+            request.query_params.get('sort_by'), self.ordering_fields
+        )
         # Albums and Folders sorting fields differ
         if sorting == 'date_created' or sorting == '-date_created':
             date_sorting_album = 'created_at' if '-' not in sorting else '-created_at'
@@ -1355,7 +1384,9 @@ class FoldersViewSet(viewsets.ViewSet):
         'root', return the content of the root folder for the current user."""
         folder_id = kwargs['pk']
 
-        sorting = check_sorting(request.query_params.get('sort_by'))
+        sorting = check_sorting(
+            request.query_params.get('sort_by'), self.ordering_fields
+        )
         # Albums and Folders sorting fields differ
         if sorting == 'date_created' or sorting == '-date_created':
             date_sorting_album = 'created_at' if '-' not in sorting else '-created_at'
