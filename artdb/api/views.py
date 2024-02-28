@@ -677,6 +677,7 @@ class AlbumsViewSet(viewsets.ViewSet):
                 type=OpenApiTypes.STR,
                 required=False,
                 enum=ordering_fields + [f'-{i}' for i in ordering_fields],
+                default='title',
             ),
             OpenApiParameter(
                 name='permissions',
@@ -706,16 +707,16 @@ class AlbumsViewSet(viewsets.ViewSet):
     def list(self, request, *args, **kwargs):
         """List of all Albums (used for getting latest Albums) /albums."""
 
-        # TODO check logic after /folders/root endpoint is implemented
-
         serializer = AlbumsListRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
         limit = check_limit(serializer.validated_data['limit'])
         offset = check_offset(serializer.validated_data['offset'])
         sorting = check_sorting(
-            request.query_params.get('sort_by'), self.ordering_fields
+            request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
+
+        print(sorting)
 
         q_filters = Q()
 
@@ -1047,6 +1048,7 @@ class AlbumsViewSet(viewsets.ViewSet):
                 type=OpenApiTypes.STR,
                 required=False,
                 description='last_name or -last_name',
+                default='last_name',
             )
         ],
         responses={
@@ -1060,7 +1062,8 @@ class AlbumsViewSet(viewsets.ViewSet):
         """Get Permissions /albums/{id}/permissions."""
 
         sorting = check_sorting(
-            request.query_params.get('sort_by'), ['last_name', '-last_name']
+            request.query_params.get('sort_by', 'last_name'),
+            ['last_name', '-last_name'],
         )
         try:
             album = (
@@ -1284,6 +1287,7 @@ class FoldersViewSet(viewsets.ViewSet):
                 type=OpenApiTypes.STR,
                 required=False,
                 enum=ordering_fields + [f'-{i}' for i in ordering_fields],
+                default='title',
             ),
             OpenApiParameter(
                 name='limit',
@@ -1312,7 +1316,7 @@ class FoldersViewSet(viewsets.ViewSet):
         limit = check_limit(request.query_params.get('limit', 100))
         offset = check_offset(request.query_params.get('offset', 0))
         sorting = check_sorting(
-            request.query_params.get('sort_by'), self.ordering_fields
+            request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
         # Albums and Folders sorting fields differ
         if sorting == 'date_created' or sorting == '-date_created':
@@ -1385,7 +1389,7 @@ class FoldersViewSet(viewsets.ViewSet):
         folder_id = kwargs['pk']
 
         sorting = check_sorting(
-            request.query_params.get('sort_by'), self.ordering_fields
+            request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
         # Albums and Folders sorting fields differ
         if sorting == 'date_created' or sorting == '-date_created':
