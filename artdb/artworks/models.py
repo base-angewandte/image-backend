@@ -403,7 +403,9 @@ class Folder(AbstractBaseModel):
         length=22,
         primary_key=True,
     )
-    title = models.CharField(verbose_name=_('Title'), max_length=255)
+    title = models.CharField(
+        verbose_name=_('Title'), max_length=255, blank=False, null=False
+    )
     owner = models.ForeignKey(
         User,
         verbose_name=_('User'),
@@ -427,12 +429,18 @@ class Folder(AbstractBaseModel):
     def is_root(self):
         return self.parent is None
 
+    @property
+    def has_title(self):
+        return self.title is None
+
     @staticmethod
     def root_folder_for_user(user):
         # All albums should be related to it. If no album exists, then folder is empty
         folder, created = Folder.objects.get_or_create(owner=user, parent=None)
         if created:
             user_albums = user.album_set.all()
+            folder.title = f'{user.username}-root'
+            folder.save()
             for a in user_albums:
                 # Add relation to albums
                 FolderAlbumRelation(album=a, user=user, folder=folder).save()
