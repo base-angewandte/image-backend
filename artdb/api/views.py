@@ -1284,19 +1284,6 @@ class FoldersViewSet(viewsets.ViewSet):
                 'type': album._meta.object_name,
                 'number_of_artworks': album.artworks.count(),
                 'featured_artworks': [],
-                # "permissions": [
-                #     {
-                #         "user": {
-                #             "id": item.permissions.,
-                #             "name": "Bernhard Saltuari"
-                #         },
-                #         "permissions": [
-                #             {
-                #                 "id": "VIEW"
-                #             }
-                #         ]
-                #     },
-                # ],
                 'permissions': [
                     {
                         'user': {
