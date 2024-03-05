@@ -1282,6 +1282,40 @@ class FoldersViewSet(viewsets.ViewSet):
 
     ordering_fields = ['title', 'date_created', 'date_changed']
 
+    def get_album_in_folder_data(self, albums, request):
+        return [
+            {
+                'id': album.id,
+                'title': album.title,
+                'type': album._meta.object_name,
+                'number_of_artworks': album.artworks.count(),
+                'featured_artworks': featured_artworks(album, request),
+                'permissions': [
+                    {
+                        'user': {
+                            'id': p.user.username,
+                            'name': p.user.get_full_name(),
+                        },
+                        'permissions': [{'id': p.permissions}],
+                    }
+                    for p in PermissionsRelation.objects.filter(album=album).filter(
+                        **{} if album.user == request.user else {'user': request.user}
+                    )
+                ],
+            }
+            for album in albums
+        ]
+
+    def get_folder_in_folder_data(self, folders, request):
+        return [
+            {
+                'id': item.id,
+                'title': item.title,
+                'type': item._meta.object_name,
+            }
+            for item in folders
+        ]
+
     @extend_schema(
         tags=['folders'],
         request=FolderSerializer,
@@ -1322,15 +1356,14 @@ class FoldersViewSet(viewsets.ViewSet):
         sorting = check_sorting(
             request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
-        # Albums "date_created" and "date_changed" fields differ
+        date_sorting_album = sorting
+
+        # Albums and Folders sorting fields differ
         if sorting == 'date_created' or sorting == '-date_created':
             date_sorting_album = 'created_at' if '-' not in sorting else '-created_at'
 
         if sorting == 'date_changed' or sorting == '-date_changed':
             date_sorting_album = 'updated_at' if '-' not in sorting else '-updated_at'
-
-        if sorting == 'title' or sorting == '-title':
-            date_sorting_album = sorting
 
         results = self.queryset.filter(owner=request.user)
 
@@ -1350,18 +1383,17 @@ class FoldersViewSet(viewsets.ViewSet):
                             ]
                         ),  # number of albums + subfolders
                         'data': [
-                            {
-                                'id': item.id,
-                                'title': item.title,
-                                'type': item._meta.object_name,
-                            }
-                            for item in list(
-                                folder.albums.all().order_by(date_sorting_album)
+                            self.get_album_in_folder_data(
+                                list(folder.albums.all().order_by(date_sorting_album)),
+                                request,
                             )
-                            + list(
-                                Folder.objects.filter(owner=request.user)
-                                .filter(parent=folder)
-                                .order_by(sorting)
+                            + self.get_folder_in_folder_data(
+                                list(
+                                    Folder.objects.filter(owner=request.user)
+                                    .filter(parent=folder.id)
+                                    .order_by(sorting)
+                                ),
+                                request,
                             )
                         ],
                     },
@@ -1380,6 +1412,19 @@ class FoldersViewSet(viewsets.ViewSet):
                 required=False,
                 enum=ordering_fields + [f'-{i}' for i in ordering_fields],
             ),
+            OpenApiParameter(
+                name='limit',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+                default=100,
+            ),
+            OpenApiParameter(
+                name='offset',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+            ),
         ],
         responses={
             200: OpenApiResponse(description='OK'),
@@ -1392,18 +1437,18 @@ class FoldersViewSet(viewsets.ViewSet):
         'root', return the content of the root folder for the current user."""
         folder_id = kwargs['pk']
 
+        limit = check_limit(request.query_params.get('limit', 100))
+        offset = check_offset(request.query_params.get('offset', 0))
         sorting = check_sorting(
             request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
+        date_sorting_album = sorting
         # Albums and Folders sorting fields differ
         if sorting == 'date_created' or sorting == '-date_created':
             date_sorting_album = 'created_at' if '-' not in sorting else '-created_at'
 
         if sorting == 'date_changed' or sorting == '-date_changed':
             date_sorting_album = 'updated_at' if '-' not in sorting else '-updated_at'
-
-        if sorting == 'title' or sorting == '-title':
-            date_sorting_album = sorting
 
         # Retrieve folder by id
         if folder_id == 'root':
@@ -1428,20 +1473,19 @@ class FoldersViewSet(viewsets.ViewSet):
                         ]
                     ),  # number of albums + subfolders
                     'data': [
-                        {
-                            'id': item.id,
-                            'title': item.title,
-                            'type': item._meta.object_name,
-                        }
-                        for item in list(
-                            folder.albums.all().order_by(date_sorting_album)
+                        self.get_album_in_folder_data(
+                            list(folder.albums.all().order_by(date_sorting_album)),
+                            request,
                         )
-                        + list(
-                            Folder.objects.filter(owner=request.user)
-                            .filter(parent=folder.id)
-                            .order_by(sorting)
+                        + self.get_folder_in_folder_data(
+                            list(
+                                Folder.objects.filter(owner=request.user)
+                                .filter(parent=folder.id)
+                                .order_by(sorting)
+                            ),
+                            request,
                         )
-                    ],
+                    ][offset : offset + limit],
                 },
             }
         )

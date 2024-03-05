@@ -403,7 +403,9 @@ class Folder(AbstractBaseModel):
         length=22,
         primary_key=True,
     )
-    title = models.CharField(verbose_name=_('Title'), max_length=255)
+    title = models.CharField(
+        verbose_name=_('Title'), max_length=255, blank=False, null=False
+    )
     owner = models.ForeignKey(
         User,
         verbose_name=_('User'),
@@ -433,6 +435,8 @@ class Folder(AbstractBaseModel):
         folder, created = Folder.objects.get_or_create(owner=user, parent=None)
         if created:
             user_albums = user.album_set.all()
+            folder.title = f'{user.username}-root'
+            folder.save()
             for a in user_albums:
                 # Add relation to albums
                 FolderAlbumRelation(album=a, user=user, folder=folder).save()
