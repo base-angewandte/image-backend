@@ -1322,7 +1322,7 @@ class FoldersViewSet(viewsets.ViewSet):
         sorting = check_sorting(
             request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
-        # Albums and Folders sorting fields differ
+        # Albums "date_created" and "date_changed" fields differ
         if sorting == 'date_created' or sorting == '-date_created':
             date_sorting_album = 'created_at' if '-' not in sorting else '-created_at'
 
