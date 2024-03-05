@@ -429,10 +429,6 @@ class Folder(AbstractBaseModel):
     def is_root(self):
         return self.parent is None
 
-    @property
-    def has_title(self):
-        return self.title is None
-
     @staticmethod
     def root_folder_for_user(user):
         # All albums should be related to it. If no album exists, then folder is empty
