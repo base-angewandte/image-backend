@@ -1365,9 +1365,6 @@ class FoldersViewSet(viewsets.ViewSet):
         if sorting == 'date_changed' or sorting == '-date_changed':
             date_sorting_album = 'updated_at' if '-' not in sorting else '-updated_at'
 
-        if sorting == 'title' or sorting == '-title':
-            date_sorting_album = sorting
-
         results = self.queryset.filter(owner=request.user)
 
         results = results[offset : offset + limit]
