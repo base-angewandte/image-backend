@@ -667,7 +667,7 @@ class AlbumsViewSet(viewsets.ViewSet):
     """
 
     queryset = Album.objects.all()
-    ordering_fields = ['title', 'created_at', 'updated_at']
+    ordering_fields = ['title', 'date_created', 'date_changed']
 
     @extend_schema(
         parameters=[
@@ -715,8 +715,12 @@ class AlbumsViewSet(viewsets.ViewSet):
         sorting = check_sorting(
             request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
+        # Albums and Folders sorting fields differ
+        if sorting == 'date_created' or sorting == '-date_created':
+            sorting = 'created_at' if '-' not in sorting else '-created_at'
 
-        print(sorting)
+        if sorting == 'date_changed' or sorting == '-date_changed':
+            sorting = 'updated_at' if '-' not in sorting else '-updated_at'
 
         q_filters = Q()
 
