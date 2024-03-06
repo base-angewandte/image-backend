@@ -1,7 +1,6 @@
 import logging
 import os
 
-# from shortuuid.django_fields import ShortUUIDField
 from base_common.fields import ShortUUIDField
 from base_common.models import AbstractBaseModel
 from mptt.models import MPTTModel, TreeForeignKey
