@@ -1,10 +1,11 @@
 import logging
 import os
 
+# from shortuuid.django_fields import ShortUUIDField
+from base_common.fields import ShortUUIDField
 from base_common.models import AbstractBaseModel
 from mptt.models import MPTTModel, TreeForeignKey
 from ordered_model.models import OrderedModel
-from shortuuid.django_fields import ShortUUIDField
 from versatileimagefield.fields import VersatileImageField
 
 from django.conf import settings
@@ -228,6 +229,7 @@ def delete_renditions_on_change(sender, update_fields, instance, **kwargs):
 class Album(models.Model):
     """Specific users can create their own collections of artworks."""
 
+    id = ShortUUIDField(primary_key=True)
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     user = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
     artworks = models.ManyToManyField(
@@ -400,7 +402,6 @@ ManyToManyDescriptor.get_queryset = lambda self: self.rel.model.objects.get_quer
 class Folder(AbstractBaseModel):
     # unique id
     id = ShortUUIDField(
-        length=22,
         primary_key=True,
     )
     title = models.CharField(
