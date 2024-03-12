@@ -796,6 +796,8 @@ class AlbumsViewSet(viewsets.ViewSet):
 
         album = Album.objects.create(title=title, user=request.user)
 
+        Folder().root_folder_for_user(request.user)
+
         return Response(
             album_object(album, request_user=request.user),
             status=status.HTTP_201_CREATED,
