@@ -4,7 +4,6 @@ import os
 from base_common.fields import ShortUUIDField
 from base_common.models import AbstractBaseModel
 from mptt.models import MPTTModel, TreeForeignKey
-from ordered_model.models import OrderedModel
 from versatileimagefield.fields import VersatileImageField
 
 from django.conf import settings
@@ -231,12 +230,6 @@ class Album(models.Model):
     id = ShortUUIDField(primary_key=True)
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     user = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
-    artworks = models.ManyToManyField(
-        Artwork,
-        verbose_name=_('Artworks'),
-        through='AlbumMembership',
-        related_name='artwork_to_artworks',
-    )
     created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now=True)
     slides = JSONField(verbose_name=_('Slides'), default=list)
@@ -277,114 +270,6 @@ class PermissionsRelation(models.Model):
 
     class Meta:
         unique_together = ['album', 'user']
-
-
-class AlbumMembership(OrderedModel):
-    """Users can create collections of artworks and put them into a specific
-    order (moved left and right).
-
-    They can also connect two artworks, so they appear on one single
-    page when exported as a powerpoint file.
-    """
-
-    collection = models.ForeignKey(
-        Album, verbose_name=_('Album'), on_delete=models.CASCADE
-    )
-    artwork = models.ForeignKey(
-        Artwork, verbose_name=_('Artwork'), on_delete=models.CASCADE
-    )
-    order_with_respect_to = 'collection'
-    connected_with = models.ForeignKey(
-        'self', null=True, blank=True, on_delete=models.CASCADE
-    )
-
-    class Meta(OrderedModel.Meta):
-        verbose_name = _('Album Membership')
-        verbose_name_plural = _('Album Memberships')
-
-    def move_left(self):
-        # did the user click a single one or a connected one?
-        if self.connected_with:
-            if self.connected_with == self.previous():
-                # right side
-                left_side = self.previous()
-                right_side = self
-            else:
-                # left side
-                left_side = self
-                right_side = self.next()
-        else:
-            left_side = self
-            right_side = None
-
-        if left_side.previous():
-            if left_side.previous().connected_with:
-                # the left_side is connected. let's move twice
-                left_side.up()
-                if right_side:
-                    right_side.up()
-            left_side.up()
-            if right_side:
-                right_side.up()
-
-    def move_right(self):
-        # did the user click a single one or a connected one?
-        if self.connected_with:
-            if self.connected_with == self.previous():
-                # right side
-                left_side = self.previous()
-                right_side = self
-            else:
-                # left side
-                left_side = self
-                right_side = self.next()
-        else:
-            left_side = None
-            right_side = self
-
-        if right_side.next():
-            if right_side.next().connected_with:
-                # the rightSide is connected. let's move twice
-                right_side.down()
-                if left_side:
-                    left_side.down()
-            right_side.down()
-            if left_side:
-                left_side.down()
-
-    def disconnect(self, partner):
-        if self.connected_with == partner and self == partner.connected_with:
-            self.connected_with = None
-            partner.connected_with = None
-            self.save()
-            partner.save()
-            return True
-        logger.error(
-            'Could not disconnect artwork membership %s with %s', self, partner
-        )
-        return False
-
-    def connect(self, partner):
-        if self.connected_with is None and partner.connected_with is None:
-            if self.next() == partner or self.previous() == partner:
-                self.connected_with = partner
-                partner.connected_with = self
-                self.save()
-                partner.save()
-            return True
-        logger.error('Could not connect artwork membership %s with %s', self, partner)
-        return False
-
-    def remove(self):
-        if self.connected_with:
-            if not self.disconnect(self.connected_with):
-                logger.error(
-                    'Could not remove artwork membership %s because I could not disconnect it',
-                    self,
-                )
-                return False
-        self.delete()
-        return True
 
 
 # Monkey patch of String representation of User
