@@ -8,6 +8,7 @@ from artworks.models import (
     Album,
     Artwork,
     Folder,
+    FolderAlbumRelation,
     Keyword,
     Location,
     PermissionsRelation,
@@ -795,6 +796,12 @@ class AlbumsViewSet(viewsets.ViewSet):
         title = serializer.validated_data['title']
 
         album = Album.objects.create(title=title, user=request.user)
+
+        # Add album to root folder, creating a relationship
+        folder = Folder.root_folder_for_user(request.user)
+        FolderAlbumRelation.objects.get_or_create(
+            album=album, user=request.user, folder=folder
+        )
 
         return Response(
             album_object(album, request_user=request.user),
