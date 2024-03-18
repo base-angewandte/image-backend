@@ -1297,6 +1297,10 @@ class FoldersViewSet(viewsets.ViewSet):
                 'type': album._meta.object_name,
                 'number_of_artworks': album.artworks.count(),
                 'featured_artworks': featured_artworks(album, request),
+                'owner': {
+                    'id': album.user.username,
+                    'name': album.user.get_full_name(),
+                },
                 'permissions': [
                     {
                         'user': {
@@ -1347,6 +1351,23 @@ class FoldersViewSet(viewsets.ViewSet):
                 required=False,
                 description='',
             ),
+            OpenApiParameter(
+                name='permissions',
+                type={
+                    'type': 'array',
+                    'items': {'type': 'string', 'enum': settings.PERMISSIONS},
+                },
+                location=OpenApiParameter.QUERY,
+                required=False,
+                style='form',
+                explode=False,
+                description=(
+                    'If the response should also return shared albums, it\'s possible to define which permissions the '
+                    'user needs to have for the album. Since the default is `EDIT`, shared albums with `EDIT` '
+                    'permissions are included in the response.'
+                ),
+                default='EDIT',
+            ),
         ],
         responses={
             200: OpenApiResponse(description='OK'),
@@ -1364,6 +1385,7 @@ class FoldersViewSet(viewsets.ViewSet):
             request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
         date_sorting_album = sorting
+        permissions = request.query_params.get('permissions', 'VIEW')
 
         # Albums and Folders sorting fields differ
         if sorting == 'date_created' or sorting == '-date_created':
@@ -1371,6 +1393,17 @@ class FoldersViewSet(viewsets.ViewSet):
 
         if sorting == 'date_changed' or sorting == '-date_changed':
             date_sorting_album = 'updated_at' if '-' not in sorting else '-updated_at'
+
+        q_filters = Q()
+
+        if permissions:
+            q_filters |= Q(
+                pk__in=PermissionsRelation.objects.filter(
+                    user=request.user,
+                    permissions__in=permissions,
+                ).values_list('album__pk', flat=True)
+            )
+        q_filters |= Q(user=request.user)
 
         results = self.queryset.filter(owner=request.user)
 
@@ -1391,7 +1424,11 @@ class FoldersViewSet(viewsets.ViewSet):
                         ),  # number of albums + subfolders
                         'data': [
                             self.get_album_in_folder_data(
-                                list(folder.albums.all().order_by(date_sorting_album)),
+                                list(
+                                    folder.albums.all()
+                                    .filter(q_filters)
+                                    .order_by(date_sorting_album)
+                                ),
                                 request,
                             )
                             + self.get_folder_in_folder_data(
