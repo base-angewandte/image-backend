@@ -1704,7 +1704,7 @@ def search(request, *args, **kwargs):
 
             q_objects |= FILTERS_MAP[f['id']](f['filter_values'])
 
-        qs = qs.filter(q_objects)
+        qs = qs.filter(q_objects).distinct()
 
     # total of results before applying limits
     total = qs.count()
