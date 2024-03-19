@@ -7,15 +7,10 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('artworks', '0057_folder_alter_album_artworks_folderalbumrelation_and_more'),
+        ('artworks', '0058_remove_album_artworks_delete_albummembership'),
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='album',
-            name='id',
-            field=base_common.fields.ShortUUIDField(primary_key=True, serialize=False),
-        ),
         migrations.AlterField(
             model_name='folder',
             name='id',
