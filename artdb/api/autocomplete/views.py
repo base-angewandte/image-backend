@@ -37,6 +37,7 @@ MODEL_MAP = {
     'keywords': Keyword,
     'locations': Location,
     'users': get_user_model(),
+    'permissions': PermissionsRelation,
 }
 
 LABELS_MAP = {
@@ -149,28 +150,24 @@ def autocomplete(request, *args, **kwargs):
                     },
                 )
         elif t in ['user_albums_editable', 'titles']:
-            query = MODEL_MAP[t].objects.filter(title__icontains=q_param)[
-                :limit
-            ]  # todo here
+            query = MODEL_MAP[t].objects.filter(title__icontains=q_param)[:limit]
+            if t == 'user_albums_editable':
+                # The requests only returns own albums and shared albums with `EDIT` permission.
+                albums = [album for album in query]
+                permissions = PermissionsRelation.objects.filter(
+                    user=request.user, album__in=albums
+                )
+                query = MODEL_MAP[t].objects.filter(user=request.user) | MODEL_MAP[
+                    t
+                ].objects.filter(pk__in=permissions)
 
             for item in query:
-                # The requests only returns own albums and shared albums with `EDIT` permission.
-                if t == 'user_albums_editable':
-                    try:
-                        if (
-                            PermissionsRelation.objects.get(
-                                user=request.user, album=item
-                            ).permissions
-                            == 'EDIT'
-                        ) or item.user == request.user:
-                            d['data'].append(
-                                {
-                                    'id': item.id,
-                                    'label': item.title,
-                                }
-                            )
-                    except PermissionsRelation.DoesNotExist:
-                        pass
+                d['data'].append(
+                    {
+                        'id': item.id,
+                        'label': item.title,
+                    }
+                )
 
         else:
             query = MODEL_MAP[t].objects.filter(name__icontains=q_param)[:limit]
