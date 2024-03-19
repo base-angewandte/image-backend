@@ -128,7 +128,7 @@ def slides_with_details(album, request):
     return ret
 
 
-def album_object(album, request=None):
+def album_object(album, request=None, details=False):
     permissions_qs = PermissionsRelation.objects.filter(album=album)
 
     if request is not None and album.user != request.user:
@@ -138,7 +138,7 @@ def album_object(album, request=None):
         'id': album.id,
         'title': album.title,
         'number_of_artworks': sum([len(slide) for slide in album.slides]),
-        'slides': album.slides,
+        'slides': slides_with_details(album, request) if details else album.slides,
         'owner': {
             'id': album.user.username,
             'name': album.user.get_full_name(),
