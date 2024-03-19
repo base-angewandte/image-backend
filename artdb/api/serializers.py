@@ -236,6 +236,10 @@ class CreateSlidesRequestSerializer(serializers.ListSerializer):
         return data
 
 
+class AlbumsRequestSerializer(serializers.Serializer):
+    details = serializers.BooleanField()
+
+
 class AlbumsDownloadRequestSerializer(serializers.Serializer):
     download_format = serializers.CharField(
         default='pptx', allow_null=False, allow_blank=False
