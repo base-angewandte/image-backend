@@ -42,8 +42,8 @@ from .serializers import (
     AlbumResponseSerializer,
     AlbumsDownloadRequestSerializer,
     AlbumsListRequestSerializer,
-    AlbumsRequestSerializer,
     AppendArtworkRequestSerializer,
+    ArtworksAlbumsRequestSerializer,
     ArtworksImageRequestSerializer,
     CreateAlbumRequestSerializer,
     CreateSlidesRequestSerializer,
@@ -341,7 +341,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         parameters=[
-            AlbumsRequestSerializer,
+            ArtworksAlbumsRequestSerializer,
             OpenApiParameter(
                 name='permissions',
                 type={
@@ -369,7 +369,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     )
     @action(detail=True, methods=['get'], url_path='albums')
     def retrieve_albums(self, request, pk=None, *args, **kwargs):
-        serializer = AlbumsRequestSerializer(data=request.query_params)
+        serializer = ArtworksAlbumsRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
         try:

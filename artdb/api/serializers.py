@@ -110,7 +110,7 @@ class UserDataSerializer(serializers.Serializer):
     )
 
 
-class AlbumsRequestSerializer(serializers.Serializer):
+class ArtworksAlbumsRequestSerializer(serializers.Serializer):
     owner = serializers.BooleanField(
         required=False,
         default=True,
@@ -125,7 +125,7 @@ class AlbumsRequestSerializer(serializers.Serializer):
         return value
 
 
-class AlbumsListRequestSerializer(AlbumsRequestSerializer):
+class AlbumsListRequestSerializer(ArtworksAlbumsRequestSerializer):
     limit = serializers.IntegerField(
         required=False,
         default=10,
