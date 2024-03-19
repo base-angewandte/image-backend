@@ -48,6 +48,7 @@ from .serializers import (
     CreateAlbumRequestSerializer,
     CreateSlidesRequestSerializer,
     FolderSerializer,
+    FoldersRequestSerializer,
     PermissionsRequestSerializer,
     PermissionsResponseSerializer,
     SearchRequestSerializer,
@@ -1329,8 +1330,8 @@ class FoldersViewSet(viewsets.ViewSet):
 
     @extend_schema(
         tags=['folders'],
-        request=FolderSerializer,
         parameters=[
+            FoldersRequestSerializer,
             OpenApiParameter(
                 name='sort_by',
                 type=OpenApiTypes.STR,
@@ -1379,13 +1380,16 @@ class FoldersViewSet(viewsets.ViewSet):
         """List of all the users albums /folders (in anticipation that there
         will be folders later)"""
 
+        serializer = FoldersRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
         limit = check_limit(request.query_params.get('limit', 100))
         offset = check_offset(request.query_params.get('offset', 0))
         sorting = check_sorting(
             request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
         date_sorting_album = sorting
-        permissions = request.query_params.get('permissions', 'VIEW')
+        permissions = request.query_params.get('permissions', 'EDIT')
 
         # Albums and Folders sorting fields differ
         if sorting == 'date_created' or sorting == '-date_created':
@@ -1394,18 +1398,24 @@ class FoldersViewSet(viewsets.ViewSet):
         if sorting == 'date_changed' or sorting == '-date_changed':
             date_sorting_album = 'updated_at' if '-' not in sorting else '-updated_at'
 
-        q_filters = Q()
+        q_filters_folders = Q()
+        q_filters_albums = Q()
 
+        # Permissions are only for Album
         if permissions:
-            q_filters |= Q(
+            q_filters_albums |= Q(
                 pk__in=PermissionsRelation.objects.filter(
                     user=request.user,
                     permissions__in=permissions,
                 ).values_list('album__pk', flat=True)
             )
-        q_filters |= Q(user=request.user)
 
-        results = self.queryset.filter(owner=request.user)
+        # "Owner" field is user for album and owner for folder
+        if serializer.validated_data['owner']:
+            q_filters_albums |= Q(user=serializer.validated_data['owner'])
+            q_filters_folders |= Q(owner=serializer.validated_data['owner'])
+
+        results = self.queryset.filter(q_filters_folders)
 
         results = results[offset : offset + limit]
         return Response(
@@ -1425,15 +1435,15 @@ class FoldersViewSet(viewsets.ViewSet):
                         'data': [
                             self.get_album_in_folder_data(
                                 list(
-                                    folder.albums.all()
-                                    .filter(q_filters)
-                                    .order_by(date_sorting_album)
+                                    folder.albums.filter(q_filters_albums).order_by(
+                                        date_sorting_album
+                                    )
                                 ),
                                 request,
                             )
                             + self.get_folder_in_folder_data(
                                 list(
-                                    Folder.objects.filter(owner=request.user)
+                                    Folder.objects.filter(q_filters_folders)
                                     .filter(parent=folder.id)
                                     .order_by(sorting)
                                 ),
