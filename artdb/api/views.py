@@ -128,11 +128,11 @@ def slides_with_details(album, request):
     return ret
 
 
-def album_object(album, request_user=None):
+def album_object(album, request=None):
     permissions_qs = PermissionsRelation.objects.filter(album=album)
 
-    if album.user != request_user:
-        permissions_qs = permissions_qs.filter(user=request_user)
+    if request is not None and album.user != request.user:
+        permissions_qs = permissions_qs.filter(user=request.user)
 
     return {
         'id': album.id,
@@ -804,7 +804,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         )
 
         return Response(
-            album_object(album, request_user=request.user),
+            album_object(album, request=request),
             status=status.HTTP_201_CREATED,
         )
 
@@ -828,7 +828,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         except Album.DoesNotExist as dne:
             raise NotFound(_('Album does not exist')) from dne
 
-        return Response(album_object(album, request_user=request.user))
+        return Response(album_object(album, request=request))
 
     @extend_schema(
         request=UpdateAlbumRequestSerializer,
@@ -864,7 +864,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         ):
             album.title = serializer.validated_data['title']
             album.save()
-            return Response(album_object(album, request_user=request.user))
+            return Response(album_object(album, request=request))
 
         raise PermissionDenied()
 
