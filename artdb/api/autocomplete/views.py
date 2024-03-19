@@ -37,7 +37,6 @@ MODEL_MAP = {
     'keywords': Keyword,
     'locations': Location,
     'users': get_user_model(),
-    'permissions': PermissionsRelation,
 }
 
 LABELS_MAP = {
