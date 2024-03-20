@@ -228,6 +228,7 @@ class Album(models.Model):
     """Specific users can create their own collections of artworks."""
 
     id = ShortUUIDField(primary_key=True)
+    archive_id = models.BigIntegerField(null=True)
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     user = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
     created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add=True)

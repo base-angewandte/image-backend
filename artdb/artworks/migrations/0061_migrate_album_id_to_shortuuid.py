@@ -166,7 +166,7 @@ def album_id_to_shortuuid_reverse(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('artworks', '0059_alter_folder_id'),
+        ('artworks', '0060_alter_album_options'),
     ]
 
     operations = [
