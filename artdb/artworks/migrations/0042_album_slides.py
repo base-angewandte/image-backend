@@ -3,11 +3,10 @@
 import django.contrib.postgres.fields.jsonb
 from django.db import migrations
 
-from artworks.models import Album
-
 
 def create_slides_content(apps, schema_editor):
     """Generates slides content from the AlbumMembership relations"""
+    Album = apps.get_model('artworks', 'Album')
     albums = Album.objects.all()
     for album in albums:
         slides = []
@@ -32,11 +31,6 @@ def create_slides_content(apps, schema_editor):
         album.save()
 
 
-def noop(apps, schmea_editor):
-    """Placeholder for an empty operation"""
-    pass
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -49,5 +43,5 @@ class Migration(migrations.Migration):
             name='slides',
             field=django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True, verbose_name='Slides'),
         ),
-        migrations.RunPython(code=create_slides_content, reverse_code=noop),
+        migrations.RunPython(code=create_slides_content, reverse_code=migrations.RunPython.noop),
     ]
