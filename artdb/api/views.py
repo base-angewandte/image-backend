@@ -1318,15 +1318,60 @@ class FoldersViewSet(viewsets.ViewSet):
             for album in albums
         ]
 
-    def get_folder_in_folder_data(self, folders, request):
-        return [
-            {
-                'id': item.id,
-                'title': item.title,
-                'type': item._meta.object_name,
-            }
-            for item in folders
-        ]
+    @extend_schema(
+        tags=['folders'],
+        request=FolderSerializer,
+        parameters=[
+            OpenApiParameter(
+                name='sort_by',
+                type=OpenApiTypes.STR,
+                required=False,
+                enum=ordering_fields + [f'-{i}' for i in ordering_fields],
+                default='title',
+            ),
+            OpenApiParameter(
+                name='limit',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+                default=100,
+            ),
+            OpenApiParameter(
+                name='offset',
+                type=OpenApiTypes.INT,
+                required=False,
+                description='',
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(description='OK'),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
+    def list(self, request, *args, **kwargs):
+        """List of all the users albums /folders (in anticipation that there
+        will be folders later)"""
+
+        limit = check_limit(request.query_params.get('limit', 100))
+        offset = check_offset(request.query_params.get('offset', 0))
+        sorting = check_sorting(
+            request.query_params.get('sort_by', 'title'), self.ordering_fields
+        )
+
+        results = self.queryset.filter(owner=request.user).order_by(sorting)
+        results = results[offset : offset + limit]
+
+        return Response(
+            [
+                {
+                    'id': folder.id,
+                    'title': folder.title,
+                    'owner': f'{folder.owner.first_name} {folder.owner.last_name}',
+                }
+                for folder in results
+            ]
+        )
 
     @extend_schema(
         tags=['folders'],
@@ -1337,7 +1382,6 @@ class FoldersViewSet(viewsets.ViewSet):
                 type=OpenApiTypes.STR,
                 required=False,
                 enum=ordering_fields + [f'-{i}' for i in ordering_fields],
-                default='title',
             ),
             OpenApiParameter(
                 name='limit',
@@ -1376,9 +1420,10 @@ class FoldersViewSet(viewsets.ViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    def list(self, request, *args, **kwargs):
-        """List of all the users albums /folders (in anticipation that there
-        will be folders later)"""
+    def retrieve(self, request, *args, **kwargs):
+        """Get folder with given id if it belongs to the user; if folder_id ==
+        'root', return the content of the root folder for the current user."""
+        folder_id = kwargs['pk']
 
         serializer = FoldersRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -1388,20 +1433,29 @@ class FoldersViewSet(viewsets.ViewSet):
         sorting = check_sorting(
             request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
-        date_sorting_album = sorting
         permissions = request.query_params.get('permissions', 'EDIT')
 
-        # Albums and Folders sorting fields differ
+        # Albums sorting fields differ, but we want to be coherent in the request so here is a hacky adaptation
         if sorting == 'date_created' or sorting == '-date_created':
-            date_sorting_album = 'created_at' if '-' not in sorting else '-created_at'
+            sorting = 'created_at' if '-' not in sorting else '-created_at'
 
         if sorting == 'date_changed' or sorting == '-date_changed':
-            date_sorting_album = 'updated_at' if '-' not in sorting else '-updated_at'
+            sorting = 'updated_at' if '-' not in sorting else '-updated_at'
 
-        q_filters_folders = Q()
+        # Retrieve folder by id
+        if folder_id == 'root':
+            folder = Folder.root_folder_for_user(request.user)
+        else:
+            # As we now only have root folder, this is not immediately useful
+            # But I am leaving it here in case someone was searching something other than root
+            try:
+                folder = Folder.objects.get(owner=request.user, id=folder_id)
+            except Folder.DoesNotExist as dne:
+                raise NotFound(_('Folder does not exist')) from dne
+
         q_filters_albums = Q()
 
-        # Permissions are only for Album
+        # Permissions are only for Album for the moment
         if permissions:
             q_filters_albums |= Q(
                 pk__in=PermissionsRelation.objects.filter(
@@ -1410,132 +1464,26 @@ class FoldersViewSet(viewsets.ViewSet):
                 ).values_list('album__pk', flat=True)
             )
 
-        # "Owner" field is user for album and owner for folder
         if serializer.validated_data['owner']:
             q_filters_albums |= Q(user=serializer.validated_data['owner'])
-            q_filters_folders |= Q(owner=serializer.validated_data['owner'])
-
-        results = self.queryset.filter(q_filters_folders)
-
-        results = results[offset : offset + limit]
-        return Response(
-            [
-                {
-                    'id': folder.id,
-                    'title': folder.title,
-                    'content': {
-                        'total': sum(
-                            [
-                                folder.albums.all().count(),
-                                Folder.objects.filter(
-                                    owner=request.user, parent=folder
-                                ).count(),
-                            ]
-                        ),  # number of albums + subfolders
-                        'data': [
-                            self.get_album_in_folder_data(
-                                list(
-                                    folder.albums.filter(q_filters_albums).order_by(
-                                        date_sorting_album
-                                    )
-                                ),
-                                request,
-                            )
-                            + self.get_folder_in_folder_data(
-                                list(
-                                    Folder.objects.filter(q_filters_folders)
-                                    .filter(parent=folder.id)
-                                    .order_by(sorting)
-                                ),
-                                request,
-                            )
-                        ],
-                    },
-                }
-                for folder in results
-            ]
-        )
-
-    @extend_schema(
-        tags=['folders'],
-        request=FolderSerializer,
-        parameters=[
-            OpenApiParameter(
-                name='sort_by',
-                type=OpenApiTypes.STR,
-                required=False,
-                enum=ordering_fields + [f'-{i}' for i in ordering_fields],
-            ),
-            OpenApiParameter(
-                name='limit',
-                type=OpenApiTypes.INT,
-                required=False,
-                description='',
-                default=100,
-            ),
-            OpenApiParameter(
-                name='offset',
-                type=OpenApiTypes.INT,
-                required=False,
-                description='',
-            ),
-        ],
-        responses={
-            200: OpenApiResponse(description='OK'),
-            403: ERROR_RESPONSES[403],
-            404: ERROR_RESPONSES[404],
-        },
-    )
-    def retrieve(self, request, *args, **kwargs):
-        """Get folder with given id if it belongs to the user; if folder_id ==
-        'root', return the content of the root folder for the current user."""
-        folder_id = kwargs['pk']
-
-        limit = check_limit(request.query_params.get('limit', 100))
-        offset = check_offset(request.query_params.get('offset', 0))
-        sorting = check_sorting(
-            request.query_params.get('sort_by', 'title'), self.ordering_fields
-        )
-        date_sorting_album = sorting
-        # Albums and Folders sorting fields differ
-        if sorting == 'date_created' or sorting == '-date_created':
-            date_sorting_album = 'created_at' if '-' not in sorting else '-created_at'
-
-        if sorting == 'date_changed' or sorting == '-date_changed':
-            date_sorting_album = 'updated_at' if '-' not in sorting else '-updated_at'
-
-        # Retrieve folder by id
-        if folder_id == 'root':
-            folder = Folder.root_folder_for_user(request.user)
-        else:
-            try:
-                folder = Folder.objects.get(owner=request.user, id=folder_id)
-            except Folder.DoesNotExist as dne:
-                raise NotFound(_('Folder does not exist')) from dne
 
         return Response(
             {
                 'id': folder.id,
                 'title': folder.title,
                 'content': {
+                    # Content shows all the albums belonging to the (root) folder per user.
+                    # As at the moment we only have root folders, folders within folders
+                    # will later be implemented to be shown in content (todo)
                     'total': sum(
                         [
                             folder.albums.all().count(),
-                            Folder.objects.filter(
-                                owner=request.user, parent=folder
-                            ).count(),
                         ]
-                    ),  # number of albums + subfolders
+                    ),  # number of albums belonging to root folder
                     'data': [
                         self.get_album_in_folder_data(
-                            list(folder.albums.all().order_by(date_sorting_album)),
-                            request,
-                        )
-                        + self.get_folder_in_folder_data(
                             list(
-                                Folder.objects.filter(owner=request.user)
-                                .filter(parent=folder.id)
-                                .order_by(sorting)
+                                folder.albums.filter(q_filters_albums).order_by(sorting)
                             ),
                             request,
                         )
