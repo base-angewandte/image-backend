@@ -90,6 +90,11 @@ def album_id_to_shortuuid(apps, schema_editor):
         'ALTER TABLE artworks_permissionsrelation ADD CONSTRAINT artworks_folderalbumrelation_artworks_album_id_fk FOREIGN KEY (album_id) REFERENCES artworks_album (id)'
     )
 
+    # add back unique constraint on (album_id, user_id) for permissionsrelation
+    cursor.execute(
+        'ALTER TABLE artworks_permissionsrelation ADD CONSTRAINT artworks_permissionsrelation_album_id_user_id_uniq UNIQUE (album_id, user_id);'
+    )
+
 
 def album_id_to_shortuuid_reverse(apps, schema_editor):
     cursor = connection.cursor()
@@ -152,6 +157,11 @@ def album_id_to_shortuuid_reverse(apps, schema_editor):
     )
     cursor.execute('ALTER TABLE artworks_folderalbumrelation DROP COLUMN album_uuid;')
     cursor.execute('ALTER TABLE artworks_permissionsrelation DROP COLUMN album_uuid;')
+
+    # add back unique constraint on (album_id, user_id) for permissionsrelation
+    cursor.execute(
+        'ALTER TABLE artworks_permissionsrelation ADD CONSTRAINT artworks_permissionsrelation_album_id_user_id_uniq UNIQUE (album_id, user_id);'
+    )
 
 
 class Migration(migrations.Migration):
