@@ -151,14 +151,17 @@ def autocomplete(request, *args, **kwargs):
         elif t in ['user_albums_editable', 'titles']:
             query = MODEL_MAP[t].objects.filter(title__icontains=q_param)[:limit]
             if t == 'user_albums_editable':
-                # The requests only returns own albums and shared albums with `EDIT` permission.
-                albums = [album for album in query]
-                permissions = PermissionsRelation.objects.filter(
-                    user=request.user, album__in=albums
+                q_filters = Q(user=request.user) | Q(
+                    pk__in=PermissionsRelation.objects.filter(
+                        user=request.user,
+                        permissions='EDIT',
+                    ).values_list('album__pk', flat=True)
                 )
-                query = MODEL_MAP[t].objects.filter(user=request.user) | MODEL_MAP[
-                    t
-                ].objects.filter(pk__in=permissions)
+                query = (
+                    MODEL_MAP[t]
+                    .objects.filter(q_filters)
+                    .filter(title__icontains=q_param)[:limit]
+                )
 
             for item in query:
                 d['data'].append(
