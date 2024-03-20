@@ -13,20 +13,20 @@ def create_slides_content(apps, schema_editor):
         for member in album.albummembership_set.all():
             # single artworks are stored represented as a list with one id
             if not member.connected_with:
-                slides.append([member.artwork.id])
+                slides.append([{'id': member.artwork.id}])
             # connected artworks are represented as a list with two ids
             else:
                 # in case nothing is in the slides yet, just add a first list
                 if len(slides) == 0:
-                    slides.append([member.artwork.id])
+                    slides.append([{'id': member.artwork.id}])
                 else:
                     # check whether the current item is connected to the last one
-                    if slides[-1][0] == member.connected_with.artwork.id:
+                    if slides[-1][0]['id'] == member.connected_with.artwork.id:
                         # then add it to this sublist
-                        slides[-1].append(member.artwork.id)
+                        slides[-1].append({'id': member.artwork.id})
                     # otherwise just add a new list with one id
                     else:
-                        slides.append([member.artwork.id])
+                        slides.append([{'id': member.artwork.id}])
         album.slides = slides
         album.save()
 
