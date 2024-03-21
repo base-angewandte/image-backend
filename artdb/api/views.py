@@ -252,10 +252,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 if artwork.image_original
                 else None,
                 'credits': artwork.credits,
-                'license': 'String',  # placeholder for future field change, see ticket 2070
+                'license': '',  # placeholder for future field change, see ticket 2070
                 'title': artwork.title,
                 'title_english': artwork.title_english,
-                'title_notes': 'String',  # placeholder for future field change, see ticket 2070
+                'title_notes': '',  # placeholder for future field change, see ticket 2070
                 'date': artwork.date,
                 'material': artwork.material,
                 'dimensions': artwork.dimensions,
