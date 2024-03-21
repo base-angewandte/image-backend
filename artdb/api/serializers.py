@@ -110,7 +110,7 @@ class UserDataSerializer(serializers.Serializer):
     )
 
 
-class AlbumsRequestSerializer(serializers.Serializer):
+class ArtworksAlbumsRequestSerializer(serializers.Serializer):
     owner = serializers.BooleanField(
         required=False,
         default=True,
@@ -130,7 +130,7 @@ class AlbumsRequestSerializer(serializers.Serializer):
         return value
 
 
-class AlbumsListRequestSerializer(AlbumsRequestSerializer):
+class AlbumsListRequestSerializer(ArtworksAlbumsRequestSerializer):
     limit = serializers.IntegerField(
         required=False,
         default=10,
@@ -239,6 +239,10 @@ class CreateSlidesRequestSerializer(serializers.ListSerializer):
                     _('No more than two artworks per slide allowed')
                 )
         return data
+
+
+class AlbumsRequestSerializer(serializers.Serializer):
+    details = serializers.BooleanField()
 
 
 class AlbumsDownloadRequestSerializer(serializers.Serializer):
