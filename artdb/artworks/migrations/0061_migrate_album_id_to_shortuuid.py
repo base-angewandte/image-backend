@@ -69,6 +69,7 @@ def album_id_to_shortuuid(apps, schema_editor):
     cursor.execute(
         'ALTER TABLE artworks_album DROP CONSTRAINT artworks_artworkcollection_pkey;'
     )
+    cursor.execute('ALTER TABLE artworks_album ALTER COLUMN archive_id DROP NOT NULL;')
     cursor.execute('ALTER TABLE artworks_album RENAME COLUMN uuid TO id;')
     cursor.execute('ALTER TABLE artworks_album ALTER COLUMN id SET NOT NULL;')
     cursor.execute('ALTER TABLE artworks_album ALTER COLUMN id DROP DEFAULT;')
@@ -98,6 +99,16 @@ def album_id_to_shortuuid(apps, schema_editor):
 
 def album_id_to_shortuuid_reverse(apps, schema_editor):
     cursor = connection.cursor()
+
+    # for albums created after this migration the archive_id is null,
+    # so we'll generate new int ids for them first
+    cursor.execute('SELECT MAX(archive_id) FROM artworks_album;')
+    new_id = cursor.fetchone()[0] + 1
+    cursor.execute('SELECT id FROM artworks_album WHERE archive_id IS NULL;')
+    results = cursor.fetchall()
+    for result in results:
+        cursor.execute('UPDATE artworks_album SET archive_id = %s WHERE id = %s', [new_id, result[0]])
+        new_id += 1
 
     # fetch all mappings of old ids to new uuids
     cursor.execute('SELECT id, archive_id FROM artworks_album;')
