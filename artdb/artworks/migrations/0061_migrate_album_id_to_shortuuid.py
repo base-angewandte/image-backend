@@ -69,6 +69,7 @@ def album_id_to_shortuuid(apps, schema_editor):
     cursor.execute(
         'ALTER TABLE artworks_album DROP CONSTRAINT artworks_artworkcollection_pkey;'
     )
+    cursor.execute('ALTER TABLE artworks_album ALTER COLUMN archive_id DROP IDENTITY IF EXISTS;')
     cursor.execute('ALTER TABLE artworks_album ALTER COLUMN archive_id DROP NOT NULL;')
     cursor.execute('ALTER TABLE artworks_album RENAME COLUMN uuid TO id;')
     cursor.execute('ALTER TABLE artworks_album ALTER COLUMN id SET NOT NULL;')
