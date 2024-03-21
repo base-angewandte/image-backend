@@ -116,11 +116,16 @@ class AlbumsRequestSerializer(serializers.Serializer):
         default=True,
         help_text='Boolean indicating to return albums owned by this user.',
     )
-    permissions = serializers.CharField(required=False, default='EDIT')
+    permissions = serializers.CharField(
+        required=False,
+        default='EDIT',
+        allow_blank=True,
+    )
 
     def validate_permissions(self, value):
+        permissions = ['', *settings.PERMISSIONS]
         for p in value.split(','):
-            if p not in settings.PERMISSIONS:
+            if p not in permissions:
                 raise serializers.ValidationError(f'{p} is not a valid permission')
         return value
 
