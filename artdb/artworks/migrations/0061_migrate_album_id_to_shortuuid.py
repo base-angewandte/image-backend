@@ -105,7 +105,8 @@ def album_id_to_shortuuid_reverse(apps, schema_editor):
     # for albums created after this migration the archive_id is null,
     # so we'll generate new int ids for them first
     cursor.execute('SELECT MAX(archive_id) FROM artworks_album;')
-    new_id = cursor.fetchone()[0] + 1
+    result = cursor.fetchone()
+    new_id = result[0] + 1 if result[0] else 1
     cursor.execute('SELECT id FROM artworks_album WHERE archive_id IS NULL;')
     results = cursor.fetchall()
     for result in results:
