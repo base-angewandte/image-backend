@@ -1,4 +1,11 @@
-from artworks.models import Album, Artist, Artwork, Keyword, Location
+from artworks.models import (
+    Album,
+    Artist,
+    Artwork,
+    Keyword,
+    Location,
+    PermissionsRelation,
+)
 from drf_spectacular.utils import (
     OpenApiExample,
     OpenApiParameter,
@@ -24,7 +31,7 @@ from .serializers import (
 )
 
 MODEL_MAP = {
-    'albums': Album,
+    'user_albums_editable': Album,
     'titles': Artwork,
     'artists': Artist,
     'keywords': Keyword,
@@ -33,7 +40,7 @@ MODEL_MAP = {
 }
 
 LABELS_MAP = {
-    'albums': _('autocomplete_albums'),
+    'user_albums_editable': _('autocomplete_user_albums_editable'),
     'titles': _('autocomplete_titles'),
     'artists': _('autocomplete_artists'),
     'keywords': _('autocomplete_keywords'),
@@ -141,16 +148,38 @@ def autocomplete(request, *args, **kwargs):
                         'label': user.get_full_name(),
                     },
                 )
-        elif t in ['albums', 'titles']:
-            query = MODEL_MAP[t].objects.filter(title__icontains=q_param)[:limit]
+        elif t == 'user_albums_editable':
+            q_filters = Q(user=request.user) | Q(
+                pk__in=PermissionsRelation.objects.filter(
+                    user=request.user,
+                    permissions='EDIT',
+                ).values_list('album__pk', flat=True)
+            )
+            query = (
+                MODEL_MAP[t]
+                .objects.filter(q_filters)
+                .filter(title__icontains=q_param)[:limit]
+            )
 
-            for item in query:
+            for album in query:
                 d['data'].append(
                     {
-                        'id': item.id,
-                        'label': item.title,
+                        'id': album.id,
+                        'label': album.title,
                     }
                 )
+
+        elif t == 'titles':
+            query = MODEL_MAP[t].objects.filter(title__icontains=q_param)[:limit]
+
+            for artwork in query:
+                d['data'].append(
+                    {
+                        'id': artwork.id,
+                        'label': artwork.title,
+                    }
+                )
+
         else:
             query = MODEL_MAP[t].objects.filter(name__icontains=q_param)[:limit]
 
