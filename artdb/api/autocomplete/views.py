@@ -148,7 +148,7 @@ def autocomplete(request, *args, **kwargs):
                         'label': user.get_full_name(),
                     },
                 )
-        if t == 'user_albums_editable':
+        elif t == 'user_albums_editable':
             q_filters = Q(user=request.user) | Q(
                 pk__in=PermissionsRelation.objects.filter(
                     user=request.user,
@@ -161,22 +161,33 @@ def autocomplete(request, *args, **kwargs):
                 .filter(title__icontains=q_param)[:limit]
             )
 
-            for item in query:
+            for user_album in query:
                 d['data'].append(
                     {
-                        'id': item.id,
-                        'label': item.title,
+                        'id': user_album.id,
+                        'label': user_album.title,
                     }
                 )
 
-        if t == 'titles':
+        elif t == 'titles':
             query = MODEL_MAP[t].objects.filter(title__icontains=q_param)[:limit]
+
+            for title in query:
+                d['data'].append(
+                    {
+                        'id': title.id,
+                        'label': title.title,
+                    }
+                )
+
+        else:
+            query = MODEL_MAP[t].objects.filter(name__icontains=q_param)[:limit]
 
             for item in query:
                 d['data'].append(
                     {
                         'id': item.id,
-                        'label': item.title,
+                        'label': item.name,
                     }
                 )
 
