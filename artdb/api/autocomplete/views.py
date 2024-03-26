@@ -170,13 +170,13 @@ def autocomplete(request, *args, **kwargs):
                 )
 
         if t == 'titles':
-            query = MODEL_MAP[t].objects.filter(name__icontains=q_param)[:limit]
+            query = MODEL_MAP[t].objects.filter(title__icontains=q_param)[:limit]
 
             for item in query:
                 d['data'].append(
                     {
                         'id': item.id,
-                        'label': item.name,
+                        'label': item.title,
                     }
                 )
 
