@@ -161,22 +161,22 @@ def autocomplete(request, *args, **kwargs):
                 .filter(title__icontains=q_param)[:limit]
             )
 
-            for user_album in query:
+            for album in query:
                 d['data'].append(
                     {
-                        'id': user_album.id,
-                        'label': user_album.title,
+                        'id': album.id,
+                        'label': album.title,
                     }
                 )
 
         elif t == 'titles':
             query = MODEL_MAP[t].objects.filter(title__icontains=q_param)[:limit]
 
-            for title in query:
+            for artwork in query:
                 d['data'].append(
                     {
-                        'id': title.id,
-                        'label': title.title,
+                        'id': artwork.id,
+                        'label': artwork.title,
                     }
                 )
 
