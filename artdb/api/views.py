@@ -1156,6 +1156,13 @@ class AlbumsViewSet(viewsets.ViewSet):
                     pr.permissions = perm['id']
                     pr.save()
 
+                    # When permission is created, add album to user's root folder
+                    # Add album to root folder, creating a relationship
+                    root_folder = Folder.root_folder_for_user(request.user)
+                    FolderAlbumRelation.objects.get_or_create(
+                        album=album, user=request.user, folder=root_folder
+                    )
+
         # remove deleted permissions
         PermissionsRelation.objects.filter(album=album).exclude(
             user__username__in=users
