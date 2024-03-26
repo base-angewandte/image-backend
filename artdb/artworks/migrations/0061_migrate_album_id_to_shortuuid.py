@@ -33,9 +33,7 @@ def album_id_to_shortuuid(apps, schema_editor):
         album_uuids_ids.append([uuids[i], result[0]])
     for params in album_uuids_ids:
         cursor.execute('UPDATE artworks_album SET uuid = %s WHERE id = %s;', params)
-
-    # Update related tables with new uuids
-    for params in album_uuids_ids:
+        # Also update the related tables with the new uuids
         cursor.execute(
             'UPDATE artworks_folderalbumrelation SET album_uuid = %s WHERE album_id = %s;',
             params,
@@ -52,16 +50,12 @@ def album_id_to_shortuuid(apps, schema_editor):
                 AND constraint_type = 'FOREIGN KEY'
                 AND constraint_name LIKE '%%album_id%%';
     """
-    cursor.execute(query.format('artworks_folderalbumrelation'))
-    fk_folderalbumrelation_constraint = cursor.fetchone()
-    cursor.execute(
-        f'ALTER TABLE artworks_folderalbumrelation DROP CONSTRAINT {fk_folderalbumrelation_constraint[0]};'
-    )
-    cursor.execute(query.format('artworks_permissionsrelation'))
-    fk_permissionsrelation_constraint = cursor.fetchone()
-    cursor.execute(
-        f'ALTER TABLE artworks_permissionsrelation DROP CONSTRAINT {fk_permissionsrelation_constraint[0]};'
-    )
+    for table in ['artworks_folderalbumrelation', 'artworks_permissionsrelation']:
+        cursor.execute(query.format(table))
+        fk_constraint = cursor.fetchone()
+        cursor.execute(
+            f'ALTER TABLE {table} DROP CONSTRAINT {fk_constraint[0]};'
+        )
 
     # Archive old pk on album and adopt new uuid for it
     cursor.execute('ALTER TABLE artworks_album RENAME COLUMN id TO archive_id;')
@@ -78,20 +72,12 @@ def album_id_to_shortuuid(apps, schema_editor):
     cursor.execute('ALTER TABLE artworks_album ADD PRIMARY KEY (id);')
 
     # Use new uuid field as foreign key id on related tables
-    cursor.execute('ALTER TABLE artworks_folderalbumrelation DROP COLUMN album_id;')
-    cursor.execute('ALTER TABLE artworks_permissionsrelation DROP COLUMN album_id;')
-    cursor.execute(
-        'ALTER TABLE artworks_folderalbumrelation RENAME COLUMN album_uuid TO album_id;'
-    )
-    cursor.execute(
-        'ALTER TABLE artworks_permissionsrelation RENAME COLUMN album_uuid TO album_id;'
-    )
-    cursor.execute(
-        'ALTER TABLE artworks_folderalbumrelation ADD CONSTRAINT artworks_folderalbumrelation_artworks_album_id_fk FOREIGN KEY (album_id) REFERENCES artworks_album (id)'
-    )
-    cursor.execute(
-        'ALTER TABLE artworks_permissionsrelation ADD CONSTRAINT artworks_folderalbumrelation_artworks_album_id_fk FOREIGN KEY (album_id) REFERENCES artworks_album (id)'
-    )
+    for table in ['artworks_folderalbumrelation', 'artworks_permissionsrelation']:
+        cursor.execute(f'ALTER TABLE {table} DROP COLUMN album_id;')
+        cursor.execute(f'ALTER TABLE {table} RENAME COLUMN album_uuid TO album_id;')
+        cursor.execute(
+            f'ALTER TABLE {table} ADD CONSTRAINT {table}_artworks_album_id_fk FOREIGN KEY (album_id) REFERENCES artworks_album (id)'
+        )
 
     # add back unique constraint on (album_id, user_id) for permissionsrelation
     cursor.execute(
@@ -119,38 +105,23 @@ def album_id_to_shortuuid_reverse(apps, schema_editor):
     album_uuid_to_id = {result[0]: result[1] for result in results}
 
     # drop foreign keys on related table and restore old album ids
-    cursor.execute(
-        'ALTER TABLE artworks_folderalbumrelation DROP CONSTRAINT artworks_folderalbumrelation_artworks_album_id_fk'
-    )
-    cursor.execute(
-        'ALTER TABLE artworks_permissionsrelation DROP CONSTRAINT artworks_folderalbumrelation_artworks_album_id_fk'
-    )
-    cursor.execute(
-        'ALTER TABLE artworks_folderalbumrelation RENAME COLUMN album_id TO album_uuid;'
-    )
-    cursor.execute(
-        'ALTER TABLE artworks_permissionsrelation RENAME COLUMN album_id TO album_uuid;'
-    )
-    cursor.execute(
-        'ALTER TABLE artworks_folderalbumrelation ADD COLUMN album_id BIGINT;'
-    )
-    cursor.execute(
-        'ALTER TABLE artworks_permissionsrelation ADD COLUMN album_id BIGINT;'
-    )
-    cursor.execute('SELECT album_uuid FROM artworks_folderalbumrelation;')
-    results = cursor.fetchall()
-    for result in results:
+    for table in ['artworks_folderalbumrelation', 'artworks_permissionsrelation']:
         cursor.execute(
-            'UPDATE artworks_folderalbumrelation SET album_id = %s WHERE album_uuid = %s;',
-            [album_uuid_to_id[result[0]], result[0]],
+            f'ALTER TABLE {table} DROP CONSTRAINT {table}_artworks_album_id_fk'
         )
-    cursor.execute('SELECT album_uuid FROM artworks_permissionsrelation;')
-    results = cursor.fetchall()
-    for result in results:
         cursor.execute(
-            'UPDATE artworks_permissionsrelation SET album_id = %s WHERE album_uuid = %s;',
-            [album_uuid_to_id[result[0]], result[0]],
+            f'ALTER TABLE {table} RENAME COLUMN album_id TO album_uuid;'
         )
+        cursor.execute(
+            f'ALTER TABLE {table} ADD COLUMN album_id BIGINT;'
+        )
+        cursor.execute(f'SELECT album_uuid FROM {table};')
+        results = cursor.fetchall()
+        for result in results:
+            cursor.execute(
+                f'UPDATE {table} SET album_id = %s WHERE album_uuid = %s;',
+                [album_uuid_to_id[result[0]], result[0]],
+            )
 
     # restore old primary key on album
     cursor.execute('ALTER TABLE artworks_album DROP CONSTRAINT artworks_album_pkey;')
