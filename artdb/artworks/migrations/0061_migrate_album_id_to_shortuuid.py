@@ -28,10 +28,8 @@ def album_id_to_shortuuid(apps, schema_editor):
         while new_uuid in uuids:
             new_uuid = shortuuid.uuid()
         uuids.append(new_uuid)
-    album_uuids_ids = []
     for i, result in enumerate(results):
-        album_uuids_ids.append([uuids[i], result[0]])
-    for params in album_uuids_ids:
+        params = [uuids[i], result[0]]
         cursor.execute('UPDATE artworks_album SET uuid = %s WHERE id = %s;', params)
         # Also update the related tables with the new uuids
         cursor.execute(
