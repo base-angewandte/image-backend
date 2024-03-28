@@ -1,9 +1,9 @@
 import logging
 import os
 
+from base_common.fields import ShortUUIDField
 from base_common.models import AbstractBaseModel
 from mptt.models import MPTTModel, TreeForeignKey
-from shortuuid.django_fields import ShortUUIDField
 from versatileimagefield.fields import VersatileImageField
 
 from django.conf import settings
@@ -227,6 +227,8 @@ def delete_renditions_on_change(sender, update_fields, instance, **kwargs):
 class Album(models.Model):
     """Specific users can create their own collections of artworks."""
 
+    id = ShortUUIDField(primary_key=True)
+    archive_id = models.BigIntegerField(null=True)
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     user = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
     created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add=True)
@@ -244,7 +246,7 @@ class Album(models.Model):
         return f'{self.title} by {self.user.get_full_name()}'
 
     def size(self):
-        return self.artworks.count()
+        return len([artwork for slide in self.slides for artwork in slide])
 
     class Meta:
         permissions = (('can_download_pptx', 'Can download as PowerPoint file'),)
@@ -285,7 +287,6 @@ ManyToManyDescriptor.get_queryset = lambda self: self.rel.model.objects.get_quer
 class Folder(AbstractBaseModel):
     # unique id
     id = ShortUUIDField(
-        length=22,
         primary_key=True,
     )
     title = models.CharField(

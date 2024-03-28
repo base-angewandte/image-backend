@@ -1311,7 +1311,7 @@ class FoldersViewSet(viewsets.ViewSet):
                 'id': album.id,
                 'title': album.title,
                 'type': album._meta.object_name,
-                'number_of_artworks': album.artworks.count(),
+                'number_of_artworks': album.size(),
                 'featured_artworks': featured_artworks(album, request),
                 'permissions': [
                     {
