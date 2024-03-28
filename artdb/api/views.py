@@ -8,6 +8,7 @@ from artworks.models import (
     Album,
     Artwork,
     Folder,
+    FolderAlbumRelation,
     Keyword,
     Location,
     PermissionsRelation,
@@ -43,6 +44,7 @@ from .serializers import (
     AlbumsListRequestSerializer,
     AlbumsRequestSerializer,
     AppendArtworkRequestSerializer,
+    ArtworksAlbumsRequestSerializer,
     ArtworksImageRequestSerializer,
     CreateAlbumRequestSerializer,
     CreateSlidesRequestSerializer,
@@ -127,17 +129,17 @@ def slides_with_details(album, request):
     return ret
 
 
-def album_object(album, request_user=None):
+def album_object(album, request=None, details=False):
     permissions_qs = PermissionsRelation.objects.filter(album=album)
 
-    if album.user != request_user:
-        permissions_qs = permissions_qs.filter(user=request_user)
+    if request is not None and album.user != request.user:
+        permissions_qs = permissions_qs.filter(user=request.user)
 
     return {
         'id': album.id,
         'title': album.title,
         'number_of_artworks': sum([len(slide) for slide in album.slides]),
-        'slides': album.slides,
+        'slides': slides_with_details(album, request) if details else album.slides,
         'owner': {
             'id': album.user.username,
             'name': album.user.get_full_name(),
@@ -251,10 +253,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 if artwork.image_original
                 else None,
                 'credits': artwork.credits,
-                'license': 'String',  # placeholder for future field change, see ticket 2070
+                'license': '',  # placeholder for future field change, see ticket 2070
                 'title': artwork.title,
                 'title_english': artwork.title_english,
-                'title_notes': 'String',  # placeholder for future field change, see ticket 2070
+                'title_notes': '',  # placeholder for future field change, see ticket 2070
                 'date': artwork.date,
                 'material': artwork.material,
                 'dimensions': artwork.dimensions,
@@ -340,7 +342,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         parameters=[
-            AlbumsRequestSerializer,
+            ArtworksAlbumsRequestSerializer,
             OpenApiParameter(
                 name='permissions',
                 type={
@@ -368,7 +370,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     )
     @action(detail=True, methods=['get'], url_path='albums')
     def retrieve_albums(self, request, pk=None, *args, **kwargs):
-        serializer = AlbumsRequestSerializer(data=request.query_params)
+        serializer = ArtworksAlbumsRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
         try:
@@ -796,12 +798,28 @@ class AlbumsViewSet(viewsets.ViewSet):
 
         album = Album.objects.create(title=title, user=request.user)
 
+        # Add album to root folder, creating a relationship
+        folder = Folder.root_folder_for_user(request.user)
+        FolderAlbumRelation.objects.get_or_create(
+            album=album, user=request.user, folder=folder
+        )
+
         return Response(
-            album_object(album, request_user=request.user),
+            album_object(album, request=request),
             status=status.HTTP_201_CREATED,
         )
 
     @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='details',
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description='Boolean indicating if the response should contain details of the artworks',
+                default=False,
+            ),
+        ],
         responses={
             200: AlbumResponseSerializer,
             403: ERROR_RESPONSES[403],
@@ -810,6 +828,9 @@ class AlbumsViewSet(viewsets.ViewSet):
     )
     def retrieve(self, request, pk=None, *args, **kwargs):
         """List of Works (Slides) in a specific Album /albums/{id}"""
+
+        serializer = AlbumsRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
 
         try:
             album = (
@@ -821,7 +842,9 @@ class AlbumsViewSet(viewsets.ViewSet):
         except Album.DoesNotExist as dne:
             raise NotFound(_('Album does not exist')) from dne
 
-        return Response(album_object(album, request_user=request.user))
+        details = serializer.validated_data['details']
+
+        return Response(album_object(album, request=request, details=details))
 
     @extend_schema(
         request=UpdateAlbumRequestSerializer,
@@ -857,7 +880,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         ):
             album.title = serializer.validated_data['title']
             album.save()
-            return Response(album_object(album, request_user=request.user))
+            return Response(album_object(album, request=request))
 
         raise PermissionDenied()
 
@@ -1697,7 +1720,7 @@ def search(request, *args, **kwargs):
 
             q_objects |= FILTERS_MAP[f['id']](f['filter_values'])
 
-        qs = qs.filter(q_objects)
+        qs = qs.filter(q_objects).distinct()
 
     # total of results before applying limits
     total = qs.count()

@@ -110,22 +110,27 @@ class UserDataSerializer(serializers.Serializer):
     )
 
 
-class AlbumsRequestSerializer(serializers.Serializer):
+class ArtworksAlbumsRequestSerializer(serializers.Serializer):
     owner = serializers.BooleanField(
         required=False,
         default=True,
         help_text='Boolean indicating to return albums owned by this user.',
     )
-    permissions = serializers.CharField(required=False, default='EDIT')
+    permissions = serializers.CharField(
+        required=False,
+        default='EDIT',
+        allow_blank=True,
+    )
 
     def validate_permissions(self, value):
+        permissions = ['', *settings.PERMISSIONS]
         for p in value.split(','):
-            if p not in settings.PERMISSIONS:
+            if p not in permissions:
                 raise serializers.ValidationError(f'{p} is not a valid permission')
         return value
 
 
-class AlbumsListRequestSerializer(AlbumsRequestSerializer):
+class AlbumsListRequestSerializer(ArtworksAlbumsRequestSerializer):
     limit = serializers.IntegerField(
         required=False,
         default=10,
@@ -234,6 +239,10 @@ class CreateSlidesRequestSerializer(serializers.ListSerializer):
                     _('No more than two artworks per slide allowed')
                 )
         return data
+
+
+class AlbumsRequestSerializer(serializers.Serializer):
+    details = serializers.BooleanField()
 
 
 class AlbumsDownloadRequestSerializer(serializers.Serializer):
