@@ -1162,6 +1162,9 @@ class AlbumsViewSet(viewsets.ViewSet):
 
             for perm in permissions:
                 with transaction.atomic():
+                    # Only allow permission assignment if the user is not already the owner
+                    if album.user == user:
+                        raise ParseError('User is already the owner of album.')
                     pr, created = PermissionsRelation.objects.get_or_create(
                         album=album,
                         user=user,
