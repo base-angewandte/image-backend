@@ -3,6 +3,31 @@
 from django.db import migrations
 
 
+def create_album_memberships_from_slides(apps, schema_editor):
+    Album = apps.get_model('artworks', 'Album')
+    Artwork = apps.get_model('artworks', 'Artwork')
+    AlbumMembership = apps.get_model('artworks', 'AlbumMembership')
+    albums = Album.objects.all()
+    for album in albums:
+        order = 0
+        for slide in album.slides:
+            if len(slide) == 1:
+                artwork = Artwork.objects.get(pk=slide[0]['id'])
+                AlbumMembership.objects.create(collection=album, artwork=artwork, order=order)
+                order += 1
+            else:
+                artwork1 = Artwork.objects.get(pk=slide[0]['id'])
+                artwork2 = Artwork.objects.get(pk=slide[1]['id'])
+                member1 = AlbumMembership.objects.create(
+                    collection=album, artwork=artwork1, order=order,
+                )
+                order += 1
+                AlbumMembership.objects.create(
+                    collection=album, artwork=artwork2, order=order, connected_with=member1
+                )
+                order += 1
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -10,6 +35,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(code=migrations.RunPython.noop, reverse_code=create_album_memberships_from_slides),
         migrations.RemoveField(
             model_name='album',
             name='artworks',
