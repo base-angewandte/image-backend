@@ -138,7 +138,7 @@ def album_object(album, request=None, details=False):
     return {
         'id': album.id,
         'title': album.title,
-        'number_of_artworks': sum([len(slide) for slide in album.slides]),
+        'number_of_artworks': album.size(),
         'slides': slides_with_details(album, request) if details else album.slides,
         'owner': {
             'id': album.user.username,
@@ -752,9 +752,7 @@ class AlbumsViewSet(viewsets.ViewSet):
                     {
                         'id': album.id,
                         'title': album.title,
-                        'number_of_artworks': sum(
-                            [len(slide) for slide in album.slides]
-                        ),
+                        'number_of_artworks': album.size(),
                         'featured_artworks': featured_artworks(album, request),
                         'owner': {
                             'id': album.user.username,
