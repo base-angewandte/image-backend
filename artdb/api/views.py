@@ -1158,9 +1158,9 @@ class AlbumsViewSet(viewsets.ViewSet):
 
                     # When permission is created, add album to user's root folder
                     # Add album to root folder, creating a relationship
-                    root_folder = Folder.root_folder_for_user(request.user)
+                    root_folder = Folder.root_folder_for_user(user)
                     FolderAlbumRelation.objects.get_or_create(
-                        album=album, user=request.user, folder=root_folder
+                        album=album, user=user, folder=root_folder
                     )
 
         # remove deleted permissions
@@ -1198,6 +1198,9 @@ class AlbumsViewSet(viewsets.ViewSet):
         will be deleted. If the user is just a user who this album is
         shared with, only their own sharing permission will be deleted.
         """
+
+        # todo in other endpoint: also the removal from folder is missing, in case the album is unshared again.
+
         try:
             album = (
                 Album.objects.filter(pk=pk)
@@ -1215,6 +1218,14 @@ class AlbumsViewSet(viewsets.ViewSet):
         # album is shared with user
         else:
             PermissionsRelation.objects.filter(album=album, user=request.user).delete()
+
+        for pr in PermissionsRelation.objects.filter(album=album):
+            user = pr.user
+            root_folder = Folder.root_folder_for_user(user)
+            FolderAlbumRelation.objects.filter(
+                album=album, user=user, folder=root_folder
+            ).delete()
+            pr.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -1451,7 +1462,7 @@ class FoldersViewSet(viewsets.ViewSet):
 
         # Retrieve folder by id
         if folder_id == 'root':
-            folder = Folder.root_folder_for_user(request.user)
+            folder = Folder.root_folder_for_user(User.objects.last())
         else:
             # As we now only have root folder, this is not immediately useful
             # But I am leaving it here in case someone was searching something other than root
