@@ -118,7 +118,7 @@ def slides_with_details(album, request):
                     'artists': [
                         {
                             'id': artist.id,
-                            'name': artist.name,
+                            'value': artist.name,
                         }
                         for artist in artwork.artists.all()
                     ],
