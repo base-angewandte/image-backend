@@ -1462,7 +1462,7 @@ class FoldersViewSet(viewsets.ViewSet):
 
         # Retrieve folder by id
         if folder_id == 'root':
-            folder = Folder.root_folder_for_user(User.objects.last())
+            folder = Folder.root_folder_for_user(request.user)
         else:
             # As we now only have root folder, this is not immediately useful
             # But I am leaving it here in case someone was searching something other than root
