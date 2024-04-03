@@ -1199,8 +1199,6 @@ class AlbumsViewSet(viewsets.ViewSet):
         shared with, only their own sharing permission will be deleted.
         """
 
-        # todo in other endpoint: also the removal from folder is missing, in case the album is unshared again.
-
         try:
             album = (
                 Album.objects.filter(pk=pk)
@@ -1213,19 +1211,22 @@ class AlbumsViewSet(viewsets.ViewSet):
 
         # user is owner of the album
         if album.user == request.user:
+            for pr in album.permissions.all():
+                user = User.objects.get(username=pr.username)
+                root_folder = Folder.root_folder_for_user(user)
+                FolderAlbumRelation.objects.filter(
+                    album=album, user=user, root_folder=root_folder
+                ).delete()
+
             PermissionsRelation.objects.filter(album=album).delete()
 
         # album is shared with user
         else:
             PermissionsRelation.objects.filter(album=album, user=request.user).delete()
-
-        for pr in PermissionsRelation.objects.filter(album=album):
-            user = pr.user
-            root_folder = Folder.root_folder_for_user(user)
+            root_folder = Folder.root_folder_for_user(request.user)
             FolderAlbumRelation.objects.filter(
-                album=album, user=user, folder=root_folder
+                album=album, user=request.user, folder=root_folder
             ).delete()
-            pr.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
