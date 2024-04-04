@@ -134,10 +134,10 @@ def album_id_to_shortuuid_reverse(apps, schema_editor):
     cursor.execute('ALTER SEQUENCE artworks_album_id_seq RESTART WITH %s;', [new_id])
 
     # set foreign keys on related tables and drop temporary uuid fields
+    cursor.execute('SET CONSTRAINTS ALL IMMEDIATE;')
     cursor.execute(
         'ALTER TABLE artworks_folderalbumrelation ADD CONSTRAINT artworks_folderalbumrelation_artworks_album_id_fk FOREIGN KEY (album_id) REFERENCES artworks_album (id)'
     )
-    cursor.execute('SET CONSTRAINTS ALL IMMEDIATE;')
     cursor.execute(
         'ALTER TABLE artworks_permissionsrelation ADD CONSTRAINT artworks_permissionsrelation_artworks_album_id_fk FOREIGN KEY (album_id) REFERENCES artworks_album (id)'
     )
