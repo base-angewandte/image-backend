@@ -76,6 +76,14 @@ class FolderSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class FoldersRequestSerializer(serializers.Serializer):
+    owner = serializers.BooleanField(
+        required=False,
+        default=True,
+        help_text='Boolean indicating to return albums owned by this user.',
+    )
+
+
 @extend_schema_serializer(
     examples=[
         OpenApiExample(
