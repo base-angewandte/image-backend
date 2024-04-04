@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 SOURCES = [
     'users',
-    'albums',
+    'user_albums_editable',
     'titles',
     'artists',
     'keywords',

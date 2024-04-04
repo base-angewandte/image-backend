@@ -1,6 +1,6 @@
 from dal_admin_filters import AutocompleteFilter
 from mptt.admin import MPTTModelAdmin
-from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
+from ordered_model.admin import OrderedInlineModelAdminMixin
 
 from django.contrib import admin
 from django.db import models
@@ -9,19 +9,7 @@ from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
 
 from .forms import ArtworkAdminForm
-from .models import Album, AlbumMembership, Artist, Artwork, Keyword, Location
-
-
-class AlbumMembershipInline(OrderedTabularInline):
-    model = AlbumMembership
-    autocomplete_fields = ['artwork']
-    extra = 0
-    fields = ('artwork',)
-    readonly_fields = (
-        'order',
-        'move_up_down_links',
-    )
-    ordering = ('order',)
+from .models import Album, Artist, Artwork, Keyword, Location
 
 
 class ArtistFilter(AutocompleteFilter):
@@ -118,7 +106,6 @@ class AlbumAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
     list_display = ('title', 'created_at', 'updated_at')
     ordering = ('-created_at',)
     search_fields = ['title']
-    inlines = (AlbumMembershipInline,)
     autocomplete_fields = ('user',)
 
 

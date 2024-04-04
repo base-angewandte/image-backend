@@ -22,6 +22,10 @@ EXPOSE 8300
 
 FROM base as dev
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gettext \
+    && rm -rf /var/lib/apt/lists/*
+
 # to ensure pip-sync is also working in docker dev setup we need to overwrite requirements.txt
 COPY requirements-dev.txt requirements.txt
 RUN pip-sync

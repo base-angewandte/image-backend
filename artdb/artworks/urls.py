@@ -11,13 +11,7 @@ urlpatterns = [
         name='artwork_detail_overlay',
     ),
     path('artwork/<int:id>/edit_overlay/', views.artwork_edit, name='artwork-edit'),
-    path(
-        'artwork/<int:id>/collect_overlay/',
-        views.artwork_collect,
-        name='artwork-collect',
-    ),
     path('collections/', views.collections_list, name='collections-list'),
-    path('collection/<int:id>/', views.collection, name='collection'),
     path(
         'collection/<int:id>_de.pptx',
         exports.collection_download_as_pptx_de,

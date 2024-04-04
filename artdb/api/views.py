@@ -44,10 +44,12 @@ from .serializers import (
     AlbumsListRequestSerializer,
     AlbumsRequestSerializer,
     AppendArtworkRequestSerializer,
+    ArtworksAlbumsRequestSerializer,
     ArtworksImageRequestSerializer,
     CreateAlbumRequestSerializer,
     CreateSlidesRequestSerializer,
     FolderSerializer,
+    FoldersRequestSerializer,
     PermissionsRequestSerializer,
     PermissionsResponseSerializer,
     SearchRequestSerializer,
@@ -117,7 +119,7 @@ def slides_with_details(album, request):
                     'artists': [
                         {
                             'id': artist.id,
-                            'name': artist.name,
+                            'value': artist.name,
                         }
                         for artist in artwork.artists.all()
                     ],
@@ -128,17 +130,17 @@ def slides_with_details(album, request):
     return ret
 
 
-def album_object(album, request_user=None):
+def album_object(album, request=None, details=False):
     permissions_qs = PermissionsRelation.objects.filter(album=album)
 
-    if album.user != request_user:
-        permissions_qs = permissions_qs.filter(user=request_user)
+    if request is not None and album.user != request.user:
+        permissions_qs = permissions_qs.filter(user=request.user)
 
     return {
         'id': album.id,
         'title': album.title,
-        'number_of_artworks': sum([len(slide) for slide in album.slides]),
-        'slides': album.slides,
+        'number_of_artworks': album.size(),
+        'slides': slides_with_details(album, request) if details else album.slides,
         'owner': {
             'id': album.user.username,
             'name': album.user.get_full_name(),
@@ -252,10 +254,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 if artwork.image_original
                 else None,
                 'credits': artwork.credits,
-                'license': 'String',  # placeholder for future field change, see ticket 2070
+                'license': '',  # placeholder for future field change, see ticket 2070
                 'title': artwork.title,
                 'title_english': artwork.title_english,
-                'title_notes': 'String',  # placeholder for future field change, see ticket 2070
+                'title_notes': '',  # placeholder for future field change, see ticket 2070
                 'date': artwork.date,
                 'material': artwork.material,
                 'dimensions': artwork.dimensions,
@@ -341,7 +343,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         parameters=[
-            AlbumsRequestSerializer,
+            ArtworksAlbumsRequestSerializer,
             OpenApiParameter(
                 name='permissions',
                 type={
@@ -369,7 +371,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     )
     @action(detail=True, methods=['get'], url_path='albums')
     def retrieve_albums(self, request, pk=None, *args, **kwargs):
-        serializer = AlbumsRequestSerializer(data=request.query_params)
+        serializer = ArtworksAlbumsRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
         try:
@@ -751,9 +753,7 @@ class AlbumsViewSet(viewsets.ViewSet):
                     {
                         'id': album.id,
                         'title': album.title,
-                        'number_of_artworks': sum(
-                            [len(slide) for slide in album.slides]
-                        ),
+                        'number_of_artworks': album.size(),
                         'featured_artworks': featured_artworks(album, request),
                         'owner': {
                             'id': album.user.username,
@@ -804,11 +804,21 @@ class AlbumsViewSet(viewsets.ViewSet):
         )
 
         return Response(
-            album_object(album, request_user=request.user),
+            album_object(album, request=request),
             status=status.HTTP_201_CREATED,
         )
 
     @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='details',
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description='Boolean indicating if the response should contain details of the artworks',
+                default=False,
+            ),
+        ],
         responses={
             200: AlbumResponseSerializer,
             403: ERROR_RESPONSES[403],
@@ -817,6 +827,9 @@ class AlbumsViewSet(viewsets.ViewSet):
     )
     def retrieve(self, request, pk=None, *args, **kwargs):
         """List of Works (Slides) in a specific Album /albums/{id}"""
+
+        serializer = AlbumsRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
 
         try:
             album = (
@@ -828,7 +841,9 @@ class AlbumsViewSet(viewsets.ViewSet):
         except Album.DoesNotExist as dne:
             raise NotFound(_('Album does not exist')) from dne
 
-        return Response(album_object(album, request_user=request.user))
+        details = serializer.validated_data['details']
+
+        return Response(album_object(album, request=request, details=details))
 
     @extend_schema(
         request=UpdateAlbumRequestSerializer,
@@ -864,7 +879,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         ):
             album.title = serializer.validated_data['title']
             album.save()
-            return Response(album_object(album, request_user=request.user))
+            return Response(album_object(album, request=request))
 
         raise PermissionDenied()
 
@@ -1148,12 +1163,22 @@ class AlbumsViewSet(viewsets.ViewSet):
 
             for perm in permissions:
                 with transaction.atomic():
+                    # Only allow permission assignment if the user is not already the owner
+                    if album.user == user:
+                        raise ParseError('User is already the owner of album.')
                     pr, created = PermissionsRelation.objects.get_or_create(
                         album=album,
                         user=user,
                     )
                     pr.permissions = perm['id']
                     pr.save()
+
+                    # When permission is created, add album to user's root folder
+                    # Add album to root folder, creating a relationship
+                    root_folder = Folder.root_folder_for_user(user)
+                    FolderAlbumRelation.objects.get_or_create(
+                        album=album, user=user, folder=root_folder
+                    )
 
         # remove deleted permissions
         PermissionsRelation.objects.filter(album=album).exclude(
@@ -1190,6 +1215,7 @@ class AlbumsViewSet(viewsets.ViewSet):
         will be deleted. If the user is just a user who this album is
         shared with, only their own sharing permission will be deleted.
         """
+
         try:
             album = (
                 Album.objects.filter(pk=pk)
@@ -1202,11 +1228,22 @@ class AlbumsViewSet(viewsets.ViewSet):
 
         # user is owner of the album
         if album.user == request.user:
+            for pr in album.permissions.all():
+                user = User.objects.get(username=pr.username)
+                root_folder = Folder.root_folder_for_user(user)
+                FolderAlbumRelation.objects.filter(
+                    album=album, user=user, root_folder=root_folder
+                ).delete()
+
             PermissionsRelation.objects.filter(album=album).delete()
 
         # album is shared with user
         else:
             PermissionsRelation.objects.filter(album=album, user=request.user).delete()
+            root_folder = Folder.root_folder_for_user(request.user)
+            FolderAlbumRelation.objects.filter(
+                album=album, user=request.user, folder=root_folder
+            ).delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -1295,8 +1332,12 @@ class FoldersViewSet(viewsets.ViewSet):
                 'id': album.id,
                 'title': album.title,
                 'type': album._meta.object_name,
-                'number_of_artworks': album.artworks.count(),
+                'number_of_artworks': album.size(),
                 'featured_artworks': featured_artworks(album, request),
+                'owner': {
+                    'id': album.user.username,
+                    'name': album.user.get_full_name(),
+                },
                 'permissions': [
                     {
                         'user': {
@@ -1311,16 +1352,6 @@ class FoldersViewSet(viewsets.ViewSet):
                 ],
             }
             for album in albums
-        ]
-
-    def get_folder_in_folder_data(self, folders, request):
-        return [
-            {
-                'id': item.id,
-                'title': item.title,
-                'type': item._meta.object_name,
-            }
-            for item in folders
         ]
 
     @extend_schema(
@@ -1363,47 +1394,16 @@ class FoldersViewSet(viewsets.ViewSet):
         sorting = check_sorting(
             request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
-        date_sorting_album = sorting
 
-        # Albums and Folders sorting fields differ
-        if sorting == 'date_created' or sorting == '-date_created':
-            date_sorting_album = 'created_at' if '-' not in sorting else '-created_at'
-
-        if sorting == 'date_changed' or sorting == '-date_changed':
-            date_sorting_album = 'updated_at' if '-' not in sorting else '-updated_at'
-
-        results = self.queryset.filter(owner=request.user)
-
+        results = self.queryset.filter(owner=request.user).order_by(sorting)
         results = results[offset : offset + limit]
+
         return Response(
             [
                 {
                     'id': folder.id,
                     'title': folder.title,
-                    'content': {
-                        'total': sum(
-                            [
-                                folder.albums.all().count(),
-                                Folder.objects.filter(
-                                    owner=request.user, parent=folder
-                                ).count(),
-                            ]
-                        ),  # number of albums + subfolders
-                        'data': [
-                            self.get_album_in_folder_data(
-                                list(folder.albums.all().order_by(date_sorting_album)),
-                                request,
-                            )
-                            + self.get_folder_in_folder_data(
-                                list(
-                                    Folder.objects.filter(owner=request.user)
-                                    .filter(parent=folder.id)
-                                    .order_by(sorting)
-                                ),
-                                request,
-                            )
-                        ],
-                    },
+                    'owner': f'{folder.owner.first_name} {folder.owner.last_name}',
                 }
                 for folder in results
             ]
@@ -1411,8 +1411,8 @@ class FoldersViewSet(viewsets.ViewSet):
 
     @extend_schema(
         tags=['folders'],
-        request=FolderSerializer,
         parameters=[
+            FoldersRequestSerializer,
             OpenApiParameter(
                 name='sort_by',
                 type=OpenApiTypes.STR,
@@ -1432,6 +1432,23 @@ class FoldersViewSet(viewsets.ViewSet):
                 required=False,
                 description='',
             ),
+            OpenApiParameter(
+                name='permissions',
+                type={
+                    'type': 'array',
+                    'items': {'type': 'string', 'enum': settings.PERMISSIONS},
+                },
+                location=OpenApiParameter.QUERY,
+                required=False,
+                style='form',
+                explode=False,
+                description=(
+                    'If the response should also return shared albums, it\'s possible to define which permissions the '
+                    'user needs to have for the album. Since the default is `EDIT`, shared albums with `EDIT` '
+                    'permissions are included in the response.'
+                ),
+                default='EDIT',
+            ),
         ],
         responses={
             200: OpenApiResponse(description='OK'),
@@ -1444,51 +1461,65 @@ class FoldersViewSet(viewsets.ViewSet):
         'root', return the content of the root folder for the current user."""
         folder_id = kwargs['pk']
 
+        serializer = FoldersRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
         limit = check_limit(request.query_params.get('limit', 100))
         offset = check_offset(request.query_params.get('offset', 0))
         sorting = check_sorting(
             request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
-        date_sorting_album = sorting
-        # Albums and Folders sorting fields differ
+        permissions = request.query_params.get('permissions', 'EDIT')
+
+        # Albums sorting fields differ, but we want to be coherent in the request so here is a hacky adaptation
         if sorting == 'date_created' or sorting == '-date_created':
-            date_sorting_album = 'created_at' if '-' not in sorting else '-created_at'
+            sorting = 'created_at' if '-' not in sorting else '-created_at'
 
         if sorting == 'date_changed' or sorting == '-date_changed':
-            date_sorting_album = 'updated_at' if '-' not in sorting else '-updated_at'
+            sorting = 'updated_at' if '-' not in sorting else '-updated_at'
 
         # Retrieve folder by id
         if folder_id == 'root':
             folder = Folder.root_folder_for_user(request.user)
         else:
+            # As we now only have root folder, this is not immediately useful
+            # But I am leaving it here in case someone was searching something other than root
             try:
                 folder = Folder.objects.get(owner=request.user, id=folder_id)
             except Folder.DoesNotExist as dne:
                 raise NotFound(_('Folder does not exist')) from dne
+
+        q_filters_albums = Q()
+
+        # Permissions are only for Album for the moment
+        if permissions:
+            q_filters_albums |= Q(
+                pk__in=PermissionsRelation.objects.filter(
+                    user=request.user,
+                    permissions__in=permissions,
+                ).values_list('album__pk', flat=True)
+            )
+
+        if serializer.validated_data['owner']:
+            q_filters_albums |= Q(user=serializer.validated_data['owner'])
 
         return Response(
             {
                 'id': folder.id,
                 'title': folder.title,
                 'content': {
+                    # Content shows all the albums belonging to the (root) folder per user.
+                    # As at the moment we only have root folders, folders within folders
+                    # will later be implemented to be shown in content (todo)
                     'total': sum(
                         [
                             folder.albums.all().count(),
-                            Folder.objects.filter(
-                                owner=request.user, parent=folder
-                            ).count(),
                         ]
-                    ),  # number of albums + subfolders
+                    ),  # number of albums belonging to root folder
                     'data': [
                         self.get_album_in_folder_data(
-                            list(folder.albums.all().order_by(date_sorting_album)),
-                            request,
-                        )
-                        + self.get_folder_in_folder_data(
                             list(
-                                Folder.objects.filter(owner=request.user)
-                                .filter(parent=folder.id)
-                                .order_by(sorting)
+                                folder.albums.filter(q_filters_albums).order_by(sorting)
                             ),
                             request,
                         )
