@@ -245,10 +245,10 @@ class FoldersTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
         self.assertEqual(len(content), 2)
-        self.assertEqual(content[1]['title'], folder1.title)
-        self.assertEqual(content[1]['id'], folder1.id)
-        self.assertEqual(content[0]['title'], folder2.title)
-        self.assertEqual(content[0]['id'], folder2.id)
+        self.assertEqual(content[0]['title'], folder1.title)
+        self.assertEqual(content[0]['id'], folder1.id)
+        self.assertEqual(content[1]['title'], folder2.title)
+        self.assertEqual(content[1]['id'], folder2.id)
 
     def test_folder_retrieve(self):
         """Test the retrieval of an album."""
