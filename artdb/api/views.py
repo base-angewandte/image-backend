@@ -592,6 +592,9 @@ def filter_date(filter_values):
     except ValueError as err:
         raise ParseError(_('Invalid filter_value format.'), 400) from err
 
+    if date_from and date_to and date_to < date_from:
+        raise ParseError(_('date_from needs to be less than or equal to date_to.'), 400)
+
     # in case only date_from is provided, all dates in its future should be found
     if not date_to:
         return Q(date_year_from__gte=date_from) | Q(date_year_to__gte=date_from)
