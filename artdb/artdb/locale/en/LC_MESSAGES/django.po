@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-03 16:49+0200\n"
+"POT-Creation-Date: 2024-04-08 15:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,90 +41,99 @@ msgstr "locations"
 msgid "autocomplete_users"
 msgstr "users"
 
-#: api/search/filters.py:14 artdb/templates/artwork/thumbnailbrowser.html:37
+#: api/search/filters.py:12
+#, python-format
+msgid "Enter %(label)s"
+msgstr ""
+
+#: api/search/filters.py:15 artdb/templates/artwork/thumbnailbrowser.html:37
 #: artworks/models.py:114 artworks/models.py:232 artworks/models.py:293
 msgid "Title"
 msgstr ""
 
-#: api/search/filters.py:15 artdb/templates/artwork/thumbnailbrowser.html:38
+#: api/search/filters.py:16 artdb/templates/artwork/thumbnailbrowser.html:38
 #: artworks/admin.py:16 artworks/models.py:35
 msgid "Artist"
 msgstr ""
 
-#: api/search/filters.py:16 artdb/templates/artwork/thumbnailbrowser.html:48
+#: api/search/filters.py:17 artdb/templates/artwork/thumbnailbrowser.html:48
 #: artworks/models.py:144
 msgid "Place of Production"
 msgstr ""
 
-#: api/search/filters.py:17 artdb/templates/artwork/thumbnailbrowser.html:51
+#: api/search/filters.py:18 artdb/templates/artwork/thumbnailbrowser.html:51
 #: artworks/models.py:85 artworks/models.py:152
 msgid "Location"
 msgstr ""
 
-#: api/search/filters.py:18 artdb/templates/artwork/thumbnailbrowser.html:55
+#: api/search/filters.py:19 artdb/templates/artwork/thumbnailbrowser.html:55
 #: artworks/forms.py:50 artworks/forms.py:63 artworks/models.py:66
 #: artworks/models.py:141
 msgid "Keywords"
 msgstr ""
 
-#: api/search/filters.py:19
+#: api/search/filters.py:20
 msgid "Date from, to"
 msgstr ""
 
-#: api/serializers.py:239
+#: api/search/filters.py:136
+msgid "Year"
+msgstr ""
+
+#: api/serializers.py:247
 msgid "No more than two artworks per slide allowed"
 msgstr ""
 
-#: api/views.py:70
+#: api/views.py:71
 msgid "limit must be a positive integer"
 msgstr ""
 
-#: api/views.py:79
+#: api/views.py:80
 msgid "negative offset is not allowed"
 msgstr ""
 
-#: api/views.py:81
+#: api/views.py:82
 msgid "offset must be an integer"
 msgstr ""
 
-#: api/views.py:90
+#: api/views.py:91
 #, python-brace-format
 msgid "sorting should be {ordering_fields}"
 msgstr ""
 
-#: api/views.py:92
+#: api/views.py:93
 msgid "sorting must be a string"
 msgstr ""
 
-#: api/views.py:105 api/views.py:247 api/views.py:331 api/views.py:379
-#: api/views.py:425 api/views.py:606 api/views.py:943 api/views.py:1056
+#: api/views.py:106 api/views.py:248 api/views.py:332 api/views.py:380
+#: api/views.py:426 api/views.py:607 api/views.py:944 api/views.py:1057
 msgid "Artwork does not exist"
 msgstr ""
 
-#: api/views.py:457
+#: api/views.py:458
 #, python-brace-format
 msgid "File for artwork {pk} not found"
 msgstr ""
 
-#: api/views.py:592
+#: api/views.py:593
 msgid "Invalid filter_value format. See example below for more information."
 msgstr ""
 
-#: api/views.py:841 api/views.py:869 api/views.py:903 api/views.py:937
-#: api/views.py:993 api/views.py:1038 api/views.py:1101 api/views.py:1145
-#: api/views.py:1218 api/views.py:1271
+#: api/views.py:842 api/views.py:870 api/views.py:904 api/views.py:938
+#: api/views.py:994 api/views.py:1039 api/views.py:1102 api/views.py:1146
+#: api/views.py:1227 api/views.py:1291
 msgid "Album does not exist"
 msgstr ""
 
-#: api/views.py:1281
+#: api/views.py:1301
 msgid "Not implemented yet"
 msgstr ""
 
-#: api/views.py:1285
+#: api/views.py:1305
 msgid "Invalid format"
 msgstr ""
 
-#: api/views.py:1484
+#: api/views.py:1490
 msgid "Folder does not exist"
 msgstr ""
 
