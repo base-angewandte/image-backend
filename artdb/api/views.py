@@ -1719,6 +1719,11 @@ def search(request, *args, **kwargs):
         qs = Artwork.objects.search(q_param)
     else:
         qs = Artwork.objects.annotate(rank=Value(1.0, FloatField()))
+        if filters:
+            qs = qs.order_by('title')
+        else:
+            # user is not using search at all, therefor show the newest changes first
+            qs = qs.order_by('-updated_at', 'title')
 
     # only search for published artworks
     qs = qs.filter(published=True)
