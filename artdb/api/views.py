@@ -1,5 +1,4 @@
 import logging
-import re
 import zipfile
 from io import BytesIO
 
@@ -576,24 +575,42 @@ def filter_keywords(filter_values):
 
 
 def filter_date(filter_values):
-    q_objects = Q()
-    if isinstance(filter_values, dict):
-        if re.match(r'^[12][0-9]{3}$', filter_values.get('date_from')):
-            q_objects |= Q(date_year_from__gte=filter_values['date_from'])
-        if re.match(r'^[12][0-9]{3}$', filter_values.get('date_to')):
-            q_objects |= Q(date_year_to__lte=filter_values['date_to'])
-        else:
-            raise ParseError(
-                'Only dates of format YYYY can be used as date filter values',
-                400,
-            )
+    if not isinstance(filter_values, dict) or (
+        'date_from' not in filter_values and 'date_to' not in filter_values
+    ):
+        raise ParseError(_('Invalid filter_value format.'), 400)
 
+    date_from = filter_values.get('date_from')
+    date_to = filter_values.get('date_to')
+    if not date_from and not date_to:
+        raise ParseError(_('Invalid filter_value format.'), 400)
+    try:
+        if date_from:
+            date_from = int(date_from)
+        if date_to:
+            date_to = int(date_to)
+    except ValueError as err:
+        raise ParseError(_('Invalid filter_value format.'), 400) from err
+
+    if date_from and date_to and date_to < date_from:
+        raise ParseError(_('date_from needs to be less than or equal to date_to.'), 400)
+
+    # in case only date_from is provided, all dates in its future should be found
+    if not date_to:
+        return Q(date_year_from__gte=date_from) | Q(date_year_to__gte=date_from)
+    # in case only date_to is provided, all dates past this date should be found
+    elif not date_from:
+        return Q(date_year_from__lte=date_to) | Q(date_year_to__lte=date_to)
+    # if both parameters are provided, we search within the given date range
     else:
-        return Response(
-            _('Invalid filter_value format. See example below for more information.')
+        return (
+            Q(date_year_from__range=[date_from, date_to])
+            | Q(date_year_to__range=[date_from, date_to])
+            | Q(
+                date_year_from__lte=date_from,
+                date_year_to__gte=date_to,
+            )
         )
-
-    return q_objects
 
 
 def featured_artworks(album, request, num_artworks=4):
@@ -1719,6 +1736,11 @@ def search(request, *args, **kwargs):
         qs = Artwork.objects.search(q_param)
     else:
         qs = Artwork.objects.annotate(rank=Value(1.0, FloatField()))
+        if filters:
+            qs = qs.order_by('title')
+        else:
+            # user is not using search at all, therefor show the newest changes first
+            qs = qs.order_by('-updated_at', 'title')
 
     # only search for published artworks
     qs = qs.filter(published=True)

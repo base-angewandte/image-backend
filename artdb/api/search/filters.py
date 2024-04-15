@@ -9,6 +9,7 @@ def autocomplete_url(type_id):
 
 autocomplete_url_lazy = lazy(autocomplete_url, str)
 
+placeholder_lazy = lazy(lambda label: _('Enter %(label)s') % {'label': label}, str)
 
 FILTER_LABELS = {
     'title': _('Title'),
@@ -36,7 +37,7 @@ FILTERS = {
             'dynamic_autosuggest': True,
             'allow_unknown_entries': True,
             'source': autocomplete_url_lazy('titles'),
-            'placeholder': f'{_("Enter")} {FILTER_LABELS["title"]}',
+            'placeholder': placeholder_lazy(FILTER_LABELS['title']),
             'order': 1,
         },
     },
@@ -56,7 +57,7 @@ FILTERS = {
             'dynamic_autosuggest': True,
             'allow_unknown_entries': True,
             'source': autocomplete_url_lazy('artists'),
-            'placeholder': f'{_("Enter")} {FILTER_LABELS["artist"]}',
+            'placeholder': placeholder_lazy(FILTER_LABELS['artist']),
             'order': 2,
         },
     },
@@ -76,7 +77,7 @@ FILTERS = {
             'dynamic_autosuggest': True,
             'allow_unknown_entries': True,
             'source': autocomplete_url_lazy('locations'),
-            'placeholder': f'{_("Enter")} {FILTER_LABELS["place_of_production"]}',
+            'placeholder': placeholder_lazy(FILTER_LABELS['place_of_production']),
             'order': 3,
         },
     },
@@ -96,7 +97,7 @@ FILTERS = {
             'dynamic_autosuggest': True,
             'allow_unknown_entries': True,
             'source': autocomplete_url_lazy('locations'),
-            'placeholder': f'{_("Enter")} {FILTER_LABELS["location"]}',
+            'placeholder': placeholder_lazy(FILTER_LABELS['location']),
             'order': 4,
         },
     },
@@ -111,7 +112,7 @@ FILTERS = {
         },
         'title': FILTER_LABELS['keywords'],
         'x-attrs': {
-            'placeholder': f'{_("Enter")} {FILTER_LABELS["keywords"]}',
+            'placeholder': placeholder_lazy(FILTER_LABELS['keywords']),
             'order': 5,
             'field_format': 'third',
             'field_type': 'chips',
@@ -132,7 +133,7 @@ FILTERS = {
             'field_format': 'full',
             'field_type': 'date',
             'date_format': 'year',
-            'placeholder': {'date': f'{_("Enter")} {_("Date")}'},
+            'placeholder': {'date': placeholder_lazy(_('Year'))},
             'order': 6,
         },
     },
