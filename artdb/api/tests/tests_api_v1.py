@@ -279,8 +279,8 @@ class LabelsTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
-        self.assertEqual(content['title'], 'Titel')
-        self.assertEqual(content['keywords'], 'Schlagworte')
+        self.assertEqual(content['title'], _('Title'))
+        self.assertEqual(content['keywords'], _('Keywords'))
 
 
 class PermissionsTests(APITestCase):
