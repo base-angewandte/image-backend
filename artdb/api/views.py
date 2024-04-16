@@ -245,6 +245,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
+        except ValueError as ve:
+            raise ParseError(_('Artwork id must be of type integer')) from ve
 
         return Response(
             {
