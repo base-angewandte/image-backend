@@ -25,10 +25,14 @@ test-data:  ## load test/placeholder data (fixtures and image files)
 	docker-compose exec -T artdb-postgres psql -U django_artdb django_artdb < test-data/set-placeholder-images.sql
 
 .PHONY: makemessages-docker
-makemessages-docker:
+makemessages-docker:  ## generate all required messages needed for localisation
 	docker-compose exec ${PROJECT_NAME}-django python manage.py makemessages -l de
 	docker-compose exec ${PROJECT_NAME}-django python manage.py makemessages -l en
 
 .PHONY: compilemessages-docker
-compilemessages-docker:
+compilemessages-docker:  ## compile all localised messages to be available in the app
 	docker-compose exec ${PROJECT_NAME}-django python manage.py compilemessages
+
+.PHONY: run-api-tests
+run-api-tests:  ## run all available api tests
+	docker-compose exec ${PROJECT_NAME}-django python manage.py test api.tests
