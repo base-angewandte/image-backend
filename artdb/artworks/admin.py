@@ -2,6 +2,7 @@ from dal_admin_filters import AutocompleteFilter
 from mptt.admin import MPTTModelAdmin
 from ordered_model.admin import OrderedInlineModelAdminMixin
 
+from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from django.forms import Textarea, TextInput
@@ -127,4 +128,6 @@ class KeywordAdmin(MPTTModelAdmin):
 
 @admin.register(Location)
 class LocationAdmin(MPTTModelAdmin):
-    search_fields = ['name']
+    search_fields = [
+        'parent__' * i + 'name' for i in range(settings.LOCATION_SEARCH_LEVELS)
+    ]
