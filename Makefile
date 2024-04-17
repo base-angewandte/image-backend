@@ -1,41 +1,38 @@
 include .env
 export
 
+PROJECT_NAME ?= artdb
 
-start:
-	docker-compose up -d --build
+include config/base.mk
 
-stop:
-	docker-compose down
+.PHONY: cleanup
+cleanup:  ## clear sessions
+	docker-compose exec ${PROJECT_NAME}-django bash -c "python manage.py clearsessions && python manage.py django_cas_ng_clean_sessions"
 
-restart:
-	docker-compose restart
-
-git-update:
-	if [ "$(shell whoami)" != "base" ]; then sudo -u base git pull; else git pull; fi
-
-init:
-	docker-compose exec artdb-django bash -c "pip-sync && python manage.py migrate"
-
-init-static:
-	docker-compose exec artdb-django bash -c "python manage.py collectstatic --noinput"
-
-cleanup:
-	docker-compose exec artdb-django bash -c "python manage.py clearsessions && python manage.py django_cas_ng_clean_sessions"
-
-build-image:
-	docker-compose build artdb-django
-
-restart-gunicorn:
-	docker-compose exec artdb-django bash -c 'kill -HUP `cat /var/run/django.pid`'
-
-build-docs:
-	docker build -t image-docs ./docker/docs
-	docker run -it -v `pwd`/docs:/docs -v `pwd`/artdb:/src image-docs make clean html
-
-update: git-update init init-static restart-gunicorn
-
-start-dev:
+.PHONY: start-dev
+start-dev:  ## start containers for local development
 	docker-compose up -d --build \
 		artdb-redis \
 		artdb-postgres
+
+.PHONY: test-data
+test-data:  ## load test/placeholder data (fixtures and image files)
+	docker-compose exec artdb-django python manage.py loaddata artworks/fixtures/artists.json
+	docker-compose exec artdb-django python manage.py loaddata artworks/fixtures/keywords.json
+	docker-compose exec artdb-django python manage.py loaddata artworks/fixtures/locations.json
+	docker-compose exec artdb-django python manage.py loaddata artworks/fixtures/artworks.json
+	cp test-data/*.png ${MEDIA_DIR}
+	docker-compose exec -T artdb-postgres psql -U django_artdb django_artdb < test-data/set-placeholder-images.sql
+
+.PHONY: makemessages-docker
+makemessages-docker:  ## generate all required messages needed for localisation
+	docker-compose exec ${PROJECT_NAME}-django python manage.py makemessages -l de
+	docker-compose exec ${PROJECT_NAME}-django python manage.py makemessages -l en
+
+.PHONY: compilemessages-docker
+compilemessages-docker:  ## compile all localised messages to be available in the app
+	docker-compose exec ${PROJECT_NAME}-django python manage.py compilemessages
+
+.PHONY: run-api-tests
+run-api-tests:  ## run all available api tests
+	docker-compose exec ${PROJECT_NAME}-django python manage.py test api.tests

@@ -3,12 +3,12 @@
         "model": "artworks.keyword",
         "pk": 5,
         "fields": {
-            "name": "Gattungen / Medien",
+            "name": "Gattungen / Medien / Themen",
             "parent": null,
-            "rght": 1,
             "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "rght": 142,
+            "tree_id": 7,
+            "level": 0
         }
     },
     {
@@ -17,9 +17,9 @@
         "fields": {
             "name": "Malerei",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 94,
+            "rght": 105,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -29,9 +29,9 @@
         "fields": {
             "name": "Collage / Assemblage / Montage",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 36,
+            "rght": 37,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -41,10 +41,10 @@
         "fields": {
             "name": "Epochen / Stile",
             "parent": null,
-            "rght": 1,
             "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "rght": 124,
+            "tree_id": 4,
+            "level": 0
         }
     },
     {
@@ -53,9 +53,9 @@
         "fields": {
             "name": "Dada",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 24,
+            "rght": 25,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -65,9 +65,9 @@
         "fields": {
             "name": "Skulptur / Plastik / Objekt",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 130,
+            "rght": 131,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -76,10 +76,10 @@
         "pk": 15,
         "fields": {
             "name": "Abstraktion",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "parent": 5,
+            "lft": 2,
+            "rght": 3,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -89,21 +89,9 @@
         "fields": {
             "name": "Fotografie",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
-        }
-    },
-    {
-        "model": "artworks.keyword",
-        "pk": 17,
-        "fields": {
-            "name": "Aktionskunst",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 52,
+            "rght": 53,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -113,9 +101,9 @@
         "fields": {
             "name": "Abstrakter Expressionismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 2,
+            "rght": 3,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -125,9 +113,9 @@
         "fields": {
             "name": "Appropriation Art",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 12,
+            "rght": 13,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -137,9 +125,9 @@
         "fields": {
             "name": "Antike",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 6,
+            "rght": 11,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -149,22 +137,22 @@
         "fields": {
             "name": "griechische Antike",
             "parent": 21,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 7,
+            "rght": 8,
+            "tree_id": 4,
+            "level": 2
         }
     },
     {
         "model": "artworks.keyword",
         "pk": 25,
         "fields": {
-            "name": "römische Antike",
+            "name": "r\u00f6mische Antike",
             "parent": 21,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 9,
+            "rght": 10,
+            "tree_id": 4,
+            "level": 2
         }
     },
     {
@@ -173,9 +161,9 @@
         "fields": {
             "name": "Art Brut",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 14,
+            "rght": 15,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -183,11 +171,11 @@
         "model": "artworks.keyword",
         "pk": 27,
         "fields": {
-            "name": "Art Déco",
+            "name": "Art D\u00e9co",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 16,
+            "rght": 17,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -197,21 +185,9 @@
         "fields": {
             "name": "Arte Povera",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
-        }
-    },
-    {
-        "model": "artworks.keyword",
-        "pk": 30,
-        "fields": {
-            "name": "Body Art",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 18,
+            "rght": 19,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -221,9 +197,9 @@
         "fields": {
             "name": "Byzanz",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 22,
+            "rght": 23,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -231,11 +207,11 @@
         "model": "artworks.keyword",
         "pk": 32,
         "fields": {
-            "name": "Conceptual Art",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "name": "Conceptual Art / Konzeptkunst / Konzeptualismus",
+            "parent": 5,
+            "lft": 38,
+            "rght": 39,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -245,9 +221,9 @@
         "fields": {
             "name": "Divisionismus / Pointilismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 26,
+            "rght": 27,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -256,10 +232,10 @@
         "pk": 34,
         "fields": {
             "name": "Eat Art",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "parent": 5,
+            "lft": 48,
+            "rght": 49,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -269,9 +245,9 @@
         "fields": {
             "name": "Expressionismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 28,
+            "rght": 29,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -281,9 +257,9 @@
         "fields": {
             "name": "Faschismus/ Nationalsozialismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 32,
+            "rght": 33,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -293,9 +269,9 @@
         "fields": {
             "name": "Fauvismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 34,
+            "rght": 35,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -303,11 +279,11 @@
         "model": "artworks.keyword",
         "pk": 38,
         "fields": {
-            "name": "Feministische Kunst",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "name": "Gender / Feminismus / Queer",
+            "parent": 5,
+            "lft": 58,
+            "rght": 59,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -317,9 +293,9 @@
         "fields": {
             "name": "Fluxus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 36,
+            "rght": 37,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -328,10 +304,10 @@
         "pk": 40,
         "fields": {
             "name": "Fotorealismus / Hyperrealismus",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "parent": 5,
+            "lft": 54,
+            "rght": 55,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -339,11 +315,11 @@
         "model": "artworks.keyword",
         "pk": 41,
         "fields": {
-            "name": "Frühchristentum",
+            "name": "Fr\u00fchchristentum",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 38,
+            "rght": 39,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -351,11 +327,11 @@
         "model": "artworks.keyword",
         "pk": 42,
         "fields": {
-            "name": "Frühmittelalter",
+            "name": "Fr\u00fchmittelalter",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 40,
+            "rght": 41,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -365,9 +341,9 @@
         "fields": {
             "name": "Futurismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 42,
+            "rght": 43,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -377,9 +353,9 @@
         "fields": {
             "name": "Gotik",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 44,
+            "rght": 45,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -389,9 +365,9 @@
         "fields": {
             "name": "Historismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 48,
+            "rght": 49,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -401,9 +377,9 @@
         "fields": {
             "name": "Impressionismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 52,
+            "rght": 53,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -413,9 +389,9 @@
         "fields": {
             "name": "Informel / Tachismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 54,
+            "rght": 55,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -424,10 +400,10 @@
         "pk": 48,
         "fields": {
             "name": "Institutionskritik",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "parent": 5,
+            "lft": 70,
+            "rght": 71,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -437,9 +413,9 @@
         "fields": {
             "name": "Jugendstil",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 58,
+            "rght": 59,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -448,10 +424,10 @@
         "pk": 50,
         "fields": {
             "name": "Kinetische Kunst",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "parent": 5,
+            "lft": 72,
+            "rght": 73,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -461,9 +437,9 @@
         "fields": {
             "name": "Klassische Moderne",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 62,
+            "rght": 63,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -473,9 +449,9 @@
         "fields": {
             "name": "Klassizismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 64,
+            "rght": 65,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -485,9 +461,9 @@
         "fields": {
             "name": "Konkrete Kunst",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 66,
+            "rght": 67,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -497,9 +473,9 @@
         "fields": {
             "name": "Konstruktivismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 68,
+            "rght": 69,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -509,9 +485,9 @@
         "fields": {
             "name": "Kubismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 70,
+            "rght": 71,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -520,10 +496,10 @@
         "pk": 56,
         "fields": {
             "name": "Land Art",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "parent": 5,
+            "lft": 88,
+            "rght": 89,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -533,9 +509,9 @@
         "fields": {
             "name": "Manierismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 72,
+            "rght": 73,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -545,9 +521,9 @@
         "fields": {
             "name": "Minimal / Postminimal Art",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 74,
+            "rght": 75,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -556,10 +532,10 @@
         "pk": 59,
         "fields": {
             "name": "Naive Kunst",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "parent": 5,
+            "lft": 116,
+            "rght": 117,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -569,9 +545,9 @@
         "fields": {
             "name": "Neue Sachlichkeit",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 84,
+            "rght": 85,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -581,9 +557,9 @@
         "fields": {
             "name": "Neoexpressionismus / Neue Wilde",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 80,
+            "rght": 81,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -591,11 +567,11 @@
         "model": "artworks.keyword",
         "pk": 63,
         "fields": {
-            "name": "Nouveau Réalisme ",
+            "name": "Nouveau R\u00e9alisme ",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 88,
+            "rght": 89,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -604,10 +580,10 @@
         "pk": 65,
         "fields": {
             "name": "Op Art",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "parent": 5,
+            "lft": 118,
+            "rght": 119,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -617,9 +593,9 @@
         "fields": {
             "name": "Orphismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 90,
+            "rght": 91,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -629,9 +605,9 @@
         "fields": {
             "name": "Pop Art",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 92,
+            "rght": 93,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -641,9 +617,9 @@
         "fields": {
             "name": "Primitivismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 94,
+            "rght": 95,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -651,11 +627,11 @@
         "model": "artworks.keyword",
         "pk": 70,
         "fields": {
-            "name": "Realismus / Naturalismus",
+            "name": "Naturalismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 78,
+            "rght": 79,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -665,9 +641,9 @@
         "fields": {
             "name": "Renaissance",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 100,
+            "rght": 101,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -677,9 +653,9 @@
         "fields": {
             "name": "Rokoko",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 102,
+            "rght": 103,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -689,9 +665,9 @@
         "fields": {
             "name": "Romanik",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 104,
+            "rght": 105,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -701,9 +677,9 @@
         "fields": {
             "name": "Romantik",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 106,
+            "rght": 107,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -713,9 +689,9 @@
         "fields": {
             "name": "Russische Avantgarde",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 108,
+            "rght": 109,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -725,9 +701,9 @@
         "fields": {
             "name": "Sozialistischer Realismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 112,
+            "rght": 113,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -736,10 +712,10 @@
         "pk": 77,
         "fields": {
             "name": "Indigene Kunst",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "parent": 5,
+            "lft": 66,
+            "rght": 67,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -749,9 +725,9 @@
         "fields": {
             "name": "Suprematismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 114,
+            "rght": 115,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -761,9 +737,9 @@
         "fields": {
             "name": "Surrealismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 116,
+            "rght": 117,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -773,9 +749,9 @@
         "fields": {
             "name": "Symbolismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 118,
+            "rght": 119,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -785,9 +761,9 @@
         "fields": {
             "name": "Wiener Aktionismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 120,
+            "rght": 121,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -796,10 +772,10 @@
         "pk": 83,
         "fields": {
             "name": "Zustandsgebundene Kunst  (Drogen / Wahn)",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "parent": 5,
+            "lft": 138,
+            "rght": 139,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -809,10 +785,10 @@
         "fields": {
             "name": "Buchmalerei",
             "parent": 6,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 95,
+            "rght": 96,
+            "tree_id": 7,
+            "level": 2
         }
     },
     {
@@ -821,9 +797,9 @@
         "fields": {
             "name": "Architektur",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 10,
+            "rght": 31,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -833,9 +809,9 @@
         "fields": {
             "name": "Angewandte Kunst",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 6,
+            "rght": 7,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -843,11 +819,11 @@
         "model": "artworks.keyword",
         "pk": 87,
         "fields": {
-            "name": "Aktion / Körper",
+            "name": "K\u00f6rper / Body Art",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 84,
+            "rght": 85,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -857,10 +833,10 @@
         "fields": {
             "name": "Glasmalerei",
             "parent": 6,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 97,
+            "rght": 98,
+            "tree_id": 7,
+            "level": 2
         }
     },
     {
@@ -869,10 +845,10 @@
         "fields": {
             "name": "Ikone",
             "parent": 6,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 99,
+            "rght": 100,
+            "tree_id": 7,
+            "level": 2
         }
     },
     {
@@ -881,10 +857,10 @@
         "fields": {
             "name": "Wandmalerei",
             "parent": 6,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 103,
+            "rght": 104,
+            "tree_id": 7,
+            "level": 2
         }
     },
     {
@@ -893,9 +869,9 @@
         "fields": {
             "name": "Grabmal / Denkmal / Monument",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 60,
+            "rght": 61,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -904,23 +880,23 @@
         "pk": 92,
         "fields": {
             "name": "Kirche",
-            "parent": 85,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "parent": 178,
+            "lft": 20,
+            "rght": 21,
+            "tree_id": 7,
+            "level": 3
         }
     },
     {
         "model": "artworks.keyword",
         "pk": 93,
         "fields": {
-            "name": "Profaner Repräsentationsbau",
-            "parent": 85,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "name": "Profaner Repr\u00e4sentationsbau",
+            "parent": 181,
+            "lft": 14,
+            "rght": 15,
+            "tree_id": 7,
+            "level": 3
         }
     },
     {
@@ -928,35 +904,11 @@
         "pk": 94,
         "fields": {
             "name": "Wohnbau",
-            "parent": 85,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
-        }
-    },
-    {
-        "model": "artworks.keyword",
-        "pk": 95,
-        "fields": {
-            "name": "Digital",
-            "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
-        }
-    },
-    {
-        "model": "artworks.keyword",
-        "pk": 96,
-        "fields": {
-            "name": "Film / Filmstill",
-            "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "parent": 181,
+            "lft": 16,
+            "rght": 17,
+            "tree_id": 7,
+            "level": 3
         }
     },
     {
@@ -965,9 +917,9 @@
         "fields": {
             "name": "Gartenkunst",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 56,
+            "rght": 57,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -977,9 +929,9 @@
         "fields": {
             "name": "Grafik",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 62,
+            "rght": 63,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -989,9 +941,9 @@
         "fields": {
             "name": "Installation",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 68,
+            "rght": 69,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -1001,9 +953,9 @@
         "fields": {
             "name": "Lichtkunst",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 90,
+            "rght": 91,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -1011,11 +963,11 @@
         "model": "artworks.keyword",
         "pk": 101,
         "fields": {
-            "name": "Populäre Bildmedien",
+            "name": "Popul\u00e4re Bildmedien",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 126,
+            "rght": 127,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -1025,9 +977,9 @@
         "fields": {
             "name": "Textilkunst",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 134,
+            "rght": 135,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -1035,11 +987,11 @@
         "model": "artworks.keyword",
         "pk": 103,
         "fields": {
-            "name": "Video",
+            "name": "Film / Video",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 50,
+            "rght": 51,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -1049,10 +1001,10 @@
         "fields": {
             "name": "Ikonographie / Bildgattungen",
             "parent": null,
-            "rght": 1,
             "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "rght": 30,
+            "tree_id": 9,
+            "level": 0
         }
     },
     {
@@ -1061,9 +1013,9 @@
         "fields": {
             "name": "Bildgattungen",
             "parent": 104,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 2,
+            "rght": 15,
+            "tree_id": 9,
             "level": 1
         }
     },
@@ -1073,10 +1025,10 @@
         "fields": {
             "name": "Landschaft",
             "parent": 105,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 7,
+            "rght": 8,
+            "tree_id": 9,
+            "level": 2
         }
     },
     {
@@ -1085,10 +1037,10 @@
         "fields": {
             "name": "Portrait",
             "parent": 105,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 9,
+            "rght": 10,
+            "tree_id": 9,
+            "level": 2
         }
     },
     {
@@ -1097,9 +1049,9 @@
         "fields": {
             "name": "Christliche Ikonographie",
             "parent": 104,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 16,
+            "rght": 21,
+            "tree_id": 9,
             "level": 1
         }
     },
@@ -1109,10 +1061,10 @@
         "fields": {
             "name": "Stillleben",
             "parent": 105,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 11,
+            "rght": 12,
+            "tree_id": 9,
+            "level": 2
         }
     },
     {
@@ -1121,10 +1073,10 @@
         "fields": {
             "name": "Genre",
             "parent": 105,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 3,
+            "rght": 4,
+            "tree_id": 9,
+            "level": 2
         }
     },
     {
@@ -1133,10 +1085,10 @@
         "fields": {
             "name": "Historie",
             "parent": 105,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 5,
+            "rght": 6,
+            "tree_id": 9,
+            "level": 2
         }
     },
     {
@@ -1145,9 +1097,9 @@
         "fields": {
             "name": "Profane Ikonographie",
             "parent": 104,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 22,
+            "rght": 27,
+            "tree_id": 9,
             "level": 1
         }
     },
@@ -1157,10 +1109,10 @@
         "fields": {
             "name": "Altes Testament",
             "parent": 108,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 17,
+            "rght": 18,
+            "tree_id": 9,
+            "level": 2
         }
     },
     {
@@ -1169,10 +1121,10 @@
         "fields": {
             "name": "Neues Testament",
             "parent": 108,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 19,
+            "rght": 20,
+            "tree_id": 9,
+            "level": 2
         }
     },
     {
@@ -1181,10 +1133,10 @@
         "fields": {
             "name": "Allegorie",
             "parent": 112,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 23,
+            "rght": 24,
+            "tree_id": 9,
+            "level": 2
         }
     },
     {
@@ -1193,10 +1145,10 @@
         "fields": {
             "name": "Mythologie",
             "parent": 112,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 25,
+            "rght": 26,
+            "tree_id": 9,
+            "level": 2
         }
     },
     {
@@ -1205,9 +1157,9 @@
         "fields": {
             "name": "Barock",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 20,
+            "rght": 21,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -1215,11 +1167,11 @@
         "model": "artworks.keyword",
         "pk": 120,
         "fields": {
-            "name": "Audio / Klang",
+            "name": "Audio / Klang / Sound",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 32,
+            "rght": 33,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -1227,11 +1179,11 @@
         "model": "artworks.keyword",
         "pk": 121,
         "fields": {
-            "name": "Holländische Malerei (17. Jh.)",
+            "name": "Holl\u00e4ndische Malerei (17. Jh.)",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 50,
+            "rght": 51,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -1239,11 +1191,11 @@
         "model": "artworks.keyword",
         "pk": 122,
         "fields": {
-            "name": "Prähistorie/ Ur- und Frühgeschichte",
+            "name": "Pr\u00e4historie/ Ur- und Fr\u00fchgeschichte",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 96,
+            "rght": 97,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -1253,9 +1205,9 @@
         "fields": {
             "name": "Islamische Kunst",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 56,
+            "rght": 57,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -1265,9 +1217,9 @@
         "fields": {
             "name": "Karolingische und Ottonische Kunst",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 60,
+            "rght": 61,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -1277,9 +1229,9 @@
         "fields": {
             "name": "Schrift",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 128,
+            "rght": 129,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -1289,9 +1241,9 @@
         "fields": {
             "name": "Sakrale nicht-christliche Ikonographie",
             "parent": 104,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 28,
+            "rght": 29,
+            "tree_id": 9,
             "level": 1
         }
     },
@@ -1299,11 +1251,11 @@
         "model": "artworks.keyword",
         "pk": 129,
         "fields": {
-            "name": "Altägyptische Kunst",
+            "name": "Alt\u00e4gyptische Kunst",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 4,
+            "rght": 5,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -1311,11 +1263,11 @@
         "model": "artworks.keyword",
         "pk": 130,
         "fields": {
-            "name": "Zeitgenössische Kunst",
+            "name": "Zeitgen\u00f6ssische Kunst",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 122,
+            "rght": 123,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -1325,9 +1277,9 @@
         "fields": {
             "name": "Moderne",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 76,
+            "rght": 77,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -1335,11 +1287,11 @@
         "model": "artworks.keyword",
         "pk": 132,
         "fields": {
-            "name": "Performance",
+            "name": "Performance / Aktion",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 124,
+            "rght": 125,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -1348,10 +1300,10 @@
         "pk": 133,
         "fields": {
             "name": "Konzeptuelle Malerei",
-            "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "parent": 5,
+            "lft": 78,
+            "rght": 79,
+            "tree_id": 7,
             "level": 1
         }
     },
@@ -1361,9 +1313,9 @@
         "fields": {
             "name": "Fantastischer Realismus",
             "parent": 11,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 30,
+            "rght": 31,
+            "tree_id": 4,
             "level": 1
         }
     },
@@ -1373,10 +1325,10 @@
         "fields": {
             "name": "Tafelmalerei",
             "parent": 6,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
-            "level": 1
+            "lft": 101,
+            "rght": 102,
+            "tree_id": 7,
+            "level": 2
         }
     },
     {
@@ -1385,9 +1337,441 @@
         "fields": {
             "name": "Ausstellung",
             "parent": 5,
-            "rght": 1,
-            "lft": 1,
-            "tree_id": 1,
+            "lft": 34,
+            "rght": 35,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 137,
+        "fields": {
+            "name": "Medienkunst",
+            "parent": 5,
+            "lft": 108,
+            "rght": 109,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 138,
+        "fields": {
+            "name": "Kollektiv",
+            "parent": 5,
+            "lft": 74,
+            "rght": 75,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 139,
+        "fields": {
+            "name": "Orientalismus",
+            "parent": 5,
+            "lft": 120,
+            "rght": 121,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 140,
+        "fields": {
+            "name": "Aktivismus",
+            "parent": 5,
+            "lft": 4,
+            "rght": 5,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 141,
+        "fields": {
+            "name": "Realismus",
+            "parent": 11,
+            "lft": 98,
+            "rght": 99,
+            "tree_id": 4,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 142,
+        "fields": {
+            "name": "K\u00fcnstler*innenbuch",
+            "parent": 5,
+            "lft": 86,
+            "rght": 87,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 143,
+        "fields": {
+            "name": "Theater",
+            "parent": 5,
+            "lft": 136,
+            "rght": 137,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 146,
+        "fields": {
+            "name": "Neokonkretismus",
+            "parent": 11,
+            "lft": 82,
+            "rght": 83,
+            "tree_id": 4,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 150,
+        "fields": {
+            "name": "Moschee",
+            "parent": 178,
+            "lft": 22,
+            "rght": 23,
+            "tree_id": 7,
+            "level": 3
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 151,
+        "fields": {
+            "name": "Situationistische Internationale",
+            "parent": 11,
+            "lft": 110,
+            "rght": 111,
+            "tree_id": 4,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 153,
+        "fields": {
+            "name": "Tiermalerei",
+            "parent": 105,
+            "lft": 13,
+            "rght": 14,
+            "tree_id": 9,
+            "level": 2
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 157,
+        "fields": {
+            "name": "Mavo",
+            "parent": 5,
+            "lft": 106,
+            "rght": 107,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 158,
+        "fields": {
+            "name": "Niederl\u00e4ndische Malerei (15 Jhd.)",
+            "parent": 11,
+            "lft": 86,
+            "rght": 87,
+            "tree_id": 4,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 159,
+        "fields": {
+            "name": "Digitale Kunst",
+            "parent": 5,
+            "lft": 42,
+            "rght": 43,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 160,
+        "fields": {
+            "name": "Harlem Renaissance",
+            "parent": 11,
+            "lft": 46,
+            "rght": 47,
+            "tree_id": 4,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 161,
+        "fields": {
+            "name": "Mail Art",
+            "parent": 5,
+            "lft": 92,
+            "rght": 93,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 162,
+        "fields": {
+            "name": "Partizipatorische Kunst",
+            "parent": 5,
+            "lft": 122,
+            "rght": 123,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 164,
+        "fields": {
+            "name": "Mobiliar",
+            "parent": 5,
+            "lft": 110,
+            "rght": 111,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 165,
+        "fields": {
+            "name": "Mosaik",
+            "parent": 5,
+            "lft": 114,
+            "rght": 115,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 166,
+        "fields": {
+            "name": "Tanz",
+            "parent": 5,
+            "lft": 132,
+            "rght": 133,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 167,
+        "fields": {
+            "name": "Mono-ha",
+            "parent": 5,
+            "lft": 112,
+            "rght": 113,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 168,
+        "fields": {
+            "name": "Antiziganismus",
+            "parent": 5,
+            "lft": 8,
+            "rght": 9,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 169,
+        "fields": {
+            "name": "Kolonialismus/ Kolonialit\u00e4t",
+            "parent": 5,
+            "lft": 76,
+            "rght": 77,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 170,
+        "fields": {
+            "name": "\u00d6kologie / Anthropoz\u00e4n",
+            "parent": 5,
+            "lft": 140,
+            "rght": 141,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 171,
+        "fields": {
+            "name": "Dis/ability",
+            "parent": 5,
+            "lft": 44,
+            "rght": 45,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 173,
+        "fields": {
+            "name": "Kunstp\u00e4dagogik",
+            "parent": 5,
+            "lft": 82,
+            "rght": 83,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 174,
+        "fields": {
+            "name": "Human Remains",
+            "parent": 5,
+            "lft": 64,
+            "rght": 65,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 175,
+        "fields": {
+            "name": "Design",
+            "parent": 5,
+            "lft": 40,
+            "rght": 41,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 176,
+        "fields": {
+            "name": "Druckgrafik",
+            "parent": 5,
+            "lft": 46,
+            "rght": 47,
+            "tree_id": 7,
+            "level": 1
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 178,
+        "fields": {
+            "name": "Sakralbau",
+            "parent": 85,
+            "lft": 19,
+            "rght": 28,
+            "tree_id": 7,
+            "level": 2
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 179,
+        "fields": {
+            "name": "Synagoge",
+            "parent": 178,
+            "lft": 24,
+            "rght": 25,
+            "tree_id": 7,
+            "level": 3
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 180,
+        "fields": {
+            "name": "Tempel",
+            "parent": 178,
+            "lft": 26,
+            "rght": 27,
+            "tree_id": 7,
+            "level": 3
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 181,
+        "fields": {
+            "name": "Profanbau",
+            "parent": 85,
+            "lft": 11,
+            "rght": 18,
+            "tree_id": 7,
+            "level": 2
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 182,
+        "fields": {
+            "name": "Industriearchitektur",
+            "parent": 181,
+            "lft": 12,
+            "rght": 13,
+            "tree_id": 7,
+            "level": 3
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 183,
+        "fields": {
+            "name": "St\u00e4dtebau",
+            "parent": 85,
+            "lft": 29,
+            "rght": 30,
+            "tree_id": 7,
+            "level": 2
+        }
+    },
+    {
+        "model": "artworks.keyword",
+        "pk": 184,
+        "fields": {
+            "name": "Kunst im \u00f6ffentlichen Raum",
+            "parent": 5,
+            "lft": 80,
+            "rght": 81,
+            "tree_id": 7,
             "level": 1
         }
     }

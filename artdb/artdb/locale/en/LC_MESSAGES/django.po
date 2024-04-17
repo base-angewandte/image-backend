@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-06 01:52+0200\n"
+"POT-Creation-Date: 2024-04-08 15:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,135 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: artdb/settings.py:259
+#: api/autocomplete/views.py:43
+msgid "autocomplete_user_albums_editable"
+msgstr "editable albums"
+
+#: api/autocomplete/views.py:44
+msgid "autocomplete_titles"
+msgstr "titles"
+
+#: api/autocomplete/views.py:45
+msgid "autocomplete_artists"
+msgstr "artists"
+
+#: api/autocomplete/views.py:46
+msgid "autocomplete_keywords"
+msgstr "keywords"
+
+#: api/autocomplete/views.py:47
+msgid "autocomplete_locations"
+msgstr "locations"
+
+#: api/autocomplete/views.py:48
+msgid "autocomplete_users"
+msgstr "users"
+
+#: api/search/filters.py:12
+#, python-format
+msgid "Enter %(label)s"
+msgstr ""
+
+#: api/search/filters.py:15 artdb/templates/artwork/thumbnailbrowser.html:37
+#: artworks/models.py:114 artworks/models.py:232 artworks/models.py:293
+msgid "Title"
+msgstr ""
+
+#: api/search/filters.py:16 artdb/templates/artwork/thumbnailbrowser.html:38
+#: artworks/admin.py:16 artworks/models.py:35
+msgid "Artist"
+msgstr ""
+
+#: api/search/filters.py:17 artdb/templates/artwork/thumbnailbrowser.html:48
+#: artworks/models.py:144
+msgid "Place of Production"
+msgstr ""
+
+#: api/search/filters.py:18 artdb/templates/artwork/thumbnailbrowser.html:51
+#: artworks/models.py:85 artworks/models.py:152
+msgid "Location"
+msgstr ""
+
+#: api/search/filters.py:19 artdb/templates/artwork/thumbnailbrowser.html:55
+#: artworks/forms.py:50 artworks/forms.py:63 artworks/models.py:66
+#: artworks/models.py:141
+msgid "Keywords"
+msgstr ""
+
+#: api/search/filters.py:20
+msgid "Date from, to"
+msgstr ""
+
+#: api/search/filters.py:136
+msgid "Year"
+msgstr ""
+
+#: api/serializers.py:247
+msgid "No more than two artworks per slide allowed"
+msgstr ""
+
+#: api/views.py:71
+msgid "limit must be a positive integer"
+msgstr ""
+
+#: api/views.py:80
+msgid "negative offset is not allowed"
+msgstr ""
+
+#: api/views.py:82
+msgid "offset must be an integer"
+msgstr ""
+
+#: api/views.py:91
+#, python-brace-format
+msgid "sorting should be {ordering_fields}"
+msgstr ""
+
+#: api/views.py:93
+msgid "sorting must be a string"
+msgstr ""
+
+#: api/views.py:106 api/views.py:248 api/views.py:332 api/views.py:380
+#: api/views.py:426 api/views.py:607 api/views.py:944 api/views.py:1057
+msgid "Artwork does not exist"
+msgstr ""
+
+#: api/views.py:458
+#, python-brace-format
+msgid "File for artwork {pk} not found"
+msgstr ""
+
+#: api/views.py:593
+msgid "Invalid filter_value format. See example below for more information."
+msgstr ""
+
+#: api/views.py:842 api/views.py:870 api/views.py:904 api/views.py:938
+#: api/views.py:994 api/views.py:1039 api/views.py:1102 api/views.py:1146
+#: api/views.py:1227 api/views.py:1291
+msgid "Album does not exist"
+msgstr ""
+
+#: api/views.py:1301
+msgid "Not implemented yet"
+msgstr ""
+
+#: api/views.py:1305
+msgid "Invalid format"
+msgstr ""
+
+#: api/views.py:1490
+msgid "Folder does not exist"
+msgstr ""
+
+#: artdb/settings.py:283
 msgid "German"
 msgstr ""
 
-#: artdb/settings.py:260
+#: artdb/settings.py:284
 msgid "English"
 msgstr ""
 
-#: artdb/templates/admin/base_site.html:5 artdb/urls.py:33 artdb/urls.py:34
+#: artdb/templates/admin/base_site.html:4 artdb/urls.py:31 artdb/urls.py:32
 msgid "Image Admin"
 msgstr ""
 
@@ -140,17 +260,7 @@ msgstr ""
 msgid "Expert"
 msgstr "Adv. Search"
 
-#: artdb/templates/artwork/thumbnailbrowser.html:37 artworks/models.py:99
-#: artworks/models.py:200
-msgid "Title"
-msgstr "Title"
-
-#: artdb/templates/artwork/thumbnailbrowser.html:38 artworks/admin.py:24
-#: artworks/models.py:29
-msgid "Artist"
-msgstr ""
-
-#: artdb/templates/artwork/thumbnailbrowser.html:42 artworks/models.py:108
+#: artdb/templates/artwork/thumbnailbrowser.html:42 artworks/models.py:126
 msgid "Date From"
 msgstr ""
 
@@ -159,131 +269,144 @@ msgstr ""
 msgid "YYYY"
 msgstr ""
 
-#: artdb/templates/artwork/thumbnailbrowser.html:45 artworks/models.py:109
+#: artdb/templates/artwork/thumbnailbrowser.html:45 artworks/models.py:128
 msgid "Date To"
 msgstr ""
 
-#: artdb/templates/artwork/thumbnailbrowser.html:48
-msgid "Location_of_creation"
-msgstr "Place of Production"
-
-#: artdb/templates/artwork/thumbnailbrowser.html:51
-msgid "Location_current"
-msgstr "Location"
-
-#: artdb/templates/artwork/thumbnailbrowser.html:55 artworks/forms.py:44
-#: artworks/forms.py:59 artworks/models.py:58 artworks/models.py:116
-msgid "Keywords"
-msgstr ""
-
-#: artdb/templates/base.html:72
+#: artdb/templates/base.html:71
 msgid "This resolution is not supported."
 msgstr ""
 
-#: artworks/admin.py:30 artworks/models.py:214 artworks/models.py:224
+#: artworks/admin.py:22
 msgid "Folder"
 msgstr ""
 
-#: artworks/admin.py:83 artworks/forms.py:51 artworks/forms.py:60
-#: artworks/models.py:30 artworks/models.py:101
+#: artworks/admin.py:88 artworks/forms.py:56 artworks/forms.py:63
+#: artworks/models.py:36 artworks/models.py:118
 msgid "Artists"
 msgstr ""
 
-#: artworks/apps.py:32
+#: artworks/apps.py:33
 msgid "Image Content"
 msgstr ""
 
-#: artworks/models.py:22 artworks/models.py:53 artworks/models.py:71
+#: artworks/exports.py:187
+msgid ""
+"Too many artworks per slides. You can only have two artworks per slide. "
+"Please edit slides."
+msgstr ""
+
+#: artworks/exports.py:195
+msgid "There is no artwork associated with id {artwork_in_slide.get(\"id\")}."
+msgstr ""
+
+#: artworks/exports.py:203
+msgid ""
+"There is no image associated with artwork with id {artwork_in_slide."
+"get('id')}; it's a directory"
+msgstr ""
+
+#: artworks/models.py:26 artworks/models.py:59 artworks/models.py:78
 msgid "Name"
 msgstr ""
 
-#: artworks/models.py:23 artworks/models.py:72
+#: artworks/models.py:28 artworks/models.py:79
 msgid "Synonyms"
 msgstr ""
 
-#: artworks/models.py:57
+#: artworks/models.py:65
 msgid "Keyword"
 msgstr ""
 
-#: artworks/models.py:76 artworks/models.py:127
-msgid "Location"
-msgstr ""
-
-#: artworks/models.py:77
+#: artworks/models.py:86
 msgid "Locations"
 msgstr ""
 
-#: artworks/models.py:93
+#: artworks/models.py:108
 msgid "Original Image"
 msgstr ""
 
-#: artworks/models.py:100
+#: artworks/models.py:116
 msgid "Title, English"
 msgstr ""
 
-#: artworks/models.py:103
+#: artworks/models.py:120
 msgid "Date"
 msgstr ""
 
-#: artworks/models.py:110
+#: artworks/models.py:130
 msgid "Material/Technique"
 msgstr ""
 
-#: artworks/models.py:111
+#: artworks/models.py:133
 msgid "Dimensions"
 msgstr ""
 
-#: artworks/models.py:112
+#: artworks/models.py:135
 msgid "Descriptions"
 msgstr "Comments"
 
-#: artworks/models.py:113
+#: artworks/models.py:136
 msgid "Credits"
 msgstr ""
 
-#: artworks/models.py:114 artworks/models.py:203
+#: artworks/models.py:137 artworks/models.py:234
 msgid "Created at"
 msgstr ""
 
-#: artworks/models.py:115 artworks/models.py:204
+#: artworks/models.py:139 artworks/models.py:235
 msgid "Updated at"
 msgstr ""
 
-#: artworks/models.py:119
-msgid "Place of Production"
-msgstr ""
-
-#: artworks/models.py:133
+#: artworks/models.py:158
 msgid "Checked"
 msgstr ""
 
-#: artworks/models.py:134
+#: artworks/models.py:159
 msgid "Published"
 msgstr ""
 
-#: artworks/models.py:138 artworks/models.py:225
+#: artworks/models.py:167
 msgid "Artwork"
 msgstr ""
 
-#: artworks/models.py:139 artworks/models.py:202
+#: artworks/models.py:168
 msgid "Artworks"
 msgstr ""
 
-#: artworks/models.py:201
+#: artworks/models.py:233 artworks/models.py:297
 msgid "User"
 msgstr ""
 
-#: artworks/models.py:215
-msgid "Folders"
+#: artworks/models.py:236
+msgid "Slides"
 msgstr ""
 
-#: artworks/models.py:230
-msgid "Folder Membership"
+#: artworks/models.py:239
+msgid "Permissions"
 msgstr ""
 
-#: artworks/models.py:231
-msgid "Folder Memberships"
+#: artworks/models.py:253
+msgid "Album"
 msgstr ""
+
+#: artworks/models.py:254 artworks/models.py:303
+msgid "Albums"
+msgstr ""
+
+#~ msgid "Location_of_creation"
+#~ msgstr "Place of Production"
+
+#~ msgid "Location_current"
+#~ msgstr "Location"
 
 #~ msgid "All Collections"
 #~ msgstr "All Folders"
+
+
+### manual translations
+msgid "VIEW"
+msgstr "view"
+
+msgid "EDIT"
+msgstr "edit"

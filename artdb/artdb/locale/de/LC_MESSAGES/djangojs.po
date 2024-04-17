@@ -78,3 +78,97 @@ msgstr "veröffentlicht"
 
 msgid "Show more"
 msgstr "Mehr anzeigen"
+
+## API
+
+#: artdb/api/views.py:299
+msgid "title"
+msgstr "Titel"
+
+#: artdb/api/views.py:306
+msgid "enter title"
+msgstr "Titel eintragen"
+
+#: artdb/api/views.py:323
+msgid "artist"
+msgstr "Künstler*in"
+
+#: artdb/api/views.py:330
+msgid "enter artist"
+msgstr "Künstler*in eintragen"
+
+#: artdb/api/views.py:347
+msgid "place of production"
+msgstr "Entstehungsort"
+
+#: artdb/api/views.py:354
+msgid "enter place of production"
+msgstr "Entstehungsort eintragen"
+
+#: artdb/api/views.py:371
+msgid "current location"
+msgstr "Standort"
+
+#: artdb/api/views.py:378
+msgid "enter current location"
+msgstr "Standort eintragen"
+
+#: artdb/api/views.py:395
+msgid "keywords"
+msgstr "Schlagwort"
+
+#: artdb/api/views.py:397
+msgid "enter keywords"
+msgstr "Schlagwort eintragen"
+
+#: artdb/api/views.py:416
+msgid "date from, to"
+msgstr "Datierung von, bis"
+
+#: artdb/api/views.py:422
+msgid "enter date"
+msgstr "Datum eintragen"
+
+
+## Labels
+msgid "artists"
+msgstr "Künstler*innen"
+
+msgid "date"
+msgstr "Datierung"
+
+msgid "credits"
+msgstr "Abbildungsnachweis"
+
+msgid "description"
+msgstr "Beschreibung"
+
+msgid "dimensions"
+msgstr "Format"
+
+msgid "keywords"
+msgstr "Schlagwörter"
+
+msgid "license"
+msgstr "Lizenz"
+
+msgid "location_current"
+msgstr "Standort"
+
+msgid "location_of_creation"
+msgstr "Entstehungsort"
+
+msgid "material"
+msgstr "Material/Technik"
+
+msgid "title"
+msgstr "Titel"
+
+msgid "title_notes"
+msgstr "Notizen zu problematischen Begrifflichkeiten"
+
+msgid "edit"
+msgstr "Bearbeiten"
+
+msgid "view"
+msgstr "Ansehen"

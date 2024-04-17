@@ -1,7 +1,8 @@
+from versatileimagefield.datastructures import sizedimage
+
 from django.apps import AppConfig
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
-from versatileimagefield.datastructures import sizedimage
+from django.utils.translation import gettext_lazy as _
 
 
 def monkeypatch_versatile_image_field():

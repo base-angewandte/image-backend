@@ -1,0 +1,10 @@
+media
+fixtures
+artdb/assets/
+dockerdata/
+docker-compose.override.yml
+secret_key.py
+logs/
+tmp/
+.python-version
+.idea
