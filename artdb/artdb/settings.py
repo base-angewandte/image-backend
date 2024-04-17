@@ -482,3 +482,5 @@ for permission in DEFAULT_PERMISSIONS:
         )
 
 SEARCH_LIMIT = 30
+
+LOCATION_SEARCH_LEVELS = env.int('LOCATION_SEARCH_LEVELS', default=5)
