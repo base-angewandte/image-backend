@@ -1757,7 +1757,7 @@ def search(request, *args, **kwargs):
             if f['id'] not in FILTERS_KEYS:
                 raise ParseError(f'Invalid filter id {repr(f["id"])}')
 
-            q_objects |= FILTERS_MAP[f['id']](f['filter_values'])
+            q_objects &= FILTERS_MAP[f['id']](f['filter_values'])
 
         qs = qs.filter(q_objects).distinct()
 
