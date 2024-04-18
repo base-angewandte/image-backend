@@ -453,7 +453,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             try:
                 image_zip.write(
                     artwork.image_original.path,
-                    arcname=artwork.image_original.name,
+                    arcname=artwork.image_original.name.split('/')[-1],
                 )
             except FileNotFoundError:
                 error_info = _('File for artwork {pk} not found')
