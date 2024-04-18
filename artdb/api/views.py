@@ -448,12 +448,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         #  image to zipfile & metadata
         with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as image_zip:
-            # create zip file
+            artwork_title = slugify(artwork.title)
+            image_suffix = artwork.image_original.name.split('.')[-1]
 
             try:
                 image_zip.write(
                     artwork.image_original.path,
-                    arcname=artwork.image_original.name,
+                    arcname=f'{artwork_title}.{image_suffix}',
                 )
             except FileNotFoundError:
                 error_info = _('File for artwork {pk} not found')
@@ -462,8 +463,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                     error_info.format(pk=pk),
                     status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
-
-            artwork_title = slugify(artwork.title)
 
             image_zip.writestr(f'{artwork_title}_metadata.txt', metadata_content)
             image_zip.close()
