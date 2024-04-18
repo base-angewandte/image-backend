@@ -477,99 +477,86 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
 
 def filter_title(filter_values):
-    """Should filter artworks whose title include the string if given, AND the
-    artworks with given id."""
     q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
-            q_objects |= Q(title__icontains=val) | Q(title_english__icontains=val)
+            q_objects &= Q(title__unaccent__icontains=val) | Q(
+                title_english__unaccent__icontains=val
+            )
         elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects |= Q(id=val.get('id'))
+            q_objects &= Q(pk=val.get('id'))
         else:
             raise ParseError(
-                'Invalid filter_value format. See example below for more information.',
-                400,
+                _('Invalid format of at least one filter_value for title filter.')
             )
 
     return q_objects
 
 
 def filter_artists(filter_values):
-    """Should filter artworks whose artist name includes the string if given,
-    AND the artworks for artist which has the given id."""
     q_objects = Q()
     for val in filter_values:
-        if isinstance(val, dict) and 'id' in val.keys():
-            q_objects |= Q(artists__id=val.get('id'))
-
         if isinstance(val, str):
-            terms = val.split(' ')
-            for term in terms:
-                q_objects |= Q(artists__name__unaccent__icontains=term)
+            q_objects &= Q(artists__name__unaccent__icontains=val)
+        elif isinstance(val, dict) and 'id' in val.keys():
+            q_objects &= Q(artists__id=val.get('id'))
+        else:
+            raise ParseError(
+                _('Invalid format of at least one filter_value for artists filter.')
+            )
 
     return q_objects
 
 
 def filter_place_of_production(filter_values):
-    """Should filter artworks whose place of production includes the string if
-    given, AND the artworks for place of production which has the given id."""
     q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
-            locations = Location.objects.filter(name__icontains=val)
-            q_objects |= Q(place_of_production__in=locations)
+            q_objects &= Q(place_of_production__name__unaccent__icontains=val)
         elif isinstance(val, dict) and 'id' in val.keys():
-            location = Location.objects.filter(id=val.get('id'))
-            location_plus_descendants = Location.objects.get_queryset_descendants(
-                location,
-                include_self=True,
+            locations = Location.objects.filter(pk=val.get('id')).get_descendants(
+                include_self=True
             )
-            q_objects |= Q(place_of_production__in=location_plus_descendants)
+            q_objects &= Q(place_of_production__in=locations)
         else:
             raise ParseError(
-                'Invalid filter_value format. See example below for more information.'
+                'Invalid format of at least one filter_value for place_of_production filter.'
             )
 
     return q_objects
 
 
 def filter_location(filter_values):
-    """Should filter artworks whose location includes the string if given, AND
-    the artworks for location which has the given id."""
     q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
-            locations = Location.objects.filter(name__icontains=val)
-            q_objects |= Q(location__in=locations)
+            q_objects &= Q(location__name__unaccent__icontains=val)
         elif isinstance(val, dict) and 'id' in val.keys():
-            location = Location.objects.filter(id=val.get('id'))
-            location_plus_descendants = Location.objects.get_queryset_descendants(
-                location,
-                include_self=True,
+            locations = Location.objects.filter(pk=val.get('id')).get_descendants(
+                include_self=True
             )
-            q_objects |= Q(location__in=location_plus_descendants)
+            q_objects &= Q(location__in=locations)
         else:
             raise ParseError(
-                'Invalid filter_value format. See example below for more information.'
+                'Invalid format of at least one filter_value for location filter.'
             )
 
     return q_objects
 
 
 def filter_keywords(filter_values):
-    """Should filter artworks whose keywords include the string if given, AND
-    the artworks for keyword which has the given id."""
     q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
-            keywords = Keyword.objects.filter(name__icontains=val)
-            q_objects |= Q(keywords__in=keywords)
+            q_objects &= Q(keywords__name__unaccent__icontains=val)
         elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects |= Q(keywords__id=val.get('id'))
+            keywords = Keyword.objects.filter(pk=val.get('id')).get_descendants(
+                include_self=True
+            )
+            q_objects &= Q(keywords__in=keywords)
         else:
             raise ParseError(
-                'Invalid filter_value format. See example below for more information.',
-                400,
+                'Invalid format of at least one filter_value for keywords filter.'
             )
 
     return q_objects
@@ -579,22 +566,24 @@ def filter_date(filter_values):
     if not isinstance(filter_values, dict) or (
         'date_from' not in filter_values and 'date_to' not in filter_values
     ):
-        raise ParseError(_('Invalid filter_value format.'), 400)
+        raise ParseError(_('Invalid filter_value format for date filter.'))
 
     date_from = filter_values.get('date_from')
     date_to = filter_values.get('date_to')
     if not date_from and not date_to:
-        raise ParseError(_('Invalid filter_value format.'), 400)
+        raise ParseError(_('Invalid filter_value format for date filter.'))
     try:
         if date_from:
             date_from = int(date_from)
         if date_to:
             date_to = int(date_to)
     except ValueError as err:
-        raise ParseError(_('Invalid filter_value format.'), 400) from err
+        raise ParseError(
+            _('Invalid format of at least one filter_value for date filter.')
+        ) from err
 
     if date_from and date_to and date_to < date_from:
-        raise ParseError(_('date_from needs to be less than or equal to date_to.'), 400)
+        raise ParseError(_('date_from needs to be less than or equal to date_to.'))
 
     # in case only date_from is provided, all dates in its future should be found
     if not date_to:
