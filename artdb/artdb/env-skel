@@ -70,3 +70,6 @@ SITE_URL=https://base.uni-ak.ac.at/
 ## Permissions default for autocomplete search, type permissions. Can be True or False
 PERMISSIONS_DEFAULT_VIEW=True
 PERMISSIONS_DEFAULT_EDIT=False
+
+## How deep the location autocomplete in the Django admin should also search for parent locations
+LOCATION_SEARCH_LEVELS=5
