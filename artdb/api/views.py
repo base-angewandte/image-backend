@@ -508,58 +508,36 @@ def filter_artists(filter_values):
     return q_objects
 
 
-def filter_place_of_production(filter_values):
+def filter_mptt_model(filter_values, model, search_field):
+    """Helper function for other filters, to filter a MPTT model based
+    field."""
     q_objects = Q()
     for val in filter_values:
         if isinstance(val, str):
-            q_objects &= Q(place_of_production__name__unaccent__icontains=val)
+            q_objects &= Q(**{f'{search_field}__name__unaccent__icontains': val})
         elif isinstance(val, dict) and 'id' in val.keys():
-            locations = Location.objects.filter(pk=val.get('id')).get_descendants(
+            entries = model.objects.filter(pk=val.get('id')).get_descendants(
                 include_self=True
             )
-            q_objects &= Q(place_of_production__in=locations)
+            q_objects &= Q(**{f'{search_field}__in': entries})
         else:
             raise ParseError(
-                'Invalid format of at least one filter_value for place_of_production filter.'
+                f'Invalid format of at least one filter_value for {search_field} filter.'
             )
 
     return q_objects
+
+
+def filter_place_of_production(filter_values):
+    return filter_mptt_model(filter_values, Location, 'place_of_production')
 
 
 def filter_location(filter_values):
-    q_objects = Q()
-    for val in filter_values:
-        if isinstance(val, str):
-            q_objects &= Q(location__name__unaccent__icontains=val)
-        elif isinstance(val, dict) and 'id' in val.keys():
-            locations = Location.objects.filter(pk=val.get('id')).get_descendants(
-                include_self=True
-            )
-            q_objects &= Q(location__in=locations)
-        else:
-            raise ParseError(
-                'Invalid format of at least one filter_value for location filter.'
-            )
-
-    return q_objects
+    return filter_mptt_model(filter_values, Location, 'location')
 
 
 def filter_keywords(filter_values):
-    q_objects = Q()
-    for val in filter_values:
-        if isinstance(val, str):
-            q_objects &= Q(keywords__name__unaccent__icontains=val)
-        elif isinstance(val, dict) and 'id' in val.keys():
-            keywords = Keyword.objects.filter(pk=val.get('id')).get_descendants(
-                include_self=True
-            )
-            q_objects &= Q(keywords__in=keywords)
-        else:
-            raise ParseError(
-                'Invalid format of at least one filter_value for keywords filter.'
-            )
-
-    return q_objects
+    return filter_mptt_model(filter_values, Keyword, 'keywords')
 
 
 def filter_date(filter_values):
