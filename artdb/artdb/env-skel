@@ -72,4 +72,4 @@ PERMISSIONS_DEFAULT_VIEW=True
 PERMISSIONS_DEFAULT_EDIT=False
 
 ## How deep the location autocomplete in the Django admin should also search for parent locations
-LOCATION_SEARCH_LEVELS=5
+LOCATION_SEARCH_LEVELS=1
