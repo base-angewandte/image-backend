@@ -1,6 +1,5 @@
 from dal_admin_filters import AutocompleteFilter
 from mptt.admin import MPTTModelAdmin
-from ordered_model.admin import OrderedInlineModelAdminMixin
 
 from django.conf import settings
 from django.contrib import admin
@@ -99,15 +98,6 @@ class ArtworkAdmin(admin.ModelAdmin):
             )
         else:
             return format_html('none')
-
-
-@admin.register(Album)
-class AlbumAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
-    readonly_fields = ('created_at', 'updated_at')
-    list_display = ('title', 'created_at', 'updated_at')
-    ordering = ('-created_at',)
-    search_fields = ['title']
-    autocomplete_fields = ('user',)
 
 
 @admin.register(Artist)
