@@ -1169,6 +1169,10 @@ class AlbumsViewSet(viewsets.ViewSet):
         PermissionsRelation.objects.filter(album=album).exclude(
             user__username__in=users
         ).delete()
+        # also remove albums with deleted permissions from those users' root folder
+        FolderAlbumRelation.objects.filter(album=album).exclude(
+            user=request.user
+        ).exclude(user__username__in=users).delete()
 
         qs = PermissionsRelation.objects.filter(album=album)
 
