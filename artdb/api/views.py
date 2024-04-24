@@ -1213,22 +1213,17 @@ class AlbumsViewSet(viewsets.ViewSet):
 
         # user is owner of the album
         if album.user == request.user:
-            for pr in album.permissions.all():
-                user = User.objects.get(username=pr.username)
-                root_folder = Folder.root_folder_for_user(user)
-                FolderAlbumRelation.objects.filter(
-                    album=album, user=user, root_folder=root_folder
-                ).delete()
-
+            # remove permissions for all users
             PermissionsRelation.objects.filter(album=album).delete()
+            # remove album from all folders except the owner's folder
+            FolderAlbumRelation.objects.filter(album=album).exclude(
+                user=request.user
+            ).delete()
 
         # album is shared with user
         else:
             PermissionsRelation.objects.filter(album=album, user=request.user).delete()
-            root_folder = Folder.root_folder_for_user(request.user)
-            FolderAlbumRelation.objects.filter(
-                album=album, user=request.user, folder=root_folder
-            ).delete()
+            FolderAlbumRelation.objects.filter(album=album, user=request.user).delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
