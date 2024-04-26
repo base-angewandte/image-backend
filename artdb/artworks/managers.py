@@ -31,7 +31,7 @@ search_vectors = (
 class ArtworkManager(models.Manager):
     def search(self, text):
         search_query = SearchQuery(text)
-        search_rank = SearchRank(search_vectors, search_query)
+        search_rank = SearchRank('search_vector', search_query)
         trigram_word_similarity_title = TrigramWordSimilarity(
             text,
             'title',
