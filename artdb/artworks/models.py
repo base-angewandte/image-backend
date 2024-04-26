@@ -8,6 +8,8 @@ from versatileimagefield.fields import VersatileImageField
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.db.models import JSONField
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
@@ -158,6 +160,8 @@ class Artwork(models.Model):
     checked = models.BooleanField(verbose_name=_('Checked'), default=False)
     published = models.BooleanField(verbose_name=_('Published'), default=False)
 
+    search_vector = SearchVectorField(null=True, editable=False)
+
     objects = ArtworkManager()
 
     class Meta:
@@ -166,6 +170,7 @@ class Artwork(models.Model):
         ]
         verbose_name = _('Artwork')
         verbose_name_plural = _('Artworks')
+        indexes = [GinIndex(fields=['search_vector'])]
 
     def __str__(self):
         return self.title
