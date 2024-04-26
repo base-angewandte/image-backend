@@ -30,7 +30,7 @@ from rest_framework.serializers import JSONField
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.db.models import FloatField, Q, Value
+from django.db.models import Count, FloatField, Q, Value, Window
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.utils.text import slugify
@@ -1700,9 +1700,11 @@ def search(request, *args, **kwargs):
     exclude = serializer.validated_data.get('exclude', [])
 
     if q_param:
-        qs = Artwork.objects.search(q_param)
+        qs = Artwork.objects.search(q_param).annotate(total_results=Window(Count('pk')))
     else:
-        qs = Artwork.objects.annotate(rank=Value(1.0, FloatField()))
+        qs = Artwork.objects.annotate(rank=Value(1.0, FloatField())).annotate(
+            total_results=Window(Count('pk'))
+        )
         if filters:
             qs = qs.order_by('title')
         else:
@@ -1726,35 +1728,32 @@ def search(request, *args, **kwargs):
 
         qs = qs.filter(q_objects).distinct()
 
-    # total of results before applying limits
-    total = qs.count()
-
     qs = qs[offset : offset + limit]
 
-    return Response(
-        {
-            'total': total,
-            'results': [
-                {
-                    'id': artwork.id,
-                    'image_original': request.build_absolute_uri(
-                        artwork.image_original.url
-                    )
-                    if artwork.image_original
-                    else None,
-                    'credits': artwork.credits,
-                    'title': artwork.title,
-                    'date': artwork.date,
-                    'artists': [
-                        {'value': artist.name, 'id': artist.id}
-                        for artist in artwork.artists.all()
-                    ],
-                    'score': artwork.rank,
-                }
-                for artwork in qs
-            ],
-        }
-    )
+    total = 0
+    results = []
+
+    for artwork in qs:
+        total = artwork.total_results
+
+        results.append(
+            {
+                'id': artwork.id,
+                'image_original': request.build_absolute_uri(artwork.image_original.url)
+                if artwork.image_original
+                else None,
+                'credits': artwork.credits,
+                'title': artwork.title,
+                'date': artwork.date,
+                'artists': [
+                    {'value': artist.name, 'id': artist.id}
+                    for artist in artwork.artists.all()
+                ],
+                'score': artwork.rank,
+            }
+        )
+
+    return Response({'total': total, 'results': results})
 
 
 @extend_schema(
