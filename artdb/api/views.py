@@ -1736,6 +1736,10 @@ def search(request, *args, **kwargs):
     results = []
 
     for artwork in qs:
+        # for performance reasons we get the total results count via annotation
+        # annotate(total_results=Window(Count('pk')))
+        # and for convenience reasons we just set it in every for loop
+        # iteration even though the value is the same for all results
         total = artwork.total_results
 
         results.append(
