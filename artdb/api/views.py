@@ -1714,6 +1714,8 @@ def search(request, *args, **kwargs):
     # only search for published artworks
     qs = qs.filter(published=True)
 
+    qs = qs.prefetch_related('artists')
+
     if exclude:
         qs = qs.exclude(id__in=exclude)
 
