@@ -33,5 +33,8 @@ class ArtworksConfig(AppConfig):
     verbose_name = _('Image Content')
 
     def ready(self):
+        # import signal handlers
+        from . import signals  # noqa: F401
+
         if settings.DEBUG:
             monkeypatch_versatile_image_field()

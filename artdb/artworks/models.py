@@ -8,8 +8,11 @@ from versatileimagefield.fields import VersatileImageField
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.postgres.aggregates import StringAgg
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVector, SearchVectorField
 from django.db import models
-from django.db.models import JSONField
+from django.db.models import JSONField, Value
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.db.models.functions import Upper
 from django.dispatch import receiver
@@ -158,6 +161,8 @@ class Artwork(models.Model):
     checked = models.BooleanField(verbose_name=_('Checked'), default=False)
     published = models.BooleanField(verbose_name=_('Published'), default=False)
 
+    search_vector = SearchVectorField(null=True, editable=False)
+
     objects = ArtworkManager()
 
     class Meta:
@@ -166,6 +171,7 @@ class Artwork(models.Model):
         ]
         verbose_name = _('Artwork')
         verbose_name_plural = _('Artworks')
+        indexes = [GinIndex(fields=['search_vector'])]
 
     def __str__(self):
         return self.title
@@ -181,6 +187,48 @@ class Artwork(models.Model):
         parts = [artists, title_in_language, self.date]
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
+
+    def update_search_vector(self):
+        search_vector = (
+            SearchVector('title', weight='A')
+            + SearchVector('title_english', weight='A')
+            + SearchVector(Value('artists_names'), weight='A')
+            + SearchVector(Value('artists_synonyms'), weight='A')
+            + SearchVector('description', weight='B')
+            + SearchVector(Value('keywords_names'), weight='B')
+            + SearchVector(Value('place_of_production_names'), weight='B')
+            + SearchVector(Value('place_of_production_synonyms'), weight='B')
+            + SearchVector(Value('location_names'), weight='B')
+            + SearchVector(Value('location_synonyms'), weight='B')
+            + SearchVector('credits', weight='C')
+            + SearchVector('material', weight='C')
+            + SearchVector('dimensions', weight='C')
+            + SearchVector('date', weight='C')
+        )
+
+        Artwork.objects.filter(pk=self.pk).annotate(
+            artists_names=StringAgg('artists__name', delimiter=' ')
+        ).annotate(
+            artists_synonyms=StringAgg('artists__synonyms', delimiter=' ')
+        ).annotate(
+            keywords_names=StringAgg('keywords__name', delimiter=' ')
+        ).annotate(
+            place_of_production_names=StringAgg(
+                'place_of_production__name',
+                delimiter=' ',
+            )
+        ).annotate(
+            place_of_production_synonyms=StringAgg(
+                'place_of_production__synonyms',
+                delimiter=' ',
+            )
+        ).annotate(
+            location_names=StringAgg('location__name', delimiter=' ')
+        ).annotate(
+            location_synonyms=StringAgg('location__synonyms', delimiter=' ')
+        ).update(
+            search_vector=search_vector
+        )
 
 
 @receiver(models.signals.post_save, sender=Artwork)
