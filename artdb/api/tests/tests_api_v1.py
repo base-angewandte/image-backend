@@ -1,7 +1,15 @@
 import json
 from io import BytesIO
 
-from artworks.models import Album, Artist, Artwork, Folder, PermissionsRelation, User
+from artworks.models import (
+    Album,
+    Artist,
+    Artwork,
+    DiscriminatoryTerm,
+    Folder,
+    PermissionsRelation,
+    User,
+)
 from PIL import Image
 from rest_framework import status
 
@@ -281,6 +289,19 @@ class LabelsTests(APITestCase):
         content = json.loads(response.content)
         self.assertEqual(content['title'], _('Title'))
         self.assertEqual(content['keywords'], _('Keywords'))
+
+    def test_discriminatory_terms(self):
+        """Test the retrieval of the discriminatory terms list."""
+        DiscriminatoryTerm.objects.create(term='Barbarian')
+        DiscriminatoryTerm.objects.create(term='Colored')
+        DiscriminatoryTerm.objects.create(term='Disabled')
+        url = reverse('discriminatory-terms', kwargs={'version': VERSION})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertEqual(type(content), list)
+        self.assertEqual(len(content), 3)
+        self.assertEqual(content[2], 'Disabled')
 
 
 class PermissionsTests(APITestCase):
