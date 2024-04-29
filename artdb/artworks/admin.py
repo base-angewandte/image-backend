@@ -9,7 +9,7 @@ from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
 
 from .forms import ArtworkAdminForm
-from .models import Album, Artist, Artwork, Keyword, Location
+from .models import Album, Artist, Artwork, DiscriminatoryTerm, Keyword, Location
 
 
 class ArtistFilter(AutocompleteFilter):
@@ -121,3 +121,9 @@ class LocationAdmin(MPTTModelAdmin):
     search_fields = [
         'parent__' * i + 'name' for i in range(settings.LOCATION_SEARCH_LEVELS)
     ]
+
+
+@admin.register(DiscriminatoryTerm)
+class DiscriminatoryTermAdmin(admin.ModelAdmin):
+    list_display = ('term',)
+    search_fields = ['term']

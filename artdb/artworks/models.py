@@ -385,3 +385,10 @@ class FolderAlbumRelation(models.Model):
     folder = models.ForeignKey(
         Folder, related_name='rel_to_folder', on_delete=models.CASCADE
     )
+
+
+class DiscriminatoryTerm(models.Model):
+    """Defined and extensible set of discriminatory terms that should be
+    contextualised by frontend."""
+
+    term = models.CharField(max_length=255)

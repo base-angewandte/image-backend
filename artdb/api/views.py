@@ -6,6 +6,7 @@ from artworks.exports import collection_download_as_pptx
 from artworks.models import (
     Album,
     Artwork,
+    DiscriminatoryTerm,
     Folder,
     FolderAlbumRelation,
     Keyword,
@@ -1776,3 +1777,17 @@ def search(request, *args, **kwargs):
 @api_view(['get'])
 def search_filters(request, *args, **kwargs):
     return Response(FILTERS)
+
+
+@extend_schema(
+    tags=['labels'],
+    responses={
+        200: OpenApiResponse(
+            description='A list of discriminatory terms, which should be contextualised.',
+        ),
+    },
+)
+@api_view(['get'])
+def discriminatory_terms(request, *args, **kwargs):
+    terms = DiscriminatoryTerm.objects.all()
+    return Response([t.term for t in terms])
