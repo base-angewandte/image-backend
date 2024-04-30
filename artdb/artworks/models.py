@@ -392,3 +392,6 @@ class DiscriminatoryTerm(models.Model):
     contextualised by frontend."""
 
     term = models.CharField(max_length=255)
+
+    class Meta:
+        ordering = [Upper('term')]
