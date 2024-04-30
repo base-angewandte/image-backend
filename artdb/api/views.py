@@ -1493,13 +1493,9 @@ class FoldersViewSet(viewsets.ViewSet):
                     # Content shows all the albums belonging to the (root) folder per user.
                     # As at the moment we only have root folders, folders within folders
                     # will later be implemented to be shown in content (todo)
-                    'total': sum(
-                        [
-                            folder.albums.all().count(),
-                        ]
-                    ),  # number of albums belonging to root folder
+                    'total': folder.albums.all().count(),  # currently: number of albums belonging to root folder
                     'data': self.get_album_in_folder_data(
-                        list(folder.albums.filter(q_filters).order_by(sorting)),
+                        folder.albums.filter(q_filters).order_by(sorting),
                         request,
                     )[offset : offset + limit],
                 },
