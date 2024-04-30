@@ -1501,14 +1501,10 @@ class FoldersViewSet(viewsets.ViewSet):
                             folder.albums.all().count(),
                         ]
                     ),  # number of albums belonging to root folder
-                    'data': [
-                        self.get_album_in_folder_data(
-                            list(
-                                folder.albums.filter(q_filters_albums).order_by(sorting)
-                            ),
-                            request,
-                        )
-                    ][offset : offset + limit],
+                    'data': self.get_album_in_folder_data(
+                        list(folder.albums.filter(q_filters_albums).order_by(sorting)),
+                        request,
+                    )[offset : offset + limit],
                 },
             }
         )
