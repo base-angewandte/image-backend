@@ -1789,5 +1789,4 @@ def search_filters(request, *args, **kwargs):
 )
 @api_view(['get'])
 def discriminatory_terms(request, *args, **kwargs):
-    terms = DiscriminatoryTerm.objects.all()
-    return Response([t.term for t in terms])
+    return Response(list(DiscriminatoryTerm.objects.values_list('term', flat=True)))
