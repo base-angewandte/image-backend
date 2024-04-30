@@ -28,7 +28,9 @@ urlpatterns = [
     path('autocomplete/', include(autocomplete_urls)),
     # Discriminatory terms
     path(
-        'discriminatory-terms/', views.discriminatory_terms, name='discriminatory-terms'
+        'discriminatory-terms/',
+        views.discriminatory_terms,
+        name='discriminatory-terms',
     ),
     # Schema
     path('openapi.yaml', SpectacularAPIView.as_view(), name='schema_yaml'),
