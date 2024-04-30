@@ -1454,9 +1454,8 @@ class FoldersViewSet(viewsets.ViewSet):
         sorting = check_sorting(
             request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
-        permissions = request.query_params.get('permissions', 'EDIT').split(',')
 
-        # Albums sorting fields differ, but we want to be coherent in the request so here is a hacky adaptation
+        # Albums sorting fields differ for legacy reasons, but should be used consistently in the API
         if sorting == 'date_created' or sorting == '-date_created':
             sorting = 'created_at' if '-' not in sorting else '-created_at'
 
@@ -1474,19 +1473,20 @@ class FoldersViewSet(viewsets.ViewSet):
             except Folder.DoesNotExist as dne:
                 raise NotFound(_('Folder does not exist')) from dne
 
-        q_filters_albums = Q()
+        q_filters = Q()
 
-        # Permissions are only for Album for the moment
+        if serializer.validated_data['owner']:
+            q_filters |= Q(user=request.user)
+
+        permissions = serializer.validated_data['permissions'].split(',')
+
         if permissions:
-            q_filters_albums |= Q(
+            q_filters |= Q(
                 pk__in=PermissionsRelation.objects.filter(
                     user=request.user,
                     permissions__in=permissions,
                 ).values_list('album__pk', flat=True)
             )
-
-        if serializer.validated_data['owner']:
-            q_filters_albums |= Q(user=request.user)
 
         return Response(
             {
@@ -1502,7 +1502,7 @@ class FoldersViewSet(viewsets.ViewSet):
                         ]
                     ),  # number of albums belonging to root folder
                     'data': self.get_album_in_folder_data(
-                        list(folder.albums.filter(q_filters_albums).order_by(sorting)),
+                        list(folder.albums.filter(q_filters).order_by(sorting)),
                         request,
                     )[offset : offset + limit],
                 },
