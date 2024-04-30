@@ -140,11 +140,7 @@ class AlbumsListRequestSerializer(ArtworksAlbumsRequestSerializer):
 
 
 class FoldersRequestSerializer(AlbumsListRequestSerializer):
-    owner = serializers.BooleanField(
-        required=False,
-        default=True,
-        help_text='Boolean indicating to return albums owned by this user.',
-    )
+    pass
 
 
 class PermissionItemSerializer(serializers.Serializer):
