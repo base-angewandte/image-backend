@@ -1495,9 +1495,11 @@ class FoldersViewSet(viewsets.ViewSet):
                     # will later be implemented to be shown in content (todo)
                     'total': folder.albums.all().count(),  # currently: number of albums belonging to root folder
                     'data': self.get_album_in_folder_data(
-                        folder.albums.filter(q_filters).order_by(sorting),
+                        folder.albums.filter(q_filters).order_by(sorting)[
+                            offset : offset + limit
+                        ],
                         request,
-                    )[offset : offset + limit],
+                    ),
                 },
             }
         )
