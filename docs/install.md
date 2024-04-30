@@ -120,6 +120,7 @@ subsections.
   python manage.py loaddata artworks/fixtures/artists.json
   python manage.py loaddata artworks/fixtures/keywords.json
   python manage.py loaddata artworks/fixtures/locations.json
+  python manage.py loaddata artworks/fixtures/discriminatory_terms.json
   python manage.py loaddata artworks/fixtures/artworks.json
   cd ..
   cp test-data/*.png artdb/assets/media

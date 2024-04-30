@@ -26,6 +26,12 @@ urlpatterns = [
     path('search/filters/', views.search_filters, name='search-filters'),
     # Autocomplete
     path('autocomplete/', include(autocomplete_urls)),
+    # Discriminatory terms
+    path(
+        'discriminatory-terms/',
+        views.discriminatory_terms,
+        name='discriminatory-terms',
+    ),
     # Schema
     path('openapi.yaml', SpectacularAPIView.as_view(), name='schema_yaml'),
     path('openapi.json', SpectacularJSONAPIView.as_view(), name='schema_json'),
