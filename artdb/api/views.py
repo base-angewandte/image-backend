@@ -48,7 +48,6 @@ from .serializers import (
     ArtworksImageRequestSerializer,
     CreateAlbumRequestSerializer,
     CreateSlidesRequestSerializer,
-    FolderSerializer,
     FoldersRequestSerializer,
     PermissionsRequestSerializer,
     PermissionsResponseSerializer,
@@ -1306,7 +1305,6 @@ class FoldersViewSet(viewsets.ViewSet):
     if folder_id == 'root', return the content of the root folder for the current user
     """
 
-    serializer_class = FolderSerializer
     queryset = Folder.objects.all()
 
     ordering_fields = ['title', 'date_created', 'date_changed']
@@ -1341,7 +1339,6 @@ class FoldersViewSet(viewsets.ViewSet):
 
     @extend_schema(
         tags=['folders'],
-        request=FolderSerializer,
         parameters=[
             OpenApiParameter(
                 name='sort_by',
@@ -1454,9 +1451,8 @@ class FoldersViewSet(viewsets.ViewSet):
         sorting = check_sorting(
             request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
-        permissions = request.query_params.get('permissions', 'EDIT')
 
-        # Albums sorting fields differ, but we want to be coherent in the request so here is a hacky adaptation
+        # Albums sorting fields differ for legacy reasons, but should be used consistently in the API
         if sorting == 'date_created' or sorting == '-date_created':
             sorting = 'created_at' if '-' not in sorting else '-created_at'
 
@@ -1474,19 +1470,20 @@ class FoldersViewSet(viewsets.ViewSet):
             except Folder.DoesNotExist as dne:
                 raise NotFound(_('Folder does not exist')) from dne
 
-        q_filters_albums = Q()
+        q_filters = Q()
 
-        # Permissions are only for Album for the moment
+        if serializer.validated_data['owner']:
+            q_filters |= Q(user=request.user)
+
+        permissions = serializer.validated_data['permissions'].split(',')
+
         if permissions:
-            q_filters_albums |= Q(
+            q_filters |= Q(
                 pk__in=PermissionsRelation.objects.filter(
                     user=request.user,
                     permissions__in=permissions,
                 ).values_list('album__pk', flat=True)
             )
-
-        if serializer.validated_data['owner']:
-            q_filters_albums |= Q(user=serializer.validated_data['owner'])
 
         return Response(
             {
@@ -1496,19 +1493,13 @@ class FoldersViewSet(viewsets.ViewSet):
                     # Content shows all the albums belonging to the (root) folder per user.
                     # As at the moment we only have root folders, folders within folders
                     # will later be implemented to be shown in content (todo)
-                    'total': sum(
-                        [
-                            folder.albums.all().count(),
-                        ]
-                    ),  # number of albums belonging to root folder
-                    'data': [
-                        self.get_album_in_folder_data(
-                            list(
-                                folder.albums.filter(q_filters_albums).order_by(sorting)
-                            ),
-                            request,
-                        )
-                    ][offset : offset + limit],
+                    'total': folder.albums.all().count(),  # currently: number of albums belonging to root folder
+                    'data': self.get_album_in_folder_data(
+                        folder.albums.filter(q_filters).order_by(sorting)[
+                            offset : offset + limit
+                        ],
+                        request,
+                    ),
                 },
             }
         )

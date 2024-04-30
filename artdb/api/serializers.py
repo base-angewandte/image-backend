@@ -1,4 +1,4 @@
-from artworks.models import Album, Folder
+from artworks.models import Album
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
 
@@ -70,20 +70,6 @@ class UserSerializer(serializers.Serializer):
     name = serializers.CharField(help_text='The display name of the user')
 
 
-class FolderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Folder
-        fields = '__all__'
-
-
-class FoldersRequestSerializer(serializers.Serializer):
-    owner = serializers.BooleanField(
-        required=False,
-        default=True,
-        help_text='Boolean indicating to return albums owned by this user.',
-    )
-
-
 @extend_schema_serializer(
     examples=[
         OpenApiExample(
@@ -151,6 +137,10 @@ class AlbumsListRequestSerializer(ArtworksAlbumsRequestSerializer):
         allow_null=False,
         help_text='Offset for the first item in the results set.',
     )
+
+
+class FoldersRequestSerializer(AlbumsListRequestSerializer):
+    pass
 
 
 class PermissionItemSerializer(serializers.Serializer):
