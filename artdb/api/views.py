@@ -1454,7 +1454,7 @@ class FoldersViewSet(viewsets.ViewSet):
         sorting = check_sorting(
             request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
-        permissions = request.query_params.get('permissions', 'EDIT')
+        permissions = request.query_params.get('permissions', 'EDIT').split(',')
 
         # Albums sorting fields differ, but we want to be coherent in the request so here is a hacky adaptation
         if sorting == 'date_created' or sorting == '-date_created':
@@ -1486,7 +1486,7 @@ class FoldersViewSet(viewsets.ViewSet):
             )
 
         if serializer.validated_data['owner']:
-            q_filters_albums |= Q(user=serializer.validated_data['owner'])
+            q_filters_albums |= Q(user=request.user)
 
         return Response(
             {
