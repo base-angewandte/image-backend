@@ -1,4 +1,4 @@
-from artworks.models import Album, Folder
+from artworks.models import Album
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
 
@@ -137,12 +137,6 @@ class AlbumsListRequestSerializer(ArtworksAlbumsRequestSerializer):
         allow_null=False,
         help_text='Offset for the first item in the results set.',
     )
-
-
-class FolderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Folder
-        fields = '__all__'
 
 
 class FoldersRequestSerializer(AlbumsListRequestSerializer):

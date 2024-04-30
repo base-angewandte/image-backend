@@ -48,7 +48,6 @@ from .serializers import (
     ArtworksImageRequestSerializer,
     CreateAlbumRequestSerializer,
     CreateSlidesRequestSerializer,
-    FolderSerializer,
     FoldersRequestSerializer,
     PermissionsRequestSerializer,
     PermissionsResponseSerializer,
@@ -1306,7 +1305,6 @@ class FoldersViewSet(viewsets.ViewSet):
     if folder_id == 'root', return the content of the root folder for the current user
     """
 
-    serializer_class = FolderSerializer
     queryset = Folder.objects.all()
 
     ordering_fields = ['title', 'date_created', 'date_changed']
@@ -1341,7 +1339,6 @@ class FoldersViewSet(viewsets.ViewSet):
 
     @extend_schema(
         tags=['folders'],
-        request=FolderSerializer,
         parameters=[
             OpenApiParameter(
                 name='sort_by',
