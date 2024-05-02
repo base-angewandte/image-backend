@@ -356,9 +356,91 @@ class UserDataTests(APITestCase):
         self.assertEqual(content['email'], 'temporary@uni-ak.ac.at')
 
 
-# todo continue with Autocomplete
-
-
 class AutocompleteTests(APITestCase):
-    # todo
-    pass
+    def test_autocomplete(self):
+        """Test the retrieval of autocomplete results."""
+        url = reverse('autocomplete', kwargs={'version': VERSION})
+
+        # test general parameter parsing
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.get(f'{url}?q=a', format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.get(f'{url}?type=users', format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.get(f'{url}?q=a&type=nonexistenttype', format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.get(f'{url}?q=a&type=users&limit=0', format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # test single autocomplete type
+        response = self.client.get(f'{url}?q=student&type=users', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertEqual(type(content), list)
+        self.assertEqual(len(content), 1)
+        self.assertEqual(content[0]['id'], 's1234567')
+        self.assertEqual(content[0]['label'], 'Test Student')
+
+        # test multiple autocomplete types
+        requested_types = ['titles', 'artists', 'users', 'keywords', 'locations']
+        response = self.client.get(
+            f'{url}?q=test&type={",".join(requested_types)}', format='json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertEqual(type(content), list)
+        self.assertEqual(len(content), 5)
+        for i, result_type in enumerate(content):
+            self.assertEqual(type(result_type), dict)
+            self.assertEqual(result_type['id'], requested_types[i])
+            self.assertEqual(type(result_type['data']), list)
+            for item in result_type['data']:
+                self.assertEqual(type(item), dict)
+                self.assertEqual('id' in item, True)
+                self.assertEqual('label' in item, True)
+        self.assertEqual(len(content[1]['data']), 0)  # no artists
+        self.assertEqual(len(content[3]['data']), 0)  # no keywords
+        self.assertEqual(len(content[4]['data']), 0)  # no locations
+        self.assertEqual(len(content[2]['data']), 2)  # 2 users
+        self.assertLess(3, len(content[0]['data']))  # more than 3 artwork titles
+        self.assertEqual(
+            content[2]['data'][0]['label'], 'Test Lecturer'
+        )  # alphabetic ordering
+        self.assertEqual(
+            content[2]['data'][1]['label'], 'Test Student'
+        )  # alphabetic ordering
+
+        # test (default) limiting
+        response = self.client.get(f'{url}?q=e&type=titles', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertEqual(len(content), 10)  # default limit
+        response = self.client.get(f'{url}?q=e&type=titles&limit=100', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertEqual(len(content), 15)
+        response = self.client.get(f'{url}?q=e&type=titles&limit=5', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertEqual(len(content), 5)
+        # now also test multi type response
+        response = self.client.get(f'{url}?q=e&type=titles,locations', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertEqual(len(content[0]['data']), 10)  # default limit
+        self.assertEqual(len(content[0]['data']), 10)  # default limit
+        response = self.client.get(
+            f'{url}?q=e&type=titles,locations&limit=100', format='json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertLess(10, len(content[0]['data']))
+        self.assertLess(10, len(content[0]['data']))
+        response = self.client.get(
+            f'{url}?q=e&type=titles,locations&limit=5', format='json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertEqual(len(content[0]['data']), 5)
+        self.assertEqual(len(content[0]['data']), 5)
