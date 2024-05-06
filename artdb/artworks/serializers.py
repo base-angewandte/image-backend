@@ -39,7 +39,7 @@ class ArtworkSerializer(serializers.ModelSerializer):
             'material',
             'dimensions',
             'keywords',
-            'description',
+            'comments',
             'credits',
             'checked',
             'published',

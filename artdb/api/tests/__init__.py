@@ -95,7 +95,7 @@ class APITestCase(RestFrameworkAPITestCase):
             material='Öl auf Leinwand',
             published=True,
             checked=True,
-            description='Neapel, Palazzo Reale\n(Zuschreibung durch Mary D. Garrard, bisland Massimo Stanzione zugeschrieben)',
+            comments='Neapel, Palazzo Reale\n(Zuschreibung durch Mary D. Garrard, bisland Massimo Stanzione zugeschrieben)',
             credits='Stolzenwald, Susanna: Artemisia Gentileschi. Bindung und Befreiung in Leben und Werk einer Malerin, Belser Verlag, Stuttgart/Zürich, 1991, S. 96.',
             image_original=temporary_image(),
         ).artists.add(artemisia)
@@ -108,7 +108,7 @@ class APITestCase(RestFrameworkAPITestCase):
             material='Plakat',
             published=True,
             checked=True,
-            description='Propagandazeitschrift der Sowjetunion, 1930-1991',
+            comments='Propagandazeitschrift der Sowjetunion, 1930-1991',
             credits='Margarita Tupitsyn/ Museum Fokwang Essen (Hg.), Glaube, Hoffnung - Anpassung, Sowjetische Bilder 1928 - 1945, 1996 Okart, S.131',
             image_original=temporary_image(),
         ).artists.add(warwara)
@@ -122,7 +122,7 @@ class APITestCase(RestFrameworkAPITestCase):
             dimensions='je 40,5 x 28,5 cm',
             published=True,
             checked=True,
-            description='Essen, Brot',
+            comments='Essen, Brot',
             credits='Mahlzeit - Essen in der Kunst, Ausstellungskatalog, Galerie im Traklhaus, Salzburg 2009. S.51',
             image_original=temporary_image(),
         ).artists.add(valie)

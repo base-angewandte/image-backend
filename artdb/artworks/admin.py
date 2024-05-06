@@ -62,7 +62,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'keywords',
         'place_of_production',
         'location',
-        'description',
+        'comments',
         'credits',
         'created_at',
         'updated_at',
