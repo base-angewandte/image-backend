@@ -262,7 +262,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'date': artwork.date,
                 'material': artwork.material,
                 'dimensions': artwork.dimensions,
-                'description': artwork.description,
+                'comments': artwork.comments,
                 'place_of_production': {
                     'id': artwork.place_of_production.id,
                     'value': artwork.place_of_production.name,
@@ -438,7 +438,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         )
         metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
         metadata_content += f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n'
-        metadata_content += f'{artwork._meta.get_field("description").verbose_name.title()}: {artwork.description} \n'
+        metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {artwork.comments} \n'
         metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
         metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]} \n'
         metadata_content += f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location if artwork.location else ""} \n'

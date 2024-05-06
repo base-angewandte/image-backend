@@ -135,7 +135,7 @@ class Artwork(models.Model):
     dimensions = models.CharField(
         verbose_name=_('Dimensions'), max_length=255, blank=True
     )
-    description = models.TextField(verbose_name=_('Descriptions'), blank=True)
+    comments = models.TextField(verbose_name=_('Comments'), blank=True)
     credits = models.TextField(verbose_name=_('Credits'), blank=True)
     created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add=True)
     updated_at = models.DateTimeField(
@@ -194,7 +194,7 @@ class Artwork(models.Model):
             + SearchVector('title_english', weight='A')
             + SearchVector(Value('artists_names'), weight='A')
             + SearchVector(Value('artists_synonyms'), weight='A')
-            + SearchVector('description', weight='B')
+            + SearchVector('comments', weight='B')
             + SearchVector(Value('keywords_names'), weight='B')
             + SearchVector(Value('place_of_production_names'), weight='B')
             + SearchVector(Value('place_of_production_synonyms'), weight='B')
