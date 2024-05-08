@@ -1,16 +1,18 @@
-from api.serializers import (
+from api.serializers.albums import (
     AlbumResponseSerializer,
     AlbumsDownloadRequestSerializer,
     AlbumsListRequestSerializer,
     AlbumsRequestSerializer,
     AppendArtworkRequestSerializer,
     CreateAlbumRequestSerializer,
-    CreateSlidesRequestSerializer,
-    PermissionsRequestSerializer,
     PermissionsResponseSerializer,
-    SlidesRequestSerializer,
     UpdateAlbumRequestSerializer,
 )
+from api.serializers.artworks import (
+    CreateSlidesRequestSerializer,
+    SlidesRequestSerializer,
+)
+from api.serializers.permissions import PermissionsRequestSerializer
 from api.views import (
     album_object,
     check_limit,

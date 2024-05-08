@@ -2,7 +2,7 @@ import logging
 import zipfile
 from io import BytesIO
 
-from api.serializers import (
+from api.serializers.artworks import (
     ArtworksAlbumsRequestSerializer,
     ArtworksImageRequestSerializer,
 )

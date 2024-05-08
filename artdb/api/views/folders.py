@@ -1,4 +1,4 @@
-from api.serializers import FoldersRequestSerializer
+from api.serializers.folders import FoldersRequestSerializer
 from api.views import check_limit, check_offset, check_sorting, featured_artworks
 from artworks.models import Folder, PermissionsRelation
 from base_common_drf.openapi.responses import ERROR_RESPONSES

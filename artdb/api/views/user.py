@@ -1,4 +1,4 @@
-from api.serializers import UserDataSerializer
+from api.serializers.user import UserDataSerializer
 from base_common_drf.openapi.responses import ERROR_RESPONSES
 from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import api_view

@@ -1,5 +1,5 @@
 from api.search.filters import FILTERS, FILTERS_KEYS
-from api.serializers import SearchRequestSerializer, SearchResultSerializer
+from api.serializers.search import SearchRequestSerializer, SearchResultSerializer
 from api.views import check_limit, check_offset
 from artworks.models import Artwork, Keyword, Location
 from base_common_drf.openapi.responses import ERROR_RESPONSES
