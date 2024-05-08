@@ -272,15 +272,13 @@ def delete_renditions_on_change(sender, update_fields, instance, **kwargs):
         old_artwork.image_original.delete_all_created_images()
 
 
-class Album(models.Model):
+class Album(AbstractBaseModel):
     """Specific users can create their own collections of artworks."""
 
     id = ShortUUIDField(primary_key=True)
     archive_id = models.BigIntegerField(null=True)
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     user = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
-    created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add=True)
-    updated_at = models.DateTimeField(verbose_name=_('Updated at'), auto_now=True)
     slides = JSONField(verbose_name=_('Slides'), default=list)
     permissions = models.ManyToManyField(
         User,

@@ -181,13 +181,6 @@ class FoldersViewSet(viewsets.ViewSet):
             request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
 
-        # Albums sorting fields differ for legacy reasons, but should be used consistently in the API
-        if sorting == 'date_created' or sorting == '-date_created':
-            sorting = 'created_at' if '-' not in sorting else '-created_at'
-
-        if sorting == 'date_changed' or sorting == '-date_changed':
-            sorting = 'updated_at' if '-' not in sorting else '-updated_at'
-
         # Retrieve folder by id
         if folder_id == 'root':
             folder = Folder.root_folder_for_user(request.user)
