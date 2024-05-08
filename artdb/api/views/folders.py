@@ -18,7 +18,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 
-class FoldersViewSet(viewsets.ViewSet):
+class FoldersViewSet(viewsets.GenericViewSet):
     """
     list:
     GET /folders/
@@ -35,7 +35,6 @@ class FoldersViewSet(viewsets.ViewSet):
     """
 
     queryset = Folder.objects.all()
-
     ordering_fields = ['title', 'date_created', 'date_changed']
 
     def get_album_in_folder_data(self, albums, request):

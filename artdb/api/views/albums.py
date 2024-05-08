@@ -50,7 +50,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 @extend_schema(tags=['albums'])
-class AlbumsViewSet(viewsets.ViewSet):
+class AlbumsViewSet(viewsets.GenericViewSet):
     """
     list:
     GET all the users albums.
