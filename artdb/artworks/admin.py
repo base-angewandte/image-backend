@@ -41,10 +41,10 @@ class ArtworkAdmin(admin.ModelAdmin):
         'get_artists',
         'checked',
         'published',
-        'created_at',
-        'updated_at',
+        'date_created',
+        'date_changed',
     )
-    ordering = ('-created_at',)
+    ordering = ('-date_created',)
     search_fields = ['title']
     fields = (
         'published',
@@ -64,10 +64,10 @@ class ArtworkAdmin(admin.ModelAdmin):
         'location',
         'comments',
         'credits',
-        'created_at',
-        'updated_at',
+        'date_created',
+        'date_changed',
     )
-    readonly_fields = ('created_at', 'updated_at', 'thumbnail_image')
+    readonly_fields = ('date_created', 'date_changed', 'thumbnail_image')
     autocomplete_fields = ('place_of_production', 'location')
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'size': '80'})},
@@ -78,8 +78,8 @@ class ArtworkAdmin(admin.ModelAdmin):
         'published',
         'checked',
         CollectionListFilter,
-        'created_at',
-        'updated_at',
+        'date_created',
+        'date_changed',
     )
 
     class Media:
@@ -102,13 +102,13 @@ class ArtworkAdmin(admin.ModelAdmin):
 
 @admin.register(Artist)
 class ArtistAdmin(admin.ModelAdmin):
-    readonly_fields = ('created_at', 'updated_at')
-    list_display = ('name', 'created_at', 'updated_at')
-    ordering = ('-created_at',)
+    readonly_fields = ('date_created', 'date_changed')
+    list_display = ('name', 'date_created', 'date_changed')
+    ordering = ('-date_created',)
     search_fields = [
         'name',
     ]
-    list_filter = ('created_at', 'updated_at')
+    list_filter = ('date_created', 'date_changed')
 
 
 @admin.register(Keyword)

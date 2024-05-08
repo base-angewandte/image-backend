@@ -23,15 +23,13 @@ from .managers import ArtworkManager
 logger = logging.getLogger(__name__)
 
 
-class Artist(models.Model):
+class Artist(AbstractBaseModel):
     """One Artist can be the maker of 0-n artworks."""
 
     name = models.CharField(verbose_name=_('Name'), max_length=255, null=False)
     synonyms = models.CharField(
         verbose_name=_('Synonyms'), max_length=255, null=False, blank=True
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
 
     class Meta:
         ordering = ['name']
@@ -101,7 +99,7 @@ class Location(MPTTModel):
         return ' > '.join(ancestors[: len(ancestors) + 1])
 
 
-class Artwork(models.Model):
+class Artwork(AbstractBaseModel):
     """Each Artwork has an metadata and image and various versions (renditions)
     of that image."""
 
@@ -137,10 +135,6 @@ class Artwork(models.Model):
     )
     comments = models.TextField(verbose_name=_('Comments'), blank=True)
     credits = models.TextField(verbose_name=_('Credits'), blank=True)
-    created_at = models.DateTimeField(verbose_name=_('Created at'), auto_now_add=True)
-    updated_at = models.DateTimeField(
-        verbose_name=_('Updated at'), auto_now=True, null=True
-    )
     keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'), blank=True)
     place_of_production = TreeForeignKey(
         Location,

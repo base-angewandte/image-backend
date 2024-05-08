@@ -221,7 +221,7 @@ def artworks_list(request):
         else:
             # what the user gets, when she isn't using the search at all
             basic_list = Artwork.objects.filter(published=True).order_by(
-                '-updated_at',
+                '-date_changed',
                 'title',
             )
         return basic_list
