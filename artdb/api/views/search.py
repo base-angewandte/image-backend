@@ -1,7 +1,7 @@
 from api.search.filters import FILTERS, FILTERS_KEYS
 from api.serializers.search import SearchRequestSerializer, SearchResultSerializer
 from api.views import check_limit, check_offset
-from artworks.models import Artwork, Keyword, Location
+from artworks.models import Artwork, Keyword, Location, PermissionsRelation
 from base_common_drf.openapi.responses import ERROR_RESPONSES
 from drf_spectacular.utils import OpenApiExample, extend_schema, inline_serializer
 from rest_framework.decorators import api_view
@@ -43,6 +43,24 @@ def filter_artists(filter_values):
                 _('Invalid format of at least one filter_value for artists filter.')
             )
 
+    return q_objects
+
+
+def filter_albums_for_user(user, owner=True, permissions='EDIT'):
+    q_objects = Q()
+
+    if owner:
+        q_objects |= Q(user=user)
+
+    permissions = permissions.split(',')
+
+    if permissions:
+        q_objects |= Q(
+            pk__in=PermissionsRelation.objects.filter(
+                user=user,
+                permissions__in=permissions,
+            ).values_list('album__pk', flat=True)
+        )
     return q_objects
 
 

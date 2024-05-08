@@ -21,6 +21,7 @@ from api.views import (
     featured_artworks,
     slides_with_details,
 )
+from api.views.search import filter_albums_for_user
 from artworks.exports import collection_download_as_pptx
 from artworks.models import (
     Album,
@@ -143,20 +144,11 @@ class AlbumsViewSet(viewsets.ViewSet):
             request.query_params.get('sort_by', 'title'), self.ordering_fields
         )
 
-        q_filters = Q()
-
-        if serializer.validated_data['owner']:
-            q_filters |= Q(user=request.user)
-
-        permissions = serializer.validated_data['permissions'].split(',')
-
-        if permissions:
-            q_filters |= Q(
-                pk__in=PermissionsRelation.objects.filter(
-                    user=request.user,
-                    permissions__in=permissions,
-                ).values_list('album__pk', flat=True)
-            )
+        q_filters = filter_albums_for_user(
+            user=request.user,
+            owner=serializer.validated_data['owner'],
+            permissions=serializer.validated_data['permissions'],
+        )
 
         albums = Album.objects.filter(q_filters).order_by(sorting)
 

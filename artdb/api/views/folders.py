@@ -1,5 +1,6 @@
 from api.serializers.folders import FoldersRequestSerializer
 from api.views import check_limit, check_offset, check_sorting, featured_artworks
+from api.views.search import filter_albums_for_user
 from artworks.models import Folder, PermissionsRelation
 from base_common_drf.openapi.responses import ERROR_RESPONSES
 from drf_spectacular.utils import (
@@ -14,7 +15,6 @@ from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
 from django.conf import settings
-from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 
@@ -192,20 +192,11 @@ class FoldersViewSet(viewsets.ViewSet):
             except Folder.DoesNotExist as dne:
                 raise NotFound(_('Folder does not exist')) from dne
 
-        q_filters = Q()
-
-        if serializer.validated_data['owner']:
-            q_filters |= Q(user=request.user)
-
-        permissions = serializer.validated_data['permissions'].split(',')
-
-        if permissions:
-            q_filters |= Q(
-                pk__in=PermissionsRelation.objects.filter(
-                    user=request.user,
-                    permissions__in=permissions,
-                ).values_list('album__pk', flat=True)
-            )
+        q_filters = filter_albums_for_user(
+            user=request.user,
+            owner=serializer.validated_data['owner'],
+            permissions=serializer.validated_data['permissions'],
+        )
 
         return Response(
             {
