@@ -7,7 +7,8 @@
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -290,7 +291,7 @@ cython_debug/
 ### Project
 media
 fixtures
-artdb/assets/
+src/assets/
 dockerdata/
 docker-compose.override.yml
 secret_key.py

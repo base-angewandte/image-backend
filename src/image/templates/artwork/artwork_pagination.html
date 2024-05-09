@@ -1,0 +1,49 @@
+{% load proper_paginate %}
+{% load url_replace %}
+
+{% comment %}
+---------------------------------------------------------
+this template defines how the pagination works;
+it is used in the thumbnailbrowser.html template
+---------------------------------------------------------
+{% endcomment %}
+
+    {% if artworks %}
+    <div class="paginator">
+        {% if artworks.has_other_pages %}
+        <ul class="pagination">
+            {% spaceless %}
+            {% if artworks.has_previous %}
+                <li><a href="?{% url_replace request 'page' artworks.previous_page_number %}" class="previous"></a></li>
+            {% else %}
+                <li class="disabled previous"></li>
+            {% endif %}
+
+            {% if artworks.number != 1 and artworks.number > 7 %}
+                <li><a href="?{% url_replace request 'page' 1 %}">1</a>…</li>
+            {% endif %}
+
+            {% for page in artworks.paginator|proper_paginate:artworks.number %}
+                {% if artworks.number == page %}
+                    <li class="current-page"><a href="?{% url_replace request 'page' page %}">{{ page }}</a></li>
+                {% else %}
+                    <li><a href="?{% url_replace request 'page' page %}">{{ page }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if artworks.number != artworks.paginator.num_pages %}
+                {% if artworks.number < artworks.paginator.num_pages|add:"-5" %}
+                    <li>…<a href="?{% url_replace request 'page' artworks.paginator.num_pages %}">{{artworks.paginator.num_pages}}</a></li>
+                {% endif %}
+            {% endif %}
+
+            {% if artworks.has_next %}
+                <li><a href="?{% url_replace request 'page' artworks.next_page_number %}" class="next"></a></li>
+            {% else %}
+                <li class="disabled next"></li>
+            {% endif %}
+
+            {% endspaceless %}
+        </ul>
+        {% endif %}
+    {% endif %}

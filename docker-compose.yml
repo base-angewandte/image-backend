@@ -1,18 +1,18 @@
 version: "2.3"
 services:
-  artdb-redis:
+  image-redis:
     image: redis:4.0.11-alpine
-    container_name: artdb-redis
+    container_name: image-redis
     volumes:
       - ./dockerdata/redis/data:/data
     networks:
-      - artdbnet
+      - imagenet
     restart: always
     command: redis-server --appendonly yes
 
-  artdb-postgres:
+  image-postgres:
     image: postgres:16-alpine
-    container_name: artdb-postgres
+    container_name: image-postgres
     environment:
       - POSTGRES_PASSWORD=$DB_PASSWORD
       - POSTGRES_USER=$DB_USER
@@ -21,12 +21,12 @@ services:
     volumes:
       - ./dockerdata/postgres/16/data:/var/lib/postgresql/data/pgdata
     networks:
-      - artdbnet
+      - imagenet
     restart: always
 
-  artdb-django:
-    build: ./artdb
-    container_name: artdb-django
+  image-django:
+    build: ./src
+    container_name: image-django
     environment:
       - POSTGRES_PASSWORD=$DB_PASSWORD
       - POSTGRES_USER=$DB_USER
@@ -34,13 +34,13 @@ services:
     expose:
       - 8300
     volumes:
-      - ./artdb:/django
-      - ./artdb/assets/static:/django/assets/static
+      - ./src:/django
+      - ./src/assets/static:/django/assets/static
       - $MEDIA_DIR:/django/assets/media
       - ./logs:/logs
     networks:
-      - artdbnet
+      - imagenet
     restart: always
 
 networks:
-  artdbnet:
+  imagenet:

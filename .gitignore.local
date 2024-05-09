@@ -1,6 +1,6 @@
 media
 fixtures
-artdb/assets/
+src/assets/
 dockerdata/
 docker-compose.override.yml
 secret_key.py

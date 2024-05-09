@@ -1,27 +1,27 @@
 version: "2.3"
 services:
-  # Uncomment the artdb-redis and artdb-postgres sections below if you need direct access to
+  # Uncomment the image-redis and image-postgres sections below if you need direct access to
   # these databases (e.g. for local development). If you are running several base applications
   # in parallel you might also have to adapt your local port, if the default ports are already
   # in use by another app
 
   # Mounting the Redis port of the container to your localhost
-  #artdb-redis:
+  #image-redis:
   #  ports:
   #    - "127.0.0.1:6379:6379"
 
   # Mounting the Postgres port of the container to your localhost
-  #artdb-postgres:
+  #image-postgres:
   #  ports:
   #    - "127.0.0.1:5432:5432"
 
-  # Using the dev target of for the artdb-django container and mounting
+  # Using the dev target of for the image-django container and mounting
   # the port of the Django dev server to your localhost
-  artdb-django:
+  image-django:
     build:
-      context: ./artdb
+      context: ./src
       target: dev
-    image: artdb-django-dev
-    container_name: artdb-django
+    image: image-django-dev
+    container_name: image-django
     ports:
       - 127.0.0.1:8300:8300

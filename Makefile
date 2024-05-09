@@ -1,7 +1,7 @@
 include .env
 export
 
-PROJECT_NAME ?= artdb
+PROJECT_NAME ?= image
 
 include config/base.mk
 
@@ -12,18 +12,18 @@ cleanup:  ## clear sessions
 .PHONY: start-dev
 start-dev:  ## start containers for local development
 	docker-compose up -d --build \
-		artdb-redis \
-		artdb-postgres
+		image-redis \
+		image-postgres
 
 .PHONY: test-data
 test-data:  ## load test/placeholder data (fixtures and image files)
-	docker-compose exec artdb-django python manage.py loaddata artworks/fixtures/artists.json
-	docker-compose exec artdb-django python manage.py loaddata artworks/fixtures/keywords.json
-	docker-compose exec artdb-django python manage.py loaddata artworks/fixtures/locations.json
-	docker-compose exec artdb-django python manage.py loaddata artworks/fixtures/discriminatory_terms.json
-	docker-compose exec artdb-django python manage.py loaddata artworks/fixtures/artworks.json
+	docker-compose exec image-django python manage.py loaddata artworks/fixtures/artists.json
+	docker-compose exec image-django python manage.py loaddata artworks/fixtures/keywords.json
+	docker-compose exec image-django python manage.py loaddata artworks/fixtures/locations.json
+	docker-compose exec image-django python manage.py loaddata artworks/fixtures/discriminatory_terms.json
+	docker-compose exec image-django python manage.py loaddata artworks/fixtures/artworks.json
 	cp test-data/*.png ${MEDIA_DIR}
-	docker-compose exec -T artdb-postgres psql -U django_artdb django_artdb < test-data/set-placeholder-images.sql
+	docker-compose exec -T image-postgres psql -U django_image django_image < test-data/set-placeholder-images.sql
 
 .PHONY: makemessages-docker
 makemessages-docker:  ## generate all required messages needed for localisation
