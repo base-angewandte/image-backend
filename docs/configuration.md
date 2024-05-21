@@ -1,6 +1,6 @@
 # Configuration
 
-The *Image* backend is configured through two `.env` files. For both there is a template
+The _Image_ backend is configured through two `.env` files. For both there is a template
 `env-skel` file available in the same folder, to copy from and then modify it. See
 also [](install.md) on when and how to set up those files.
 
@@ -19,9 +19,9 @@ in the default assets folder within Django root. In that case, you can adapt the
 `MEDIA_DIR=` and point to your media directory that gets mounted into the Django
 container to Django's default assets directory.
 
-## `/artdb/artdb/.env`
+## `/src/image/.env`
 
-The main configuration environment file is in the _artdb/artdb_ folder, and it is
+The main configuration environment file is in the _src/image_ folder, and it is
 parsed in the Django settings initialization. All available settings are commented,
 but some are more self-explanatory than others. Some only really make sense, once
 you grasp the whole architectural ecosystem. So here you find some notes to shed more
@@ -35,27 +35,28 @@ services will be run inside docker containers. Only when you want to start the
 Django application itself on your host machine (e.g. for local development), you have
 to set this to False.
 
-### SITE\_URL & FORCE\_SCRIPT\_NAME
+### SITE_URL & FORCE_SCRIPT_NAME
 
-The `SITE_URL` has to be set to the base URL of the site *Image* is running on, which
+The `SITE_URL` has to be set to the base URL of the site _Image_ is running on, which
 will depend on whether you deploy this to some online node, either with multiple services
-sharing one domain or running *Image* on a separate domain, or if you run it locally.
+sharing one domain or running _Image_ on a separate domain, or if you run it locally.
 For local development setups you can choose `http://127.0.0.1:8300/`. For an online
 deployment choose the base path (protocol and domain), e.g. `https://base.uni-ak.ac.at/`.
 
 Additionally, `FORCE_SCRIPT_NAME` (which defaults to `/image`) will be used to
-determine the actual PATH to your *Image* instance, by prefixing it with the
+determine the actual PATH to your _Image_ instance, by prefixing it with the
 `SITE_URL`. So for a local development setup (where Django is actually running on
 127.0.0.1:8300) make sure to remove the comment and explicitly set this to an empty
 string:
+
 ```
 FORCE_SCRIPT_NAME=
 ```
 
-Do the same if *Image* runs on the root of a dedicated domain, and leave the
+Do the same if _Image_ runs on the root of a dedicated domain, and leave the
 default if it runs on a shared domain where it runs on the _/image_ path.
 
-### BEHIND\_PROXY
+### BEHIND_PROXY
 
 This defines whether your application is running behind a reverse proxy (e.g. nginx).
 In most cases the default True will be fine here. But for local development you might
@@ -72,12 +73,12 @@ development environments, it is highly advised for staging and production deploy
 All settings should basically be fine by default, as long as your frontend runs on the
 same domain as the backend. If you need frontends on different domains (e.g. for
 testing and staging purposes) to be able to make those request, you should add them
-to the `CSRF_TRUSTED_ORIGINS` and `CORS_ALLOWED_ORIGINS` lists. You should also set 
+to the `CSRF_TRUSTED_ORIGINS` and `CORS_ALLOWED_ORIGINS` lists. You should also set
 `CORS_ALLOW_CREDENTIALS` to `True` to be able to make authenticated requests on behalf
 of the user. Downloads in the frontend only work if you also add `content-disposition`
 to `CORS_EXPOSE_HEADERS`.
 
-### CAS\_SERVER
+### CAS_SERVER
 
 The `CAS_SERVER` points to the base path of your authentication server (e.g.
 https://base.uni-ak.ac.at/cas/).
@@ -88,7 +89,7 @@ The base header is the old header row with links to other base applications next
 to image. This will be deprecated soon, as for image 2.0 we are developing a
 separate frontend that will be responsible for loading the base header. Until
 then, if you want to have the base header included in image's root page, set
-this some site with available base header, e.g. https://***REMOVED***/ 
+this some site with available base header, e.g. https://***REMOVED***/
 
 ### POSTGRES\_\* & REDIS\_\*
 

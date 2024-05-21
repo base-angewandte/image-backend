@@ -1,10 +1,10 @@
-## These settings are used to set up the DB in the artdb-postgres container.
-DB_NAME=django_artdb
-DB_USER=django_artdb
+## These settings are used to set up the DB in the image-postgres container.
+DB_NAME=django_image
+DB_USER=django_image
 ## Make sure to change this to a strong password on any production/public server.
 ## If you change it here for local development, make sure to also set the POSTGRES_PASSWORD
-## in artdb/artdb/.env accordingly
+## in src/image/.env accordingly
 DB_PASSWORD=password
 
 ## The directory where your (uploaded) image files should reside
-MEDIA_DIR=./artdb/assets/media
+MEDIA_DIR=./src/assets/media

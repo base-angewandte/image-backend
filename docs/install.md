@@ -33,8 +33,8 @@ In both cases there are some common steps to follow:
   vi .env
 
   # django env
-  cp ./artdb/artdb/env-skel ./artdb/artdb/.env
-  vi ./artdb/artdb/.env
+  cp ./src/image/env-skel ./src/image/.env
+  vi ./src/image/.env
   ```
 
 - Create the docker-compose override file:
@@ -48,10 +48,10 @@ subsections.
 
 ### Everything inside docker
 
-- Make sure that the `DOCKER` variable in `./artdb/artdb/.env` is set to
+- Make sure that the `DOCKER` variable in `./src/image/.env` is set to
   `TRUE`. Otherwise, django will assume that postgres and redis are accessible
   on localhost ports.
-- Also in `./artdb/artdb/.env`, make sure the variable `FORCE_SCRIPT_NAME=` is uncommented and set to an empty string.
+- Also in `./src/image/.env`, make sure the variable `FORCE_SCRIPT_NAME=` is uncommented and set to an empty string.
 
 - Start everything:
 
@@ -76,7 +76,7 @@ subsections.
 ### The full developer setup
 
 > Disclaimer: make sure to explicitly set the relevant `POSTGRES_*` variables in your
-> artdb/artdb/.env file, if you have changed any of the corresponding `DB_*`
+> src/image/.env file, if you have changed any of the corresponding `DB_*`
 > parameters in your .env file. This is not necessary for dockerised setups, but in your
 > local django dev server those environement variables are not assigned
 > automagically. Take a look at the [](./configuration.md) section for details.
@@ -87,7 +87,7 @@ subsections.
 
   ```bash
   pip install pip-tools
-  cd artdb
+  cd image
   pip-sync
   cd ..
   ```
@@ -104,7 +104,7 @@ subsections.
 - Run migration:
 
   ```bash
-  cd artdb
+  cd image
   python manage.py migrate
   ```
 
@@ -123,8 +123,8 @@ subsections.
   python manage.py loaddata artworks/fixtures/discriminatory_terms.json
   python manage.py loaddata artworks/fixtures/artworks.json
   cd ..
-  cp test-data/*.png artdb/assets/media
-  docker-compose exec -T artdb-postgres psql -U django_artdb django_artdb < test-data/set-placeholder-images.sql
+  cp test-data/*.png image/assets/media
+  docker-compose exec -T image-postgres psql -U django_image django_image < test-data/set-placeholder-images.sql
   ```
 
 ### Resetting your database and/or the cache
@@ -172,8 +172,8 @@ or `python manage.py migrate` steps above
   vi .env
 
   # django env
-  cp ./artdb/artdb/env-skel ./artdb/artdb/.env
-  vi ./artdb/artdb/.env
+  cp ./src/image/env-skel ./src/image/.env
+  vi ./src/image/.env
   ```
 
 - Use `Makefile` to initialize and run project:

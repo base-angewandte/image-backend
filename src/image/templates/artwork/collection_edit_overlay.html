@@ -1,0 +1,39 @@
+{% load static %}
+{% load i18n %}
+{{ form.media }}
+
+{% comment %}
+---------------------------------------------------------
+this template defines the overlay the user sees
+when she clicks the edit button of a specific collection
+---------------------------------------------------------
+{% endcomment %}
+
+<div class="content">
+    <div class="center">
+    </div>
+</div>
+
+<div class="sidebar-attached">
+    <form class="editform" method="POST" action="{% url 'collection-edit' collection.id %}">
+        {% csrf_token %}
+        <div class="confirmationarea">
+            <div name="cancel" class="inspector-button cancel js-close-edit-overlay" onclick="hideImageAndOverlay(); return false;">{% trans 'Cancel' %}</div><button class="inspector-button confirm" type="submit">{% trans 'Save' %}</button>
+        </div>
+        {% spaceless %}
+        <div class="metadataarea">
+            {{ form.errors }}
+            {{ form.title.label_tag }}
+            {{ form.title }}
+            {{ form.title.errors }}
+        </div>
+        {% endspaceless %}
+    </form>
+
+    <form class="editform" method="POST" action="{% url 'collection-delete' collection.id %}">
+        {% csrf_token %}
+        <div class="dangerarea">
+            <button class="inspector-button delete" type="submit">{% trans 'Delete Collection' %}</button>
+        </div>
+    </form>
+</div>

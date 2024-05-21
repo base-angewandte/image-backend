@@ -1,0 +1,446 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-08 15:57+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: api/autocomplete/views.py:43
+msgid "autocomplete_user_albums_editable"
+msgstr "bearbeitbare Alben"
+
+#: api/autocomplete/views.py:44
+msgid "autocomplete_titles"
+msgstr "Titel"
+
+#: api/autocomplete/views.py:45
+msgid "autocomplete_artists"
+msgstr "Künster_innen"
+
+#: api/autocomplete/views.py:46
+msgid "autocomplete_keywords"
+msgstr "Schlagworte"
+
+#: api/autocomplete/views.py:47
+msgid "autocomplete_locations"
+msgstr "Orte"
+
+#: api/autocomplete/views.py:48
+msgid "autocomplete_users"
+msgstr "Benutzer_innen"
+
+#: api/search/filters.py:12
+#, python-format
+msgid "Enter %(label)s"
+msgstr "%(label)s eingeben"
+
+#: api/search/filters.py:15 api/tests/tests_api_v1.py:274
+#: artworks/models.py:115 artworks/models.py:274 artworks/models.py:333
+#: image/templates/artwork/thumbnailbrowser.html:37
+msgid "Title"
+msgstr "Titel"
+
+#: api/search/filters.py:16 artworks/admin.py:16 artworks/models.py:36
+#: image/templates/artwork/thumbnailbrowser.html:38
+msgid "Artist"
+msgstr "Künstler_in"
+
+#: api/search/filters.py:17 artworks/models.py:141
+#: image/templates/artwork/thumbnailbrowser.html:48
+msgid "Place of Production"
+msgstr "Entstehungsort"
+
+#: api/search/filters.py:18 artworks/models.py:86 artworks/models.py:149
+#: image/templates/artwork/thumbnailbrowser.html:51
+msgid "Location"
+msgstr "Standort"
+
+#: api/search/filters.py:19 api/tests/tests_api_v1.py:275 artworks/forms.py:50
+#: artworks/forms.py:63 artworks/models.py:67 artworks/models.py:138
+#: image/templates/artwork/thumbnailbrowser.html:55
+msgid "Keywords"
+msgstr "Schlagworte"
+
+#: api/search/filters.py:20
+msgid "Date from, to"
+msgstr "Datierung, von, bis"
+
+#: api/search/filters.py:136
+msgid "Year"
+msgstr "Jahr"
+
+#: api/serializers/artworks.py:53
+msgid "No more than two artworks per slide allowed"
+msgstr ""
+
+# ## manual translations
+#: api/tests/tests_api_v1.py:299
+msgid "VIEW"
+msgstr "ansehen"
+
+#: api/tests/tests_api_v1.py:301
+msgid "EDIT"
+msgstr "bearbeiten"
+
+#: api/views/__init__.py:13
+msgid "limit must be a positive integer"
+msgstr ""
+
+#: api/views/__init__.py:22
+msgid "negative offset is not allowed"
+msgstr ""
+
+#: api/views/__init__.py:24
+msgid "offset must be an integer"
+msgstr ""
+
+#: api/views/__init__.py:33
+#, python-brace-format
+msgid "sorting should be {ordering_fields}"
+msgstr ""
+
+#: api/views/__init__.py:35
+msgid "sorting must be a string"
+msgstr ""
+
+#: api/views/__init__.py:48 api/views/__init__.py:83 api/views/albums.py:354
+#: api/views/albums.py:467 api/views/artworks.py:120 api/views/artworks.py:206
+#: api/views/artworks.py:254 api/views/artworks.py:300
+msgid "Artwork does not exist"
+msgstr ""
+
+#: api/views/albums.py:252 api/views/albums.py:280 api/views/albums.py:314
+#: api/views/albums.py:348 api/views/albums.py:404 api/views/albums.py:449
+#: api/views/albums.py:512 api/views/albums.py:556 api/views/albums.py:641
+#: api/views/albums.py:700
+msgid "Album does not exist"
+msgstr ""
+
+#: api/views/albums.py:710
+msgid "Not implemented yet"
+msgstr ""
+
+#: api/views/albums.py:714
+msgid "Invalid format"
+msgstr ""
+
+#: api/views/artworks.py:122
+msgid "Artwork id must be of type integer"
+msgstr ""
+
+#: api/views/artworks.py:333
+#, python-brace-format
+msgid "File for artwork {pk} not found"
+msgstr ""
+
+#: api/views/folders.py:192
+msgid "Folder does not exist"
+msgstr ""
+
+#: api/views/search.py:28
+msgid "Invalid format of at least one filter_value for title filter."
+msgstr ""
+
+#: api/views/search.py:43
+msgid "Invalid format of at least one filter_value for artists filter."
+msgstr ""
+
+#: api/views/search.py:103 api/views/search.py:108
+msgid "Invalid filter_value format for date filter."
+msgstr ""
+
+#: api/views/search.py:116
+msgid "Invalid format of at least one filter_value for date filter."
+msgstr ""
+
+#: api/views/search.py:120
+msgid "date_from needs to be less than or equal to date_to."
+msgstr ""
+
+#: artworks/admin.py:22
+msgid "Folder"
+msgstr "Arbeitsmappe"
+
+#: artworks/admin.py:88 artworks/forms.py:56 artworks/forms.py:63
+#: artworks/models.py:37 artworks/models.py:119
+msgid "Artists"
+msgstr "Künstler_innen"
+
+#: artworks/apps.py:33
+msgid "Image Content"
+msgstr "Image Daten"
+
+#: artworks/exports.py:187
+msgid ""
+"Too many artworks per slides. You can only have two artworks per slide. "
+"Please edit slides."
+msgstr ""
+
+#: artworks/exports.py:195
+msgid "There is no artwork associated with id {artwork_in_slide.get(\"id\")}."
+msgstr ""
+
+#: artworks/exports.py:203
+msgid ""
+"There is no image associated with artwork with id {artwork_in_slide."
+"get('id')}; it's a directory"
+msgstr ""
+
+#: artworks/models.py:29 artworks/models.py:60 artworks/models.py:79
+msgid "Name"
+msgstr ""
+
+#: artworks/models.py:31 artworks/models.py:80
+msgid "Synonyms"
+msgstr "Synonyme"
+
+#: artworks/models.py:66
+msgid "Keyword"
+msgstr "Schlagwort"
+
+#: artworks/models.py:87
+msgid "Locations"
+msgstr "Standorte"
+
+#: artworks/models.py:109
+msgid "Original Image"
+msgstr "Originalbild"
+
+#: artworks/models.py:117
+msgid "Title, English"
+msgstr "Titel, englisch"
+
+#: artworks/models.py:121
+msgid "Date"
+msgstr "Datierung"
+
+#: artworks/models.py:127 image/templates/artwork/thumbnailbrowser.html:42
+msgid "Date From"
+msgstr "Datierung, von"
+
+#: artworks/models.py:129 image/templates/artwork/thumbnailbrowser.html:45
+msgid "Date To"
+msgstr "Datierung, bis"
+
+#: artworks/models.py:131
+msgid "Material/Technique"
+msgstr "Material/Technik"
+
+#: artworks/models.py:134
+msgid "Dimensions"
+msgstr "Format"
+
+#: artworks/models.py:136
+msgid "Comments"
+msgstr "Anmerkungen"
+
+#: artworks/models.py:137
+msgid "Credits"
+msgstr "Abbildungsnachweis"
+
+#: artworks/models.py:155
+msgid "Checked"
+msgstr "Geprüft"
+
+#: artworks/models.py:156
+msgid "Published"
+msgstr "Veröffentlicht"
+
+#: artworks/models.py:166
+msgid "Artwork"
+msgstr "Kunstwerk"
+
+#: artworks/models.py:167
+msgid "Artworks"
+msgstr "Kunstwerke"
+
+#: artworks/models.py:275 artworks/models.py:337
+msgid "User"
+msgstr "Benutzer_in"
+
+#: artworks/models.py:276
+msgid "Slides"
+msgstr "Folien"
+
+#: artworks/models.py:279
+msgid "Permissions"
+msgstr "Berechtigungen"
+
+#: artworks/models.py:293
+msgid "Album"
+msgstr ""
+
+#: artworks/models.py:294 artworks/models.py:343
+msgid "Albums"
+msgstr "Alben"
+
+#: image/settings.py:283
+msgid "German"
+msgstr "Deutsch"
+
+#: image/settings.py:284
+msgid "English"
+msgstr "Englisch"
+
+#: image/templates/admin/base_site.html:4 image/urls.py:31 image/urls.py:32
+msgid "Image Admin"
+msgstr "Image Redaktion"
+
+#: image/templates/artwork/artwork_collect_overlay.html:13
+msgid "Add artwork to your collections"
+msgstr "Meine Arbeitsmappen"
+
+#: image/templates/artwork/artwork_collect_overlay.html:18
+msgid "New folder title"
+msgstr "Titel der neuen Arbeitsmappe"
+
+#: image/templates/artwork/artwork_collect_overlay.html:18
+msgid "title"
+msgstr "Titel"
+
+#: image/templates/artwork/artwork_collect_overlay.html:19
+#: image/templates/artwork/artwork_collect_overlay.html:27
+msgid "add"
+msgstr "Hinzufügen"
+
+#: image/templates/artwork/artwork_collect_overlay.html:26
+msgid "remove"
+msgstr "Entfernen"
+
+#: image/templates/artwork/artwork_collect_overlay.html:33
+msgid "NoCollections"
+msgstr "Es sind noch keine Arbeitsmappen erstellt worden."
+
+#: image/templates/artwork/artwork_collect_overlay.html:46
+#: image/templates/artwork/artwork_detail_overlay.html:22
+msgid "addtocollection"
+msgstr "In Arbeitsmappe hinzufügen"
+
+#: image/templates/artwork/artwork_collect_overlay.html:46
+#: image/templates/artwork/artwork_detail_overlay.html:22
+msgid "Edit"
+msgstr "Editieren"
+
+#: image/templates/artwork/artwork_edit_overlay.html:34
+#: image/templates/artwork/collection_edit_overlay.html:21
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: image/templates/artwork/artwork_edit_overlay.html:34
+#: image/templates/artwork/collection_edit_overlay.html:21
+msgid "Save"
+msgstr "Sichern"
+
+#: image/templates/artwork/artwork_thumbnails.html:31
+#: image/templates/artwork/collection.html:71
+msgid "NoArtworks"
+msgstr "Keine Werke gefunden."
+
+#: image/templates/artwork/collection.html:19
+#: image/templates/artwork/collections_list.html:19
+#: image/templates/artwork/thumbnailbrowser.html:17
+msgid "All Artworks"
+msgstr "Alle Kunstwerke"
+
+#: image/templates/artwork/collection.html:19
+#: image/templates/artwork/collections_list.html:19
+#: image/templates/artwork/thumbnailbrowser.html:17
+msgid "Collections"
+msgstr "Arbeitsmappen"
+
+#: image/templates/artwork/collection.html:41
+#: image/templates/artwork/collections_list.html:66
+msgid "Unnamed Editor"
+msgstr "Namenloser Editor"
+
+#: image/templates/artwork/collection.html:50
+msgid "Edit Collection"
+msgstr "Arbeitsmappe editieren"
+
+#: image/templates/artwork/collection.html:53
+msgid "Download PowerPoint"
+msgstr "PowerPoint herunterladen"
+
+#: image/templates/artwork/collection.html:54
+msgid "Close"
+msgstr "Schliessen"
+
+#: image/templates/artwork/collection.html:54
+msgid "show/hide download options"
+msgstr "Download-Möglichkeiten zeigen/verstecken"
+
+#: image/templates/artwork/collection.html:55
+msgid "Download PowerPoint German"
+msgstr "PowerPoint Deutsch herunterladen"
+
+#: image/templates/artwork/collection.html:56
+msgid "Download PowerPoint English"
+msgstr "PowerPoint Englisch herunterladen"
+
+#: image/templates/artwork/collection_edit_overlay.html:36
+msgid "Delete Collection"
+msgstr "Arbeitsmappe löschen"
+
+#: image/templates/artwork/collections_list.html:52
+msgid "My Collections"
+msgstr "Meine Arbeitsmappen"
+
+#: image/templates/artwork/thumbnailbrowser.html:22
+msgid "Search Artworks"
+msgstr "Suche"
+
+#: image/templates/artwork/thumbnailbrowser.html:24
+msgid "Search Basic/Advanced Switch"
+msgstr "Suche einfach/erweitert wechseln"
+
+#: image/templates/artwork/thumbnailbrowser.html:28
+msgid "Expert"
+msgstr "Erw. Suche"
+
+#: image/templates/artwork/thumbnailbrowser.html:42
+#: image/templates/artwork/thumbnailbrowser.html:45
+msgid "YYYY"
+msgstr "JJJJ"
+
+#: image/templates/base.html:71
+msgid "This resolution is not supported."
+msgstr "Diese Auflösung wird nicht unterstützt."
+
+#~ msgid "Created at"
+#~ msgstr "Erstellt"
+
+#~ msgid "Updated at"
+#~ msgstr "Aktualisiert"
+
+#~ msgid "Descriptions"
+#~ msgstr "Anmerkungen"
+
+#~ msgid "Location_of_creation"
+#~ msgstr "Entstehungsort"
+
+#~ msgid "Location_current"
+#~ msgstr "Standort"
+
+#~ msgid "Folders"
+#~ msgstr "Arbeitsmappen"
+
+#~ msgid "Folder Membership"
+#~ msgstr "Arbeitsmappenzugehörigkeit"
+
+#~ msgid "Folder Memberships"
+#~ msgstr "Arbeitsmappenzugehörigkeiten"
+
+#~ msgid "All Collections"
+#~ msgstr "Alle Arbeitsmappen"
