@@ -12,18 +12,18 @@ cleanup:  ## clear sessions
 .PHONY: start-dev
 start-dev:  ## start containers for local development
 	docker-compose up -d --build \
-		image-redis \
-		image-postgres
+		${PROJECT_NAME}-redis \
+		${PROJECT_NAME}-postgres
 
 .PHONY: test-data
 test-data:  ## load test/placeholder data (fixtures and image files)
-	docker-compose exec image-django python manage.py loaddata artworks/fixtures/artists.json
-	docker-compose exec image-django python manage.py loaddata artworks/fixtures/keywords.json
-	docker-compose exec image-django python manage.py loaddata artworks/fixtures/locations.json
-	docker-compose exec image-django python manage.py loaddata artworks/fixtures/discriminatory_terms.json
-	docker-compose exec image-django python manage.py loaddata artworks/fixtures/artworks.json
+	docker-compose exec ${PROJECT_NAME}-django python manage.py loaddata artworks/fixtures/artists.json
+	docker-compose exec ${PROJECT_NAME}-django python manage.py loaddata artworks/fixtures/keywords.json
+	docker-compose exec ${PROJECT_NAME}-django python manage.py loaddata artworks/fixtures/locations.json
+	docker-compose exec ${PROJECT_NAME}-django python manage.py loaddata artworks/fixtures/discriminatory_terms.json
+	docker-compose exec ${PROJECT_NAME}-django python manage.py loaddata artworks/fixtures/artworks.json
 	cp test-data/*.png ${MEDIA_DIR}
-	docker-compose exec -T image-postgres psql -U django_image django_image < test-data/set-placeholder-images.sql
+	docker-compose exec -T ${PROJECT_NAME}-postgres psql -U django_${PROJECT_NAME} django_${PROJECT_NAME} < test-data/set-placeholder-images.sql
 
 .PHONY: makemessages-docker
 makemessages-docker:  ## generate all required messages needed for localisation
