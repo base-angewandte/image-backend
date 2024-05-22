@@ -64,6 +64,21 @@ class ArtworkTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
+    def test_labels_list(self):
+        """Test the retrieval of artwork labels."""
+        Artwork.objects.create(
+            title='Test Artwork',
+            image_original=temporary_image(),
+            checked=True,
+            published=True,
+        )
+        url = reverse('artwork-labels', kwargs={'version': VERSION})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertEqual(content['title'], _('Title'))
+        self.assertEqual(content['keywords'], _('Keywords'))
+
     def test_artworks_retrieve_albums(self):
         """Test the retrieval of the albums current user has added this artwork
         to."""
@@ -259,22 +274,7 @@ class FoldersTests(APITestCase):
         pass
 
 
-class LabelsTests(APITestCase):
-    def test_labels_list(self):
-        """Test the retrieval of labels."""
-        Artwork.objects.create(
-            title='Test Artwork',
-            image_original=temporary_image(),
-            checked=True,
-            published=True,
-        )
-        url = reverse('label-list', kwargs={'version': VERSION})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        content = json.loads(response.content)
-        self.assertEqual(content['title'], _('Title'))
-        self.assertEqual(content['keywords'], _('Keywords'))
-
+class DiscriminatoryTermsTests(APITestCase):
     def test_discriminatory_terms(self):
         """Test the retrieval of the discriminatory terms list."""
         DiscriminatoryTerm.objects.create(term='Barbarian')
