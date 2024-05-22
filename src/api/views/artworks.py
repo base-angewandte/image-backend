@@ -216,6 +216,27 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 url = artwork.image_original.url
         return redirect(request.build_absolute_uri(url))
 
+    @action(detail=False, methods=['get'], url_path='labels')
+    def label(self, request, pk=None, *args, **kwargs):
+        ret = {}
+
+        exclude = (
+            'id',
+            'checked',
+            'published',
+            'date_created',
+            'date_changed',
+            'search_vector',
+        )
+
+        # Artworks
+        fields = Artwork._meta.get_fields()
+        for field in fields:
+            if field.name not in exclude and hasattr(field, 'verbose_name'):
+                ret[field.name] = field.verbose_name
+
+        return Response(ret)
+
     @extend_schema(
         parameters=[
             ArtworksAlbumsRequestSerializer,
