@@ -208,7 +208,7 @@ def search(request, *args, **kwargs):
             qs = qs.order_by('title')
         else:
             # user is not using search at all, therefor show the newest changes first
-            qs = qs.order_by('-updated_at', 'title')
+            qs = qs.order_by('-date_changed', 'title')
 
     # only search for published artworks
     qs = qs.filter(published=True)
