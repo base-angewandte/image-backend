@@ -216,7 +216,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 url = artwork.image_original.url
         return redirect(request.build_absolute_uri(url))
 
-    @action(detail=False, methods=['get'], url_path='labels')
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(description='OK'),
+            403: ERROR_RESPONSES[403],
+        },
+    )
+    @action(detail=False, methods=['get'])
     def label(self, request, pk=None, *args, **kwargs):
         ret = {}
 
