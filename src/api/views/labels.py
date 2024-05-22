@@ -26,10 +26,11 @@ class LabelsViewSet(viewsets.GenericViewSet):
 
         exclude = (
             'id',
-            'created_at',
-            'updated_at',
             'checked',
             'published',
+            'date_created',
+            'date_changed',
+            'search_vector',
         )
 
         # Artworks
