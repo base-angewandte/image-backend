@@ -223,7 +223,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=False, methods=['get'])
-    def label(self, request, pk=None, *args, **kwargs):
+    def labels(self, request, pk=None, *args, **kwargs):
         ret = {}
 
         exclude = (
