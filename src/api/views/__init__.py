@@ -104,8 +104,14 @@ def featured_artworks(album, request, num_artworks=4):
 def album_object(album, request=None, details=False):
     permissions_qs = PermissionsRelation.objects.filter(album=album)
 
+    # only album owners see all permissions. users who an album is shared with see
+    # either only their own permission, or - if they have EDIT permissions themselves -
+    # all other users with EDIT permissions
     if request is not None and album.user != request.user:
-        permissions_qs = permissions_qs.filter(user=request.user)
+        if permissions_qs.filter(user=request.user, permissions='EDIT').exists():
+            permissions_qs = permissions_qs.filter(permissions='EDIT')
+        else:
+            permissions_qs = permissions_qs.filter(user=request.user)
 
     return {
         'id': album.id,
