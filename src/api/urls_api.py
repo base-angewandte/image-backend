@@ -12,7 +12,6 @@ from .views.albums import AlbumsViewSet
 from .views.artworks import ArtworksViewSet
 from .views.discriminatory_terms import discriminatory_terms
 from .views.folders import FoldersViewSet
-from .views.labels import LabelsViewSet
 from .views.permissions import PermissionsViewSet
 from .views.search import search, search_filters
 from .views.user import get_user_data
@@ -21,7 +20,6 @@ router = routers.DefaultRouter()
 
 router.register('artworks', ArtworksViewSet, basename='artwork')
 router.register('albums', AlbumsViewSet, basename='album')
-router.register('labels', LabelsViewSet, basename='label')
 router.register('permissions', PermissionsViewSet, basename='permission')
 router.register('folders', FoldersViewSet, basename='folder')
 

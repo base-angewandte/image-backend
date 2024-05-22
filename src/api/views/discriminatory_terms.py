@@ -6,7 +6,7 @@ from artworks.models import DiscriminatoryTerm
 
 
 @extend_schema(
-    tags=['labels'],
+    tags=['discriminatory_terms'],
     responses={
         200: OpenApiResponse(
             description='A list of discriminatory terms, which should be contextualised.',
