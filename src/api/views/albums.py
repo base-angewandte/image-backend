@@ -157,38 +157,16 @@ class AlbumsViewSet(viewsets.GenericViewSet):
 
         albums = albums[offset : offset + limit]
 
+        results = []
+        for album in albums:
+            results.append(album_object(album, request=request, details=False))
+            results[-1].pop('slides')
+            results[-1]['featured_artworks'] = featured_artworks(album, request)
+
         return Response(
             {
                 'total': total,
-                'results': [
-                    {
-                        'id': album.id,
-                        'title': album.title,
-                        'number_of_artworks': album.size(),
-                        'featured_artworks': featured_artworks(album, request),
-                        'owner': {
-                            'id': album.user.username,
-                            'name': album.user.get_full_name(),
-                        },
-                        'permissions': [
-                            {
-                                'user': {
-                                    'id': p.user.username,
-                                    'name': p.user.get_full_name(),
-                                },
-                                'permissions': [{'id': p.permissions}],
-                            }
-                            for p in PermissionsRelation.objects.filter(
-                                album=album
-                            ).filter(
-                                **{}
-                                if album.user == request.user
-                                else {'user': request.user}
-                            )
-                        ],
-                    }
-                    for album in albums
-                ],
+                'results': results,
             }
         )
 
