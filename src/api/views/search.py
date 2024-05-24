@@ -229,10 +229,13 @@ def search(request, *args, **kwargs):
 
     subq = subq.distinct()
 
+    subq_sql, subq_params = subq.query.sql_with_params()
+
     qs = Artwork.objects.raw(
         'SELECT *, COUNT(*) OVER() AS "total_count" '  # nosec
-        f'FROM ({subq.query}) AS subq '
-        f'LIMIT {limit} OFFSET {offset};'
+        f'FROM ({subq_sql}) AS subq '
+        'LIMIT %s OFFSET %s;',
+        params=(*subq_params, limit, offset),
     )
 
     total = 0
