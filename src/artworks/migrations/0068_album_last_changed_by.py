@@ -15,13 +15,13 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='album',
-            name='changed_last_by',
+            name='last_changed_by',
             field=models.ForeignKey(
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='last_album_changes',
                 to=settings.AUTH_USER_MODEL,
-                verbose_name='Changed last by'
+                verbose_name='Last changed by'
             ),
         ),
     ]
