@@ -227,7 +227,9 @@ def search(request, *args, **kwargs):
 
             q_objects &= FILTERS_MAP[f['id']](f['filter_values'])
 
-        qs = qs.filter(q_objects).distinct()
+        qs = qs.filter(q_objects)
+
+    qs = qs.distinct()
 
     qs = qs[offset : offset + limit]
 
