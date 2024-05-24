@@ -281,6 +281,13 @@ class Album(AbstractBaseModel):
         symmetrical=False,
         related_name='permissions',
     )
+    last_changed_by = models.ForeignKey(
+        User,
+        verbose_name=_('Last changed by'),
+        related_name='last_album_changes',
+        on_delete=models.CASCADE,
+        null=True,
+    )
 
     def __str__(self):
         return f'{self.title} by {self.user.get_full_name()}'

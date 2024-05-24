@@ -270,6 +270,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             ).exists()
         ):
             album.title = serializer.validated_data['title']
+            album.last_changed_by = request.user
             album.save()
             return Response(album_object(album, request=request))
 
@@ -345,6 +346,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         ):
             slide = [serializer.validated_data]
             album.slides.append(slide)
+            album.last_changed_by = request.user
             album.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -450,6 +452,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                     current_slide.append({'id': artwork['id']})
                 slides_list.append(current_slide)
             album.slides = slides_list
+            album.last_changed_by = request.user
             album.save()
 
             if query_params_serializer.validated_data['details']:

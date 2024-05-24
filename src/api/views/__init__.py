@@ -160,7 +160,18 @@ def album_object(
             }
             for p in permissions_qs
         ],
+        'date_created': album.date_created,
+        'date_changed': album.date_changed,
     }
+
+    if album.last_changed_by:
+        ret['last_changed_by'] = {
+            'id': album.last_changed_by.username,
+            'name': album.last_changed_by.get_full_name(),
+        }
+    else:
+        ret['last_changed_by'] = ret['owner']
+
     if include_slides:
         ret['slides'] = slides_with_details(album, request) if details else album.slides
     if include_type:
