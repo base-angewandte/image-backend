@@ -283,7 +283,7 @@ class Album(AbstractBaseModel):
     )
     last_changed_by = models.ForeignKey(
         User,
-        verbose_name=_('Changed last by'),
+        verbose_name=_('Last changed by'),
         related_name='last_album_changes',
         on_delete=models.CASCADE,
         null=True,
