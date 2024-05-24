@@ -14,9 +14,9 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from api.serializers.folders import FoldersRequestSerializer
-from api.views import check_limit, check_offset, check_sorting, featured_artworks
+from api.views import album_object, check_limit, check_offset, check_sorting
 from api.views.search import filter_albums_for_user
-from artworks.models import Folder, PermissionsRelation
+from artworks.models import Folder
 
 
 class FoldersViewSet(viewsets.GenericViewSet):
@@ -37,34 +37,6 @@ class FoldersViewSet(viewsets.GenericViewSet):
 
     queryset = Folder.objects.all()
     ordering_fields = ['title', 'date_created', 'date_changed']
-
-    def get_album_in_folder_data(self, albums, request):
-        return [
-            {
-                'id': album.id,
-                'title': album.title,
-                'type': album._meta.object_name,
-                'number_of_artworks': album.size(),
-                'featured_artworks': featured_artworks(album, request),
-                'owner': {
-                    'id': album.user.username,
-                    'name': album.user.get_full_name(),
-                },
-                'permissions': [
-                    {
-                        'user': {
-                            'id': p.user.username,
-                            'name': p.user.get_full_name(),
-                        },
-                        'permissions': [{'id': p.permissions}],
-                    }
-                    for p in PermissionsRelation.objects.filter(album=album).filter(
-                        **{} if album.user == request.user else {'user': request.user}
-                    )
-                ],
-            }
-            for album in albums
-        ]
 
     @extend_schema(
         tags=['folders'],
@@ -198,6 +170,20 @@ class FoldersViewSet(viewsets.GenericViewSet):
             permissions=serializer.validated_data['permissions'],
         )
 
+        albums = folder.albums.filter(q_filters).order_by(sorting)[
+            offset : offset + limit
+        ]
+        albums_data = [
+            album_object(
+                album,
+                request=request,
+                details=False,
+                include_slides=False,
+                include_type=True,
+                include_featured=True,
+            )
+            for album in albums
+        ]
         return Response(
             {
                 'id': folder.id,
@@ -207,12 +193,7 @@ class FoldersViewSet(viewsets.GenericViewSet):
                     # As at the moment we only have root folders, folders within folders
                     # will later be implemented to be shown in content (todo)
                     'total': folder.albums.all().count(),  # currently: number of albums belonging to root folder
-                    'data': self.get_album_in_folder_data(
-                        folder.albums.filter(q_filters).order_by(sorting)[
-                            offset : offset + limit
-                        ],
-                        request,
-                    ),
+                    'data': albums_data,
                 },
             }
         )

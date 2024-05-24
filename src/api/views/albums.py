@@ -36,7 +36,6 @@ from api.views import (
     check_limit,
     check_offset,
     check_sorting,
-    featured_artworks,
     slides_with_details,
 )
 from api.views.search import filter_albums_for_user
@@ -161,32 +160,14 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             {
                 'total': total,
                 'results': [
-                    {
-                        'id': album.id,
-                        'title': album.title,
-                        'number_of_artworks': album.size(),
-                        'featured_artworks': featured_artworks(album, request),
-                        'owner': {
-                            'id': album.user.username,
-                            'name': album.user.get_full_name(),
-                        },
-                        'permissions': [
-                            {
-                                'user': {
-                                    'id': p.user.username,
-                                    'name': p.user.get_full_name(),
-                                },
-                                'permissions': [{'id': p.permissions}],
-                            }
-                            for p in PermissionsRelation.objects.filter(
-                                album=album
-                            ).filter(
-                                **{}
-                                if album.user == request.user
-                                else {'user': request.user}
-                            )
-                        ],
-                    }
+                    album_object(
+                        album,
+                        request=request,
+                        details=False,
+                        include_slides=False,
+                        include_type=False,
+                        include_featured=True,
+                    )
                     for album in albums
                 ],
             }

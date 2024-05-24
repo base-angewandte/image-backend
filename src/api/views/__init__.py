@@ -1,8 +1,9 @@
 from rest_framework.exceptions import NotFound, ParseError
+from rest_framework.request import Request
 
 from django.utils.translation import gettext_lazy as _
 
-from artworks.models import Artwork, PermissionsRelation
+from artworks.models import Album, Artwork, PermissionsRelation
 
 
 def check_limit(limit):
@@ -101,17 +102,50 @@ def featured_artworks(album, request, num_artworks=4):
     return artworks
 
 
-def album_object(album, request=None, details=False):
+def album_object(
+    album: Album,
+    request: Request = None,
+    details=False,
+    include_slides=True,
+    include_type=False,
+    include_featured=False,
+) -> dict:
+    """Returns a dict representation of an album object.
+
+    This will return a dictionary that can be used directly in API
+    responses, representing an album. While this is not an actual
+    serialization, it serves the purpose of contextually serializing an
+    album object into a format containing potential extra information,
+    like the slide details or featured artworks.
+
+    :param album: the album to 'serialize'
+    :param request: the request context with information about the
+        logged-in user
+    :param details: whether to include nested information in the slides
+        list (default is False)
+    :param include_slides: whether to include the slides list at all
+        (default is True)
+    :param include_type: whether to include the type information, e.g.
+        when listed in folders (default is False)
+    :param include_featured: whether to include the featured artworks
+        (default is False)
+    :returns: a dict representing the album with all requested features
+    """
     permissions_qs = PermissionsRelation.objects.filter(album=album)
 
+    # only album owners see all permissions. users who an album is shared with see
+    # either only their own permission, or - if they have EDIT permissions themselves -
+    # all other users with EDIT permissions
     if request is not None and album.user != request.user:
-        permissions_qs = permissions_qs.filter(user=request.user)
+        if permissions_qs.filter(user=request.user, permissions='EDIT').exists():
+            permissions_qs = permissions_qs.filter(permissions='EDIT')
+        else:
+            permissions_qs = permissions_qs.filter(user=request.user)
 
-    return {
+    ret = {
         'id': album.id,
         'title': album.title,
         'number_of_artworks': album.size(),
-        'slides': slides_with_details(album, request) if details else album.slides,
         'owner': {
             'id': album.user.username,
             'name': album.user.get_full_name(),
@@ -127,3 +161,10 @@ def album_object(album, request=None, details=False):
             for p in permissions_qs
         ],
     }
+    if include_slides:
+        ret['slides'] = slides_with_details(album, request) if details else album.slides
+    if include_type:
+        ret['type'] = album._meta.object_name
+    if include_featured:
+        ret['featured_artworks'] = featured_artworks(album, request)
+    return ret
