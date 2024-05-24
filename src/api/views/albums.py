@@ -163,7 +163,9 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                     album_object(
                         album,
                         request=request,
+                        details=False,
                         include_slides=False,
+                        include_type=False,
                         include_featured=True,
                     )
                     for album in albums

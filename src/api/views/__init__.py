@@ -1,8 +1,9 @@
 from rest_framework.exceptions import NotFound, ParseError
+from rest_framework.request import Request
 
 from django.utils.translation import gettext_lazy as _
 
-from artworks.models import Artwork, PermissionsRelation
+from artworks.models import Album, Artwork, PermissionsRelation
 
 
 def check_limit(limit):
@@ -102,13 +103,34 @@ def featured_artworks(album, request, num_artworks=4):
 
 
 def album_object(
-    album,
-    request=None,
+    album: Album,
+    request: Request = None,
     details=False,
     include_slides=True,
     include_type=False,
     include_featured=False,
-):
+) -> dict:
+    """Returns a dict representation of an album object.
+
+    This will return a dictionary that can be used directly in API
+    responses, representing an album. While this is not an actual
+    serialization, it serves the purpose of contextually serializing an
+    album object into a format containing potential extra information,
+    like the slide details or featured artworks.
+
+    :param album: the album to 'serialize'
+    :param request: the request context with information about the
+        logged-in user
+    :param details: whether to include nested information in the slides
+        list (default is False)
+    :param include_slides: whether to include the slides list at all
+        (default is True)
+    :param include_type: whether to include the type information, e.g.
+        when listed in folders (default is False)
+    :param include_featured: whether to include the featured artworks
+        (default is False)
+    :returns: a dict representing the album with all requested features
+    """
     permissions_qs = PermissionsRelation.objects.filter(album=album)
 
     # only album owners see all permissions. users who an album is shared with see

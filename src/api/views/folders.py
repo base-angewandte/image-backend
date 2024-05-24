@@ -177,6 +177,7 @@ class FoldersViewSet(viewsets.GenericViewSet):
             album_object(
                 album,
                 request=request,
+                details=False,
                 include_slides=False,
                 include_type=True,
                 include_featured=True,
