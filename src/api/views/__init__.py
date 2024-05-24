@@ -101,7 +101,14 @@ def featured_artworks(album, request, num_artworks=4):
     return artworks
 
 
-def album_object(album, request=None, details=False):
+def album_object(
+    album,
+    request=None,
+    details=False,
+    include_slides=True,
+    include_type=False,
+    include_featured=False,
+):
     permissions_qs = PermissionsRelation.objects.filter(album=album)
 
     # only album owners see all permissions. users who an album is shared with see
@@ -113,11 +120,10 @@ def album_object(album, request=None, details=False):
         else:
             permissions_qs = permissions_qs.filter(user=request.user)
 
-    return {
+    ret = {
         'id': album.id,
         'title': album.title,
         'number_of_artworks': album.size(),
-        'slides': slides_with_details(album, request) if details else album.slides,
         'owner': {
             'id': album.user.username,
             'name': album.user.get_full_name(),
@@ -133,3 +139,10 @@ def album_object(album, request=None, details=False):
             for p in permissions_qs
         ],
     }
+    if include_slides:
+        ret['slides'] = slides_with_details(album, request) if details else album.slides
+    if include_type:
+        ret['type'] = album._meta.object_name
+    if include_featured:
+        ret['featured_artworks'] = featured_artworks(album, request)
+    return ret

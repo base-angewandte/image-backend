@@ -36,7 +36,6 @@ from api.views import (
     check_limit,
     check_offset,
     check_sorting,
-    featured_artworks,
     slides_with_details,
 )
 from api.views.search import filter_albums_for_user
@@ -157,16 +156,18 @@ class AlbumsViewSet(viewsets.GenericViewSet):
 
         albums = albums[offset : offset + limit]
 
-        results = []
-        for album in albums:
-            results.append(album_object(album, request=request, details=False))
-            results[-1].pop('slides')
-            results[-1]['featured_artworks'] = featured_artworks(album, request)
-
         return Response(
             {
                 'total': total,
-                'results': results,
+                'results': [
+                    album_object(
+                        album,
+                        request=request,
+                        include_slides=False,
+                        include_featured=True,
+                    )
+                    for album in albums
+                ],
             }
         )
 
