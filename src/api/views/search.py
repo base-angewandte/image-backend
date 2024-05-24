@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.serializers import JSONField
 
 from django.conf import settings
-from django.db.models import Count, FloatField, Q, Value, Window
+from django.db.models import FloatField, Q, Value
 from django.utils.translation import gettext_lazy as _
 
 from api.search.filters import FILTERS, FILTERS_KEYS
@@ -199,24 +199,22 @@ def search(request, *args, **kwargs):
     exclude = serializer.validated_data.get('exclude', [])
 
     if q_param:
-        qs = Artwork.objects.search(q_param).annotate(total_results=Window(Count('pk')))
+        subq = Artwork.objects.search(q_param)
     else:
-        qs = Artwork.objects.annotate(rank=Value(1.0, FloatField())).annotate(
-            total_results=Window(Count('pk'))
-        )
+        subq = Artwork.objects.annotate(rank=Value(1.0, FloatField()))
         if filters:
-            qs = qs.order_by('title')
+            subq = subq.order_by('title')
         else:
             # user is not using search at all, therefor show the newest changes first
-            qs = qs.order_by('-date_changed', 'title')
+            subq = subq.order_by('-date_changed', 'title')
 
     # only search for published artworks
-    qs = qs.filter(published=True)
+    subq = subq.filter(published=True)
 
-    qs = qs.prefetch_related('artists')
+    subq = subq.prefetch_related('artists')
 
     if exclude:
-        qs = qs.exclude(id__in=exclude)
+        subq = subq.exclude(id__in=exclude)
 
     if filters:
         q_objects = Q()
@@ -227,21 +225,29 @@ def search(request, *args, **kwargs):
 
             q_objects &= FILTERS_MAP[f['id']](f['filter_values'])
 
-        qs = qs.filter(q_objects)
+        subq = subq.filter(q_objects)
 
-    qs = qs.distinct()
+    subq = subq.distinct()
 
-    qs = qs[offset : offset + limit]
+    subq_sql, subq_params = subq.query.sql_with_params()
+
+    qs = Artwork.objects.raw(
+        # we need a raw query here, but don't use any unvalidated parameters
+        'SELECT *, COUNT(*) OVER() AS "total_count" '  # nosec: see comment above
+        f'FROM ({subq_sql}) AS subq '
+        'LIMIT %s OFFSET %s;',
+        params=(*subq_params, limit, offset),
+    )
 
     total = 0
     results = []
 
     for artwork in qs:
-        # for performance reasons we get the total results count via annotation
-        # annotate(total_results=Window(Count('pk')))
+        # for performance reasons we get the total results count via
+        # window function (see raw sql above)
         # and for convenience reasons we just set it in every for loop
         # iteration even though the value is the same for all results
-        total = artwork.total_results
+        total = artwork.total_count
 
         results.append(
             {
