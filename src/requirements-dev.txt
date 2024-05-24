@@ -12,8 +12,6 @@ astroid==2.15.8
     # via
     #   -r src/requirements.in
     #   pylint
-async-timeout==4.0.3
-    # via redis
 attrs==23.1.0
     # via
     #   jsonschema
@@ -85,7 +83,7 @@ django-js-asset==2.1.0
     # via django-mptt
 django-mass-edit==3.5.0
     # via -r src/requirements.in
-django-mptt==0.14.0
+django-mptt==0.16.0
     # via -r src/requirements.in
 django-ordered-model==3.7.4
     # via -r src/requirements.in
