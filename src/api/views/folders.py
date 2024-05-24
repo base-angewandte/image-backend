@@ -175,7 +175,11 @@ class FoldersViewSet(viewsets.GenericViewSet):
         ]
         albums_data = [
             album_object(
-                album, request=request, include_slides=False, include_type=True
+                album,
+                request=request,
+                include_slides=False,
+                include_type=True,
+                include_featured=True,
             )
             for album in albums
         ]
