@@ -232,7 +232,8 @@ def search(request, *args, **kwargs):
     subq_sql, subq_params = subq.query.sql_with_params()
 
     qs = Artwork.objects.raw(
-        'SELECT *, COUNT(*) OVER() AS "total_count" '  # nosec
+        # we need a raw query here, but don't use any unvalidated parameters
+        'SELECT *, COUNT(*) OVER() AS "total_count" '  # nosec: see comment above
         f'FROM ({subq_sql}) AS subq '
         'LIMIT %s OFFSET %s;',
         params=(*subq_params, limit, offset),
