@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-08 15:57+0200\n"
+"POT-Creation-Date: 2024-05-27 12:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: api/autocomplete/views.py:43
+#: api/autocomplete/views.py:44
 msgid "autocomplete_user_albums_editable"
 msgstr "bearbeitbare Alben"
 
-#: api/autocomplete/views.py:44
+#: api/autocomplete/views.py:45
 msgid "autocomplete_titles"
 msgstr "Titel"
 
-#: api/autocomplete/views.py:45
+#: api/autocomplete/views.py:46
 msgid "autocomplete_artists"
 msgstr "Künster_innen"
 
-#: api/autocomplete/views.py:46
+#: api/autocomplete/views.py:47
 msgid "autocomplete_keywords"
 msgstr "Schlagworte"
 
-#: api/autocomplete/views.py:47
+#: api/autocomplete/views.py:48
 msgid "autocomplete_locations"
 msgstr "Orte"
 
-#: api/autocomplete/views.py:48
+#: api/autocomplete/views.py:49
 msgid "autocomplete_users"
 msgstr "Benutzer_innen"
 
@@ -46,8 +46,8 @@ msgstr "Benutzer_innen"
 msgid "Enter %(label)s"
 msgstr "%(label)s eingeben"
 
-#: api/search/filters.py:15 api/tests/tests_api_v1.py:274
-#: artworks/models.py:115 artworks/models.py:274 artworks/models.py:333
+#: api/search/filters.py:15 api/tests/tests_api_v1.py:79 artworks/models.py:115
+#: artworks/models.py:275 artworks/models.py:341
 #: image/templates/artwork/thumbnailbrowser.html:37
 msgid "Title"
 msgstr "Titel"
@@ -57,18 +57,18 @@ msgstr "Titel"
 msgid "Artist"
 msgstr "Künstler_in"
 
-#: api/search/filters.py:17 artworks/models.py:141
+#: api/search/filters.py:17 artworks/models.py:142
 #: image/templates/artwork/thumbnailbrowser.html:48
 msgid "Place of Production"
 msgstr "Entstehungsort"
 
-#: api/search/filters.py:18 artworks/models.py:86 artworks/models.py:149
+#: api/search/filters.py:18 artworks/models.py:86 artworks/models.py:150
 #: image/templates/artwork/thumbnailbrowser.html:51
 msgid "Location"
 msgstr "Standort"
 
-#: api/search/filters.py:19 api/tests/tests_api_v1.py:275 artworks/forms.py:50
-#: artworks/forms.py:63 artworks/models.py:67 artworks/models.py:138
+#: api/search/filters.py:19 api/tests/tests_api_v1.py:80 artworks/forms.py:51
+#: artworks/forms.py:64 artworks/models.py:67 artworks/models.py:139
 #: image/templates/artwork/thumbnailbrowser.html:55
 msgid "Keywords"
 msgstr "Schlagworte"
@@ -86,86 +86,86 @@ msgid "No more than two artworks per slide allowed"
 msgstr ""
 
 # ## manual translations
-#: api/tests/tests_api_v1.py:299
+#: api/tests/tests_api_v1.py:300
 msgid "VIEW"
 msgstr "ansehen"
 
-#: api/tests/tests_api_v1.py:301
+#: api/tests/tests_api_v1.py:302
 msgid "EDIT"
 msgstr "bearbeiten"
 
-#: api/views/__init__.py:13
+#: api/views/__init__.py:15
 msgid "limit must be a positive integer"
 msgstr ""
 
-#: api/views/__init__.py:22
+#: api/views/__init__.py:24
 msgid "negative offset is not allowed"
 msgstr ""
 
-#: api/views/__init__.py:24
+#: api/views/__init__.py:26
 msgid "offset must be an integer"
 msgstr ""
 
-#: api/views/__init__.py:33
+#: api/views/__init__.py:35
 #, python-brace-format
 msgid "sorting should be {ordering_fields}"
 msgstr ""
 
-#: api/views/__init__.py:35
+#: api/views/__init__.py:37
 msgid "sorting must be a string"
 msgstr ""
 
-#: api/views/__init__.py:48 api/views/__init__.py:83 api/views/albums.py:354
-#: api/views/albums.py:467 api/views/artworks.py:120 api/views/artworks.py:206
-#: api/views/artworks.py:254 api/views/artworks.py:300
+#: api/views/__init__.py:50 api/views/__init__.py:85 api/views/albums.py:337
+#: api/views/albums.py:451 api/views/artworks.py:121 api/views/artworks.py:207
+#: api/views/artworks.py:282 api/views/artworks.py:328
 msgid "Artwork does not exist"
 msgstr ""
 
-#: api/views/albums.py:252 api/views/albums.py:280 api/views/albums.py:314
-#: api/views/albums.py:348 api/views/albums.py:404 api/views/albums.py:449
-#: api/views/albums.py:512 api/views/albums.py:556 api/views/albums.py:641
-#: api/views/albums.py:700
+#: api/views/albums.py:234 api/views/albums.py:262 api/views/albums.py:297
+#: api/views/albums.py:331 api/views/albums.py:388 api/views/albums.py:433
+#: api/views/albums.py:497 api/views/albums.py:541 api/views/albums.py:626
+#: api/views/albums.py:685
 msgid "Album does not exist"
 msgstr ""
 
-#: api/views/albums.py:710
+#: api/views/albums.py:695
 msgid "Not implemented yet"
 msgstr ""
 
-#: api/views/albums.py:714
+#: api/views/albums.py:699
 msgid "Invalid format"
 msgstr ""
 
-#: api/views/artworks.py:122
+#: api/views/artworks.py:123
 msgid "Artwork id must be of type integer"
 msgstr ""
 
-#: api/views/artworks.py:333
+#: api/views/artworks.py:362
 #, python-brace-format
 msgid "File for artwork {pk} not found"
 msgstr ""
 
-#: api/views/folders.py:192
+#: api/views/folders.py:165
 msgid "Folder does not exist"
 msgstr ""
 
-#: api/views/search.py:28
+#: api/views/search.py:30
 msgid "Invalid format of at least one filter_value for title filter."
 msgstr ""
 
-#: api/views/search.py:43
+#: api/views/search.py:45
 msgid "Invalid format of at least one filter_value for artists filter."
 msgstr ""
 
-#: api/views/search.py:103 api/views/search.py:108
+#: api/views/search.py:106 api/views/search.py:111
 msgid "Invalid filter_value format for date filter."
 msgstr ""
 
-#: api/views/search.py:116
+#: api/views/search.py:119
 msgid "Invalid format of at least one filter_value for date filter."
 msgstr ""
 
-#: api/views/search.py:120
+#: api/views/search.py:123
 msgid "date_from needs to be less than or equal to date_to."
 msgstr ""
 
@@ -173,8 +173,8 @@ msgstr ""
 msgid "Folder"
 msgstr "Arbeitsmappe"
 
-#: artworks/admin.py:88 artworks/forms.py:56 artworks/forms.py:63
-#: artworks/models.py:37 artworks/models.py:119
+#: artworks/admin.py:89 artworks/forms.py:57 artworks/forms.py:64
+#: artworks/models.py:37 artworks/models.py:120
 msgid "Artists"
 msgstr "Künstler_innen"
 
@@ -222,67 +222,75 @@ msgstr "Originalbild"
 msgid "Title, English"
 msgstr "Titel, englisch"
 
-#: artworks/models.py:121
+#: artworks/models.py:119
+msgid "Comment on title"
+msgstr "Anmerkung zum Titel"
+
+#: artworks/models.py:122
 msgid "Date"
 msgstr "Datierung"
 
-#: artworks/models.py:127 image/templates/artwork/thumbnailbrowser.html:42
+#: artworks/models.py:128 image/templates/artwork/thumbnailbrowser.html:42
 msgid "Date From"
 msgstr "Datierung, von"
 
-#: artworks/models.py:129 image/templates/artwork/thumbnailbrowser.html:45
+#: artworks/models.py:130 image/templates/artwork/thumbnailbrowser.html:45
 msgid "Date To"
 msgstr "Datierung, bis"
 
-#: artworks/models.py:131
+#: artworks/models.py:132
 msgid "Material/Technique"
 msgstr "Material/Technik"
 
-#: artworks/models.py:134
+#: artworks/models.py:135
 msgid "Dimensions"
 msgstr "Format"
 
-#: artworks/models.py:136
+#: artworks/models.py:137
 msgid "Comments"
 msgstr "Anmerkungen"
 
-#: artworks/models.py:137
+#: artworks/models.py:138
 msgid "Credits"
 msgstr "Abbildungsnachweis"
 
-#: artworks/models.py:155
+#: artworks/models.py:156
 msgid "Checked"
 msgstr "Geprüft"
 
-#: artworks/models.py:156
+#: artworks/models.py:157
 msgid "Published"
 msgstr "Veröffentlicht"
 
-#: artworks/models.py:166
+#: artworks/models.py:167
 msgid "Artwork"
 msgstr "Kunstwerk"
 
-#: artworks/models.py:167
+#: artworks/models.py:168
 msgid "Artworks"
 msgstr "Kunstwerke"
 
-#: artworks/models.py:275 artworks/models.py:337
+#: artworks/models.py:276 artworks/models.py:345
 msgid "User"
 msgstr "Benutzer_in"
 
-#: artworks/models.py:276
+#: artworks/models.py:277
 msgid "Slides"
 msgstr "Folien"
 
-#: artworks/models.py:279
+#: artworks/models.py:280
 msgid "Permissions"
 msgstr "Berechtigungen"
 
-#: artworks/models.py:293
+#: artworks/models.py:287
+msgid "Last changed by"
+msgstr ""
+
+#: artworks/models.py:301
 msgid "Album"
 msgstr ""
 
-#: artworks/models.py:294 artworks/models.py:343
+#: artworks/models.py:302 artworks/models.py:351
 msgid "Albums"
 msgstr "Alben"
 

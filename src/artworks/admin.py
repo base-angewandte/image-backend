@@ -53,6 +53,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'image_original',
         'title',
         'title_english',
+        'title_comment',
         'artists',
         'date',
         'date_year_from',
@@ -71,7 +72,7 @@ class ArtworkAdmin(admin.ModelAdmin):
     autocomplete_fields = ('place_of_production', 'location')
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'size': '80'})},
-        models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 80})},
+        models.TextField: {'widget': Textarea(attrs={'rows': 4, 'cols': 80})},
     }
     list_filter = (
         ArtistFilter,

@@ -132,7 +132,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'license': '',  # placeholder for future field change, see ticket 2070
                 'title': artwork.title,
                 'title_english': artwork.title_english,
-                'title_notes': '',  # placeholder for future field change, see ticket 2070
+                'title_comment': artwork.title_comment,
                 'date': artwork.date,
                 'material': artwork.material,
                 'dimensions': artwork.dimensions,
@@ -330,6 +330,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         # create metadata file content
         metadata_content = ''
         metadata_content += f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n'
+        metadata_content += f'{artwork._meta.get_field("title_english").verbose_name.title()}: {artwork.title_english} \n'
+        metadata_content += f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {artwork.title_comment} \n'
         if len(artwork.artists.all()) > 1:
             metadata_content += f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n'
         else:
