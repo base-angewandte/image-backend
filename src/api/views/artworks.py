@@ -330,6 +330,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         # create metadata file content
         metadata_content = ''
         metadata_content += f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n'
+        metadata_content += f'{artwork._meta.get_field("title_english").verbose_name.title()}: {artwork.title_english} \n'
+        metadata_content += f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {artwork.title_comment} \n'
         if len(artwork.artists.all()) > 1:
             metadata_content += f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n'
         else:
@@ -337,7 +339,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         metadata_content += (
             f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n'
         )
-        metadata_content += f'{artwork._meta.get_field("title_comment").verbose_name.title(): {artwork.title_comment}}'
         metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
         metadata_content += f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n'
         metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {artwork.comments} \n'
