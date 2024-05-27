@@ -53,6 +53,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'image_original',
         'title',
         'title_english',
+        'title_comment',
         'artists',
         'date',
         'date_year_from',

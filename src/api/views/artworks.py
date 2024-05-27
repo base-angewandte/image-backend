@@ -132,7 +132,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'license': '',  # placeholder for future field change, see ticket 2070
                 'title': artwork.title,
                 'title_english': artwork.title_english,
-                'title_notes': '',  # placeholder for future field change, see ticket 2070
+                'title_comment': artwork.title_comment,
                 'date': artwork.date,
                 'material': artwork.material,
                 'dimensions': artwork.dimensions,
@@ -337,6 +337,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         metadata_content += (
             f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n'
         )
+        metadata_content += f'{artwork._meta.get_field("title_comment").verbose_name.title(): {artwork.title_comment}}'
         metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
         metadata_content += f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n'
         metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {artwork.comments} \n'

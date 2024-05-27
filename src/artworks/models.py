@@ -116,6 +116,7 @@ class Artwork(AbstractBaseModel):
     title_english = models.CharField(
         verbose_name=_('Title, English'), max_length=255, blank=True
     )
+    title_comment = models.TextField(verbose_name=_('Comment on title'), blank=True)
     artists = models.ManyToManyField(Artist, verbose_name=_('Artists'), blank=True)
     date = models.CharField(
         verbose_name=_('Date'),
