@@ -16,35 +16,36 @@ from artworks.models import Artwork, Keyword, Location, PermissionsRelation
 
 
 def filter_title(filter_values):
-    q_objects = Q()
+    filters_list = []
     for val in filter_values:
         if isinstance(val, str):
-            q_objects &= Q(title__unaccent__icontains=val) | Q(
-                title_english__unaccent__icontains=val
+            filters_list.append(
+                Q(title__unaccent__icontains=val)
+                | Q(title_english__unaccent__icontains=val)
             )
         elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects &= Q(pk=val.get('id'))
+            filters_list.append(Q(pk=val.get('id')))
         else:
             raise ParseError(
                 _('Invalid format of at least one filter_value for title filter.')
             )
 
-    return q_objects
+    return filters_list
 
 
 def filter_artists(filter_values):
-    q_objects = Q()
+    filters_list = []
     for val in filter_values:
         if isinstance(val, str):
-            q_objects &= Q(artists__name__unaccent__icontains=val)
+            filters_list.append(Q(artists__name__unaccent__icontains=val))
         elif isinstance(val, dict) and 'id' in val.keys():
-            q_objects &= Q(artists__id=val.get('id'))
+            filters_list.append(Q(artists__id=val.get('id')))
         else:
             raise ParseError(
                 _('Invalid format of at least one filter_value for artists filter.')
             )
 
-    return q_objects
+    return filters_list
 
 
 def filter_albums_for_user(user, owner=True, permissions='EDIT'):
@@ -68,21 +69,22 @@ def filter_albums_for_user(user, owner=True, permissions='EDIT'):
 def filter_mptt_model(filter_values, model, search_field):
     """Helper function for other filters, to filter a MPTT model based
     field."""
-    q_objects = Q()
+    filters_list = []
     for val in filter_values:
         if isinstance(val, str):
-            q_objects &= Q(**{f'{search_field}__name__unaccent__icontains': val})
+            filters_list.append(
+                Q(**{f'{search_field}__name__unaccent__icontains': val})
+            )
         elif isinstance(val, dict) and 'id' in val.keys():
             entries = model.objects.filter(pk=val.get('id')).get_descendants(
                 include_self=True
             )
-            q_objects &= Q(**{f'{search_field}__in': entries})
+            filters_list.append(Q(**{f'{search_field}__in': entries}))
         else:
             raise ParseError(
                 f'Invalid format of at least one filter_value for {search_field} filter.'
             )
-
-    return q_objects
+    return filters_list
 
 
 def filter_place_of_production(filter_values):
@@ -122,20 +124,20 @@ def filter_date(filter_values):
 
     # in case only date_from is provided, all dates in its future should be found
     if not date_to:
-        return Q(date_year_from__gte=date_from) | Q(date_year_to__gte=date_from)
+        return [Q(date_year_from__gte=date_from) | Q(date_year_to__gte=date_from)]
     # in case only date_to is provided, all dates past this date should be found
     elif not date_from:
-        return Q(date_year_from__lte=date_to) | Q(date_year_to__lte=date_to)
+        return [Q(date_year_from__lte=date_to) | Q(date_year_to__lte=date_to)]
     # if both parameters are provided, we search within the given date range
     else:
-        return (
+        return [
             Q(date_year_from__range=[date_from, date_to])
             | Q(date_year_to__range=[date_from, date_to])
             | Q(
                 date_year_from__lte=date_from,
                 date_year_to__gte=date_to,
             )
-        )
+        ]
 
 
 FILTERS_MAP = {}
@@ -217,15 +219,13 @@ def search(request, *args, **kwargs):
         subq = subq.exclude(id__in=exclude)
 
     if filters:
-        q_objects = Q()
-
         for f in filters:
             if f['id'] not in FILTERS_KEYS:
                 raise ParseError(f'Invalid filter id {repr(f["id"])}')
 
-            q_objects &= FILTERS_MAP[f['id']](f['filter_values'])
-
-        subq = subq.filter(q_objects)
+            filters_list = FILTERS_MAP[f['id']](f['filter_values'])
+            for filter_item in filters_list:
+                subq = subq.filter(filter_item)
 
     subq = subq.distinct()
 
