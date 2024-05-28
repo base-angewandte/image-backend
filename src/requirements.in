@@ -36,6 +36,7 @@ pylint==2.17.6
 python-pptx==0.6.22
 pytz==2023.3
 requests==2.31.0
+sentry-sdk[django]==2.3.1
 shortuuid==1.0.11
 six==1.16.0
 typed-ast==1.5.5
