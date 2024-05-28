@@ -72,7 +72,7 @@
 
 {% block footer %}
   {% if not form.username and not form.password %}
-    {% include 'base_header/base_footer.html' %}
+    {% comment %}{% include 'base_header/base_footer.html' %}{% endcomment %}
     {% include 'base_header/base_header_script.html' with active='image-admin' %}
   {% endif %}
 {% endblock %}
