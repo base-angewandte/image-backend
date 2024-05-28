@@ -494,6 +494,7 @@ SENTRY_ENVIRONMENT = env.str(
     else 'production',
 )
 SENTRY_TRACES_SAMPLE_RATE = env.float('SENTRY_TRACES_SAMPLE_RATE', default=0.2)
+SENTRY_PROFILES_SAMPLE_RATE = env.float('SENTRY_PROFILES_SAMPLE_RATE', default=0.2)
 
 if SENTRY_DSN:
     import sentry_sdk
@@ -508,5 +509,6 @@ if SENTRY_DSN:
             RedisIntegration(),
         ],
         traces_sample_rate=SENTRY_TRACES_SAMPLE_RATE,
+        profiles_sample_rate=SENTRY_PROFILES_SAMPLE_RATE,
         send_default_pii=True,
     )
