@@ -484,3 +484,29 @@ for permission in DEFAULT_PERMISSIONS:
 SEARCH_LIMIT = 30
 
 LOCATION_SEARCH_LEVELS = env.int('LOCATION_SEARCH_LEVELS', default=1)
+
+# Sentry
+SENTRY_DSN = env.str('SENTRY_DSN', default=None)
+SENTRY_ENVIRONMENT = env.str(
+    'SENTRY_ENVIRONMENT',
+    default='development'
+    if any([i in SITE_URL for i in ['dev', 'localhost', '127.0.0.1']])
+    else 'production',
+)
+SENTRY_TRACES_SAMPLE_RATE = env.float('SENTRY_TRACES_SAMPLE_RATE', default=0.2)
+
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.redis import RedisIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        environment=SENTRY_ENVIRONMENT,
+        integrations=[
+            DjangoIntegration(),
+            RedisIntegration(),
+        ],
+        traces_sample_rate=SENTRY_TRACES_SAMPLE_RATE,
+        send_default_pii=True,
+    )
