@@ -25,7 +25,9 @@ brotli==1.1.0
 build==1.0.3
     # via pip-tools
 certifi==2023.7.22
-    # via requests
+    # via
+    #   requests
+    #   sentry-sdk
 charset-normalizer==3.3.1
     # via requests
 click==8.1.7
@@ -53,6 +55,7 @@ django==4.2.6
     #   django-versatileimagefield
     #   djangorestframework
     #   drf-spectacular
+    #   sentry-sdk
 django-appconf==1.0.5
     # via
     #   -r src/requirements.in
@@ -184,6 +187,10 @@ rpds-py==0.10.6
     # via
     #   jsonschema
     #   referencing
+sentry-sdk[django]==2.3.1
+    # via
+    #   -r src/requirements.in
+    #   sentry-sdk
 shortuuid==1.0.11
     # via
     #   -r src/requirements.in
@@ -207,7 +214,9 @@ typing-extensions==4.8.0
 uritemplate==4.1.1
     # via drf-spectacular
 urllib3==2.0.7
-    # via requests
+    # via
+    #   requests
+    #   sentry-sdk
 wheel==0.41.2
     # via pip-tools
 whitenoise[brotli]==6.5.0
