@@ -1,0 +1,8 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+{% block object-tools-items %}
+<li>
+  <a href="{% url 'multi_artwork_creation' %}">{% trans 'Upload multiple images' %}</a>
+</li>
+{{ block.super }}
+{% endblock %}

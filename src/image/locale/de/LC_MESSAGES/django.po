@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-27 12:56+0200\n"
+"POT-Creation-Date: 2024-05-31 11:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,7 +140,7 @@ msgstr ""
 msgid "Artwork id must be of type integer"
 msgstr ""
 
-#: api/views/artworks.py:362
+#: api/views/artworks.py:363
 #, python-brace-format
 msgid "File for artwork {pk} not found"
 msgstr ""
@@ -173,7 +173,7 @@ msgstr ""
 msgid "Folder"
 msgstr "Arbeitsmappe"
 
-#: artworks/admin.py:89 artworks/forms.py:57 artworks/forms.py:64
+#: artworks/admin.py:90 artworks/forms.py:57 artworks/forms.py:64
 #: artworks/models.py:37 artworks/models.py:120
 msgid "Artists"
 msgstr "Künstler_innen"
@@ -197,6 +197,10 @@ msgid ""
 "There is no image associated with artwork with id {artwork_in_slide."
 "get('id')}; it's a directory"
 msgstr ""
+
+#: artworks/forms.py:95
+msgid "Images"
+msgstr "Bilder"
 
 #: artworks/models.py:29 artworks/models.py:60 artworks/models.py:79
 msgid "Name"
@@ -294,6 +298,14 @@ msgstr ""
 msgid "Albums"
 msgstr "Alben"
 
+#: artworks/views.py:474
+msgid "Images successfully uploaded"
+msgstr "Bilder erfolgreich hochgeladen"
+
+#: artworks/views.py:482 image/templates/admin/artwork/change_list.html:5
+msgid "Upload multiple images"
+msgstr "Mehrere Bilder hochladen"
+
 #: image/settings.py:283
 msgid "German"
 msgstr "Deutsch"
@@ -301,6 +313,10 @@ msgstr "Deutsch"
 #: image/settings.py:284
 msgid "English"
 msgstr "Englisch"
+
+#: image/templates/admin/artwork/upload.html:10
+msgid "Upload images"
+msgstr "Bilder hochladen"
 
 #: image/templates/admin/base_site.html:4 image/urls.py:31 image/urls.py:32
 msgid "Image Admin"

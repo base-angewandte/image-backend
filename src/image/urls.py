@@ -34,6 +34,8 @@ admin.site.site_header = _('Image Admin')
 urlpatterns = [
     path('', include('artworks.urls')),
     path('api/', include('api.urls')),
+    # django admin
+    path('editing/', include('artworks.urls_admin')),
     path('editing/', admin.site.urls),
     path('editing/', include('massadmin.urls')),
     path(

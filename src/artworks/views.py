@@ -5,7 +5,9 @@ from functools import reduce
 
 from dal import autocomplete
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import (
     BooleanField,
@@ -18,9 +20,12 @@ from django.db.models import (
 )
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import FormView
 
-from .forms import AlbumForm, ArtworkForm
+from .forms import AlbumForm, ArtworkForm, ImageFieldForm
 from .models import Album, Artist, Artwork, Keyword, Location
 from .serializers import ArtworkSerializer, CollectionSerializer
 
@@ -441,3 +446,36 @@ class KeywordAutocomplete(autocomplete.Select2QuerySetView):
             return qs.filter(name__icontains=self.q)
         else:
             return Keyword.objects.none()
+
+
+class MultiArtworkCreationFormView(PermissionRequiredMixin, FormView):
+    form_class = ImageFieldForm
+    template_name = 'admin/artwork/upload.html'
+    success_url = reverse_lazy('admin:artworks_artwork_changelist')
+    permission_required = ['artworks.add_artwork']
+
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        files = form.cleaned_data['image_field']
+        for f in files:
+            Artwork(
+                title=f.name,
+                image_original=f,
+                published=False,
+                checked=False,
+            ).save()
+        messages.success(self.request, _('Images successfully uploaded'))
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        """Add the title to the context data."""
+        context = super().get_context_data(**kwargs)
+        context['title'] = _('Upload multiple images')
+        return context

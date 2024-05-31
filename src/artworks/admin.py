@@ -82,6 +82,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'date_created',
         'date_changed',
     )
+    change_list_template = 'admin/artwork/change_list.html'
 
     class Media:
         js = ['js/artwork_form.js']
