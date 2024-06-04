@@ -87,7 +87,7 @@ subsections.
 
   ```bash
   pip install pip-tools
-  cd image
+  cd src
   pip-sync
   cd ..
   ```
@@ -104,7 +104,7 @@ subsections.
 - Run migration:
 
   ```bash
-  cd image
+  cd src
   python manage.py migrate
   ```
 
