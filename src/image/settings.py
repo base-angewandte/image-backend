@@ -512,3 +512,8 @@ if SENTRY_DSN:
         profiles_sample_rate=SENTRY_PROFILES_SAMPLE_RATE,
         send_default_pii=True,
     )
+
+GND_BASE_URL = env.str('GND_BASE_URL', default='https://lobid.org/gnd/')
+
+# TODO: discuss: what is a good timeout value? it will be used in fetching GND data when saving entries in django admin
+REQUESTS_TIMEOUT = 10
