@@ -61,7 +61,7 @@ def process_external_artist_metadata(sender, instance, raw, **kwargs):
         try:
             response = requests.get(
                 settings.GND_BASE_URL + instance.gnd_id,
-                timeout=settings.REQUEST_TIMEOUT,
+                timeout=settings.REQUESTS_TIMEOUT,
             )
             gnd_data = response.json()
             instance.external_metadata['gnd'] = {
