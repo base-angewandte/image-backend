@@ -67,14 +67,27 @@ class ArtistAdminForm(forms.ModelForm):
                     settings.GND_BASE_URL + gnd_id,
                     timeout=settings.REQUESTS_TIMEOUT,
                 )
-                gnd_data = response.json()
-                self.instance.external_metadata['gnd'] = {
-                    'date_requested': datetime.now().isoformat(),
-                    'response_data': gnd_data,
-                }
             except requests.RequestException as e:
-                msg = _('Request error when retrieving GND data.') + f'Details: {e}'
-                raise forms.ValidationError(message=msg) from e
+                raise forms.ValidationError(
+                    _('Request error when retrieving GND data. Details: %(details)s'),
+                    params={'details': f'{repr(e)}'},
+                ) from e
+
+            if response.status_code != 200:
+                if response.status_code == 404:
+                    raise forms.ValidationError(
+                        _('No GND entry was found with ID %(id)s.'),
+                        params={'id': gnd_id},
+                    )
+                raise forms.ValidationError(
+                    _('HTTP error %(status)s when retrieving GND data: %(details)s'),
+                    params={'status': response.status_code, 'details': response.text},
+                )
+            gnd_data = response.json()
+            self.instance.external_metadata['gnd'] = {
+                'date_requested': datetime.now().isoformat(),
+                'response_data': gnd_data,
+            }
 
             # TODO: discuss how exactly to handle name and synonym fields:
             #   based on which gnd data properties, in which formatting, how many synonyms
