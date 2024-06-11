@@ -1,3 +1,5 @@
+import re
+
 from dal import autocomplete
 
 from django import forms
@@ -43,6 +45,19 @@ class MPTTMultipleChoiceField(ModelMultipleChoiceField):
             obj, getattr(self.queryset.model._meta, 'level_attr', 'level'), 0
         )
         return '{} {}'.format('-' * level, force_str(obj))
+
+
+class ArtistAdminForm(forms.ModelForm):
+    def clean(self):
+        if not self.data['name'] and not self.data['gnd_id']:
+            raise forms.ValidationError(
+                message=_('Either a name or a valid GND ID need to be set')
+            )
+        if self.data['gnd_id']:
+            if not re.match(r'^[0-9]*(-?[0-9X])?$', self.data['gnd_id']):
+                raise forms.ValidationError(message=_('Invalid GND ID format.'))
+
+            # TODO: move Artist pre_save logic to fetch GND data here
 
 
 class ArtworkAdminForm(forms.ModelForm):

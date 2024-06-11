@@ -56,7 +56,9 @@ def process_external_artist_metadata(sender, instance, raw, **kwargs):
         before_save = sender.objects.get(pk=instance.pk)
     except sender.DoesNotExist:
         pass
-    if before_save is None or before_save.gnd_id != instance.gnd_id:
+    if instance.gnd_id and (
+        before_save is None or before_save.gnd_id != instance.gnd_id
+    ):
         print('updating gnd data for', instance.gnd_id)
         try:
             response = requests.get(
