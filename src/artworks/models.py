@@ -1,8 +1,6 @@
 import logging
 import os
-from datetime import datetime
 
-import requests
 from base_common.fields import ShortUUIDField
 from base_common.models import AbstractBaseModel
 from mptt.models import MPTTModel, TreeForeignKey
@@ -44,66 +42,6 @@ class Artist(AbstractBaseModel):
 
     def __str__(self):
         return self.name
-
-
-@receiver(models.signals.pre_save, sender=Artist)
-def process_external_artist_metadata(sender, instance, raw, **kwargs):
-    # TODO: discuss if we want to skip fetching data for raw saves (e.g. when loading fixtures)
-    if raw:
-        return
-    before_save = None
-    try:
-        before_save = sender.objects.get(pk=instance.pk)
-    except sender.DoesNotExist:
-        pass
-    if instance.gnd_id and (
-        before_save is None or before_save.gnd_id != instance.gnd_id
-    ):
-        print('updating gnd data for', instance.gnd_id)
-        try:
-            response = requests.get(
-                settings.GND_BASE_URL + instance.gnd_id,
-                timeout=settings.REQUESTS_TIMEOUT,
-            )
-            gnd_data = response.json()
-            instance.external_metadata['gnd'] = {
-                'date_requested': datetime.now().isoformat(),
-                'response_data': gnd_data,
-            }
-            print(instance.external_metadata['gnd'])
-        except requests.RequestException as e:
-            # TODO: discuss how to handle errors when retrieving GND data
-            #   we can check for status code 404, if just the id was not found
-            #   or any other issue, which suggests that the api was not avaialable?
-            instance.external_metadata['gnd'] = {
-                'date_requested': datetime.now().isoformat(),
-                'error': repr(e),
-            }
-            logger.error(
-                f'Request error when retrieving GND data for {instance.gnd_id}: {e}'
-            )
-            return
-
-        # TODO: discuss how exactly to handle name and synonym fields:
-        #   based on which gnd data properties, in which formatting, how many synonyms
-        #   and should we handle potential multiple names or dates?
-
-        if 'preferredNameEntityForThePerson' in gnd_data:
-            instance.name = (
-                gnd_data['preferredNameEntityForThePerson']['forename'][0]
-                + ' '
-                + gnd_data['preferredNameEntityForThePerson']['surname'][0]
-            )
-        elif 'preferredName' in gnd_data:
-            instance.name = gnd_data['preferredName']
-
-        if 'variantName' in gnd_data:
-            instance.synonyms = ' | '.join(gnd_data['variantName'])[:255]
-
-        if 'dateOfBirth' in gnd_data:
-            instance.date_birth = gnd_data.get('dateOfBirth')[0]
-        if 'dateOfDeath' in gnd_data:
-            instance.date_death = gnd_data.get('dateOfDeath')[0]
 
 
 def get_path_to_original_file(instance, filename):

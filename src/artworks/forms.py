@@ -1,8 +1,11 @@
 import re
+from datetime import datetime
 
+import requests
 from dal import autocomplete
 
 from django import forms
+from django.conf import settings
 
 # https://gist.github.com/tdsymonds/abdcb395f172a016ed785f59043749e3
 from django.contrib.admin.widgets import FilteredSelectMultiple
@@ -57,7 +60,42 @@ class ArtistAdminForm(forms.ModelForm):
             if not re.match(r'^[0-9]*(-?[0-9X])?$', self.data['gnd_id']):
                 raise forms.ValidationError(message=_('Invalid GND ID format.'))
 
-            # TODO: move Artist pre_save logic to fetch GND data here
+            cleaned_data = super().clean()
+            gnd_id = self.data['gnd_id']
+            try:
+                response = requests.get(
+                    settings.GND_BASE_URL + gnd_id,
+                    timeout=settings.REQUESTS_TIMEOUT,
+                )
+                gnd_data = response.json()
+                self.instance.external_metadata['gnd'] = {
+                    'date_requested': datetime.now().isoformat(),
+                    'response_data': gnd_data,
+                }
+            except requests.RequestException as e:
+                msg = _('Request error when retrieving GND data.') + f'Details: {e}'
+                raise forms.ValidationError(message=msg) from e
+
+            # TODO: discuss how exactly to handle name and synonym fields:
+            #   based on which gnd data properties, in which formatting, how many synonyms
+            #   and should we handle potential multiple names or dates?
+
+            if 'preferredNameEntityForThePerson' in gnd_data:
+                cleaned_data['name'] = (
+                    gnd_data['preferredNameEntityForThePerson']['forename'][0]
+                    + ' '
+                    + gnd_data['preferredNameEntityForThePerson']['surname'][0]
+                )
+            elif 'preferredName' in gnd_data:
+                cleaned_data['name'] = gnd_data['preferredName']
+
+            if 'variantName' in gnd_data:
+                cleaned_data['synonyms'] = ' | '.join(gnd_data['variantName'])[:255]
+
+            if 'dateOfBirth' in gnd_data:
+                cleaned_data['date_birth'] = gnd_data.get('dateOfBirth')[0]
+            if 'dateOfDeath' in gnd_data:
+                cleaned_data['date_death'] = gnd_data.get('dateOfDeath')[0]
 
 
 class ArtworkAdminForm(forms.ModelForm):
