@@ -9,7 +9,6 @@ from versatileimagefield.fields import VersatileImageField
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.postgres.aggregates import StringAgg
-from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVector, SearchVectorField
 from django.db import models
 from django.db.models import JSONField, Value
@@ -166,7 +165,6 @@ class Artwork(AbstractBaseModel):
         ]
         verbose_name = _('Artwork')
         verbose_name_plural = _('Artworks')
-        indexes = [GinIndex(fields=['search_vector'])]
 
     def __str__(self):
         return self.title
