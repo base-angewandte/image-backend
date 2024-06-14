@@ -9,7 +9,7 @@ from django.db import models
 class ArtworkManager(models.Manager):
     def search(self, text):
         search_query = SearchQuery(text)
-        search_rank = SearchRank('search_vector', search_query)
+        search_rank = SearchRank('search_vector', search_query, normalization=32)
         trigram_word_similarity_title = TrigramWordSimilarity(
             text,
             'title',
@@ -36,6 +36,6 @@ class ArtworkManager(models.Manager):
         return (
             self.get_queryset()
             .annotate(rank=rank)
-            .filter(rank__gte=0.2)
+            .filter(rank__gte=0.1)
             .order_by('-rank')
         )
