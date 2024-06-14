@@ -148,12 +148,8 @@ portalocker==2.8.2
     # via concurrent-log-handler
 psutil==5.9.6
     # via rainbow-saddle
-psycopg[binary]==3.1.12
-    # via
-    #   -r src/requirements.in
-    #   psycopg
-psycopg-binary==3.1.12
-    # via psycopg
+psycopg==3.1.19
+    # via -r src/requirements.in
 pylint==2.17.6
     # via -r src/requirements.in
 pyproject-hooks==1.0.0

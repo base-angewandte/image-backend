@@ -5,3 +5,4 @@
 -r requirements.in
 
 pre-commit
+psycopg[binary]
