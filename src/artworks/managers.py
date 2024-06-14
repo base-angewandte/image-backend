@@ -4,12 +4,13 @@ from django.contrib.postgres.search import (
     TrigramWordSimilarity,
 )
 from django.db import models
+from django.db.models import F
 
 
 class ArtworkManager(models.Manager):
     def search(self, text):
         search_query = SearchQuery(text)
-        search_rank = SearchRank('search_vector', search_query, normalization=32)
+        search_rank = SearchRank(F('search_vector'), search_query, normalization=32)
         trigram_word_similarity_title = TrigramWordSimilarity(
             text,
             'title',
