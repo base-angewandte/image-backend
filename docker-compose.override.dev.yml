@@ -1,4 +1,3 @@
-version: "2.3"
 services:
   # Uncomment the image-redis and image-postgres sections below if you need direct access to
   # these databases (e.g. for local development). If you are running several base applications
