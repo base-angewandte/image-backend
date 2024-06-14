@@ -38,7 +38,7 @@ dal-admin-filters==1.1.0
     # via -r src/requirements.in
 dill==0.3.7
     # via pylint
-django==4.2.6
+django==4.2.13
     # via
     #   -r src/requirements.in
     #   base-common
