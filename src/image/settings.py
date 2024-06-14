@@ -25,13 +25,13 @@ from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
-env = environ.Env()
-env.read_env()
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 PROJECT_NAME = '.'.join(__name__.split('.')[:-1])
+
+env = environ.Env()
+env.read_env(os.path.join(BASE_DIR, '..', '.env'))
 
 try:
     from .secret_key import SECRET_KEY
