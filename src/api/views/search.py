@@ -213,8 +213,6 @@ def search(request, *args, **kwargs):
     # only search for published artworks
     subq = subq.filter(published=True)
 
-    subq = subq.prefetch_related('artists')
-
     if exclude:
         subq = subq.exclude(id__in=exclude)
 
@@ -237,7 +235,7 @@ def search(request, *args, **kwargs):
         f'FROM ({subq_sql}) AS subq '
         'LIMIT %s OFFSET %s;',
         params=(*subq_params, limit, offset),
-    )
+    ).prefetch_related('artists')
 
     total = 0
     results = []
