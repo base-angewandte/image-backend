@@ -245,11 +245,11 @@ WSGI_APPLICATION = f'{PROJECT_NAME}.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', f'django_{PROJECT_NAME}'),
-        'USER': os.environ.get('POSTGRES_USER', f'django_{PROJECT_NAME}'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', f'password_{PROJECT_NAME}'),
+        'NAME': env.str('POSTGRES_DB', default=f'django_{PROJECT_NAME}'),
+        'USER': env.str('POSTGRES_USER', default=f'django_{PROJECT_NAME}'),
+        'PASSWORD': env.str('POSTGRES_PASSWORD', default=f'password_{PROJECT_NAME}'),
         'HOST': f'{PROJECT_NAME}-postgres' if DOCKER else 'localhost',
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        'PORT': env.str('POSTGRES_PORT', default='5432'),
     }
 }
 
@@ -397,7 +397,7 @@ CACHES = {
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': 'redis://{}:{}/0'.format(
             f'{PROJECT_NAME}-redis' if DOCKER else 'localhost',
-            os.environ.get('REDIS_PORT', '6379'),
+            env.int('REDIS_PORT', default=6379),
         ),
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
