@@ -399,14 +399,20 @@ CACHES = {
             f'{PROJECT_NAME}-redis' if DOCKER else 'localhost',
             env.int('REDIS_PORT', default=6379),
         ),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        },
-    }
+        'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
+    },
+    'sessions': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://{}:{}/1'.format(
+            f'{PROJECT_NAME}-redis' if DOCKER else 'localhost',
+            env.int('REDIS_PORT', default=6379),
+        ),
+        'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
+    },
 }
 """Session settings."""
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'
+SESSION_CACHE_ALIAS = 'sessions'
 SESSION_COOKIE_NAME = 'sessionid_{}'.format('image')
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
