@@ -27,7 +27,7 @@ msgstr "Titel"
 
 #: api/autocomplete/views.py:46
 msgid "autocomplete_artists"
-msgstr "Künster_innen"
+msgstr "Künster*innen"
 
 #: api/autocomplete/views.py:47
 msgid "autocomplete_keywords"
@@ -39,7 +39,7 @@ msgstr "Orte"
 
 #: api/autocomplete/views.py:49
 msgid "autocomplete_users"
-msgstr "Benutzer_innen"
+msgstr "Benutzer*innen"
 
 #: api/search/filters.py:12
 #, python-format
@@ -55,7 +55,7 @@ msgstr "Titel"
 #: api/search/filters.py:16 artworks/admin.py:16 artworks/models.py:36
 #: image/templates/artwork/thumbnailbrowser.html:38
 msgid "Artist"
-msgstr "Künstler_in"
+msgstr "Künstler*in"
 
 #: api/search/filters.py:17 artworks/models.py:142
 #: image/templates/artwork/thumbnailbrowser.html:48
@@ -176,7 +176,7 @@ msgstr "Arbeitsmappe"
 #: artworks/admin.py:90 artworks/forms.py:57 artworks/forms.py:64
 #: artworks/models.py:37 artworks/models.py:120
 msgid "Artists"
-msgstr "Künstler_innen"
+msgstr "Künstler*innen"
 
 #: artworks/apps.py:33
 msgid "Image Content"
@@ -276,7 +276,7 @@ msgstr "Kunstwerke"
 
 #: artworks/models.py:276 artworks/models.py:345
 msgid "User"
-msgstr "Benutzer_in"
+msgstr "Benutzer*in"
 
 #: artworks/models.py:277
 msgid "Slides"

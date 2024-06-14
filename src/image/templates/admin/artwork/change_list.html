@@ -1,8 +1,10 @@
 {% extends "admin/change_list.html" %}
 {% load i18n %}
 {% block object-tools-items %}
+{% if perms.artworks.add_artwork %}
 <li>
   <a href="{% url 'multi_artwork_creation' %}">{% trans 'Upload multiple images' %}</a>
 </li>
+{% endif %}
 {{ block.super }}
 {% endblock %}
