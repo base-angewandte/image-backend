@@ -14,6 +14,11 @@ credentials and the static assets folder. The defaults are fine, only the
 > default _password_. But in terms of nearly any security policy you absolutely _MUST_
 > set a strong password here. Try e.g. `pwgen -s 32 1`.
 
+If you want to explicitly use a different port for the docker services, you can
+configure the `POSTGRES_PORT` and `REDIS_PORT` settings accordingly, but you will also
+need to create a `docker-compose.override.yml` file to configure these ports for docker.
+See `docker-compose.overridy.dev.yml` for an example of how to do this.
+
 For a production setup you might want to store the uploaded image files not directly
 in the default assets folder within Django root. In that case, you can adapt the
 `MEDIA_DIR=` and point to your media directory that gets mounted into the Django
@@ -87,12 +92,3 @@ to image. This will be deprecated soon, as for image 2.0 we are developing a
 separate frontend that will be responsible for loading the base header. Until
 then, if you want to have the base header included in image's root page, set
 this some site with available base header, e.g. https://***REMOVED***/
-
-### POSTGRES\_\* & REDIS\_\*
-
-For both databases the `*_PORT` setting should be fine by default, unless you explicitly
-use a different port for those docker services.
-
-The `POSTGRES_PASSWORD` has to be the same as the one set in the root folder _.env_ file.
-If you deploy everything with docker, you don't have to set it here explicitly, as the
-environment variable will already be set by docker based on the root _.env_ file.
