@@ -152,6 +152,7 @@ def autocomplete(request, *args, **kwargs):
                         'full_name',
                     )
                 )
+                .filter(similarity__gte=0.6)
                 .order_by('-similarity')
             )
             for user in query:
