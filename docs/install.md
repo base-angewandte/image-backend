@@ -43,10 +43,10 @@ subsections.
 
 ### Everything inside docker
 
-- Make sure that the `DOCKER` variable in `./.env` is set to
+- Make sure that the `DOCKER` variable in `.env` is set to
   `TRUE`. Otherwise, django will assume that postgres and redis are accessible
   on localhost ports.
-- Also in `./.env`, make sure the variable `FORCE_SCRIPT_NAME=` is uncommented and set to an empty string.
+- Also in `.env`, make sure the variable `FORCE_SCRIPT_NAME=` is uncommented and set to an empty string.
 
 - Start everything:
 
