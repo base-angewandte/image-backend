@@ -202,18 +202,17 @@ def search(request, *args, **kwargs):
 
     if q_param:
         subq = Artwork.objects.search(q_param)
+        order_by = '"rank" DESC'
     else:
         subq = Artwork.objects.annotate(rank=Value(1.0, FloatField()))
         if filters:
-            subq = subq.order_by('title')
+            order_by = '"title"'
         else:
             # user is not using search at all, therefor show the newest changes first
-            subq = subq.order_by('-date_changed', 'title')
+            order_by = '"date_changed" DESC, "title"'
 
     # only search for published artworks
     subq = subq.filter(published=True)
-
-    subq = subq.prefetch_related('artists')
 
     if exclude:
         subq = subq.exclude(id__in=exclude)
@@ -227,7 +226,9 @@ def search(request, *args, **kwargs):
             for filter_item in filters_list:
                 subq = subq.filter(filter_item)
 
-    subq = subq.distinct()
+    # we need to remove the previously set ordering to be able to use
+    # distinct only on id field
+    subq = subq.order_by().distinct('id')
 
     subq_sql, subq_params = subq.query.sql_with_params()
 
@@ -235,9 +236,10 @@ def search(request, *args, **kwargs):
         # we need a raw query here, but don't use any unvalidated parameters
         'SELECT *, COUNT(*) OVER() AS "total_count" '  # nosec: see comment above
         f'FROM ({subq_sql}) AS subq '
-        'LIMIT %s OFFSET %s;',
+        f'ORDER BY {order_by} '
+        'LIMIT %s OFFSET %s',
         params=(*subq_params, limit, offset),
-    )
+    ).prefetch_related('artists')
 
     total = 0
     results = []
