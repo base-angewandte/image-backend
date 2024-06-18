@@ -43,6 +43,15 @@ build-docs-default:  ## build documentation
 .PHONY: update-default
 update-default: git-update init restart-gunicorn build-docs  ## update project (runs git-update init restart-gunicorn build-docs)
 
+.PHONY: makemessages-docker-default
+makemessages-docker-default:  ## generate all required messages needed for localisation
+	docker compose exec ${PROJECT_NAME}-django python manage.py makemessages -l de
+	docker compose exec ${PROJECT_NAME}-django python manage.py makemessages -l en
+
+.PHONY: compilemessages-docker-default
+compilemessages-docker-default:  ## compile all localised messages to be available in the app
+	docker compose exec ${PROJECT_NAME}-django python manage.py compilemessages
+
 .PHONY: pip-compile-default
 pip-compile-default:  ## run pip-compile locally
 	pip-compile src/requirements.in
