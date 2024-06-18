@@ -24,17 +24,12 @@ In both cases there are some common steps to follow:
   git checkout develop
   ```
 
-- Check and adapt settings (if you need more details on the single settings, then the comments in the skeleton env
-  files give you, take a look at the [](./configuration.md) section) :
+- Check and adapt settings (if you need more details on the single settings, than the comments in the skeleton env
+  file give you, take a look at the [](./configuration.md) section) :
 
   ```bash
-  # env
   cp env-skel .env
   vi .env
-
-  # django env
-  cp ./src/image/env-skel ./src/image/.env
-  vi ./src/image/.env
   ```
 
 - Create the docker-compose override file:
@@ -48,10 +43,10 @@ subsections.
 
 ### Everything inside docker
 
-- Make sure that the `DOCKER` variable in `./src/image/.env` is set to
+- Make sure that the `DOCKER` variable in `.env` is set to
   `TRUE`. Otherwise, django will assume that postgres and redis are accessible
   on localhost ports.
-- Also in `./src/image/.env`, make sure the variable `FORCE_SCRIPT_NAME=` is uncommented and set to an empty string.
+- Also in `.env`, make sure the variable `FORCE_SCRIPT_NAME=` is uncommented and set to an empty string.
 
 - Start everything:
 
@@ -74,12 +69,6 @@ subsections.
   ```
 
 ### The full developer setup
-
-> Disclaimer: make sure to explicitly set the relevant `POSTGRES_*` variables in your
-> src/image/.env file, if you have changed any of the corresponding `DB_*`
-> parameters in your .env file. This is not necessary for dockerised setups, but in your
-> local django dev server those environement variables are not assigned
-> automagically. Take a look at the [](./configuration.md) section for details.
 
 - Install the latest python 3.11 and create virtualenv e.g. via `pyenv` and `pyenv-virtualenv`.
 
@@ -167,13 +156,8 @@ or `python manage.py migrate` steps above
 - Check and adapt settings:
 
   ```bash
-  # env
   cp env-skel .env
   vi .env
-
-  # django env
-  cp ./src/image/env-skel ./src/image/.env
-  vi ./src/image/.env
   ```
 
 - Use `Makefile` to initialize and run project:

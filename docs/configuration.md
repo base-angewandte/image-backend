@@ -1,32 +1,34 @@
 # Configuration
 
-The _Image_ backend is configured through two `.env` files. For both there is a template
-`env-skel` file available in the same folder, to copy from and then modify it. See
-also [](install.md) on when and how to set up those files.
+The _Image_ backend is configured through one `.env` file in the project root folder.
+There is a template `env-skel` file available in the same folder, to copy from and
+then modify it. See also [](install.md) on when and how to set up those file.
 
 ## `.env`
 
-The first and shorter one is in the project root folder. It is used to configure the
-docker services, for database credentials and the static assets folder. The defaults
-are fine, only the `DB_PASSWORD` should be set to a strong password.
+The first part of the file is used to configure the docker services, for database
+credentials and the static assets folder. The defaults are fine, only the
+`POSTGRES_PASSWORD` should be set to a strong password.
 
 > Note: we wrote _should_, because programmatically nothing keeps you from using the
 > default _password_. But in terms of nearly any security policy you absolutely _MUST_
 > set a strong password here. Try e.g. `pwgen -s 32 1`.
+
+If you want to explicitly use a different port for the docker services, you can
+configure the `POSTGRES_PORT` and `REDIS_PORT` settings accordingly, but you will also
+need to create a `docker-compose.override.yml` file to configure these ports for docker.
+See `docker-compose.overridy.dev.yml` for an example of how to do this.
 
 For a production setup you might want to store the uploaded image files not directly
 in the default assets folder within Django root. In that case, you can adapt the
 `MEDIA_DIR=` and point to your media directory that gets mounted into the Django
 container to Django's default assets directory.
 
-## `/src/image/.env`
-
-The main configuration environment file is in the _src/image_ folder, and it is
-parsed in the Django settings initialization. All available settings are commented,
-but some are more self-explanatory than others. Some only really make sense, once
-you grasp the whole architectural ecosystem. So here you find some notes to shed more
-light on those settings that might seem more opaque, or that are absolutely needed
-to run.
+The rest of the file contains additional Django configuration. All available settings
+are commented, but some are more self-explanatory than others. Some only really make
+sense, once you grasp the whole architectural ecosystem. So here you find some notes
+to shed more light on those settings that might seem more opaque, or that are absolutely
+needed to run.
 
 ### DOCKER
 
@@ -90,12 +92,3 @@ to image. This will be deprecated soon, as for image 2.0 we are developing a
 separate frontend that will be responsible for loading the base header. Until
 then, if you want to have the base header included in image's root page, set
 this some site with available base header, e.g. https://***REMOVED***/
-
-### POSTGRES\_\* & REDIS\_\*
-
-For both databases the `*_PORT` setting should be fine by default, unless you explicitly
-use a different port for those docker services.
-
-The `POSTGRES_PASSWORD` has to be the same as the one set in the root folder _.env_ file.
-If you deploy everything with docker, you don't have to set it here explicitly, as the
-environment variable will already be set by docker based on the root _.env_ file.

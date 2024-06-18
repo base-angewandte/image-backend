@@ -10,7 +10,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from django.contrib.auth import get_user_model
-from django.db.models import Q
+from django.contrib.postgres.search import TrigramWordSimilarity
+from django.db.models import Q, Value
+from django.db.models.functions import Concat
 from django.utils.translation import gettext_lazy as _
 
 from artworks.models import (
@@ -139,9 +141,20 @@ def autocomplete(request, *args, **kwargs):
         }
 
         if t == 'users':
-            query = MODEL_MAP[t].objects.filter(
-                Q(first_name__icontains=q_param) | Q(last_name__icontains=q_param)
-            )[:limit]
+            query = (
+                MODEL_MAP[t]
+                .objects.annotate(
+                    full_name=Concat('first_name', Value(' '), 'last_name')
+                )
+                .annotate(
+                    similarity=TrigramWordSimilarity(
+                        q_param,
+                        'full_name',
+                    )
+                )
+                .filter(similarity__gte=0.6)
+                .order_by('-similarity')
+            )
             for user in query:
                 d['data'].append(
                     {
