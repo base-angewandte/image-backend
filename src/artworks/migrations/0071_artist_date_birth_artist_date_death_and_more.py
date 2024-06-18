@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('artworks', '0069_artwork_title_comment'),
+        ('artworks', '0070_remove_artwork_artworks_ar_search__9a85c2_gin'),
     ]
 
     operations = [
