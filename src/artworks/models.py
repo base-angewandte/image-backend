@@ -27,10 +27,16 @@ class Artist(AbstractBaseModel):
     """One Artist can be the maker of 0-n artworks."""
 
     name = models.CharField(
-        verbose_name=_('Name'), max_length=255, null=False, blank=True
+        verbose_name=_('Name'),
+        max_length=255,
+        null=False,
+        blank=True,
     )
     synonyms = models.CharField(
-        verbose_name=_('Synonyms'), max_length=255, null=False, blank=True
+        verbose_name=_('Synonyms'),
+        max_length=255,
+        null=False,
+        blank=True,
     )
     date_birth = models.DateField(null=True, blank=True)
     date_death = models.DateField(null=True, blank=True)

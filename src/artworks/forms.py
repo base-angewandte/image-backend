@@ -56,7 +56,7 @@ class ArtistAdminForm(forms.ModelForm):
             # see https://www.wikidata.org/wiki/Property:P227 for GND ID definition
             if not re.match(
                 r'^(1[0123]?\d{7}[0-9X]|[47]\d{6}-\d|[1-9]\d{0,7}-[0-9X]|3\d{7}[0-9X])$',
-                self.data['gnd_id'],
+                gnd_id,
             ):
                 raise forms.ValidationError(message=_('Invalid GND ID format.'))
 
