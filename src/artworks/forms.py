@@ -60,7 +60,7 @@ class ArtistAdminForm(forms.ModelForm):
             if not re.match(r'^[0-9]*(-?[0-9X])?$', self.data['gnd_id']):
                 raise forms.ValidationError(message=_('Invalid GND ID format.'))
 
-            cleaned_data = super().clean()
+            super().clean()
             gnd_id = self.data['gnd_id']
             try:
                 response = requests.get(
@@ -94,21 +94,23 @@ class ArtistAdminForm(forms.ModelForm):
             #   and should we handle potential multiple names or dates?
 
             if 'preferredNameEntityForThePerson' in gnd_data:
-                cleaned_data['name'] = (
+                self.cleaned_data['name'] = (
                     gnd_data['preferredNameEntityForThePerson']['forename'][0]
                     + ' '
                     + gnd_data['preferredNameEntityForThePerson']['surname'][0]
                 )
             elif 'preferredName' in gnd_data:
-                cleaned_data['name'] = gnd_data['preferredName']
+                self.cleaned_data['name'] = gnd_data['preferredName']
 
             if 'variantName' in gnd_data:
-                cleaned_data['synonyms'] = ' | '.join(gnd_data['variantName'])[:255]
+                self.cleaned_data['synonyms'] = ' | '.join(gnd_data['variantName'])[
+                    :255
+                ]
 
             if 'dateOfBirth' in gnd_data:
-                cleaned_data['date_birth'] = gnd_data.get('dateOfBirth')[0]
+                self.cleaned_data['date_birth'] = gnd_data.get('dateOfBirth')[0]
             if 'dateOfDeath' in gnd_data:
-                cleaned_data['date_death'] = gnd_data.get('dateOfDeath')[0]
+                self.cleaned_data['date_death'] = gnd_data.get('dateOfDeath')[0]
 
 
 class ArtworkAdminForm(forms.ModelForm):
