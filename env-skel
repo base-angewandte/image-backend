@@ -1,10 +1,84 @@
-## These settings are used to set up the DB in the image-postgres container.
-DB_NAME=django_image
-DB_USER=django_image
-## Make sure to change this to a strong password on any production/public server.
-## If you change it here for local development, make sure to also set the POSTGRES_PASSWORD
-## in src/image/.env accordingly
-DB_PASSWORD=password
+## PostgreSQL settings for image-postgres container and Django
+POSTGRES_DB=django_image
+POSTGRES_USER=django_image
+POSTGRES_PASSWORD=password_image
+## You need to use an override file to change the port of the container
+# POSTGRES_PORT=5432
+
+## Redis settings for image-redis container and Django
+## You need to use an override file to change the port of the container
+# REDIS_PORT=6379
 
 ## The directory where your (uploaded) image files should reside
 MEDIA_DIR=./src/assets/media
+
+## Django Settings
+
+## For development this can be set to True
+## SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG=False
+
+## If you are developing locally (with Django not running inside a container), set this to False
+# DOCKER=True
+
+## The base URL of the Django site, for local development http://localhost:8500/
+SITE_URL=
+
+## In a production deployment with other base components, this base path should
+## be set for image. For local development set this explicitly to an empty string.
+# FORCE_SCRIPT_NAME=/image
+
+## The accepted HTTP Host headers, Django will serve. Defaults to urlparse(SITE_URL).hostname
+# ALLOWED_HOSTS=
+
+## In a production environment Django will be deployed behind a nginx proxy.
+## For local development, set this to False
+# BEHIND_PROXY=True
+
+## Set up admin notifications here
+# DJANGO_ADMINS=Full Name <email-with-name@example.com>,anotheremailwithoutname@example.com
+
+## The base url for the CAS server, e.g. https://your.base.domain/cas/
+## default: f'{SITE_URL}cas/'
+# CAS_SERVER=
+
+## In a production setup you should set up SMTP account to get notifications
+# EMAIL_HOST_USER=
+# EMAIL_HOST_PASSWORD=
+# EMAIL_HOST=
+# EMAIL_PORT=
+# EMAIL_USE_TLS=
+# EMAIL_USE_LOCALTIME=
+# EMAIL_SUBJECT_PREFIX=[Image]
+
+## The generated OpenAPI 3.0 spec contains the URL and a description to the
+## server hosting the API. This is by default created from SITE_URL and FORCE_SCRIPT_NAME
+# OPENAPI_SERVER_URL=
+# OPENAPI_SERVER_DESCRIPTION=Image+
+
+## Set up CSRF and CORS settings here. For a local development server you
+## might want to set CORS_ALLOW_CREDENTIALS to: True
+## CORS_ALLOWED_ORIGINS to: localhost,127.0.0.1
+## CORS_EXPOSE_HEADERS to: content-disposition
+## and CSRF_TRUSTED_ORIGINS to: localhost,127.0.0.1
+# CORS_ALLOW_CREDENTIALS=False
+# CORS_ALLOWED_ORIGINS=
+# CORS_EXPOSE_HEADERS=
+# CSRF_TRUSTED_ORIGINS=
+
+## The URL where the base header can be loaded from (defaults to SITE_URL).
+## For local development you might want to point to a prod or staging site here.
+# BASE_HEADER_SITE_URL=
+
+## Permissions default for autocomplete search, type permissions. Can be True or False
+PERMISSIONS_DEFAULT_VIEW=True
+PERMISSIONS_DEFAULT_EDIT=False
+
+## How deep the location autocomplete in the Django admin should also search for parent locations
+LOCATION_SEARCH_LEVELS=1
+
+## If you want to activate Sentry monitoring, set the following parameters
+# SENTRY_DSN=
+# SENTRY_ENVIRONMENT=development
+# SENTRY_TRACES_SAMPLE_RATE=0.2
+# SENTRY_PROFILES_SAMPLE_RATE=0.2

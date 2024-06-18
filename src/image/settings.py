@@ -25,13 +25,13 @@ from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
-env = environ.Env()
-env.read_env()
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 PROJECT_NAME = '.'.join(__name__.split('.')[:-1])
+
+env = environ.Env()
+env.read_env(os.path.join(BASE_DIR, '..', '.env'))
 
 try:
     from .secret_key import SECRET_KEY
@@ -245,11 +245,11 @@ WSGI_APPLICATION = f'{PROJECT_NAME}.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', f'django_{PROJECT_NAME}'),
-        'USER': os.environ.get('POSTGRES_USER', f'django_{PROJECT_NAME}'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', f'password_{PROJECT_NAME}'),
+        'NAME': env.str('POSTGRES_DB', default=f'django_{PROJECT_NAME}'),
+        'USER': env.str('POSTGRES_USER', default=f'django_{PROJECT_NAME}'),
+        'PASSWORD': env.str('POSTGRES_PASSWORD', default=f'password_{PROJECT_NAME}'),
         'HOST': f'{PROJECT_NAME}-postgres' if DOCKER else 'localhost',
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        'PORT': env.str('POSTGRES_PORT', default='5432'),
     }
 }
 
@@ -397,16 +397,22 @@ CACHES = {
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': 'redis://{}:{}/0'.format(
             f'{PROJECT_NAME}-redis' if DOCKER else 'localhost',
-            os.environ.get('REDIS_PORT', '6379'),
+            env.int('REDIS_PORT', default=6379),
         ),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        },
-    }
+        'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
+    },
+    'sessions': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://{}:{}/1'.format(
+            f'{PROJECT_NAME}-redis' if DOCKER else 'localhost',
+            env.int('REDIS_PORT', default=6379),
+        ),
+        'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
+    },
 }
 """Session settings."""
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'
+SESSION_CACHE_ALIAS = 'sessions'
 SESSION_COOKIE_NAME = 'sessionid_{}'.format('image')
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
