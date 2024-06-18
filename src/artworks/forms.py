@@ -64,7 +64,7 @@ class ArtistAdminForm(forms.ModelForm):
             gnd_id = self.data['gnd_id']
             try:
                 response = requests.get(
-                    settings.GND_BASE_URL + gnd_id,
+                    settings.GND_API_BASE_URL + gnd_id,
                     timeout=settings.REQUESTS_TIMEOUT,
                 )
             except requests.RequestException as e:
