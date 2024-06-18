@@ -113,13 +113,6 @@ class ArtistAdmin(admin.ModelAdmin):
     ]
     list_filter = ('date_created', 'date_changed')
 
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        # Allow empty name fields, as this might be filled with GND data and
-        # is handled in the custom form validation
-        form.base_fields['name'].required = False
-        return form
-
 
 @admin.register(Keyword)
 class KeywordAdmin(MPTTModelAdmin):

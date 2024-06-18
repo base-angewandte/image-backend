@@ -52,10 +52,6 @@ class MPTTMultipleChoiceField(ModelMultipleChoiceField):
 
 class ArtistAdminForm(forms.ModelForm):
     def clean(self):
-        if not self.data['name'] and not self.data['gnd_id']:
-            raise forms.ValidationError(
-                message=_('Either a name or a valid GND ID need to be set')
-            )
         if gnd_id := self.data['gnd_id']:
             # see https://www.wikidata.org/wiki/Property:P227 for GND ID definition
             if not re.match(

@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.postgres.aggregates import StringAgg
 from django.contrib.postgres.search import SearchVector, SearchVectorField
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import JSONField, Value
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
@@ -25,7 +26,9 @@ logger = logging.getLogger(__name__)
 class Artist(AbstractBaseModel):
     """One Artist can be the maker of 0-n artworks."""
 
-    name = models.CharField(verbose_name=_('Name'), max_length=255, null=False)
+    name = models.CharField(
+        verbose_name=_('Name'), max_length=255, null=False, blank=True
+    )
     synonyms = models.CharField(
         verbose_name=_('Synonyms'), max_length=255, null=False, blank=True
     )
@@ -41,6 +44,10 @@ class Artist(AbstractBaseModel):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        if not self.name and not self.gnd_id:
+            raise ValidationError(_('Either a name or a valid GND ID need to be set'))
 
 
 def get_path_to_original_file(instance, filename):

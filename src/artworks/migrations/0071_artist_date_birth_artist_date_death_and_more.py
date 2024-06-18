@@ -30,4 +30,9 @@ class Migration(migrations.Migration):
             name='gnd_id',
             field=models.CharField(blank=True, max_length=16, null=True),
         ),
+        migrations.AlterField(
+            model_name='artist',
+            name='name',
+            field=models.CharField(blank=True, max_length=255, verbose_name='Name'),
+        ),
     ]
