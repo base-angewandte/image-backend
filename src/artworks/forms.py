@@ -56,12 +56,11 @@ class ArtistAdminForm(forms.ModelForm):
             raise forms.ValidationError(
                 message=_('Either a name or a valid GND ID need to be set')
             )
-        if self.data['gnd_id']:
+        if gnd_id := self.data['gnd_id']:
             if not re.match(r'^[0-9]*(-?[0-9X])?$', self.data['gnd_id']):
                 raise forms.ValidationError(message=_('Invalid GND ID format.'))
 
             super().clean()
-            gnd_id = self.data['gnd_id']
             try:
                 response = requests.get(
                     settings.GND_API_BASE_URL + gnd_id,
