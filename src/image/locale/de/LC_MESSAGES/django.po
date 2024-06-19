@@ -226,7 +226,7 @@ msgstr "Fehler beim Abfragen der GND-Datenbank. Details: %(details)s"
 #: artworks/models.py:83
 #, python-format
 msgid "No GND entry was found with ID %(id)s."
-msgstr "Es wurde GND Eintrag mit der ID %(id)s gefunden. "
+msgstr "Es wurde kein GND Eintrag mit der ID %(id)s gefunden."
 
 #: artworks/models.py:87
 #, python-format
