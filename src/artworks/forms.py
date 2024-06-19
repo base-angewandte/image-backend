@@ -1,11 +1,6 @@
-import re
-from datetime import datetime
-
-import requests
 from dal import autocomplete
 
 from django import forms
-from django.conf import settings
 
 # https://gist.github.com/tdsymonds/abdcb395f172a016ed785f59043749e3
 from django.contrib.admin.widgets import FilteredSelectMultiple
@@ -48,68 +43,6 @@ class MPTTMultipleChoiceField(ModelMultipleChoiceField):
             obj, getattr(self.queryset.model._meta, 'level_attr', 'level'), 0
         )
         return '{} {}'.format('-' * level, force_str(obj))
-
-
-class ArtistAdminForm(forms.ModelForm):
-    def clean(self):
-        if gnd_id := self.data['gnd_id']:
-            # see https://www.wikidata.org/wiki/Property:P227 for GND ID definition
-            if not re.match(
-                r'^(1[0123]?\d{7}[0-9X]|[47]\d{6}-\d|[1-9]\d{0,7}-[0-9X]|3\d{7}[0-9X])$',
-                gnd_id,
-            ):
-                raise forms.ValidationError(message=_('Invalid GND ID format.'))
-
-            super().clean()
-            try:
-                response = requests.get(
-                    settings.GND_API_BASE_URL + gnd_id,
-                    timeout=settings.REQUESTS_TIMEOUT,
-                )
-            except requests.RequestException as e:
-                raise forms.ValidationError(
-                    _('Request error when retrieving GND data. Details: %(details)s'),
-                    params={'details': f'{repr(e)}'},
-                ) from e
-
-            if response.status_code != 200:
-                if response.status_code == 404:
-                    raise forms.ValidationError(
-                        _('No GND entry was found with ID %(id)s.'),
-                        params={'id': gnd_id},
-                    )
-                raise forms.ValidationError(
-                    _('HTTP error %(status)s when retrieving GND data: %(details)s'),
-                    params={'status': response.status_code, 'details': response.text},
-                )
-            gnd_data = response.json()
-            self.instance.external_metadata['gnd'] = {
-                'date_requested': datetime.now().isoformat(),
-                'response_data': gnd_data,
-            }
-
-            # TODO: discuss how exactly to handle name and synonym fields:
-            #   based on which gnd data properties, in which formatting, how many synonyms
-            #   and should we handle potential multiple names or dates?
-
-            if 'preferredNameEntityForThePerson' in gnd_data:
-                self.cleaned_data['name'] = (
-                    gnd_data['preferredNameEntityForThePerson']['forename'][0]
-                    + ' '
-                    + gnd_data['preferredNameEntityForThePerson']['surname'][0]
-                )
-            elif 'preferredName' in gnd_data:
-                self.cleaned_data['name'] = gnd_data['preferredName']
-
-            if 'variantName' in gnd_data:
-                self.cleaned_data['synonyms'] = ' | '.join(gnd_data['variantName'])[
-                    :255
-                ]
-
-            if 'dateOfBirth' in gnd_data:
-                self.cleaned_data['date_birth'] = gnd_data.get('dateOfBirth')[0]
-            if 'dateOfDeath' in gnd_data:
-                self.cleaned_data['date_death'] = gnd_data.get('dateOfDeath')[0]
 
 
 class ArtworkAdminForm(forms.ModelForm):

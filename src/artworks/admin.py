@@ -8,7 +8,7 @@ from django.forms import Textarea, TextInput
 from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
 
-from .forms import ArtistAdminForm, ArtworkAdminForm
+from .forms import ArtworkAdminForm
 from .models import Album, Artist, Artwork, DiscriminatoryTerm, Keyword, Location
 
 
@@ -104,7 +104,6 @@ class ArtworkAdmin(admin.ModelAdmin):
 
 @admin.register(Artist)
 class ArtistAdmin(admin.ModelAdmin):
-    form = ArtistAdminForm
     readonly_fields = ('date_created', 'date_changed', 'external_metadata')
     list_display = ('name', 'gnd_id', 'date_created', 'date_changed')
     ordering = ('-date_created',)
