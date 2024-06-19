@@ -77,6 +77,12 @@ PERMISSIONS_DEFAULT_EDIT=False
 ## How deep the location autocomplete in the Django admin should also search for parent locations
 LOCATION_SEARCH_LEVELS=1
 
+## The base URL of the GND API, to which an ID can be concatenated in order to retrieve a GND entry
+GND_API_BASE_URL=https://lobid.org/gnd/
+
+## Default timeout when using requests to fetch data (e.g. from GND)
+REQUESTS_TIMEOUT=5
+
 ## If you want to activate Sentry monitoring, set the following parameters
 # SENTRY_DSN=
 # SENTRY_ENVIRONMENT=development

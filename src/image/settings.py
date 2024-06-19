@@ -518,3 +518,7 @@ if SENTRY_DSN:
         profiles_sample_rate=SENTRY_PROFILES_SAMPLE_RATE,
         send_default_pii=True,
     )
+
+GND_API_BASE_URL = env.str('GND_API_BASE_URL', default='https://lobid.org/gnd/')
+
+REQUESTS_TIMEOUT = env.int('REQUESTS_TIMEOUT', default=5)

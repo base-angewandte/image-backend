@@ -104,8 +104,8 @@ class ArtworkAdmin(admin.ModelAdmin):
 
 @admin.register(Artist)
 class ArtistAdmin(admin.ModelAdmin):
-    readonly_fields = ('date_created', 'date_changed')
-    list_display = ('name', 'date_created', 'date_changed')
+    readonly_fields = ('date_created', 'date_changed', 'external_metadata')
+    list_display = ('name', 'gnd_id', 'date_created', 'date_changed')
     ordering = ('-date_created',)
     search_fields = [
         'name',
