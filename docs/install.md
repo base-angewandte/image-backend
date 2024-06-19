@@ -14,7 +14,7 @@ There are two supported ways to start the development server:
 
 In both cases there are some common steps to follow:
 
-- Install docker and docker-compose for your system
+- Install docker with compose plugin for your system
 
 - Clone git repository and checkout branch `develop`:
 
@@ -32,7 +32,7 @@ In both cases there are some common steps to follow:
   vi .env
   ```
 
-- Create the docker-compose override file:
+- Create the docker compose override file:
 
   ```bash
   cp docker-compose.override.dev.yml docker-compose.override.yml
@@ -113,7 +113,7 @@ subsections.
   python manage.py loaddata artworks/fixtures/artworks.json
   cd ..
   cp test-data/*.png image/assets/media
-  docker-compose exec -T image-postgres psql -U django_image django_image < test-data/set-placeholder-images.sql
+  docker compose exec -T image-postgres psql -U django_image django_image < test-data/set-placeholder-images.sql
   ```
 
 ### Resetting your database and/or the cache
@@ -138,7 +138,7 @@ or `python manage.py migrate` steps above
   sudo apt-get update
   ```
 
-- Install docker and docker-compose
+- Install docker with compose plugin
 
 - Change to user `base`
 
