@@ -28,3 +28,17 @@ test-data:  ## load test/placeholder data (fixtures and image files)
 .PHONY: run-api-tests
 run-api-tests:  ## run all available api tests
 	docker compose exec ${PROJECT_NAME}-django python manage.py test api.tests
+
+.PHONY: migrate-postgres
+migrate-postgres:  ## migrate data from old PostgreSQL database to new one
+	@printf "Are you sure you want to migrate data from the old PostgreSQL 10 database to the new one? [y/N] " && read answer && case "$$answer" in [yY]) true;; *) false;; esac
+	docker compose down
+	test -f docker-compose.override.yml && mv docker-compose.override.yml docker-compose.override.yml.tmp
+	cp docker-compose.override.postgres.old.yml docker-compose.override.yml
+	docker compose up -d ${PROJECT_NAME}-postgres ${PROJECT_NAME}-postgres-old
+	# wait for postgres containers to start up
+	sleep 3
+	docker compose exec ${PROJECT_NAME}-postgres-old pg_dump -U ${POSTGRES_USER} ${POSTGRES_DB} | docker compose exec -T ${PROJECT_NAME}-postgres psql -U ${POSTGRES_USER} ${POSTGRES_DB}
+	docker compose down
+	rm docker-compose.override.yml
+	test -f docker-compose.override.yml.tmp && mv docker-compose.override.yml.tmp docker-compose.override.yml
