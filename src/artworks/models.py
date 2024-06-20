@@ -93,10 +93,9 @@ class Artist(AbstractBaseModel):
                 'response_data': gnd_data,
             }
 
-            # TODO: discuss how exactly to handle name and synonym fields:
-            #   based on which gnd data properties, in which formatting, how many synonyms
-            #   and should we handle potential multiple names or dates?
-
+            # for the name we use the preferredNameEntityForThePerson, with the
+            # preferredName as a fallback. similarly for the synonyms we use the
+            # variantNameEntityForThePerson and the variantName as a fallback
             if 'preferredNameEntityForThePerson' in gnd_data:
                 self.name = (
                     gnd_data['preferredNameEntityForThePerson']['forename'][0]
@@ -106,9 +105,17 @@ class Artist(AbstractBaseModel):
             elif 'preferredName' in gnd_data:
                 self.name = gnd_data['preferredName']
 
-            if 'variantName' in gnd_data:
+            if 'variantNameEntityForThePerson' in gnd_data:
+                synonyms = [
+                    n['forename'][0] + ' ' + n['surname'][0]
+                    for n in gnd_data['variantNameEntityForThePerson']
+                ]
+                self.synonyms = ' | '.join(synonyms)[:255]
+            elif 'variantName' in gnd_data:
                 self.synonyms = ' | '.join(gnd_data['variantName'])[:255]
 
+            # while theoretically there could be more than one date, it was
+            # decided to just use the first listed date if there is one
             if 'dateOfBirth' in gnd_data:
                 self.date_birth = gnd_data.get('dateOfBirth')[0]
             if 'dateOfDeath' in gnd_data:
