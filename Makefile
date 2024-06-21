@@ -36,5 +36,12 @@ migrate-postgres:  ## migrate data from old PostgreSQL database to new one
 	docker compose -f docker-compose.postgres.migrate.yml up -d ${PROJECT_NAME}-postgres ${PROJECT_NAME}-postgres-old
 	# wait for postgres containers to start up
 	sleep 3
+ifneq ($(and $(DB_NAME),$(DB_USER)),)
+	# rename old user and database
+	echo "CREATE USER root SUPERUSER;" | docker compose -f docker-compose.postgres.migrate.yml exec -T ${PROJECT_NAME}-postgres-old psql postgres -U ${DB_USER}
+	echo "ALTER DATABASE ${DB_NAME} RENAME TO ${POSTGRES_DB}; ALTER USER ${DB_USER} RENAME TO ${POSTGRES_USER};" | docker compose -f docker-compose.postgres.migrate.yml exec -T ${PROJECT_NAME}-postgres-old psql postgres -U root
+	echo "DROP USER root;" | docker compose -f docker-compose.postgres.migrate.yml exec -T ${PROJECT_NAME}-postgres-old psql postgres -U ${POSTGRES_USER}
+endif
+	# migrate data
 	docker compose -f docker-compose.postgres.migrate.yml exec ${PROJECT_NAME}-postgres-old pg_dump -U ${POSTGRES_USER} ${POSTGRES_DB} | docker compose exec -T ${PROJECT_NAME}-postgres psql -U ${POSTGRES_USER} ${POSTGRES_DB}
 	docker compose -f docker-compose.postgres.migrate.yml down
