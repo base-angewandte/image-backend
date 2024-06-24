@@ -37,10 +37,11 @@ class Artist(AbstractBaseModel):
     )
     synonyms = models.CharField(
         verbose_name=_('Synonyms'),
-        max_length=255,
         null=False,
         blank=True,
+        help_text=_('Comma-separated list of synonyms.'),
     )
+
     date_birth = models.DateField(null=True, blank=True)
     date_death = models.DateField(null=True, blank=True)
     gnd_id = models.CharField(max_length=16, null=True, blank=True)
@@ -106,13 +107,26 @@ class Artist(AbstractBaseModel):
                 self.name = gnd_data['preferredName']
 
             if 'variantNameEntityForThePerson' in gnd_data:
-                synonyms = [
-                    n['forename'][0] + ' ' + n['surname'][0]
-                    for n in gnd_data['variantNameEntityForThePerson']
-                ]
-                self.synonyms = ' | '.join(synonyms)[:255]
+                synonyms = []
+                for n in gnd_data['variantNameEntityForThePerson']:
+                    synonym = ''
+                    if 'nameAddition' in n:
+                        synonym += n['nameAddition'][0] + ' '
+                    if 'personalName' in n:
+                        if 'prefix' in n:
+                            synonym += n['prefix'][0] + ' '
+                        synonym += n['personalName'][0]
+                    else:
+                        if 'forename' in n:
+                            synonym += n['forename'][0] + ' '
+                        if 'prefix' in n:
+                            synonym += n['prefix'][0] + ' '
+                        if 'surname' in n:
+                            synonym += n['surname'][0]
+                    synonyms.append(synonym)
+                self.synonyms = ', '.join(synonyms)
             elif 'variantName' in gnd_data:
-                self.synonyms = ' | '.join(gnd_data['variantName'])[:255]
+                self.synonyms = ', '.join(gnd_data['variantName'])
 
             # while theoretically there could be more than one date, it was
             # decided to just use the first listed date if there is one
