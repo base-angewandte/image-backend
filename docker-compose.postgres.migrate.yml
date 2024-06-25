@@ -11,5 +11,3 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - ./dockerdata/postgres/10/data:/var/lib/postgresql/data/pgdata
-    networks:
-      - imagenet
