@@ -45,6 +45,9 @@ class Artist(AbstractBaseModel):
     date_birth = models.DateField(null=True, blank=True)
     date_death = models.DateField(null=True, blank=True)
     gnd_id = models.CharField(max_length=16, null=True, blank=True)
+    gnd_overwrite = models.BooleanField(
+        default=True, help_text=_('Overwrite entry with data from GND?')
+    )
     external_metadata = JSONField(null=True, blank=True, default=dict)
 
     class Meta:
@@ -67,6 +70,9 @@ class Artist(AbstractBaseModel):
                 raise ValidationError(_('Invalid GND ID format.'))
 
             super().clean()
+            if not self.gnd_overwrite:
+                return
+
             try:
                 response = requests.get(
                     settings.GND_API_BASE_URL + self.gnd_id,
