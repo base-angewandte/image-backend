@@ -123,7 +123,7 @@ class Artist(AbstractBaseModel):
                             synonym += n['prefix'][0] + ' '
                         if 'surname' in n:
                             synonym += n['surname'][0]
-                    synonyms.append(synonym)
+                    synonyms.append(synonym.strip())
                 self.synonyms = ', '.join(synonyms)
             elif 'variantName' in gnd_data:
                 self.synonyms = ', '.join(gnd_data['variantName'])
