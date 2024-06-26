@@ -1,0 +1,13 @@
+include:
+  - docker-compose.yml
+services:
+  image-postgres-old:
+    image: postgres:10.5-alpine
+    container_name: image-postgres-old
+    environment:
+      - POSTGRES_DB=${DB_NAME:-$POSTGRES_DB}
+      - POSTGRES_USER=${DB_USER:-$POSTGRES_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-$POSTGRES_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./dockerdata/postgres/10/data:/var/lib/postgresql/data/pgdata

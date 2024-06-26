@@ -28,3 +28,7 @@ test-data:  ## load test/placeholder data (fixtures and image files)
 .PHONY: run-api-tests
 run-api-tests:  ## run all available api tests
 	docker compose exec ${PROJECT_NAME}-django python manage.py test api.tests
+
+.PHONY: migrate-postgres
+migrate-postgres:  ## migrate data from old PostgreSQL database to new one
+	@bash scripts/migrate-postgres.sh
