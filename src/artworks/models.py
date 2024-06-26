@@ -70,8 +70,6 @@ class Artist(AbstractBaseModel):
                 raise ValidationError(_('Invalid GND ID format.'))
 
             super().clean()
-            if not self.gnd_overwrite:
-                return
 
             try:
                 response = requests.get(
@@ -99,6 +97,10 @@ class Artist(AbstractBaseModel):
                 'date_requested': datetime.now().isoformat(),
                 'response_data': gnd_data,
             }
+
+            # if gnd_overwrite was deactivated we still store the retrieved metadata
+            if not self.gnd_overwrite:
+                return
 
             self.set_name_from_gnd_data(gnd_data)
             self.set_synonyms_from_gnd_data(gnd_data)
