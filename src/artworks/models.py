@@ -100,46 +100,70 @@ class Artist(AbstractBaseModel):
                 'response_data': gnd_data,
             }
 
-            # for the name we use the preferredNameEntityForThePerson, with the
-            # preferredName as a fallback. similarly for the synonyms we use the
-            # variantNameEntityForThePerson and the variantName as a fallback
-            if 'preferredNameEntityForThePerson' in gnd_data:
-                self.name = (
-                    gnd_data['preferredNameEntityForThePerson']['forename'][0]
-                    + ' '
-                    + gnd_data['preferredNameEntityForThePerson']['surname'][0]
-                )
-            elif 'preferredName' in gnd_data:
-                self.name = gnd_data['preferredName']
+            self.set_name_from_gnd_data(gnd_data)
+            self.set_synonyms_from_gnd_data(gnd_data)
+            self.set_birth_from_gnd_data(gnd_data)
 
-            if 'variantNameEntityForThePerson' in gnd_data:
-                synonyms = []
-                for n in gnd_data['variantNameEntityForThePerson']:
-                    synonym = ''
-                    if 'nameAddition' in n:
-                        synonym += n['nameAddition'][0] + ' '
-                    if 'personalName' in n:
-                        if 'prefix' in n:
-                            synonym += n['prefix'][0] + ' '
-                        synonym += n['personalName'][0]
-                    else:
-                        if 'forename' in n:
-                            synonym += n['forename'][0] + ' '
-                        if 'prefix' in n:
-                            synonym += n['prefix'][0] + ' '
-                        if 'surname' in n:
-                            synonym += n['surname'][0]
-                    synonyms.append(synonym.strip())
-                self.synonyms = ', '.join(synonyms)
-            elif 'variantName' in gnd_data:
-                self.synonyms = ', '.join(gnd_data['variantName'])
+    def set_birth_from_gnd_data(self, gnd_data):
+        """Sets an Arist name, based on a GND result.
 
-            # while theoretically there could be more than one date, it was
-            # decided to just use the first listed date if there is one
-            if 'dateOfBirth' in gnd_data:
-                self.date_birth = gnd_data.get('dateOfBirth')[0]
-            if 'dateOfDeath' in gnd_data:
-                self.date_death = gnd_data.get('dateOfDeath')[0]
+        :param dict gnd_data: GND response data for the Artist
+        """
+        # while theoretically there could be more than one date, it was
+        # decided to just use the first listed date if there is one
+        if 'dateOfBirth' in gnd_data:
+            self.date_birth = gnd_data.get('dateOfBirth')[0]
+        if 'dateOfDeath' in gnd_data:
+            self.date_death = gnd_data.get('dateOfDeath')[0]
+
+    def set_name_from_gnd_data(self, gnd_data):
+        """Sets an Arist's name, based on a GND result.
+
+        To generate the name, the `preferredNameEntityForThePerson` property
+        of the response is used. As a fallback the `preferredName` will be
+        used.
+
+        :param dict gnd_data: response data of the GND API for the Artist
+        """
+        if 'preferredNameEntityForThePerson' in gnd_data:
+            self.name = (
+                gnd_data['preferredNameEntityForThePerson']['forename'][0]
+                + ' '
+                + gnd_data['preferredNameEntityForThePerson']['surname'][0]
+            )
+        elif 'preferredName' in gnd_data:
+            self.name = gnd_data['preferredName']
+
+    def set_synonyms_from_gnd_data(self, gnd_data):
+        """Sets an Arist's synonyms, based on a GND result.
+
+        To generate the name, the `variantNameEntityForThePerson` property
+        of the response is used. As a fallback the `variantName` will be
+        used.
+
+        :param dict gnd_data: response data of the GND API for the Artist
+        """
+        if 'variantNameEntityForThePerson' in gnd_data:
+            synonyms = []
+            for n in gnd_data['variantNameEntityForThePerson']:
+                synonym = ''
+                if 'nameAddition' in n:
+                    synonym += n['nameAddition'][0] + ' '
+                if 'personalName' in n:
+                    if 'prefix' in n:
+                        synonym += n['prefix'][0] + ' '
+                    synonym += n['personalName'][0]
+                else:
+                    if 'forename' in n:
+                        synonym += n['forename'][0] + ' '
+                    if 'prefix' in n:
+                        synonym += n['prefix'][0] + ' '
+                    if 'surname' in n:
+                        synonym += n['surname'][0]
+                synonyms.append(synonym.strip())
+            self.synonyms = ', '.join(synonyms)
+        elif 'variantName' in gnd_data:
+            self.synonyms = ', '.join(gnd_data['variantName'])
 
 
 def get_path_to_original_file(instance, filename):
