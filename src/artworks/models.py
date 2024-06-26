@@ -104,6 +104,10 @@ class Artist(AbstractBaseModel):
             self.set_synonyms_from_gnd_data(gnd_data)
             self.set_birth_from_gnd_data(gnd_data)
 
+        elif self.external_metadata:
+            # remove old GND metadata if the GND ID was set to empty
+            self.external_metadata = {}
+
     def set_birth_from_gnd_data(self, gnd_data):
         """Sets an Arist name, based on a GND result.
 
