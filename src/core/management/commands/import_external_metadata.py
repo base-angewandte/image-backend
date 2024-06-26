@@ -116,7 +116,7 @@ class Command(BaseCommand):
                 }
                 artist.set_name_from_gnd_data(gnd_data)
                 artist.set_synonyms_from_gnd_data(gnd_data)
-                artist.set_birth_from_gnd_data(gnd_data)
+                artist.set_birth_death_from_gnd_data(gnd_data)
 
                 # if the name generated from the GND data differs from the one
                 # originally stored in image, we restore the old name and
