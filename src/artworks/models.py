@@ -136,13 +136,24 @@ class Artist(AbstractBaseModel):
         :param dict gnd_data: response data of the GND API for the Artist
         """
         if 'preferredNameEntityForThePerson' in gnd_data:
-            self.name = (
-                gnd_data['preferredNameEntityForThePerson']['forename'][0]
-                + ' '
-                + gnd_data['preferredNameEntityForThePerson']['surname'][0]
-            )
+            n = gnd_data['preferredNameEntityForThePerson']
+            name = ''
+            if 'nameAddition' in n:
+                name += n['nameAddition'][0] + ' '
+            if 'personalName' in n:
+                if 'prefix' in n:
+                    name += n['prefix'][0] + ' '
+                name += n['personalName'][0]
+            else:
+                if 'forename' in n:
+                    name += n['forename'][0] + ' '
+                if 'prefix' in n:
+                    name += n['prefix'][0] + ' '
+                if 'surname' in n:
+                    name += n['surname'][0]
+            self.name = name.strip()
         elif 'preferredName' in gnd_data:
-            self.name = gnd_data['preferredName']
+            self.name = gnd_data['preferredName'].strip()
 
     def set_synonyms_from_gnd_data(self, gnd_data):
         """Sets an Arist's synonyms, based on a GND result.
