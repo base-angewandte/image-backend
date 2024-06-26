@@ -6,6 +6,7 @@ from datetime import datetime
 import requests
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
 
 from artworks.models import Artist
@@ -76,6 +77,7 @@ class Command(BaseCommand):
             request_errors = []
             updated = []
             updated_without_name = []
+            validation_errors = []
             count = 0
             total = len(entries)
             for entry in entries:
@@ -128,7 +130,10 @@ class Command(BaseCommand):
                 else:
                     updated.append(entry)
 
-                artist.save()
+                try:
+                    artist.save()
+                except ValidationError as e:
+                    validation_errors.append((entry, repr(e)))
 
             self.stdout.write(f'Updated {len(updated)} entries.')
             self.stdout.write(
@@ -160,6 +165,13 @@ class Command(BaseCommand):
             )
             for entry in request_errors:
                 self.stdout.write(f'{entry[1]} for {entry[0]}')
+            self.stdout.write(
+                self.style.ERROR(
+                    f'Validation error for {len(validation_errors)} entries:'
+                )
+            )
+            for entry in validation_errors:
+                self.stdout.write(f'{entry[0][1]} {entry[0][0]}: {entry[1]}')
 
         elif data_type == 'location':
             raise CommandError('Importing location metadata is not yet implemented.')
