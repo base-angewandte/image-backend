@@ -139,39 +139,46 @@ class Command(BaseCommand):
             self.stdout.write(
                 f'Updated {len(updated_without_name)} entries, without overwriting the name.'
             )
-            self.stdout.write(
-                self.style.WARNING(
-                    f'No Artist with matching name found in {len(artists_not_found)} cases:'
+            if artists_not_found:
+                self.stdout.write(
+                    self.style.WARNING(
+                        f'No Artist with matching name found in {len(artists_not_found)} cases:'
+                    )
                 )
-            )
-            for entry in artists_not_found:
-                self.stdout.write(f'{entry[0]} with GND ID {entry[1]}')
-            self.stdout.write(
-                self.style.WARNING(
-                    f'Duplicate artist names found in {len(artists_not_found)} cases:'
+                for entry in artists_not_found:
+                    self.stdout.write(f'{entry[0]} with GND ID {entry[1]}')
+            if indistinct_names:
+                self.stdout.write(
+                    self.style.WARNING(
+                        f'Duplicate artist names found in {len(indistinct_names)} cases:'
+                    )
                 )
-            )
-            for entry in artists_not_found:
-                self.stdout.write(entry[0])
-            self.stdout.write(
-                self.style.WARNING(
-                    f'No GND entry found for {len(gnd_data_not_found)} IDs:'
+                for entry in indistinct_names:
+                    self.stdout.write(entry[0])
+            if gnd_data_not_found:
+                self.stdout.write(
+                    self.style.WARNING(
+                        f'No GND entry found for {len(gnd_data_not_found)} IDs:'
+                    )
                 )
-            )
-            for entry in gnd_data_not_found:
-                self.stdout.write(f'{entry[1]} for {entry[0]}')
-            self.stdout.write(
-                self.style.WARNING(f'Request error for {len(request_errors)} entries:')
-            )
-            for entry in request_errors:
-                self.stdout.write(f'{entry[1]} for {entry[0]}')
-            self.stdout.write(
-                self.style.ERROR(
-                    f'Validation error for {len(validation_errors)} entries:'
+                for entry in gnd_data_not_found:
+                    self.stdout.write(f'{entry[1]} for {entry[0]}')
+            if request_errors:
+                self.stdout.write(
+                    self.style.ERROR(
+                        f'Request error for {len(request_errors)} entries:'
+                    )
                 )
-            )
-            for entry in validation_errors:
-                self.stdout.write(f'{entry[0][1]} {entry[0][0]}: {entry[1]}')
+                for entry in request_errors:
+                    self.stdout.write(f'{entry[1]} for {entry[0]}')
+            if validation_errors:
+                self.stdout.write(
+                    self.style.ERROR(
+                        f'Validation error for {len(validation_errors)} entries:'
+                    )
+                )
+                for entry in validation_errors:
+                    self.stdout.write(f'{entry[0][1]} {entry[0][0]}: {entry[1]}')
 
         elif data_type == 'location':
             raise CommandError('Importing location metadata is not yet implemented.')
