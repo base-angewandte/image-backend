@@ -64,7 +64,7 @@ class Artist(AbstractBaseModel):
         if self.gnd_id:
             # see https://www.wikidata.org/wiki/Property:P227 for GND ID definition
             if not re.match(
-                r'^(1[0123]?\d{7}[0-9X]|[47]\d{6}-\d|[1-9]\d{0,7}-[0-9X]|3\d{7}[0-9X])$',
+                settings.GND_ID_REGEX,
                 self.gnd_id,
             ):
                 raise ValidationError(_('Invalid GND ID format.'))
@@ -118,12 +118,11 @@ class Artist(AbstractBaseModel):
         # while theoretically there could be more than one date, it was
         # decided to just use the first listed date if there is one
         # TODO: discuss: how to handle dates in format YYYY?
-        date_pattern = r'^-?[0-9]{1,4}-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])$'
         if 'dateOfBirth' in gnd_data:
-            if re.match(date_pattern, gnd_data.get('dateOfBirth')[0]):
+            if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfBirth')[0]):
                 self.date_birth = gnd_data.get('dateOfBirth')[0]
         if 'dateOfDeath' in gnd_data:
-            if re.match(date_pattern, gnd_data.get('dateOfDeath')[0]):
+            if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfDeath')[0]):
                 self.date_death = gnd_data.get('dateOfDeath')[0]
 
     def set_name_from_gnd_data(self, gnd_data):

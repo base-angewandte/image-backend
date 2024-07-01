@@ -61,7 +61,7 @@ class Command(BaseCommand):
             invalid_ids = []
             for entry in entries:
                 if not re.match(
-                    r'^(1[0123]?\d{7}[0-9X]|[47]\d{6}-\d|[1-9]\d{0,7}-[0-9X]|3\d{7}[0-9X])$',
+                    settings.GND_ID_REGEX,
                     entry[1],
                 ):
                     invalid_ids.append(f'{entry[1]} for {entry[0]}')
