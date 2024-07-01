@@ -2,7 +2,7 @@ media
 fixtures
 src/assets/
 dockerdata/
-docker-compose.override.yml
+compose.override.yaml
 secret_key.py
 logs/
 tmp/

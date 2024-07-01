@@ -16,8 +16,8 @@ credentials and the static assets folder. The defaults are fine, only the
 
 If you want to explicitly use a different port for the docker services, you can
 configure the `POSTGRES_PORT` and `REDIS_PORT` settings accordingly, but you will also
-need to create a `docker-compose.override.yml` file to configure these ports for docker.
-See `docker-compose.overridy.dev.yml` for an example of how to do this.
+need to create a `compose.override.yaml` file to configure these ports for docker.
+See `compose.overridy.dev.yaml` for an example of how to do this.
 
 For a production setup you might want to store the uploaded image files not directly
 in the default assets folder within Django root. In that case, you can adapt the

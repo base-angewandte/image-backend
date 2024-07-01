@@ -35,7 +35,7 @@ In both cases there are some common steps to follow:
 - Create the docker compose override file:
 
   ```bash
-  cp docker-compose.override.dev.yml docker-compose.override.yml
+  cp compose.override.dev.yaml compose.override.yaml
   ```
 
 Now, depending on which path you want to go, take one of the following two
@@ -81,7 +81,7 @@ subsections.
   cd ..
   ```
 
-- Check the _docker-compose.override.dev.yml_ file you created before from the template
+- Check the _compose.override.dev.yaml_ file you created before from the template
   and uncomment the port mounts for Redis and Postgres, so your local Django can access them.
 
 - Start required services:
