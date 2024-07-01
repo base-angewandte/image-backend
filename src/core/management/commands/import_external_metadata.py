@@ -1,7 +1,6 @@
 import argparse
 import csv
 import re
-from datetime import datetime
 
 import requests
 
@@ -112,10 +111,7 @@ class Command(BaseCommand):
 
                 gnd_data = response.json()
                 artist.gnd_id = entry[1]
-                artist.external_metadata['gnd'] = {
-                    'date_requested': datetime.now().isoformat(),
-                    'response_data': gnd_data,
-                }
+                artist.set_external_metadata('gnd', gnd_data)
                 artist.set_name_from_gnd_data(gnd_data)
                 artist.set_synonyms_from_gnd_data(gnd_data)
                 artist.set_birth_death_from_gnd_data(gnd_data)

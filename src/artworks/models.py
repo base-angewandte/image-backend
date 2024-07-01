@@ -93,10 +93,7 @@ class Artist(AbstractBaseModel):
                     params={'status': response.status_code, 'details': response.text},
                 )
             gnd_data = response.json()
-            self.external_metadata['gnd'] = {
-                'date_requested': datetime.now().isoformat(),
-                'response_data': gnd_data,
-            }
+            self.set_external_metadata('gnd', gnd_data)
 
             # if gnd_overwrite was deactivated we still store the retrieved metadata
             if not self.gnd_overwrite:
@@ -124,6 +121,12 @@ class Artist(AbstractBaseModel):
         if 'dateOfDeath' in gnd_data:
             if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfDeath')[0]):
                 self.date_death = gnd_data.get('dateOfDeath')[0]
+
+    def set_external_metadata(self, key, data):
+        self.external_metadata[key] = {
+            'date_requested': datetime.now().isoformat(),
+            'response_data': data,
+        }
 
     def set_name_from_gnd_data(self, gnd_data):
         """Sets an Arist's name, based on a GND result.
