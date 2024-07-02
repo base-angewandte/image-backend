@@ -7,6 +7,7 @@ import requests
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
+from django.db import IntegrityError
 
 from artworks.models import Artist
 
@@ -77,6 +78,7 @@ class Command(BaseCommand):
             updated = []
             updated_without_name = []
             validation_errors = []
+            integrity_errors = []
             count = 0
             total = len(entries)
             for entry in entries:
@@ -141,6 +143,8 @@ class Command(BaseCommand):
                         artist.save()
                     except ValidationError as e:
                         validation_errors.append((entry, repr(e)))
+                except IntegrityError as e:
+                    integrity_errors.append((entry, repr(e)))
 
             self.stdout.write(f'Updated {len(updated)} entries.')
             self.stdout.write(
@@ -185,6 +189,14 @@ class Command(BaseCommand):
                     )
                 )
                 for entry in validation_errors:
+                    self.stdout.write(f'{entry[0][1]} {entry[0][0]}: {entry[1]}')
+            if integrity_errors:
+                self.stdout.write(
+                    self.style.ERROR(
+                        f'Integrity error for {len(integrity_errors)} entries:'
+                    )
+                )
+                for entry in integrity_errors:
                     self.stdout.write(f'{entry[0][1]} {entry[0][0]}: {entry[1]}')
 
         elif data_type == 'location':

@@ -49,7 +49,7 @@ class Artist(AbstractBaseModel):
         blank=True,
         help_text=_('Overrides birth and death dates for display, if not empty.'),
     )
-    gnd_id = models.CharField(max_length=16, null=True, blank=True)
+    gnd_id = models.CharField(max_length=16, null=True, blank=True, unique=True)
     gnd_overwrite = models.BooleanField(
         default=True, help_text=_('Overwrite entry with data from GND?')
     )
