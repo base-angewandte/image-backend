@@ -128,8 +128,19 @@ class Command(BaseCommand):
 
                 try:
                     artist.save()
-                except ValidationError as e:
-                    validation_errors.append((entry, repr(e)))
+                except ValidationError:
+                    # try to store potentially invalid dates in date_display first
+                    # this can happen if a date has valid format but is not a real
+                    # calendar date (e.g. a Feb. 29 in a non-leap-year)
+                    try:
+                        artist.date_display = (
+                            f'{artist.date_birth} - {artist.date_death}'
+                        )
+                        artist.date_birth = None
+                        artist.date_death = None
+                        artist.save()
+                    except ValidationError as e:
+                        validation_errors.append((entry, repr(e)))
 
             self.stdout.write(f'Updated {len(updated)} entries.')
             self.stdout.write(

@@ -119,13 +119,21 @@ class Artist(AbstractBaseModel):
         """
         # while theoretically there could be more than one date, it was
         # decided to just use the first listed date if there is one
-        # TODO: discuss: how to handle dates in format YYYY?
+        date_display = ''
         if 'dateOfBirth' in gnd_data:
             if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfBirth')[0]):
                 self.date_birth = gnd_data.get('dateOfBirth')[0]
+            else:
+                date_display += gnd_data.get('dateOfBirth')[0] + ' - '
         if 'dateOfDeath' in gnd_data:
             if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfDeath')[0]):
                 self.date_death = gnd_data.get('dateOfDeath')[0]
+            else:
+                if not date_display:
+                    date_display += ' - '
+                date_display += gnd_data.get('dateOfDeath')[0]
+        if date_display:
+            self.date_display = date_display
 
     def set_external_metadata(self, key, data):
         self.external_metadata[key] = {
