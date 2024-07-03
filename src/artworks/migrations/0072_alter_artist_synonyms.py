@@ -3,6 +3,14 @@
 from django.db import migrations, models
 
 
+def shorten_synonyms(apps, schema_editor):
+    Artist = apps.get_model("artworks", "Artist")
+    for artist in Artist.objects.all():
+        if len(artist.synonyms) > 255:
+            artist.synonyms = artist.synonyms[:255]
+            artist.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -15,4 +23,5 @@ class Migration(migrations.Migration):
             name='synonyms',
             field=models.CharField(blank=True, help_text='Comma-separated list of synonyms.', verbose_name='Synonyms'),
         ),
+        migrations.RunPython(code=migrations.RunPython.noop, reverse_code=shorten_synonyms)
     ]
