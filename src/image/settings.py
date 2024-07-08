@@ -520,5 +520,7 @@ if SENTRY_DSN:
     )
 
 GND_API_BASE_URL = env.str('GND_API_BASE_URL', default='https://lobid.org/gnd/')
+GND_ID_REGEX = r'^(1[0123]?\d{7}[0-9X]|[47]\d{6}-\d|[1-9]\d{0,7}-[0-9X]|3\d{7}[0-9X])$'
+GND_DATE_REGEX = r'^-?[0-9]{1,4}-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])$'
 
 REQUESTS_TIMEOUT = env.int('REQUESTS_TIMEOUT', default=5)

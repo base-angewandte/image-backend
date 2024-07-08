@@ -37,13 +37,22 @@ class Artist(AbstractBaseModel):
     )
     synonyms = models.CharField(
         verbose_name=_('Synonyms'),
-        max_length=255,
         null=False,
         blank=True,
+        help_text=_('Comma-separated list of synonyms.'),
     )
+
     date_birth = models.DateField(null=True, blank=True)
     date_death = models.DateField(null=True, blank=True)
-    gnd_id = models.CharField(max_length=16, null=True, blank=True)
+    date_display = models.CharField(
+        null=True,
+        blank=True,
+        help_text=_('Overrides birth and death dates for display, if not empty.'),
+    )
+    gnd_id = models.CharField(max_length=16, null=True, blank=True, unique=True)
+    gnd_overwrite = models.BooleanField(
+        default=True, help_text=_('Overwrite entry with data from GND?')
+    )
     external_metadata = JSONField(null=True, blank=True, default=dict)
 
     class Meta:
@@ -60,12 +69,13 @@ class Artist(AbstractBaseModel):
         if self.gnd_id:
             # see https://www.wikidata.org/wiki/Property:P227 for GND ID definition
             if not re.match(
-                r'^(1[0123]?\d{7}[0-9X]|[47]\d{6}-\d|[1-9]\d{0,7}-[0-9X]|3\d{7}[0-9X])$',
+                settings.GND_ID_REGEX,
                 self.gnd_id,
             ):
                 raise ValidationError(_('Invalid GND ID format.'))
 
             super().clean()
+
             try:
                 response = requests.get(
                     settings.GND_API_BASE_URL + self.gnd_id,
@@ -88,31 +98,106 @@ class Artist(AbstractBaseModel):
                     params={'status': response.status_code, 'details': response.text},
                 )
             gnd_data = response.json()
-            self.external_metadata['gnd'] = {
-                'date_requested': datetime.now().isoformat(),
-                'response_data': gnd_data,
-            }
+            # if gnd_overwrite was deactivated we still store the retrieved metadata
+            self.set_external_metadata('gnd', gnd_data)
+            # everything else will only be stored if overwrite is not set
+            if not self.gnd_overwrite:
+                return
 
-            # TODO: discuss how exactly to handle name and synonym fields:
-            #   based on which gnd data properties, in which formatting, how many synonyms
-            #   and should we handle potential multiple names or dates?
+            self.set_name_from_gnd_data(gnd_data)
+            self.set_synonyms_from_gnd_data(gnd_data)
+            self.set_birth_death_from_gnd_data(gnd_data)
 
-            if 'preferredNameEntityForThePerson' in gnd_data:
-                self.name = (
-                    gnd_data['preferredNameEntityForThePerson']['forename'][0]
-                    + ' '
-                    + gnd_data['preferredNameEntityForThePerson']['surname'][0]
-                )
-            elif 'preferredName' in gnd_data:
-                self.name = gnd_data['preferredName']
+        elif self.external_metadata:
+            # remove old GND metadata if the GND ID was set to empty
+            self.external_metadata = {}
 
-            if 'variantName' in gnd_data:
-                self.synonyms = ' | '.join(gnd_data['variantName'])[:255]
+    def set_birth_death_from_gnd_data(self, gnd_data):
+        """Sets an Arist name, based on a GND result.
 
-            if 'dateOfBirth' in gnd_data:
+        :param dict gnd_data: GND response data for the Artist
+        """
+        # while theoretically there could be more than one date, it was
+        # decided to just use the first listed date if there is one
+        date_display = ''
+        if 'dateOfBirth' in gnd_data:
+            if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfBirth')[0]):
                 self.date_birth = gnd_data.get('dateOfBirth')[0]
-            if 'dateOfDeath' in gnd_data:
+            date_display += gnd_data.get('dateOfBirth')[0] + ' - '
+        if 'dateOfDeath' in gnd_data:
+            if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfDeath')[0]):
                 self.date_death = gnd_data.get('dateOfDeath')[0]
+            if not date_display:
+                date_display += ' - '
+            date_display += gnd_data.get('dateOfDeath')[0]
+        if date_display:
+            self.date_display = date_display
+
+    def set_external_metadata(self, key, data):
+        self.external_metadata[key] = {
+            'date_requested': datetime.now().isoformat(),
+            'response_data': data,
+        }
+
+    def set_name_from_gnd_data(self, gnd_data):
+        """Sets an Arist's name, based on a GND result.
+
+        To generate the name, the `preferredNameEntityForThePerson` property
+        of the response is used. As a fallback the `preferredName` will be
+        used.
+
+        :param dict gnd_data: response data of the GND API for the Artist
+        """
+        if 'preferredNameEntityForThePerson' in gnd_data:
+            n = gnd_data['preferredNameEntityForThePerson']
+            name = ''
+            if 'nameAddition' in n:
+                name += n['nameAddition'][0] + ' '
+            if 'personalName' in n:
+                if 'prefix' in n:
+                    name += n['prefix'][0] + ' '
+                name += n['personalName'][0]
+            else:
+                if 'forename' in n:
+                    name += n['forename'][0] + ' '
+                if 'prefix' in n:
+                    name += n['prefix'][0] + ' '
+                if 'surname' in n:
+                    name += n['surname'][0]
+            self.name = name.strip()
+        elif 'preferredName' in gnd_data:
+            self.name = gnd_data['preferredName'].strip()
+
+    def set_synonyms_from_gnd_data(self, gnd_data):
+        """Sets an Arist's synonyms, based on a GND result.
+
+        To generate the name, the `variantNameEntityForThePerson` property
+        of the response is used. As a fallback the `variantName` will be
+        used.
+
+        :param dict gnd_data: response data of the GND API for the Artist
+        """
+        if 'variantNameEntityForThePerson' in gnd_data:
+            synonyms = []
+            for n in gnd_data['variantNameEntityForThePerson']:
+                synonym = ''
+                if 'nameAddition' in n:
+                    synonym += n['nameAddition'][0] + ' '
+                if 'personalName' in n:
+                    if 'prefix' in n:
+                        synonym += n['prefix'][0] + ' '
+                    synonym += n['personalName'][0]
+                else:
+                    if 'forename' in n:
+                        synonym += n['forename'][0] + ' '
+                    if 'prefix' in n:
+                        synonym += n['prefix'][0] + ' '
+                    if 'surname' in n:
+                        synonym += n['surname'][0]
+                synonyms.append(synonym.strip())
+            self.synonyms = ', '.join(synonyms)
+        elif 'variantName' in gnd_data:
+            self.synonyms = ', '.join(gnd_data['variantName'])
 
 
 def get_path_to_original_file(instance, filename):
