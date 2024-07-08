@@ -81,6 +81,12 @@ subsections.
   cd ..
   ```
 
+- Install the pre-commit hooks:
+
+  ```bash
+  pre-commit install
+  ```
+
 - Check the _docker-compose.override.dev.yml_ file you created before from the template
   and uncomment the port mounts for Redis and Postgres, so your local Django can access them.
 
