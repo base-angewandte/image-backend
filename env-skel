@@ -21,7 +21,7 @@ MEDIA_DIR=./src/assets/media
 ## If you are developing locally (with Django not running inside a container), set this to False
 # DOCKER=True
 
-## The base URL of the Django site, for local development http://localhost:8500/
+## The base URL of the Django site, for local development http://localhost:8300/
 SITE_URL=
 
 ## In a production deployment with other base components, this base path should
@@ -58,9 +58,9 @@ SITE_URL=
 
 ## Set up CSRF and CORS settings here. For a local development server you
 ## might want to set CORS_ALLOW_CREDENTIALS to: True
-## CORS_ALLOWED_ORIGINS to: localhost,127.0.0.1
+## CORS_ALLOWED_ORIGINS to: http://localhost:3000,http://127.0.0.1:3000
 ## CORS_EXPOSE_HEADERS to: content-disposition
-## and CSRF_TRUSTED_ORIGINS to: localhost,127.0.0.1
+## and CSRF_TRUSTED_ORIGINS to: http://localhost:3000,http://127.0.0.1:3000
 # CORS_ALLOW_CREDENTIALS=False
 # CORS_ALLOWED_ORIGINS=
 # CORS_EXPOSE_HEADERS=
