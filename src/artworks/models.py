@@ -98,9 +98,9 @@ class Artist(AbstractBaseModel):
                     params={'status': response.status_code, 'details': response.text},
                 )
             gnd_data = response.json()
-            self.set_external_metadata('gnd', gnd_data)
-
             # if gnd_overwrite was deactivated we still store the retrieved metadata
+            self.set_external_metadata('gnd', gnd_data)
+            # everything else will only be stored if overwrite is not set
             if not self.gnd_overwrite:
                 return
 
