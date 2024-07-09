@@ -5,14 +5,16 @@
 #    pip-compile src/requirements-dev.in
 #
 asgiref==3.8.1
-    # via django
+    # via
+    #   django
+    #   django-cors-headers
 async-timeout==4.0.3
     # via redis
 attrs==23.2.0
     # via
     #   jsonschema
     #   referencing
-base-common==0.2
+base-common==0.3
     # via -r src/requirements.in
 base-common-drf==0.4
     # via -r src/requirements.in
@@ -30,7 +32,7 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via pip-tools
-concurrent-log-handler==0.9.24
+concurrent-log-handler==0.9.25
     # via -r src/requirements.in
 dal-admin-filters==1.1.0
     # via -r src/requirements.in
@@ -52,19 +54,19 @@ django==4.2.14
     #   djangorestframework
     #   drf-spectacular
     #   sentry-sdk
-django-autocomplete-light==3.9.7
+django-autocomplete-light==3.11.0
     # via
     #   -r src/requirements.in
     #   dal-admin-filters
-django-cas-ng==4.3.0
+django-cas-ng==5.0.1
     # via -r src/requirements.in
-django-cleanup==8.0.0
+django-cleanup==8.1.0
     # via -r src/requirements.in
-django-cors-headers==4.2.0
+django-cors-headers==4.4.0
     # via -r src/requirements.in
 django-environ==0.11.2
     # via -r src/requirements.in
-django-filter==23.3
+django-filter==24.2
     # via -r src/requirements.in
 django-js-asset==2.2.0
     # via django-mptt
@@ -74,22 +76,22 @@ django-mptt==0.16.0
     # via -r src/requirements.in
 django-ordered-model==3.7.4
     # via -r src/requirements.in
-django-redis==5.3.0
+django-redis==5.4.0
     # via -r src/requirements.in
-django-versatileimagefield==3.0
+django-versatileimagefield==3.1
     # via -r src/requirements.in
 djangorestframework==3.14.0
     # via
     #   -r src/requirements.in
     #   base-common-drf
     #   drf-spectacular
-drf-spectacular==0.26.5
+drf-spectacular==0.27.2
     # via
     #   -r src/requirements.in
     #   base-common-drf
 filelock==3.15.4
     # via virtualenv
-gunicorn==21.2.0
+gunicorn==22.0.0
     # via -r src/requirements.in
 identify==2.6.0
     # via pre-commit
@@ -111,11 +113,11 @@ packaging==24.1
     # via
     #   build
     #   gunicorn
-pillow==9.5.0
+pillow==10.4.0
     # via
     #   django-versatileimagefield
     #   python-pptx
-pip-tools==7.3.0
+pip-tools==7.4.1
     # via -r src/requirements.in
 platformdirs==4.2.2
     # via virtualenv
@@ -125,19 +127,21 @@ pre-commit==3.7.1
     # via -r src/requirements-dev.in
 psutil==6.0.0
     # via rainbow-saddle
-psycopg[binary]==3.1.19
+psycopg[binary]==3.2.1
     # via
     #   -r src/requirements.in
     #   psycopg
-psycopg-binary==3.1.19
+psycopg-binary==3.2.1
     # via psycopg
 pyproject-hooks==1.1.0
-    # via build
+    # via
+    #   build
+    #   pip-tools
 python-cas==1.6.0
     # via django-cas-ng
 python-magic==0.4.27
     # via django-versatileimagefield
-python-pptx==0.6.22
+python-pptx==0.6.23
     # via -r src/requirements.in
 pytz==2024.1
     # via djangorestframework
@@ -153,7 +157,7 @@ referencing==0.35.1
     # via
     #   jsonschema
     #   jsonschema-specifications
-requests==2.31.0
+requests==2.32.3
     # via
     #   -r src/requirements.in
     #   python-cas
@@ -161,16 +165,14 @@ rpds-py==0.19.0
     # via
     #   jsonschema
     #   referencing
-sentry-sdk[django]==2.3.1
+sentry-sdk[django]==2.8.0
     # via
     #   -r src/requirements.in
     #   sentry-sdk
 shortuuid==1.0.13
     # via base-common
 six==1.16.0
-    # via
-    #   django-autocomplete-light
-    #   python-cas
+    # via python-cas
 sqlparse==0.5.0
     # via django
 typing-extensions==4.12.2
@@ -185,7 +187,7 @@ virtualenv==20.26.3
     # via pre-commit
 wheel==0.43.0
     # via pip-tools
-whitenoise[brotli]==6.5.0
+whitenoise[brotli]==6.7.0
     # via
     #   -r src/requirements.in
     #   whitenoise
