@@ -9,7 +9,7 @@ case $answer in
 *) exit ;;
 esac
 
-PGM_COMPOSE_FILE=docker-compose.postgres.migrate.yml
+PGM_COMPOSE_FILE=compose.postgres.migrate.yaml
 
 echo "shutting down all services"
 docker compose down
