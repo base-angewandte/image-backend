@@ -245,6 +245,7 @@ class Location(MPTTModel):
     gnd_overwrite = models.BooleanField(
         default=True, help_text=_('Overwrite entry with data from GND?')
     )
+    location = models.CharField(max_length=255, null=True, blank=True)
     external_metadata = JSONField(null=True, blank=True, default=dict)
 
     class Meta:
@@ -266,7 +267,7 @@ class Location(MPTTModel):
     # TODO: Should be refactored, because it's using almost the identical code.
     def clean(self):
         if not self.gnd_id:
-            raise ValidationError(_('Either a name or a valid GND ID need to be set'))
+            raise ValidationError(_('A valid GND ID needs to be set'))
         # TODO: Add regex
         else:
             super().clean()
