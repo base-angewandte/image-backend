@@ -246,12 +246,7 @@ class Location(MPTTModel):
         default=True, help_text=_('Overwrite entry with data from GND?')
     )
     location = models.CharField(max_length=255, null=True, blank=True)
-    synonyms_location = models.CharField(
-        verbose_name=_('Synonyms_Location'),
-        null=False,
-        blank=True,
-        help_text=_('Comma-separated list of synonyms.'),
-    )
+
     external_metadata = JSONField(null=True, blank=True, default=dict)
 
     class Meta:
@@ -300,9 +295,14 @@ class Location(MPTTModel):
                     params={'status': response.status_code, 'details': response.text},
                 )
             gnd_data = response.json()
+
+            if not self.gnd_overwrite:
+                return
+
             self.external_metadata = gnd_data
 
             self.set_location(gnd_data)
+            self.set_synonyms_location_from_gnd_data(gnd_data)
 
     # Some gnd_id's point instead of as stated in the excell file to a museum, just to a municipality.
     # TerritorialCorporateBodyOrAdministrativeUnit -> should a check be implemented and stated to the user that the
@@ -319,6 +319,15 @@ class Location(MPTTModel):
                 # If even the city is not available, only then will the country be shown
                 # (could be deleted, if not needed)
                 self.location = 'Current location of the artwork is unknown.'
+
+    def set_synonyms_location_from_gnd_data(self, gnd_data):
+        synonyms: list = []
+        if len(gnd_data['variantName']) > 0:
+            for n in gnd_data['variantName']:
+                synonyms.append(n)
+            self.synonyms = ', '.join(synonyms)
+            if len(self.synonyms) > 255:
+                self.synonyms = self.synonyms[:255]
 
 
 class Artwork(AbstractBaseModel):
