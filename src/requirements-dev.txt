@@ -8,8 +8,6 @@ asgiref==3.8.1
     # via
     #   django
     #   django-cors-headers
-async-timeout==4.0.3
-    # via redis
 attrs==23.2.0
     # via
     #   jsonschema
