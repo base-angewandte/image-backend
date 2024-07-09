@@ -6,13 +6,15 @@
 #
 apimapper==0.7.9
     # via -r src/requirements.in
-asgiref==3.7.2
+asgiref==3.8.1
     # via django
 astroid==2.15.8
     # via
     #   -r src/requirements.in
     #   pylint
-attrs==23.1.0
+async-timeout==4.0.3
+    # via redis
+attrs==23.2.0
     # via
     #   jsonschema
     #   referencing
@@ -22,13 +24,13 @@ base-common-drf==0.4
     # via -r src/requirements.in
 brotli==1.1.0
     # via whitenoise
-build==1.0.3
+build==1.2.1
     # via pip-tools
-certifi==2023.7.22
+certifi==2024.7.4
     # via
     #   requests
     #   sentry-sdk
-charset-normalizer==3.3.1
+charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via pip-tools
@@ -36,9 +38,9 @@ concurrent-log-handler==0.9.24
     # via -r src/requirements.in
 dal-admin-filters==1.1.0
     # via -r src/requirements.in
-dill==0.3.7
+dill==0.3.8
     # via pylint
-django==4.2.13
+django==4.2.14
     # via
     #   -r src/requirements.in
     #   base-common
@@ -78,7 +80,7 @@ django-filter==23.3
     # via -r src/requirements.in
 django-imagekit==4.1.0
     # via -r src/requirements.in
-django-js-asset==2.1.0
+django-js-asset==2.2.0
     # via django-mptt
 django-mass-edit==3.5.0
     # via -r src/requirements.in
@@ -101,7 +103,7 @@ drf-spectacular==0.26.5
     #   base-common-drf
 gunicorn==21.2.0
     # via -r src/requirements.in
-idna==3.4
+idna==3.7
     # via requests
 inflection==0.5.1
     # via drf-spectacular
@@ -109,25 +111,25 @@ isort==5.12.0
     # via
     #   -r src/requirements.in
     #   pylint
-jsonschema==4.19.1
+jsonschema==4.23.0
     # via drf-spectacular
-jsonschema-specifications==2023.7.1
+jsonschema-specifications==2023.12.1
     # via jsonschema
 lazy-object-proxy==1.9.0
     # via
     #   -r src/requirements.in
     #   astroid
-lxml==4.9.3
+lxml==5.2.2
     # via
     #   python-cas
     #   python-pptx
-markdown==3.5
+markdown==3.6
     # via apimapper
 mccabe==0.7.0
     # via
     #   -r src/requirements.in
     #   pylint
-packaging==23.2
+packaging==24.1
     # via
     #   build
     #   gunicorn
@@ -142,11 +144,11 @@ pillow==9.5.0
     #   python-pptx
 pip-tools==7.3.0
     # via -r src/requirements.in
-platformdirs==3.11.0
+platformdirs==4.2.2
     # via pylint
-portalocker==2.8.2
+portalocker==2.10.0
     # via concurrent-log-handler
-psutil==5.9.6
+psutil==6.0.0
     # via rainbow-saddle
 psycopg[binary]==3.1.19
     # via
@@ -156,7 +158,7 @@ psycopg-binary==3.1.19
     # via psycopg
 pylint==2.17.6
     # via -r src/requirements.in
-pyproject-hooks==1.0.0
+pyproject-hooks==1.1.0
     # via build
 python-cas==1.6.0
     # via django-cas-ng
@@ -172,9 +174,9 @@ pyyaml==6.0.1
     # via drf-spectacular
 rainbow-saddle==0.4.0
     # via -r src/requirements.in
-redis==5.0.1
+redis==5.0.7
     # via django-redis
-referencing==0.30.2
+referencing==0.35.1
     # via
     #   jsonschema
     #   jsonschema-specifications
@@ -183,7 +185,7 @@ requests==2.31.0
     #   -r src/requirements.in
     #   apimapper
     #   python-cas
-rpds-py==0.10.6
+rpds-py==0.19.0
     # via
     #   jsonschema
     #   referencing
@@ -201,23 +203,23 @@ six==1.16.0
     #   django-autocomplete-light
     #   django-imagekit
     #   python-cas
-sqlparse==0.4.4
+sqlparse==0.5.0
     # via
     #   django
     #   django-debug-toolbar
-tomlkit==0.12.1
+tomlkit==0.12.5
     # via pylint
 typed-ast==1.5.5
     # via -r src/requirements.in
-typing-extensions==4.8.0
+typing-extensions==4.12.2
     # via psycopg
 uritemplate==4.1.1
     # via drf-spectacular
-urllib3==2.0.7
+urllib3==2.2.2
     # via
     #   requests
     #   sentry-sdk
-wheel==0.41.2
+wheel==0.43.0
     # via pip-tools
 whitenoise[brotli]==6.5.0
     # via
@@ -227,7 +229,7 @@ wrapt==1.15.0
     # via
     #   -r src/requirements.in
     #   astroid
-xlsxwriter==3.1.9
+xlsxwriter==3.2.0
     # via python-pptx
 
 # The following packages are considered to be unsafe in a requirements file:
