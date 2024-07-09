@@ -263,6 +263,38 @@ class Location(MPTTModel):
 
         return ' > '.join(ancestors[: len(ancestors) + 1])
 
+    # TODO: Should be refactored, because it's using almost the identical code.
+    def clean(self):
+        if not self.gnd_id:
+            raise ValidationError(_('Either a name or a valid GND ID need to be set'))
+        # TODO: Add regex
+        else:
+            super().clean()
+
+            try:
+                response = requests.get(
+                    settings.GND_API_BASE_URL + self.gnd_id,
+                    timeout=settings.REQUESTS_TIMEOUT,
+                )
+            except requests.RequestException as e:
+                raise ValidationError(
+                    _('Request error when retrieving GND data. Details: %(details)s'),
+                    params={'details': f'{repr(e)}'},
+                ) from e
+
+            if response.status_code != 200:
+                if response.status_code == 404:
+                    raise ValidationError(
+                        _('No GND entry was found with ID %(id)s.'),
+                        params={'id': self.gnd_id},
+                    )
+                raise ValidationError(
+                    _('HTTP error %(status)s when retrieving GND data: %(details)s'),
+                    params={'status': response.status_code, 'details': response.text},
+                )
+            gnd_data = response.json()
+            self.external_metadata = gnd_data
+
 
 class Artwork(AbstractBaseModel):
     """Each Artwork has an metadata and image and various versions (renditions)
