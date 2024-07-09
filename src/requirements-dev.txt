@@ -44,7 +44,6 @@ django==4.2.14
     #   django-autocomplete-light
     #   django-cas-ng
     #   django-cors-headers
-    #   django-debug-toolbar
     #   django-filter
     #   django-js-asset
     #   django-mass-edit
@@ -62,8 +61,6 @@ django-cas-ng==4.3.0
 django-cleanup==8.0.0
     # via -r src/requirements.in
 django-cors-headers==4.2.0
-    # via -r src/requirements.in
-django-debug-toolbar==4.2.0
     # via -r src/requirements.in
 django-environ==0.11.2
     # via -r src/requirements.in
@@ -175,9 +172,7 @@ six==1.16.0
     #   django-autocomplete-light
     #   python-cas
 sqlparse==0.5.0
-    # via
-    #   django
-    #   django-debug-toolbar
+    # via django
 typing-extensions==4.12.2
     # via psycopg
 uritemplate==4.1.1

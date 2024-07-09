@@ -186,20 +186,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-if DEBUG:
-    INSTALLED_APPS += ['debug_toolbar']
-    # insert before SessionMiddleware
-    MIDDLEWARE.insert(
-        MIDDLEWARE.index('django.contrib.sessions.middleware.SessionMiddleware'),
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
-    )
-
-    # for django debug toolbar
-    INTERNAL_IPS = '127.0.0.1'
-    DEBUG_TOOLBAR_CONFIG = {
-        'SHOW_TOOLBAR_CALLBACK': lambda r: False,  # disables it
-    }
-
 if BEHIND_PROXY:
     MIDDLEWARE += [
         'base_common.middleware.SetRemoteAddrFromForwardedFor',
