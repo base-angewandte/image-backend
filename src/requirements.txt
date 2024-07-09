@@ -4,14 +4,8 @@
 #
 #    pip-compile src/requirements.in
 #
-apimapper==0.7.9
-    # via -r src/requirements.in
 asgiref==3.8.1
     # via django
-astroid==2.15.8
-    # via
-    #   -r src/requirements.in
-    #   pylint
 async-timeout==4.0.3
     # via redis
 attrs==23.2.0
@@ -38,14 +32,11 @@ concurrent-log-handler==0.9.24
     # via -r src/requirements.in
 dal-admin-filters==1.1.0
     # via -r src/requirements.in
-dill==0.3.8
-    # via pylint
 django==4.2.14
     # via
     #   -r src/requirements.in
     #   base-common
     #   base-common-drf
-    #   django-appconf
     #   django-autocomplete-light
     #   django-cas-ng
     #   django-cors-headers
@@ -58,10 +49,6 @@ django==4.2.14
     #   djangorestframework
     #   drf-spectacular
     #   sentry-sdk
-django-appconf==1.0.5
-    # via
-    #   -r src/requirements.in
-    #   django-imagekit
 django-autocomplete-light==3.9.7
     # via
     #   -r src/requirements.in
@@ -77,8 +64,6 @@ django-debug-toolbar==4.2.0
 django-environ==0.11.2
     # via -r src/requirements.in
 django-filter==23.3
-    # via -r src/requirements.in
-django-imagekit==4.1.0
     # via -r src/requirements.in
 django-js-asset==2.2.0
     # via django-mptt
@@ -107,45 +92,24 @@ idna==3.7
     # via requests
 inflection==0.5.1
     # via drf-spectacular
-isort==5.12.0
-    # via
-    #   -r src/requirements.in
-    #   pylint
 jsonschema==4.23.0
     # via drf-spectacular
 jsonschema-specifications==2023.12.1
     # via jsonschema
-lazy-object-proxy==1.9.0
-    # via
-    #   -r src/requirements.in
-    #   astroid
 lxml==5.2.2
     # via
     #   python-cas
     #   python-pptx
-markdown==3.6
-    # via apimapper
-mccabe==0.7.0
-    # via
-    #   -r src/requirements.in
-    #   pylint
 packaging==24.1
     # via
     #   build
     #   gunicorn
-pilkit==2.0
-    # via
-    #   -r src/requirements.in
-    #   django-imagekit
 pillow==9.5.0
     # via
-    #   -r src/requirements.in
     #   django-versatileimagefield
     #   python-pptx
 pip-tools==7.3.0
     # via -r src/requirements.in
-platformdirs==4.2.2
-    # via pylint
 portalocker==2.10.0
     # via concurrent-log-handler
 psutil==6.0.0
@@ -156,8 +120,6 @@ psycopg[binary]==3.1.19
     #   psycopg
 psycopg-binary==3.1.19
     # via psycopg
-pylint==2.17.6
-    # via -r src/requirements.in
 pyproject-hooks==1.1.0
     # via build
 python-cas==1.6.0
@@ -166,10 +128,8 @@ python-magic==0.4.27
     # via django-versatileimagefield
 python-pptx==0.6.22
     # via -r src/requirements.in
-pytz==2023.3
-    # via
-    #   -r src/requirements.in
-    #   djangorestframework
+pytz==2024.1
+    # via djangorestframework
 pyyaml==6.0.1
     # via drf-spectacular
 rainbow-saddle==0.4.0
@@ -183,7 +143,6 @@ referencing==0.35.1
 requests==2.31.0
     # via
     #   -r src/requirements.in
-    #   apimapper
     #   python-cas
 rpds-py==0.19.0
     # via
@@ -193,24 +152,16 @@ sentry-sdk[django]==2.3.1
     # via
     #   -r src/requirements.in
     #   sentry-sdk
-shortuuid==1.0.11
-    # via
-    #   -r src/requirements.in
-    #   base-common
+shortuuid==1.0.13
+    # via base-common
 six==1.16.0
     # via
-    #   -r src/requirements.in
     #   django-autocomplete-light
-    #   django-imagekit
     #   python-cas
 sqlparse==0.5.0
     # via
     #   django
     #   django-debug-toolbar
-tomlkit==0.12.5
-    # via pylint
-typed-ast==1.5.5
-    # via -r src/requirements.in
 typing-extensions==4.12.2
     # via psycopg
 uritemplate==4.1.1
@@ -225,10 +176,6 @@ whitenoise[brotli]==6.5.0
     # via
     #   -r src/requirements.in
     #   whitenoise
-wrapt==1.15.0
-    # via
-    #   -r src/requirements.in
-    #   astroid
 xlsxwriter==3.2.0
     # via python-pptx
 
