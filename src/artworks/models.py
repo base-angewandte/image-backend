@@ -246,6 +246,12 @@ class Location(MPTTModel):
         default=True, help_text=_('Overwrite entry with data from GND?')
     )
     location = models.CharField(max_length=255, null=True, blank=True)
+    synonyms_location = models.CharField(
+        verbose_name=_('Synonyms_Location'),
+        null=False,
+        blank=True,
+        help_text=_('Comma-separated list of synonyms.'),
+    )
     external_metadata = JSONField(null=True, blank=True, default=dict)
 
     class Meta:
