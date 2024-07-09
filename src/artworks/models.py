@@ -241,6 +241,11 @@ class Location(MPTTModel):
     parent = TreeForeignKey(
         'self', on_delete=models.CASCADE, null=True, blank=True, related_name='children'
     )
+    gnd_id = models.CharField(max_length=16, null=True, blank=True, unique=True)
+    gnd_overwrite = models.BooleanField(
+        default=True, help_text=_('Overwrite entry with data from GND?')
+    )
+    external_metadata = JSONField(null=True, blank=True, default=dict)
 
     class Meta:
         verbose_name = _('Location')
