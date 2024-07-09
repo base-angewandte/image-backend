@@ -245,7 +245,6 @@ class Location(MPTTModel):
     gnd_overwrite = models.BooleanField(
         default=True, help_text=_('Overwrite entry with data from GND?')
     )
-    location = models.CharField(max_length=255, null=True, blank=True)
 
     external_metadata = JSONField(null=True, blank=True, default=dict)
 
@@ -267,6 +266,7 @@ class Location(MPTTModel):
 
     # TODO: Should be refactored, because it's using almost the identical code.
     def clean(self):
+        # TODO: check if the name is also set, as its made by jackie
         if not self.gnd_id:
             raise ValidationError(_('A valid GND ID needs to be set'))
         # TODO: Add regex
@@ -301,24 +301,24 @@ class Location(MPTTModel):
 
             self.external_metadata = gnd_data
 
-            self.set_location(gnd_data)
+            self.set_name_from_gnd_api(gnd_data)
             self.set_synonyms_location_from_gnd_data(gnd_data)
 
     # Some gnd_id's point instead of as stated in the excell file to a museum, just to a municipality.
     # TerritorialCorporateBodyOrAdministrativeUnit -> should a check be implemented and stated to the user that the
     # gnd id is false? Or should such cases be directly excluded?
-    def set_location(self, gnd_data):
+    def set_name_from_gnd_api(self, gnd_data):
         if 'preferredName' in gnd_data:
-            self.location = gnd_data['preferredName']
+            self.name = gnd_data['preferredName']
         else:
             # If the name of the institution can't be found in the gnd api -
             #  the city where the artwork is located will be shown instead in the field.
             if gnd_data['placeOfBusiness'][0]['label']:
-                self.location = gnd_data['placeOfBusiness'][0]['label']
+                self.name = gnd_data['placeOfBusiness'][0]['label']
             else:
                 # If even the city is not available, only then will the country be shown
                 # (could be deleted, if not needed)
-                self.location = 'Current location of the artwork is unknown.'
+                self.name = 'Current location of the artwork is unknown.'
 
     def set_synonyms_location_from_gnd_data(self, gnd_data):
         synonyms: list = []
