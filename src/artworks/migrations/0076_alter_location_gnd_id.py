@@ -25,4 +25,9 @@ class Migration(migrations.Migration):
             name='gnd_overwrite',
             field=models.BooleanField(default=True, help_text='Overwrite entry with data from GND?'),
         ),
+        migrations.AlterField(
+            model_name='location',
+            name='name',
+            field=models.CharField(blank=True, max_length=255, verbose_name='Name'),
+        ),
     ]

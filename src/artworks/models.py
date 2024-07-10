@@ -236,7 +236,9 @@ class Keyword(MPTTModel):
 class Location(MPTTModel):
     """Locations are nodes in a fixed hierarchical taxonomy."""
 
-    name = models.CharField(verbose_name=_('Name'), max_length=255)
+    name = models.CharField(
+        verbose_name=_('Name'), max_length=255, blank=True, null=False
+    )
     synonyms = models.CharField(verbose_name=_('Synonyms'), max_length=255, blank=True)
     parent = TreeForeignKey(
         'self', on_delete=models.CASCADE, null=True, blank=True, related_name='children'
@@ -267,10 +269,10 @@ class Location(MPTTModel):
     # TODO: Should be refactored, because it's using almost the identical code.
     def clean(self):
         # TODO: check if the name is also set, as its made by jackie
-        if not self.gnd_id:
-            raise ValidationError(_('A valid GND ID needs to be set'))
+        if not self.name and not self.gnd_id:
+            raise ValidationError(_('Either a name or a valid GND ID need to be set'))
         # TODO: Add regex
-        else:
+        if self.gnd_id:
             super().clean()
 
             try:
