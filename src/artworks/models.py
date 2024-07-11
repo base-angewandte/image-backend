@@ -323,13 +323,15 @@ class Location(MPTTModel):
                 self.name = 'Current location of the artwork is unknown.'
 
     def set_synonyms_location_from_gnd_data(self, gnd_data):
-        synonyms: list = []
-        if len(gnd_data['variantName']) > 0:
+        if 'variantName' in gnd_data:
+            synonyms: list = []
             for n in gnd_data['variantName']:
                 synonyms.append(n)
             self.synonyms = ', '.join(synonyms)
             if len(self.synonyms) > 255:
                 self.synonyms = self.synonyms[:255]
+        else:
+            self.synonyms = ''
 
 
 class Artwork(AbstractBaseModel):
