@@ -316,21 +316,11 @@ class Location(MPTTModel):
             'response_data': data,
         }
 
-    # Some gnd_id's point instead of as stated in the excell file to a museum, just to a municipality.
-    # TerritorialCorporateBodyOrAdministrativeUnit -> should a check be implemented and stated to the user that the
-    # gnd id is false? Or should such cases be directly excluded?
     def set_name_from_gnd_api(self, gnd_data):
         if 'preferredName' in gnd_data:
             self.name = gnd_data['preferredName']
         else:
-            # If the name of the institution can't be found in the gnd api -
-            #  the city where the artwork is located will be shown instead in the field.
-            if gnd_data['placeOfBusiness'][0]['label']:
-                self.name = gnd_data['placeOfBusiness'][0]['label']
-            else:
-                # If even the city is not available, only then will the country be shown
-                # (could be deleted, if not needed)
-                self.name = 'Current location of the artwork is unknown.'
+            raise ValidationError(_('No preferredName field was found.'))
 
     def set_synonyms_location_from_gnd_data(self, gnd_data):
         if 'variantName' in gnd_data:
