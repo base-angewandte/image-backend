@@ -303,13 +303,18 @@ class Location(MPTTModel):
                 )
             gnd_data = response.json()
 
+            self.set_external_metadata('gnd', gnd_data)
             if not self.gnd_overwrite:
                 return
 
-            self.external_metadata = gnd_data
-
             self.set_name_from_gnd_api(gnd_data)
             self.set_synonyms_location_from_gnd_data(gnd_data)
+
+    def set_external_metadata(self, key, data):
+        self.external_metadata[key] = {
+            'date_requested': datetime.now().isoformat(),
+            'response_data': data,
+        }
 
     # Some gnd_id's point instead of as stated in the excell file to a museum, just to a municipality.
     # TerritorialCorporateBodyOrAdministrativeUnit -> should a check be implemented and stated to the user that the
