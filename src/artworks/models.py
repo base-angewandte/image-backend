@@ -268,11 +268,16 @@ class Location(MPTTModel):
 
     # TODO: Should be refactored, because it's using almost the identical code.
     def clean(self):
-        # TODO: check if the name is also set, as its made by jackie
         if not self.name and not self.gnd_id:
             raise ValidationError(_('Either a name or a valid GND ID need to be set'))
         # TODO: Add regex
         if self.gnd_id:
+            # see https://www.wikidata.org/wiki/Property:P227 for GND ID definition
+            if not re.match(
+                settings.GND_ID_REGEX,
+                self.gnd_id,
+            ):
+                raise ValidationError(_('Invalid GND ID format.'))
             super().clean()
 
             try:
