@@ -24,6 +24,6 @@ def proper_paginate(paginator, current_page, neighbors=5):
         elif end_index > paginator.num_pages:
             start_index -= end_index - paginator.num_pages
             end_index = paginator.num_pages
-        page_list = [f for f in range(start_index, end_index + 1)]
+        page_list = list(range(start_index, end_index + 1))
         return page_list[: (2 * neighbors + 1)]
     return paginator.page_range
