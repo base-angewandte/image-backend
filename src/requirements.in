@@ -1,6 +1,6 @@
-# compile this file with 'pip-compile requirements.in'
-# sync environment with 'pip-sync'
-# to update all packages run 'pip-compile --upgrade'
+# compile this file with 'uv pip compile requirements.in -o requirements.txt'
+# sync environment with 'uv pip sync requirements.txt'
+# to update all packages run 'uv pip compile requirements.in -o requirements.txt --upgrade'
 
 base-common==0.3
 base-common-drf==0.4

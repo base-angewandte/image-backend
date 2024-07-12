@@ -72,19 +72,11 @@ subsections.
 
 - Install the latest python 3.11 and create virtualenv e.g. via `pyenv` and `pyenv-virtualenv`.
 
-- Install pip-tools and requirements in your virtualenv:
+- Install uv and requirements in your virtualenv:
 
   ```bash
-  pip install pip-tools
-  cd src
-  pip-sync
-  cd ..
-  ```
-
-- Install the pre-commit hooks:
-
-  ```bash
-  pre-commit install
+  pip install uv
+  uv pip sync src/requirements-dev.txt
   ```
 
 - Check the _compose.override.dev.yaml_ file you created before from the template
@@ -96,17 +88,16 @@ subsections.
   make start-dev
   ```
 
-- Run migration:
+- Run migrations and install the pre-commit hooks:
 
   ```bash
-  cd src
-  python manage.py migrate
+  make init-dev
   ```
 
 - Start development server:
 
   ```bash
-  python manage.py runserver 8300
+  cd src && python manage.py runserver 8300
   ```
 
 - To additionally get some initial test data into the database:
