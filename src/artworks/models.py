@@ -1,7 +1,7 @@
 import logging
-import os
 import re
 from datetime import datetime
+from pathlib import Path
 
 import requests
 from base_common.fields import ShortUUIDField
@@ -44,14 +44,15 @@ class Artist(AbstractBaseModel):
 
     date_birth = models.DateField(null=True, blank=True)
     date_death = models.DateField(null=True, blank=True)
-    date_display = models.CharField(
+    date_display = models.CharField(  # noqa: DJ001
         null=True,
         blank=True,
         help_text=_('Overrides birth and death dates for display, if not empty.'),
     )
     gnd_id = models.CharField(max_length=16, null=True, blank=True, unique=True)
     gnd_overwrite = models.BooleanField(
-        default=True, help_text=_('Overwrite entry with data from GND?')
+        default=True,
+        help_text=_('Overwrite entry with data from GND?'),
     )
     external_metadata = JSONField(null=True, blank=True, default=dict)
 
@@ -219,7 +220,11 @@ class Keyword(MPTTModel):
 
     name = models.CharField(verbose_name=_('Name'), max_length=255, unique=True)
     parent = TreeForeignKey(
-        'self', on_delete=models.CASCADE, null=True, blank=True, related_name='children'
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='children',
     )
 
     class Meta:
@@ -239,7 +244,11 @@ class Location(MPTTModel):
     name = models.CharField(verbose_name=_('Name'), max_length=255)
     synonyms = models.CharField(verbose_name=_('Synonyms'), max_length=255, blank=True)
     parent = TreeForeignKey(
-        'self', on_delete=models.CASCADE, null=True, blank=True, related_name='children'
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='children',
     )
 
     class Meta:
@@ -274,7 +283,9 @@ class Artwork(AbstractBaseModel):
     )
     title = models.CharField(verbose_name=_('Title'), max_length=255, blank=True)
     title_english = models.CharField(
-        verbose_name=_('Title, English'), max_length=255, blank=True
+        verbose_name=_('Title, English'),
+        max_length=255,
+        blank=True,
     )
     title_comment = models.TextField(verbose_name=_('Comment on title'), blank=True)
     artists = models.ManyToManyField(Artist, verbose_name=_('Artists'), blank=True)
@@ -285,14 +296,20 @@ class Artwork(AbstractBaseModel):
         help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende/Anfang 14. Jh., 5.3.1799, ca./um/vor/nach 1700',
     )
     date_year_from = models.IntegerField(
-        verbose_name=_('Date From'), null=True, blank=True
+        verbose_name=_('Date From'),
+        null=True,
+        blank=True,
     )
     date_year_to = models.IntegerField(verbose_name=_('Date To'), null=True, blank=True)
-    material = models.TextField(
-        verbose_name=_('Material/Technique'), null=True, blank=True
+    material = models.TextField(  # noqa: DJ001
+        verbose_name=_('Material/Technique'),
+        null=True,
+        blank=True,
     )
     dimensions = models.CharField(
-        verbose_name=_('Dimensions'), max_length=255, blank=True
+        verbose_name=_('Dimensions'),
+        max_length=255,
+        blank=True,
     )
     comments = models.TextField(verbose_name=_('Comments'), blank=True)
     credits = models.TextField(verbose_name=_('Credits'), blank=True)
@@ -361,27 +378,27 @@ class Artwork(AbstractBaseModel):
         )
 
         Artwork.objects.filter(pk=self.pk).annotate(
-            artists_names=StringAgg('artists__name', delimiter=' ')
+            artists_names=StringAgg('artists__name', delimiter=' '),
         ).annotate(
-            artists_synonyms=StringAgg('artists__synonyms', delimiter=' ')
+            artists_synonyms=StringAgg('artists__synonyms', delimiter=' '),
         ).annotate(
-            keywords_names=StringAgg('keywords__name', delimiter=' ')
+            keywords_names=StringAgg('keywords__name', delimiter=' '),
         ).annotate(
             place_of_production_names=StringAgg(
                 'place_of_production__name',
                 delimiter=' ',
-            )
+            ),
         ).annotate(
             place_of_production_synonyms=StringAgg(
                 'place_of_production__synonyms',
                 delimiter=' ',
-            )
+            ),
         ).annotate(
-            location_names=StringAgg('location__name', delimiter=' ')
+            location_names=StringAgg('location__name', delimiter=' '),
         ).annotate(
-            location_synonyms=StringAgg('location__synonyms', delimiter=' ')
+            location_synonyms=StringAgg('location__synonyms', delimiter=' '),
         ).update(
-            search_vector=search_vector
+            search_vector=search_vector,
         )
 
 
@@ -395,16 +412,16 @@ def move_uploaded_image(sender, instance, created, **kwargs):
             get_path_to_original_file(instance, old_name),
             max_length=sender._meta.get_field('image_original').max_length,
         )
-        absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+        absolute_path = settings.MEDIA_ROOT_PATH / relative_path
 
         if not old_name:
             return
 
-        if not os.path.exists(absolute_path):
-            os.makedirs(os.path.dirname(absolute_path), exist_ok=True)
+        if not absolute_path.exists():
+            absolute_path.parent.mkdir(parents=True, exist_ok=True)
 
         # move the uploaded image
-        os.rename(imagefile.path, absolute_path)
+        Path(imagefile.path).rename(absolute_path)
 
         imagefile.name = relative_path
         instance.save()
@@ -479,6 +496,9 @@ class PermissionsRelation(models.Model):
     class Meta:
         unique_together = ['album', 'user']
 
+    def __str__(self):
+        return f'{self.user.get_full_name()} <-- {self.get_permissions_display()} --> {self.album.title}'
+
 
 # Monkey patch of String representation of User
 def string_representation(self):
@@ -497,7 +517,10 @@ class Folder(AbstractBaseModel):
         primary_key=True,
     )
     title = models.CharField(
-        verbose_name=_('Title'), max_length=255, blank=False, null=False
+        verbose_name=_('Title'),
+        max_length=255,
+        blank=False,
+        null=False,
     )
     owner = models.ForeignKey(
         User,
@@ -517,6 +540,9 @@ class Folder(AbstractBaseModel):
         related_name='folder_to_parent',
         null=True,
     )
+
+    def __str__(self):
+        return self.title
 
     @property
     def is_root(self):
@@ -538,12 +564,19 @@ class Folder(AbstractBaseModel):
 
 class FolderAlbumRelation(models.Model):
     album = models.ForeignKey(
-        Album, related_name='rel_to_album', on_delete=models.CASCADE
+        Album,
+        related_name='rel_to_album',
+        on_delete=models.CASCADE,
     )
     user = models.ForeignKey(User, related_name='rel_to_user', on_delete=models.CASCADE)
     folder = models.ForeignKey(
-        Folder, related_name='rel_to_folder', on_delete=models.CASCADE
+        Folder,
+        related_name='rel_to_folder',
+        on_delete=models.CASCADE,
     )
+
+    def __str__(self):
+        return f'{self.folder.title} <-- {self.user.get_full_name()} --> {self.album.title}'
 
 
 class DiscriminatoryTerm(models.Model):
@@ -554,3 +587,6 @@ class DiscriminatoryTerm(models.Model):
 
     class Meta:
         ordering = [Upper('term')]
+
+    def __str__(self):
+        return self.term

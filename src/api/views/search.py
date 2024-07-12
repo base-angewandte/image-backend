@@ -21,13 +21,13 @@ def filter_title(filter_values):
         if isinstance(val, str):
             filters_list.append(
                 Q(title__unaccent__icontains=val)
-                | Q(title_english__unaccent__icontains=val)
+                | Q(title_english__unaccent__icontains=val),
             )
-        elif isinstance(val, dict) and 'id' in val.keys():
+        elif isinstance(val, dict) and 'id' in val:
             filters_list.append(Q(pk=val.get('id')))
         else:
             raise ParseError(
-                _('Invalid format of at least one filter_value for title filter.')
+                _('Invalid format of at least one filter_value for title filter.'),
             )
 
     return filters_list
@@ -38,11 +38,11 @@ def filter_artists(filter_values):
     for val in filter_values:
         if isinstance(val, str):
             filters_list.append(Q(artists__name__unaccent__icontains=val))
-        elif isinstance(val, dict) and 'id' in val.keys():
+        elif isinstance(val, dict) and 'id' in val:
             filters_list.append(Q(artists__id=val.get('id')))
         else:
             raise ParseError(
-                _('Invalid format of at least one filter_value for artists filter.')
+                _('Invalid format of at least one filter_value for artists filter.'),
             )
 
     return filters_list
@@ -61,7 +61,7 @@ def filter_albums_for_user(user, owner=True, permissions='EDIT'):
             pk__in=PermissionsRelation.objects.filter(
                 user=user,
                 permissions__in=permissions,
-            ).values_list('album__pk', flat=True)
+            ).values_list('album__pk', flat=True),
         )
     return q_objects
 
@@ -73,16 +73,16 @@ def filter_mptt_model(filter_values, model, search_field):
     for val in filter_values:
         if isinstance(val, str):
             filters_list.append(
-                Q(**{f'{search_field}__name__unaccent__icontains': val})
+                Q(**{f'{search_field}__name__unaccent__icontains': val}),
             )
-        elif isinstance(val, dict) and 'id' in val.keys():
+        elif isinstance(val, dict) and 'id' in val:
             entries = model.objects.filter(pk=val.get('id')).get_descendants(
-                include_self=True
+                include_self=True,
             )
             filters_list.append(Q(**{f'{search_field}__in': entries}))
         else:
             raise ParseError(
-                f'Invalid format of at least one filter_value for {search_field} filter.'
+                f'Invalid format of at least one filter_value for {search_field} filter.',
             )
     return filters_list
 
@@ -116,7 +116,7 @@ def filter_date(filter_values):
             date_to = int(date_to)
     except ValueError as err:
         raise ParseError(
-            _('Invalid format of at least one filter_value for date filter.')
+            _('Invalid format of at least one filter_value for date filter.'),
         ) from err
 
     if date_from and date_to and date_to < date_from:
@@ -136,7 +136,7 @@ def filter_date(filter_values):
             | Q(
                 date_year_from__lte=date_from,
                 date_year_to__gte=date_to,
-            )
+            ),
         ]
 
 
@@ -160,7 +160,7 @@ for filter_id in FILTERS_KEYS:
                     {
                         'id': 'artists',
                         'filter_values': ['lassnig', {'id': 1192}],
-                    }
+                    },
                 ],
             },
         ),
@@ -178,7 +178,7 @@ for filter_id in FILTERS_KEYS:
                             'date_from': '2000',
                             'date_to': '2001',
                         },
-                    }
+                    },
                 ],
             },
         ),
@@ -205,11 +205,8 @@ def search(request, *args, **kwargs):
         order_by = '"rank" DESC'
     else:
         subq = Artwork.objects.annotate(rank=Value(1.0, FloatField()))
-        if filters:
-            order_by = '"title"'
-        else:
-            # user is not using search at all, therefor show the newest changes first
-            order_by = '"date_changed" DESC, "title"'
+        # if user is using search, sort by title, else show the newest changes first
+        order_by = '"title"' if filters else '"date_changed" DESC, "title"'
 
     # only search for published artworks
     subq = subq.filter(published=True)
@@ -234,7 +231,7 @@ def search(request, *args, **kwargs):
 
     qs = Artwork.objects.raw(
         # we need a raw query here, but don't use any unvalidated parameters
-        'SELECT *, COUNT(*) OVER() AS "total_count" '  # nosec: see comment above
+        'SELECT *, COUNT(*) OVER() AS "total_count" '  # noqa: S608, see comment above
         f'FROM ({subq_sql}) AS subq '
         f'ORDER BY {order_by} '
         'LIMIT %s OFFSET %s',
@@ -265,7 +262,7 @@ def search(request, *args, **kwargs):
                     for artist in artwork.artists.all()
                 ],
                 'score': artwork.rank,
-            }
+            },
         )
 
     return Response({'total': total, 'results': results})

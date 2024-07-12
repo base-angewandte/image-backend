@@ -62,7 +62,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
     GET specific album.
 
     update:
-    PATCH specific album and album’s fields
+    PATCH specific album and album's fields
 
     destroy:
     DELETE specific album
@@ -118,7 +118,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                 style='form',
                 explode=False,
                 description=(
-                    'If the response should also return shared albums, it\'s possible to define which permissions the '
+                    "If the response should also return shared albums, it's possible to define which permissions the "
                     'user needs to have for the album. Since the default is `EDIT`, shared albums with `EDIT` '
                     'permissions are included in the response.'
                 ),
@@ -141,7 +141,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         limit = check_limit(serializer.validated_data['limit'])
         offset = check_offset(serializer.validated_data['offset'])
         sorting = check_sorting(
-            request.query_params.get('sort_by', 'title'), self.ordering_fields
+            request.query_params.get('sort_by', 'title'),
+            self.ordering_fields,
         )
 
         q_filters = filter_albums_for_user(
@@ -170,7 +171,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                     )
                     for album in albums
                 ],
-            }
+            },
         )
 
     @extend_schema(
@@ -192,7 +193,9 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         # Add album to root folder, creating a relationship
         folder = Folder.root_folder_for_user(request.user)
         FolderAlbumRelation.objects.get_or_create(
-            album=album, user=request.user, folder=folder
+            album=album,
+            user=request.user,
+            folder=folder,
         )
 
         return Response(
@@ -274,7 +277,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             album.save()
             return Response(album_object(album, request=request))
 
-        raise PermissionDenied()
+        raise PermissionDenied
 
     @extend_schema(
         responses={
@@ -300,7 +303,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             album.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-        raise PermissionDenied()
+        raise PermissionDenied
 
     # additional actions
 
@@ -350,7 +353,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             album.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-        raise PermissionDenied()
+        raise PermissionDenied
 
     @extend_schema(
         parameters=[
@@ -460,7 +463,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             else:
                 return Response(album.slides)
 
-        raise PermissionDenied()
+        raise PermissionDenied
 
     @extend_schema(
         parameters=[
@@ -470,7 +473,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                 required=False,
                 description='last_name or -last_name',
                 default='last_name',
-            )
+            ),
         ],
         responses={
             200: PermissionsResponseSerializer,
@@ -518,7 +521,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                     'permissions': [{'id': p.permissions}],
                 }
                 for p in qs.order_by(sorting)
-            ]
+            ],
         )
 
     @extend_schema(
@@ -572,16 +575,18 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                     # Add album to root folder, creating a relationship
                     root_folder = Folder.root_folder_for_user(user)
                     FolderAlbumRelation.objects.get_or_create(
-                        album=album, user=user, folder=root_folder
+                        album=album,
+                        user=user,
+                        folder=root_folder,
                     )
 
         # remove deleted permissions
         PermissionsRelation.objects.filter(album=album).exclude(
-            user__username__in=users
+            user__username__in=users,
         ).delete()
         # also remove albums with deleted permissions from those users' root folder
         FolderAlbumRelation.objects.filter(album=album).exclude(
-            user=request.user
+            user=request.user,
         ).exclude(user__username__in=users).delete()
 
         qs = PermissionsRelation.objects.filter(album=album)
@@ -596,7 +601,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                     'permissions': [{'id': p.permissions}],
                 }
                 for p in qs
-            ]
+            ],
         )
 
     @extend_schema(
@@ -631,7 +636,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             PermissionsRelation.objects.filter(album=album).delete()
             # remove album from all folders except the owner's folder
             FolderAlbumRelation.objects.filter(album=album).exclude(
-                user=request.user
+                user=request.user,
             ).delete()
 
         # album is shared with user
@@ -688,7 +693,11 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         language = serializer.validated_data['language']
 
         if download_format == 'pptx':
-            return collection_download_as_pptx(request, id=album.id, language=language)
+            return collection_download_as_pptx(
+                request,
+                album_id=album.id,
+                language=language,
+            )
         elif download_format == 'pdf':
             # TODO implement pdf creation
             return Response(

@@ -52,7 +52,7 @@ def artworks_list(request):
         expert_list = Artwork.objects.filter(published=True)
         if query_place_of_production:
             locations = Location.objects.filter(
-                name__istartswith=query_place_of_production
+                name__istartswith=query_place_of_production,
             )
             locations_plus_descendants = Location.objects.get_queryset_descendants(
                 locations,
@@ -95,10 +95,10 @@ def artworks_list(request):
                 return []
         if query_artwork_title:
             title_contains = Q(title__icontains=query_artwork_title) | Q(
-                title_english__icontains=query_artwork_title
+                title_english__icontains=query_artwork_title,
             )
             title_starts_with = Q(title__istartswith=query_artwork_title) | Q(
-                title_english__istartswith=query_artwork_title
+                title_english__istartswith=query_artwork_title,
             )
             # order results by startswith match. see: https://stackoverflow.com/a/48409962
             expert_list = expert_list.filter(title_contains)
@@ -121,12 +121,12 @@ def artworks_list(request):
             def get_artists(term):
                 return Artist.objects.filter(
                     Q(name__unaccent__istartswith=term)
-                    | Q(name__unaccent__icontains=' ' + term)
+                    | Q(name__unaccent__icontains=' ' + term),
                 )
 
             def get_keywords(term):
                 return Keyword.objects.filter(
-                    Q(name__istartswith=term) | Q(name__istartswith=' ' + term)
+                    Q(name__istartswith=term) | Q(name__istartswith=' ' + term),
                 )
 
             terms = [term.strip() for term in query_search.split()]
@@ -209,7 +209,7 @@ def artworks_list(request):
                         ),
                         default=Value(99),
                         output_field=IntegerField(),
-                    )
+                    ),
                 )
                 .filter(published=True)
                 .exclude(rank=99)
@@ -260,12 +260,12 @@ def artworks_list(request):
 
 
 @login_required
-def details(request, id=None):
+def details(request, pk=None):
     """Return artwork details in json format."""
     try:
-        artwork = Artwork.objects.get(id=id)
+        artwork = Artwork.objects.get(id=pk)
     except Artwork.DoesNotExist:
-        logger.warning('Could not find artwork: %s', id)
+        logger.warning('Could not find artwork: %s', pk)
         return JsonResponse(
             status=404,
             data={'status': 'false', 'message': 'Could not get artwork details'},
@@ -275,10 +275,10 @@ def details(request, id=None):
 
 
 @login_required
-def artwork_detail_overlay(request, id=None):
+def artwork_detail_overlay(request, pk=None):
     """Render an overlay showing a large version of the image and the artwork's
     details."""
-    artwork = get_object_or_404(Artwork, id=id)
+    artwork = get_object_or_404(Artwork, id=pk)
     context = {
         'artwork': artwork,
         'is_staff': request.user.is_staff,
@@ -287,9 +287,9 @@ def artwork_detail_overlay(request, id=None):
 
 
 @permission_required('artworks.change_artwork')
-def artwork_edit(request, id):
+def artwork_edit(request, pk):
     """Render an overlay showing the editable fields of an artwork."""
-    artwork = get_object_or_404(Artwork, id=id)
+    artwork = get_object_or_404(Artwork, id=pk)
     if request.method == 'POST':
         form = ArtworkForm(request.POST, request.FILES, instance=artwork)
         if form.is_valid():
@@ -307,9 +307,9 @@ def artwork_edit(request, id):
 
 
 @login_required
-def collection_edit(request, id):
+def collection_edit(request, pk):
     """Render an overlay showing the editable fields of a collection."""
-    artwork_collection = get_object_or_404(Album, id=id)
+    artwork_collection = get_object_or_404(Album, id=pk)
     if request.user.id is not artwork_collection.user.id:
         # users can only manipulate their own collections via this view
         return HttpResponseForbidden()
@@ -317,7 +317,7 @@ def collection_edit(request, id):
         form = AlbumForm(request.POST, instance=artwork_collection)
         if form.is_valid():
             form.save()
-            return redirect('collection', id=id)
+            return redirect('collection', pk=pk)
     context = {
         'form': AlbumForm(instance=artwork_collection),
         'collection': artwork_collection,
@@ -326,17 +326,17 @@ def collection_edit(request, id):
 
 
 @login_required
-def collection_delete(request, id):
+def collection_delete(request, pk):
     """Delete a collection."""
     if request.method == 'POST':
         try:
-            artwork_collection = Album.objects.get(id=id)
+            artwork_collection = Album.objects.get(id=pk)
             if request.user.id is artwork_collection.user.id:
                 # users can only manipulate their own collections via this view
                 artwork_collection.delete()
                 return redirect('collections-list')
             else:
-                logger.warning('Could not get artwork collection: %s', id)
+                logger.warning('Could not get artwork collection: %s', pk)
                 return JsonResponse(
                     status=403,
                     data={'status': 'false', 'message': 'Permission needed'},
@@ -347,16 +347,16 @@ def collection_delete(request, id):
                 data={'status': 'false', 'message': 'Could not delete collection'},
             )
     else:
-        return redirect('collection', id=id)
+        return redirect('collection', pk=pk)
 
 
 @login_required
-def collection_json(request, id=None):
+def collection_json(request, pk=None):
     """Return collection data in json format."""
     try:
-        col = Album.objects.get(id=id)
+        col = Album.objects.get(id=pk)
     except Album.DoesNotExist:
-        logger.warning('Could not get artwork collection: %s', id)
+        logger.warning('Could not get artwork collection: %s', pk)
         return JsonResponse(
             status=404,
             data={'status': 'false', 'message': 'Could not get collection'},
@@ -387,7 +387,7 @@ class ArtworkArtistAutocomplete(autocomplete.Select2QuerySetView):
         if self.q:
             return qs.filter(
                 Q(name__unaccent__icontains=self.q)
-                | Q(synonyms__unaccent__icontains=self.q)
+                | Q(synonyms__unaccent__icontains=self.q),
             )
 
         return qs
@@ -404,7 +404,7 @@ class ArtistAutocomplete(autocomplete.Select2QuerySetView):
                 Q(name__unaccent__istartswith=self.q)
                 | Q(name__unaccent__icontains=' ' + self.q)
                 | Q(synonyms__unaccent__istartswith=self.q)
-                | Q(synonyms__unaccent__icontains=' ' + self.q)
+                | Q(synonyms__unaccent__icontains=' ' + self.q),
             )
         else:
             return Artist.objects.none()

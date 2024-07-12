@@ -53,7 +53,7 @@ def slides_with_details(album, request):
                 {
                     'id': artwork.id,
                     'image_original': request.build_absolute_uri(
-                        artwork.image_original.url
+                        artwork.image_original.url,
                     )
                     if artwork.image_original
                     else None,
@@ -67,7 +67,7 @@ def slides_with_details(album, request):
                         }
                         for artist in artwork.artists.all()
                     ],
-                }
+                },
             )
         ret.append(slide_info)
 
@@ -88,12 +88,12 @@ def featured_artworks(album, request, num_artworks=4):
                 {
                     'id': artwork.pk,
                     'image_original': request.build_absolute_uri(
-                        artwork.image_original.url
+                        artwork.image_original.url,
                     )
                     if artwork.image_original
                     else None,
                     'title': artwork.title,
-                }
+                },
             )
 
             if len(artworks) == num_artworks:

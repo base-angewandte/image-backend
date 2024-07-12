@@ -75,7 +75,8 @@ class FoldersViewSet(viewsets.GenericViewSet):
         limit = check_limit(request.query_params.get('limit', 100))
         offset = check_offset(request.query_params.get('offset', 0))
         sorting = check_sorting(
-            request.query_params.get('sort_by', 'title'), self.ordering_fields
+            request.query_params.get('sort_by', 'title'),
+            self.ordering_fields,
         )
 
         results = self.queryset.filter(owner=request.user).order_by(sorting)
@@ -89,7 +90,7 @@ class FoldersViewSet(viewsets.GenericViewSet):
                     'owner': f'{folder.owner.first_name} {folder.owner.last_name}',
                 }
                 for folder in results
-            ]
+            ],
         )
 
     @extend_schema(
@@ -126,7 +127,7 @@ class FoldersViewSet(viewsets.GenericViewSet):
                 style='form',
                 explode=False,
                 description=(
-                    'If the response should also return shared albums, it\'s possible to define which permissions the '
+                    "If the response should also return shared albums, it's possible to define which permissions the "
                     'user needs to have for the album. Since the default is `EDIT`, shared albums with `EDIT` '
                     'permissions are included in the response.'
                 ),
@@ -150,7 +151,8 @@ class FoldersViewSet(viewsets.GenericViewSet):
         limit = check_limit(request.query_params.get('limit', 100))
         offset = check_offset(request.query_params.get('offset', 0))
         sorting = check_sorting(
-            request.query_params.get('sort_by', 'title'), self.ordering_fields
+            request.query_params.get('sort_by', 'title'),
+            self.ordering_fields,
         )
 
         # Retrieve folder by id
@@ -195,7 +197,7 @@ class FoldersViewSet(viewsets.GenericViewSet):
                     'total': folder.albums.all().count(),  # currently: number of albums belonging to root folder
                     'data': albums_data,
                 },
-            }
+            },
         )
 
     @extend_schema(
@@ -216,9 +218,9 @@ class FoldersViewSet(viewsets.GenericViewSet):
                                 'shared_info': 'Some shared info',
                                 '# of works': 89,
                                 'thumbnail': 'https://www.thumbnail.com',
-                            }
+                            },
                         ],
-                    )
+                    ),
                 ],
             ),
         ],

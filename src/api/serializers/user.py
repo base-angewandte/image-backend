@@ -25,17 +25,19 @@ class UserSerializer(serializers.Serializer):
 class UserDataSerializer(serializers.Serializer):
     id = serializers.CharField(help_text='The user id in the auth backend')
     name = serializers.CharField(help_text='The display name of the user')
-    email = serializers.CharField(help_text='The user\'s e-mail address')
+    email = serializers.CharField(help_text="The user's e-mail address")
     showroom_id = serializers.CharField(
         allow_null=True,
         help_text=(
-            'The user\'s associated showroom id. Or null, if no associated '
+            "The user's associated showroom id. Or null, if no associated "
             'showroom entity can be found or showroom page is deactivated'
         ),
     )
     groups = serializers.ListSerializer(
-        child=serializers.CharField(), help_text='The groups this user belongs to.'
+        child=serializers.CharField(),
+        help_text='The groups this user belongs to.',
     )
     permissions = serializers.ListSerializer(
-        child=serializers.CharField(), help_text='The permissions this user has.'
+        child=serializers.CharField(),
+        help_text='The permissions this user has.',
     )

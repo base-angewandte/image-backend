@@ -50,6 +50,6 @@ class CreateSlidesRequestSerializer(serializers.ListSerializer):
         for item in data:
             if len(item) > 2:
                 raise serializers.ValidationError(
-                    _('No more than two artworks per slide allowed')
+                    _('No more than two artworks per slide allowed'),
                 )
         return data

@@ -15,6 +15,7 @@ https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 import os
 import sys
 from email.utils import getaddresses
+from pathlib import Path
 from urllib.parse import urlparse
 
 import environ
@@ -25,23 +26,23 @@ from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 PROJECT_NAME = '.'.join(__name__.split('.')[:-1])
 
 env = environ.Env()
-env.read_env(os.path.join(BASE_DIR, '..', '.env'))
+env.read_env(BASE_DIR / '..' / '.env')
 
 try:
     from .secret_key import SECRET_KEY
 except ImportError:
     from django.core.management.utils import get_random_secret_key
 
-    f = open(os.path.join(BASE_DIR, PROJECT_NAME, 'secret_key.py'), 'w+')
-    SECRET_KEY = get_random_secret_key()
-    f.write("SECRET_KEY = '%s'\n" % SECRET_KEY)
-    f.close()
+    secret_key_path = BASE_DIR / PROJECT_NAME / 'secret_key.py'
+    with secret_key_path.open(mode='w+') as f:
+        SECRET_KEY = get_random_secret_key()
+        f.write(f"SECRET_KEY = '{SECRET_KEY}'\n")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -83,7 +84,7 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[urlparse(SITE_URL).hostname])
 BEHIND_PROXY = env.bool('BEHIND_PROXY', default=True)
 
 ADMINS = getaddresses(
-    [env('DJANGO_ADMINS', default='Philipp Mayer <philipp.mayer@uni-ak.ac.at>')]
+    [env('DJANGO_ADMINS', default='Philipp Mayer <philipp.mayer@uni-ak.ac.at>')],
 )
 
 MANAGERS = ADMINS
@@ -145,7 +146,7 @@ CAS_RENAME_ATTRIBUTES = {
     'email0': 'email',
 }
 """Email settings."""
-SERVER_EMAIL = 'error@%s' % urlparse(SITE_URL).hostname
+SERVER_EMAIL = f'error@{urlparse(SITE_URL).hostname}'
 
 EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD', default='')
@@ -155,14 +156,14 @@ EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=False)
 EMAIL_USE_LOCALTIME = env.bool('EMAIL_USE_LOCALTIME', default=True)
 
 EMAIL_SUBJECT_PREFIX = '{} '.format(
-    env.str('EMAIL_SUBJECT_PREFIX', default='[Image]').strip()
+    env.str('EMAIL_SUBJECT_PREFIX', default='[Image]').strip(),
 )
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-    EMAIL_FILE_PATH = os.path.join(BASE_DIR, '..', 'tmp', 'emails')
+    EMAIL_FILE_PATH = BASE_DIR / '..' / 'tmp' / 'emails'
 
-    if not os.path.exists(EMAIL_FILE_PATH):
-        os.makedirs(EMAIL_FILE_PATH)
+    if not EMAIL_FILE_PATH.exists():
+        EMAIL_FILE_PATH.mkdir(parents=True)
 
 """ Https settings """
 if SITE_URL.startswith('https'):
@@ -199,7 +200,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'image', 'templates'),
+            BASE_DIR / 'image' / 'templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -236,7 +237,7 @@ DATABASES = {
         'PASSWORD': env.str('POSTGRES_PASSWORD', default=f'password_{PROJECT_NAME}'),
         'HOST': f'{PROJECT_NAME}-postgres' if DOCKER else 'localhost',
         'PORT': env.str('POSTGRES_PORT', default='5432'),
-    }
+    },
 }
 
 # Password validation
@@ -272,7 +273,7 @@ LANGUAGES = (
 
 LANGUAGES_DICT = dict(LANGUAGES)
 
-LOCALE_PATHS = (os.path.join(BASE_DIR, 'image', 'locale'),)
+LOCALE_PATHS = (BASE_DIR / 'image' / 'locale',)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
@@ -288,18 +289,21 @@ STORAGES = {
 
 STATICFILES_DIRS = (
     # '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'static')), os.sep),
-    os.path.join(BASE_DIR, 'image', 'static_dev'),
+    BASE_DIR / 'image' / 'static_dev',
 )
 
 STATIC_URL = '{}/static/'.format(FORCE_SCRIPT_NAME if FORCE_SCRIPT_NAME else '')
 STATIC_ROOT = '{}{}'.format(
-    os.path.normpath(os.path.join(BASE_DIR, 'assets', 'static')), os.sep
+    os.path.normpath(BASE_DIR / 'assets' / 'static'),
+    os.sep,
 )
 
 MEDIA_URL = '{}/media/'.format(FORCE_SCRIPT_NAME if FORCE_SCRIPT_NAME else '')
 MEDIA_ROOT = '{}{}'.format(
-    os.path.normpath(os.path.join(BASE_DIR, 'assets', 'media')), os.sep
+    os.path.normpath(BASE_DIR / 'assets' / 'media'),
+    os.sep,
 )
+MEDIA_ROOT_PATH = Path(MEDIA_ROOT)
 
 # config of versatileimagefield
 # used to edit artworks
@@ -319,17 +323,17 @@ VERSATILEIMAGEFIELD_SETTINGS = {
     'progressive_jpeg': False,
 }
 """Logging."""
-LOG_DIR = os.path.join(BASE_DIR, '..', 'logs')
+LOG_DIR = BASE_DIR / '..' / 'logs'
 
-if not os.path.exists(LOG_DIR):
-    os.makedirs(LOG_DIR)
+if not LOG_DIR.exists():
+    LOG_DIR.mkdir(parents=True)
 
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
         },
         'simple': {'format': '%(levelname)s %(message)s'},
     },
@@ -346,7 +350,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'application.log'),
+            'filename': LOG_DIR / 'application.log',
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 1000,
             'use_gzip': True,
@@ -413,7 +417,8 @@ CORS_EXPOSE_HEADERS = env.list('CORS_EXPOSE_HEADERS', default=[])
 BASE_HEADER_SITE_URL = env.str('BASE_HEADER_SITE_URL', SITE_URL)
 BASE_HEADER_JSON = f'{BASE_HEADER_SITE_URL}bs/base-header.json'
 BASE_HEADER = '{}{}'.format(
-    BASE_HEADER_SITE_URL, requests.get(BASE_HEADER_JSON, timeout=60).json()['latest']
+    BASE_HEADER_SITE_URL,
+    requests.get(BASE_HEADER_JSON, timeout=60).json()['latest'],
 )
 
 REST_FRAMEWORK = {
@@ -456,7 +461,7 @@ SPECTACULAR_SETTINGS = {
             required=False,
             enum=list(LANGUAGES_DICT.keys()),
             default='en',
-        )
+        ),
     ],
 }
 
@@ -470,7 +475,7 @@ DEFAULT_PERMISSIONS = env.list('DEFAULT_PERMISSIONS', default=['VIEW'])
 for permission in DEFAULT_PERMISSIONS:
     if permission not in PERMISSIONS:
         raise ImproperlyConfigured(
-            f'Permission {repr(permission)} not allowed in DEFAULT_PERMISSIONS'
+            f'Permission {repr(permission)} not allowed in DEFAULT_PERMISSIONS',
         )
 
 SEARCH_LIMIT = 30
@@ -482,7 +487,7 @@ SENTRY_DSN = env.str('SENTRY_DSN', default=None)
 SENTRY_ENVIRONMENT = env.str(
     'SENTRY_ENVIRONMENT',
     default='development'
-    if any([i in SITE_URL for i in ['dev', 'localhost', '127.0.0.1']])
+    if any(i in SITE_URL for i in ['dev', 'localhost', '127.0.0.1'])
     else 'production',
 )
 SENTRY_TRACES_SAMPLE_RATE = env.float('SENTRY_TRACES_SAMPLE_RATE', default=0.2)
