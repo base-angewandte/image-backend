@@ -228,9 +228,16 @@ class Location(MPTTModel, MetaDataMixin):
     """Locations are nodes in a fixed hierarchical taxonomy."""
 
     name = models.CharField(
-        verbose_name=_('Name'), max_length=255, blank=True, null=False
+        verbose_name=_('Name'),
+        max_length=255,
+        blank=True,
+        null=False,
     )
-    synonyms = models.CharField(verbose_name=_('Synonyms'), max_length=255, blank=True)
+    synonyms = models.CharField(
+        verbose_name=_('Synonyms'),
+        max_length=255,
+        blank=True,
+    )
     parent = TreeForeignKey(
         'self', on_delete=models.CASCADE, null=True, blank=True, related_name='children'
     )
