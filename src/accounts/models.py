@@ -8,5 +8,9 @@ class User(AbstractUser):
     class Meta:
         db_table = 'auth_user'
 
+    @property
+    def full_name(self):
+        return self.get_full_name()
+
     def __str__(self):
         return self.get_full_name() or self.username
