@@ -10,7 +10,6 @@ from mptt.models import MPTTModel, TreeForeignKey
 from versatileimagefield.fields import VersatileImageField
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.contrib.postgres.aggregates import StringAgg
 from django.contrib.postgres.search import SearchVector, SearchVectorField
 from django.core.exceptions import ValidationError
@@ -507,13 +506,6 @@ class PermissionsRelation(models.Model):
     def __str__(self):
         return f'{self.user.get_full_name()} <-- {self.get_permissions_display()} --> {self.album.title}'
 
-
-# Monkey patch of String representation of User
-def string_representation(self):
-    return self.get_full_name() or self.username
-
-
-get_user_model().add_to_class('__str__', string_representation)
 
 # Monkey patch ManyToManyDescriptor
 ManyToManyDescriptor.get_queryset = lambda self: self.rel.model.objects.get_queryset()
