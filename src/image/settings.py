@@ -130,7 +130,7 @@ AUTHENTICATION_BACKENDS = [
     'django_cas_ng.backends.CASBackend',
 ]
 
-AUTH_USER_MODEL = 'auth.User'
+AUTH_USER_MODEL = 'accounts.User'
 
 LOGIN_URL = reverse_lazy('cas_ng_login')
 LOGOUT_URL = reverse_lazy('cas_ng_logout')
