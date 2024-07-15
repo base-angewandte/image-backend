@@ -13,13 +13,16 @@ from artworks.models import Album, Artist, Artwork, Keyword
 
 class ArtworkForm(forms.ModelForm):
     image_original = forms.ImageField(
-        label_suffix='', label='Upload', widget=forms.FileInput, required=False
+        label_suffix='',
+        label='Upload',
+        widget=forms.FileInput,
+        required=False,
     )
     image_original.widget.attrs.update({'class': 'imageselector'})
 
     class Meta:
         model = Artwork
-        exclude = ['id', 'created_at', 'updated_at']
+        exclude = ['id', 'created_at', 'updated_at']  # noqa: DJ006
         widgets = {
             'artists': autocomplete.ModelSelect2Multiple(url='artist-autocomplete'),
             'keywords': autocomplete.ModelSelect2Multiple(url='keyword-autocomplete'),
@@ -40,7 +43,9 @@ class MPTTMultipleChoiceField(ModelMultipleChoiceField):
     # https://gist.github.com/tdsymonds/abdcb395f172a016ed785f59043749e3
     def label_from_instance(self, obj):
         level = getattr(
-            obj, getattr(self.queryset.model._meta, 'level_attr', 'level'), 0
+            obj,
+            getattr(self.queryset.model._meta, 'level_attr', 'level'),
+            0,
         )
         return '{} {}'.format('-' * level, force_str(obj))
 
@@ -60,14 +65,14 @@ class ArtworkAdminForm(forms.ModelForm):
 
     class Meta:
         model = Artwork
-        fields = '__all__'
+        fields = '__all__'  # noqa: DJ007
         labels = {'Keywords': _('Keywords'), 'Artists': _('Artists')}
 
 
 class AlbumForm(forms.ModelForm):
     class Meta:
         model = Album
-        exclude = ['id', 'created_at', 'updated_at', 'user', 'artworks']
+        exclude = ['id', 'created_at', 'updated_at', 'user', 'artworks']  # noqa: DJ006
 
 
 # Multi File Upload
@@ -85,7 +90,7 @@ class MultipleImageField(forms.ImageField):
 
     def clean(self, data, initial=None):
         single_file_clean = super().clean
-        if isinstance(data, (list, tuple)):
+        if isinstance(data, list | tuple):
             result = [single_file_clean(d, initial) for d in data]
         else:
             result = [single_file_clean(data, initial)]

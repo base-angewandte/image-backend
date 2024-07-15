@@ -58,17 +58,18 @@ class Command(BaseCommand):
             entries.append([row[0].strip(), row[1].strip()])
 
         if data_type == 'artist':
-            invalid_ids = []
-            for entry in entries:
+            invalid_ids = [
+                f'{entry[1]} for {entry[0]}'
+                for entry in entries
                 if not re.match(
                     settings.GND_ID_REGEX,
                     entry[1],
-                ):
-                    invalid_ids.append(f'{entry[1]} for {entry[0]}')
+                )
+            ]
             if invalid_ids:
                 raise CommandError(
                     'Your dataset contains the following invalid GND IDs:\n'
-                    + '\n'.join(invalid_ids)
+                    + '\n'.join(invalid_ids),
                 )
 
             artists_not_found = []
@@ -148,53 +149,53 @@ class Command(BaseCommand):
 
             self.stdout.write(f'Updated {len(updated)} entries.')
             self.stdout.write(
-                f'Updated {len(updated_without_name)} entries, without overwriting the name.'
+                f'Updated {len(updated_without_name)} entries, without overwriting the name.',
             )
             if artists_not_found:
                 self.stdout.write(
                     self.style.WARNING(
-                        f'No Artist with matching name found in {len(artists_not_found)} cases:'
-                    )
+                        f'No Artist with matching name found in {len(artists_not_found)} cases:',
+                    ),
                 )
                 for entry in artists_not_found:
                     self.stdout.write(f'{entry[0]} with GND ID {entry[1]}')
             if indistinct_names:
                 self.stdout.write(
                     self.style.WARNING(
-                        f'Duplicate artist names found in {len(indistinct_names)} cases:'
-                    )
+                        f'Duplicate artist names found in {len(indistinct_names)} cases:',
+                    ),
                 )
                 for entry in indistinct_names:
                     self.stdout.write(entry[0])
             if gnd_data_not_found:
                 self.stdout.write(
                     self.style.WARNING(
-                        f'No GND entry found for {len(gnd_data_not_found)} IDs:'
-                    )
+                        f'No GND entry found for {len(gnd_data_not_found)} IDs:',
+                    ),
                 )
                 for entry in gnd_data_not_found:
                     self.stdout.write(f'{entry[1]} for {entry[0]}')
             if request_errors:
                 self.stdout.write(
                     self.style.ERROR(
-                        f'Request error for {len(request_errors)} entries:'
-                    )
+                        f'Request error for {len(request_errors)} entries:',
+                    ),
                 )
                 for entry in request_errors:
                     self.stdout.write(f'{entry[1]} for {entry[0]}')
             if validation_errors:
                 self.stdout.write(
                     self.style.ERROR(
-                        f'Validation error for {len(validation_errors)} entries:'
-                    )
+                        f'Validation error for {len(validation_errors)} entries:',
+                    ),
                 )
                 for entry in validation_errors:
                     self.stdout.write(f'{entry[0][1]} {entry[0][0]}: {entry[1]}')
             if integrity_errors:
                 self.stdout.write(
                     self.style.ERROR(
-                        f'Integrity error for {len(integrity_errors)} entries:'
-                    )
+                        f'Integrity error for {len(integrity_errors)} entries:',
+                    ),
                 )
                 for entry in integrity_errors:
                     self.stdout.write(f'{entry[0][1]} {entry[0][0]}: {entry[1]}')

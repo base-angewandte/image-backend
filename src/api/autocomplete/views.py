@@ -119,7 +119,7 @@ LABELS_MAP = {
                     ],
                 ),
             ],
-        )
+        ),
     },
 )
 @api_view(['GET'])
@@ -144,13 +144,13 @@ def autocomplete(request, *args, **kwargs):
             query = (
                 MODEL_MAP[t]
                 .objects.annotate(
-                    full_name=Concat('first_name', Value(' '), 'last_name')
+                    full_name=Concat('first_name', Value(' '), 'last_name'),
                 )
                 .annotate(
                     similarity=TrigramWordSimilarity(
                         q_param,
                         'full_name',
-                    )
+                    ),
                 )
                 .filter(similarity__gte=0.6)
                 .order_by('-similarity')
@@ -167,7 +167,7 @@ def autocomplete(request, *args, **kwargs):
                 pk__in=PermissionsRelation.objects.filter(
                     user=request.user,
                     permissions='EDIT',
-                ).values_list('album__pk', flat=True)
+                ).values_list('album__pk', flat=True),
             )
             query = (
                 MODEL_MAP[t]
@@ -180,7 +180,7 @@ def autocomplete(request, *args, **kwargs):
                     {
                         'id': album.id,
                         'label': album.title,
-                    }
+                    },
                 )
 
         elif t == 'titles':
@@ -191,7 +191,7 @@ def autocomplete(request, *args, **kwargs):
                     {
                         'id': artwork.id,
                         'label': artwork.title,
-                    }
+                    },
                 )
 
         else:
@@ -202,7 +202,7 @@ def autocomplete(request, *args, **kwargs):
                     {
                         'id': item.id,
                         'label': item.name,
-                    }
+                    },
                 )
 
         ret.append(d)

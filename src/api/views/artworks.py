@@ -89,7 +89,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                     {
                         'id': artwork.id,
                         'image_original': request.build_absolute_uri(
-                            artwork.image_original.url
+                            artwork.image_original.url,
                         )
                         if artwork.image_original
                         else None,
@@ -103,7 +103,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                     }
                     for artwork in results
                 ],
-            }
+            },
         )
 
     @extend_schema(
@@ -157,7 +157,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                     {'id': keyword.id, 'value': keyword.name}
                     for keyword in artwork.keywords.all()
                 ],
-            }
+            },
         )
 
     # additional actions
@@ -257,7 +257,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 style='form',
                 explode=False,
                 description=(
-                    'If the response should also return shared albums, it\'s possible to define which permissions the '
+                    "If the response should also return shared albums, it's possible to define which permissions the "
                     'user needs to have for the album. Since the default is `EDIT`, shared albums with `EDIT` '
                     'permissions are included in the response.'
                 ),
@@ -293,11 +293,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 pk__in=PermissionsRelation.objects.filter(
                     user=request.user,
                     permissions__in=permissions,
-                ).values_list('album__pk', flat=True)
+                ).values_list('album__pk', flat=True),
             )
 
         albums = Album.objects.filter(slides__contains=[[{'id': artwork.pk}]]).filter(
-            q_filters
+            q_filters,
         )
 
         return Response(
@@ -307,7 +307,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                     'title': album.title,
                 }
                 for album in albums
-            ]
+            ],
         )
 
     @extend_schema(

@@ -19,7 +19,7 @@ def temporary_image():  # from https://stackoverflow.com/a/67611074
 class APITestCase(RestFrameworkAPITestCase):
     def setUp(self):
         # create and log in user
-        User = get_user_model()
+        User = get_user_model()  # noqa: N806
         self.user = User.objects.create_user('temporary', 'temporary@uni-ak.ac.at')
         self.client.force_login(self.user)
 
@@ -101,8 +101,8 @@ class APITestCase(RestFrameworkAPITestCase):
             image_original=temporary_image(),
         ).artists.add(artemisia)
         Artwork.objects.create(
-            title='Die UDSSR im Aufbau [СССР на стройке] Nr. 12',
-            title_english='The USSR in Construction [СССР на стройке] , No. 12',
+            title='Die UDSSR im Aufbau [СССР на стройке] Nr. 12',  # noqa: RUF001
+            title_english='The USSR in Construction [СССР на стройке] , No. 12',  # noqa: RUF001
             date='1935',
             date_year_from=1935,
             date_year_to=1935,

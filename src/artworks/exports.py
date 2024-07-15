@@ -1,5 +1,4 @@
 import logging
-import os
 from io import BytesIO
 
 from pptx import Presentation
@@ -21,15 +20,15 @@ from .models import Album, Artwork
 logger = logging.getLogger(__name__)
 
 
-def collection_download_as_pptx_en(request, id=None):
-    return collection_download_as_pptx(request, id, 'en')
+def collection_download_as_pptx_en(request, album_id=None):
+    return collection_download_as_pptx(request, album_id, 'en')
 
 
-def collection_download_as_pptx_de(request, id=None):
-    return collection_download_as_pptx(request, id, 'de')
+def collection_download_as_pptx_de(request, album_id=None):
+    return collection_download_as_pptx(request, album_id, 'de')
 
 
-def collection_download_as_pptx(request, id=None, language='de'):
+def collection_download_as_pptx(request, album_id=None, language='de'):
     """Return a downloadable powerpoint presentation of the collection."""
 
     def get_new_slide():
@@ -60,7 +59,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
         img_relative_path = artwork.image_original.thumbnail[
             '1880x933'  # 1920-20-20 = 1880
         ].name
-        img_path = os.path.join(settings.MEDIA_ROOT, img_relative_path)
+        img_path = settings.MEDIA_ROOT_PATH / img_relative_path
         slide = get_new_slide()
         add_picture_to_slide(slide, img_path, padding, 'center')
         picture_width = prs.slide_width - (padding * 2)
@@ -75,9 +74,9 @@ def collection_download_as_pptx(request, id=None, language='de'):
         img_relative_path_left = artwork_left.image_original.thumbnail[
             '920x933'  # (1920/2)-20-20 = 920
         ].name
-        img_path_left = os.path.join(settings.MEDIA_ROOT, img_relative_path_left)
+        img_path_left = settings.MEDIA_ROOT_PATH / img_relative_path_left
         img_relative_path_right = artwork_right.image_original.thumbnail['920x933'].name
-        img_path_right = os.path.join(settings.MEDIA_ROOT, img_relative_path_right)
+        img_path_right = settings.MEDIA_ROOT_PATH / img_relative_path_right
         slide = get_new_slide()
         add_picture_to_slide(slide, img_path_left, padding, 'left')
         add_picture_to_slide(slide, img_path_right, padding, 'right')
@@ -115,7 +114,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
                 pic.top = padding + int((picture_max_height - pic.height) / 2)
         else:
             picture_max_width = int(
-                (prs.slide_width - (padding * 2) - distance_between) / 2
+                (prs.slide_width - (padding * 2) - distance_between) / 2,
             )
             space_aspect_ratio = picture_max_width / picture_max_height
             if aspect_ratio < space_aspect_ratio:
@@ -155,7 +154,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
     distance_between = prs_padding * 2
 
     try:
-        col = Album.objects.get(id=id)
+        col = Album.objects.get(id=album_id)
     except Album.DoesNotExist:
         logger.warning('Could not create powerpoint file. Collection missing.')
         return
@@ -165,14 +164,9 @@ def collection_download_as_pptx(request, id=None, language='de'):
         for slide in slides:
             try:
                 if len(slide) == 2:
-                    artwork_ids = []
-                    for artwork_in_slide in slide:
-                        artwork_ids.append(
-                            Artwork.objects.get(id=artwork_in_slide.get('id'))
-                        )
                     add_slide_with_two_pictures(
-                        artwork_ids[0],
-                        artwork_ids[1],
+                        Artwork.objects.get(id=slide[0].get('id')),
+                        Artwork.objects.get(id=slide[1].get('id')),
                         prs_padding,
                     )
 
@@ -184,7 +178,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
                 else:
                     return Response(
                         _(
-                            'Too many artworks per slides. You can only have two artworks per slide. Please edit slides.'
+                            'Too many artworks per slides. You can only have two artworks per slide. Please edit slides.',
                         ),
                         status=status.HTTP_400_BAD_REQUEST,
                     )
@@ -192,7 +186,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
             except Artwork.DoesNotExist:
                 return Response(
                     _(
-                        f'There is no artwork associated with id {artwork_in_slide.get("id")}.'
+                        f'There is no artwork associated with id {artwork_in_slide.get("id")}.',
                     ),
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -200,7 +194,7 @@ def collection_download_as_pptx(request, id=None, language='de'):
             except FileNotFoundError:
                 return Response(
                     _(
-                        f"There is no image associated with artwork with id {artwork_in_slide.get('id')}; it's a directory"
+                        f"There is no image associated with artwork with id {artwork_in_slide.get('id')}; it's a directory",
                     ),
                     status=status.HTTP_404_NOT_FOUND,
                 )

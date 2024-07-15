@@ -4,28 +4,30 @@ from . import exports, views
 
 urlpatterns = [
     path('', views.artworks_list, name='artworks-list'),
-    path('artwork/<int:id>.json', views.details, name='artwork-details'),
+    path('artwork/<int:pk>.json', views.details, name='artwork-details'),
     path(
-        'artwork/<int:id>/detail_overlay/',
+        'artwork/<int:pk>/detail_overlay/',
         views.artwork_detail_overlay,
         name='artwork_detail_overlay',
     ),
-    path('artwork/<int:id>/edit_overlay/', views.artwork_edit, name='artwork-edit'),
+    path('artwork/<int:pk>/edit_overlay/', views.artwork_edit, name='artwork-edit'),
     path('collections/', views.collections_list, name='collections-list'),
     path(
-        'collection/<int:id>_de.pptx',
+        'collection/<int:pk>_de.pptx',
         exports.collection_download_as_pptx_de,
         name='download-pptx-de',
     ),
     path(
-        'collection/<int:id>_en.pptx',
+        'collection/<int:pk>_en.pptx',
         exports.collection_download_as_pptx_en,
         name='download-pptx-en',
     ),
-    path('collection/<int:id>.json', views.collection_json, name='collection-json'),
-    path('collection/<int:id>/edit/', views.collection_edit, name='collection-edit'),
+    path('collection/<int:pk>.json', views.collection_json, name='collection-json'),
+    path('collection/<int:pk>/edit/', views.collection_edit, name='collection-edit'),
     path(
-        'collection/<int:id>/delete/', views.collection_delete, name='collection-delete'
+        'collection/<int:pk>/delete/',
+        views.collection_delete,
+        name='collection-delete',
     ),
     path(
         'artwork-artist-autocomplete/',

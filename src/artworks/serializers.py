@@ -50,7 +50,7 @@ class ArtworkSerializer(serializers.ModelSerializer):
 class ThumbnailSerializer(serializers.ModelSerializer):
     artists = ArtistSerializer(read_only=True, many=True)
     image_original = VersatileImageFieldSerializer(
-        sizes=[('thumbnail', 'thumbnail__180x180')]
+        sizes=[('thumbnail', 'thumbnail__180x180')],
     )
 
     class Meta:

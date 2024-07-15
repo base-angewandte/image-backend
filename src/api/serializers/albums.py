@@ -43,7 +43,9 @@ class AlbumsRequestSerializer(serializers.Serializer):
 
 class AlbumsDownloadRequestSerializer(serializers.Serializer):
     download_format = serializers.CharField(
-        default='pptx', allow_null=False, allow_blank=False
+        default='pptx',
+        allow_null=False,
+        allow_blank=False,
     )
     language = serializers.CharField(default='de', allow_null=False, allow_blank=False)
 

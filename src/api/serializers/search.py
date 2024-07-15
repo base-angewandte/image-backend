@@ -10,10 +10,10 @@ class SearchArtistsSerializer(serializers.Serializer):
 
 class SearchFilterSerializer(serializers.Serializer):
     id = serializers.CharField(
-        help_text='id of the filter as obtained from the /search/filters endpoint'
+        help_text='id of the filter as obtained from the /search/filters endpoint',
     )
     filter_values = serializers.JSONField(
-        help_text='Filters as defined in the /search/filters endpoint'
+        help_text='Filters as defined in the /search/filters endpoint',
     )
 
 
@@ -40,7 +40,8 @@ class SearchRequestSerializer(serializers.Serializer):
         help_text='Exclude certain artworks from the results.',
     )
     q = serializers.CharField(
-        required=False, help_text='Query string for full text search.'
+        required=False,
+        help_text='Query string for full text search.',
     )
     limit = serializers.IntegerField(
         required=False,

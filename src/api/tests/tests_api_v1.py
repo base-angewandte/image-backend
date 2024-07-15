@@ -35,7 +35,9 @@ class ArtworkTests(APITestCase):
     def test_artworks_retrieve(self):
         """Test the retrieval of an artwork."""
         artwork = Artwork.objects.create(
-            title='Test Artwork', image_original=temporary_image(), published=True
+            title='Test Artwork',
+            image_original=temporary_image(),
+            published=True,
         )
         url = reverse('artwork-detail', kwargs={'pk': artwork.pk, 'version': VERSION})
         response = self.client.get(url, format='json')
@@ -43,13 +45,16 @@ class ArtworkTests(APITestCase):
         content = json.loads(response.content)
         self.assertEqual(content['title'], artwork.title)
         self.assertEqual(
-            content['image_original'], f'http://testserver{artwork.image_original.url}'
+            content['image_original'],
+            f'http://testserver{artwork.image_original.url}',
         )
         self.assertEqual(content['artists'], [])
 
     def test_artworks_image(self):
         artwork = Artwork.objects.create(
-            title='Test Artwork', image_original=temporary_image(), published=True
+            title='Test Artwork',
+            image_original=temporary_image(),
+            published=True,
         )
         url = reverse(
             'artwork-image',
@@ -94,7 +99,9 @@ class ArtworkTests(APITestCase):
     def test_artworks_download(self):
         """Test the download of an artwork + metadata."""
         artwork = Artwork.objects.create(
-            title='Test Artwork', image_original=temporary_image(), published=True
+            title='Test Artwork',
+            image_original=temporary_image(),
+            published=True,
         )
         artist = Artist.objects.create(name='TestArtist')
         artwork.artists.add(artist)
@@ -164,10 +171,12 @@ class AlbumsTests(APITestCase):
         """Test the appending of artworks to album slides."""
         album = Album.objects.create(title='Test Album', user=self.user)
         artwork = Artwork.objects.create(
-            title='Test Artwork', image_original=temporary_image()
+            title='Test Artwork',
+            image_original=temporary_image(),
         )
         url = reverse(
-            'album-append-artwork', kwargs={'pk': album.pk, 'version': VERSION}
+            'album-append-artwork',
+            kwargs={'pk': album.pk, 'version': VERSION},
         )
         data = {'id': artwork.pk}
         response = self.client.post(url, data, format='json')
@@ -189,13 +198,16 @@ class AlbumsTests(APITestCase):
         """Test the creation of album slides."""
         album = Album.objects.create(title='Test Album', user=self.user)
         artwork1 = Artwork.objects.create(
-            title='Test Artwork 1', image_original=temporary_image()
+            title='Test Artwork 1',
+            image_original=temporary_image(),
         )
         artwork2 = Artwork.objects.create(
-            title='Test Artwork 2', image_original=temporary_image()
+            title='Test Artwork 2',
+            image_original=temporary_image(),
         )
         artwork3 = Artwork.objects.create(
-            title='Test Artwork 3', image_original=temporary_image()
+            title='Test Artwork 3',
+            image_original=temporary_image(),
         )
         url = reverse('album-slides', kwargs={'pk': album.pk, 'version': VERSION})
         data = [[{'id': artwork1.pk}, {'id': artwork2.pk}], [{'id': artwork3.pk}]]
@@ -308,10 +320,14 @@ class SearchTests(APITestCase):
         # Todo (possible): extend? as there are several usecases
         artist = Artist.objects.create(name='TestArtist')
         artwork1 = Artwork.objects.create(
-            title='Test Artwork 1', image_original=temporary_image(), published=True
+            title='Test Artwork 1',
+            image_original=temporary_image(),
+            published=True,
         )
         artwork2 = Artwork.objects.create(
-            title='Test Artwork 2', image_original=temporary_image(), published=True
+            title='Test Artwork 2',
+            image_original=temporary_image(),
+            published=True,
         )
         artwork1.artists.add(artist)
         artwork2.artists.add(artist)
@@ -326,7 +342,7 @@ class SearchTests(APITestCase):
                 {
                     'id': 'artists',
                     'filter_values': ['artist'],
-                }
+                },
             ],
         }
         url = reverse('search', kwargs={'version': VERSION})
@@ -386,7 +402,8 @@ class AutocompleteTests(APITestCase):
         # test multiple autocomplete types
         requested_types = ['titles', 'artists', 'users', 'keywords', 'locations']
         response = self.client.get(
-            f'{url}?q=test&type={",".join(requested_types)}', format='json'
+            f'{url}?q=test&type={",".join(requested_types)}',
+            format='json',
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
@@ -406,10 +423,12 @@ class AutocompleteTests(APITestCase):
         self.assertEqual(len(content[2]['data']), 2)  # 2 users
         self.assertLess(3, len(content[0]['data']))  # more than 3 artwork titles
         self.assertEqual(
-            content[2]['data'][0]['label'], 'Test Lecturer'
+            content[2]['data'][0]['label'],
+            'Test Lecturer',
         )  # alphabetic ordering
         self.assertEqual(
-            content[2]['data'][1]['label'], 'Test Student'
+            content[2]['data'][1]['label'],
+            'Test Student',
         )  # alphabetic ordering
 
         # test (default) limiting
@@ -432,14 +451,16 @@ class AutocompleteTests(APITestCase):
         self.assertEqual(len(content[0]['data']), 10)  # default limit
         self.assertEqual(len(content[0]['data']), 10)  # default limit
         response = self.client.get(
-            f'{url}?q=e&type=titles,locations&limit=100', format='json'
+            f'{url}?q=e&type=titles,locations&limit=100',
+            format='json',
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
         self.assertLess(10, len(content[0]['data']))
         self.assertLess(10, len(content[0]['data']))
         response = self.client.get(
-            f'{url}?q=e&type=titles,locations&limit=5', format='json'
+            f'{url}?q=e&type=titles,locations&limit=5',
+            format='json',
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
