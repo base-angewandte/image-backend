@@ -96,7 +96,6 @@ class Command(BaseCommand):
                     continue
             elif data_type == 'location':
                 try:
-                    entry[0] = entry[0].replace('\n', '')
                     location = Location.objects.get(name=entry[0])
                 except Location.DoesNotExist:
                     entries_not_found.append(entry)
