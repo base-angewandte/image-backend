@@ -264,11 +264,9 @@ class Location(MPTTModel, MetaDataMixin):
 
         return ' > '.join(ancestors[: len(ancestors) + 1])
 
-    # TODO: Should be refactored, because it's using almost the identical code.
     def clean(self):
         if not self.name and not self.gnd_id:
             raise ValidationError(_('Either a name or a valid GND ID need to be set'))
-        # TODO: Add regex
         if self.gnd_id:
             # Call the clean method of the parent class
             super().clean()
