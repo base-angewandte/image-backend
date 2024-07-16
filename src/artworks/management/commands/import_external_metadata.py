@@ -11,8 +11,6 @@ from django.db import IntegrityError
 
 from artworks.models import Artist, Location
 
-# TODO: Keyword
-
 
 class Command(BaseCommand):
     help = 'Import data from external sources (e.g. GND) for Artists, Locations and Keywords'
@@ -52,6 +50,10 @@ class Command(BaseCommand):
         entries = []
         reader = csv.reader(file, delimiter=';')
         header = True
+
+        if data_type == 'keyword':
+            raise CommandError('Importing keyword metadata is not yet implemented.')
+
         for row in reader:
             if header and options['skip_header']:
                 header = False
