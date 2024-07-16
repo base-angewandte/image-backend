@@ -185,7 +185,7 @@ class Artist(AbstractBaseModel, MetaDataMixin):
             synonyms = []
             for n in gnd_data['variantNameEntityForThePerson']:
                 synonym = self.construct_individual_name(n)
-                synonyms.append(synonym.strip())
+                synonyms.append(synonym)
             self.synonyms = ', '.join(synonyms)
         elif 'variantName' in gnd_data:
             self.synonyms = ', '.join(gnd_data['variantName'])
