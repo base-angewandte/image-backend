@@ -71,8 +71,7 @@ class Command(BaseCommand):
                 + '\n'.join(invalid_ids)
             )
 
-        artists_not_found = []
-        locations_not_found = []
+        entries_not_found = []
         indistinct_names = []
         gnd_data_not_found = []
         request_errors = []
@@ -90,7 +89,7 @@ class Command(BaseCommand):
                 try:
                     artist = Artist.objects.get(name=entry[0])
                 except Artist.DoesNotExist:
-                    artists_not_found.append(entry)
+                    entries_not_found.append(entry)
                     continue
                 except Artist.MultipleObjectsReturned:
                     indistinct_names.append(entry)
@@ -100,7 +99,7 @@ class Command(BaseCommand):
                     entry[0] = entry[0].replace('\n', '')
                     location = Location.objects.get(name=entry[0])
                 except Location.DoesNotExist:
-                    locations_not_found.append(entry)
+                    entries_not_found.append(entry)
                     continue
                 except Location.MultipleObjectsReturned:
                     indistinct_names.append(entry)
@@ -174,21 +173,13 @@ class Command(BaseCommand):
         self.stdout.write(
             f'Updated {len(updated_without_name)} entries, without overwriting the name.'
         )
-        if artists_not_found:
+        if entries_not_found:
             self.stdout.write(
                 self.style.WARNING(
-                    f'No Artist with matching name found in {len(artists_not_found)} cases:'
+                    f'No {data_type} with matching name found in {len(entries_not_found)} cases:'
                 )
             )
-            for entry in artists_not_found:
-                self.stdout.write(f'{entry[0]} with GND ID {entry[1]}')
-        if locations_not_found:
-            self.stdout.write(
-                self.style.WARNING(
-                    f'No Locations with matching name found in {len(locations_not_found)} cases:'
-                )
-            )
-            for entry in locations_not_found:
+            for entry in entries_not_found:
                 self.stdout.write(f'{entry[0]} with GND ID {entry[1]}')
         if indistinct_names:
             self.stdout.write(
