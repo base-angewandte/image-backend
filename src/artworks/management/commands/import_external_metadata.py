@@ -193,7 +193,7 @@ class Command(BaseCommand):
         if indistinct_names:
             self.stdout.write(
                 self.style.WARNING(
-                    f'Duplicate artist names found in {len(indistinct_names)} cases:'
+                    f'Duplicate name entries found in {len(indistinct_names)} cases:'
                 )
             )
             for entry in indistinct_names:
