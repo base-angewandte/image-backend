@@ -139,21 +139,21 @@ class Artist(AbstractBaseModel, MetaDataMixin):
         if date_display:
             self.date_display = date_display
 
-    def construct_individual_name(self, n):
+    def construct_individual_name(self, gnd_name_information):
         name = ''
-        if 'nameAddition' in n:
-            name += n['nameAddition'][0] + ' '
-        if 'personalName' in n:
-            if 'prefix' in n:
-                name += n['prefix'][0] + ' '
-            name += n['personalName'][0]
+        if 'nameAddition' in gnd_name_information:
+            name += gnd_name_information['nameAddition'][0] + ' '
+        if 'personalName' in gnd_name_information:
+            if 'prefix' in gnd_name_information:
+                name += gnd_name_information['prefix'][0] + ' '
+            name += gnd_name_information['personalName'][0]
         else:
-            if 'forename' in n:
-                name += n['forename'][0] + ' '
-            if 'prefix' in n:
-                name += n['prefix'][0] + ' '
-            if 'surname' in n:
-                name += n['surname'][0]
+            if 'forename' in gnd_name_information:
+                name += gnd_name_information['forename'][0] + ' '
+            if 'prefix' in gnd_name_information:
+                name += gnd_name_information['prefix'][0] + ' '
+            if 'surname' in gnd_name_information:
+                name += gnd_name_information['surname'][0]
         return name.strip()
 
     def set_name_from_gnd_data(self, gnd_data):
@@ -276,10 +276,10 @@ class Location(MPTTModel, MetaDataMixin):
             if not self.gnd_overwrite:
                 return
 
-            self.set_name_from_gnd_api(gnd_data)
+            self.set_name_from_gnd_data(gnd_data)
             self.set_synonyms_location_from_gnd_data(gnd_data)
 
-    def set_name_from_gnd_api(self, gnd_data):
+    def set_name_from_gnd_data(self, gnd_data):
         if 'preferredName' in gnd_data:
             self.name = gnd_data['preferredName']
         else:
