@@ -240,7 +240,6 @@ class Location(MPTTModel, MetaDataMixin):
     )
     synonyms = models.CharField(
         verbose_name=_('Synonyms'),
-        max_length=255,
         blank=True,
     )
     parent = TreeForeignKey(
@@ -298,8 +297,6 @@ class Location(MPTTModel, MetaDataMixin):
             for n in gnd_data['variantName']:
                 synonyms.append(n)
             self.synonyms = ', '.join(synonyms)
-            if len(self.synonyms) > 255:
-                self.synonyms = self.synonyms[:255]
         else:
             self.synonyms = ''
 
