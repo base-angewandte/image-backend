@@ -32,6 +32,9 @@ def validate_gnd_id(gnd_id):
         gnd_id,
     ):
         raise ValidationError(_('Invalid GND ID format.'))
+
+
+def fetch_gnd_data(gnd_id):
     try:
         response = requests.get(
             settings.GND_API_BASE_URL + gnd_id,
@@ -103,7 +106,9 @@ class Artist(AbstractBaseModel, MetaDataMixin):
             # Call the clean method of the parent class
             super().clean()
             # Validate the gnd_id and fetch the external metadata
-            gnd_data = validate_gnd_id(self.gnd_id)
+            validate_gnd_id(self.gnd_id)
+            # Fetch the external metadata
+            gnd_data = fetch_gnd_data(self.gnd_id)
             # if gnd_overwrite was deactivated we still store the retrieved metadata
             self.set_external_metadata('gnd', gnd_data)
             # everything else will only be stored if overwrite is not set
@@ -271,7 +276,9 @@ class Location(MPTTModel, MetaDataMixin):
             # Call the clean method of the parent class
             super().clean()
             # Validate the gnd_id and fetch the external metadata
-            gnd_data = validate_gnd_id(self.gnd_id)
+            validate_gnd_id(self.gnd_id)
+            # Fetch the external metadata
+            gnd_data = fetch_gnd_data(self.gnd_id)
             self.set_external_metadata('gnd', gnd_data)
             if not self.gnd_overwrite:
                 return
