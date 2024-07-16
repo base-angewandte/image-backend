@@ -160,7 +160,7 @@ class Command(BaseCommand):
             elif data_type == 'location':
                 location.gnd_id = entry[1]
                 location.set_external_metadata('gnd', gnd_data)
-                location.set_name_from_gnd_api(gnd_data)
+                location.set_synonyms_from_gnd_data(gnd_data)
                 location.set_synonyms_location_from_gnd_data(gnd_data)
 
                 if location.name != entry[0]:
