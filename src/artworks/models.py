@@ -91,6 +91,9 @@ def process_external_metadata(instance):
         # Fetch the external metadata
         gnd_data = fetch_gnd_data(instance.gnd_id)
         instance.update_with_gnd_data(gnd_data)
+        link_wikidata = instance.get_wikidata_link(gnd_data)
+        if link_wikidata:
+            fetch_wikidata(link_wikidata)
     elif instance.external_metadata:
         instance.external_metadata = {}
 
@@ -325,6 +328,14 @@ class Location(MPTTModel, MetaDataMixin):
         if self.gnd_overwrite:
             self.set_name_from_gnd_data(gnd_data)
             self.set_synonyms_from_gnd_data(gnd_data)
+
+    def get_wikidata_link(self, gnd_data):
+        if 'sameAs' in gnd_data:
+            wikidata_link = ''
+            for n in gnd_data['sameAs']:
+                if 'wikidata' in n['id']:
+                    wikidata_link += n['id']
+                    return wikidata_link
 
 
 class Artwork(AbstractBaseModel):
