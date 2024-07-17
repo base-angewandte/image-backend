@@ -1,6 +1,5 @@
 import logging
 import re
-from datetime import datetime
 from pathlib import Path
 
 import requests
@@ -22,11 +21,66 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from .managers import ArtworkManager
+from .mixins import MetaDataMixin
 
 logger = logging.getLogger(__name__)
 
 
-class Artist(AbstractBaseModel):
+def validate_gnd_id(gnd_id):
+    if not re.match(
+        settings.GND_ID_REGEX,
+        gnd_id,
+    ):
+        raise ValidationError(_('Invalid GND ID format.'))
+
+
+def fetch_gnd_data(gnd_id):
+    try:
+        response = requests.get(
+            settings.GND_API_BASE_URL + gnd_id,
+            timeout=settings.REQUESTS_TIMEOUT,
+        )
+    except requests.RequestException as e:
+        raise ValidationError(
+            _('Request error when retrieving GND data. Details: %(details)s'),
+            params={'details': f'{repr(e)}'},
+        ) from e
+
+    if response.status_code != 200:
+        if response.status_code == 404:
+            raise ValidationError(
+                _('No GND entry was found with ID %(id)s.'),
+                params={'id': gnd_id},
+            )
+        raise ValidationError(
+            _('HTTP error %(status)s when retrieving GND data: %(details)s'),
+            params={'status': response.status_code, 'details': response.text},
+        )
+    gnd_data = response.json()
+
+    return gnd_data
+
+
+def process_external_metadata(instance):
+    """Process external metadata for the given instance, to avoid code
+    duplication.
+
+    It is used by both clean functions of Artist and Location.
+    """
+    if not instance.name and not instance.gnd_id:
+        raise ValidationError(_('Either a name or a valid GND ID need to be set'))
+
+    if instance.gnd_id:
+        # Validate the gnd_id and fetch the external metadata
+        validate_gnd_id(instance.gnd_id)
+        # Fetch the external metadata
+        gnd_data = fetch_gnd_data(instance.gnd_id)
+        instance.update_with_gnd_data(gnd_data)
+    elif instance.external_metadata:
+        instance.external_metadata = {}
+
+
+class Artist(AbstractBaseModel, MetaDataMixin):
     """One Artist can be the maker of 0-n artworks."""
 
     name = models.CharField(
@@ -65,53 +119,8 @@ class Artist(AbstractBaseModel):
         return self.name
 
     def clean(self):
-        if not self.name and not self.gnd_id:
-            raise ValidationError(_('Either a name or a valid GND ID need to be set'))
-        if self.gnd_id:
-            # see https://www.wikidata.org/wiki/Property:P227 for GND ID definition
-            if not re.match(
-                settings.GND_ID_REGEX,
-                self.gnd_id,
-            ):
-                raise ValidationError(_('Invalid GND ID format.'))
-
-            super().clean()
-
-            try:
-                response = requests.get(
-                    settings.GND_API_BASE_URL + self.gnd_id,
-                    timeout=settings.REQUESTS_TIMEOUT,
-                )
-            except requests.RequestException as e:
-                raise ValidationError(
-                    _('Request error when retrieving GND data. Details: %(details)s'),
-                    params={'details': f'{repr(e)}'},
-                ) from e
-
-            if response.status_code != 200:
-                if response.status_code == 404:
-                    raise ValidationError(
-                        _('No GND entry was found with ID %(id)s.'),
-                        params={'id': self.gnd_id},
-                    )
-                raise ValidationError(
-                    _('HTTP error %(status)s when retrieving GND data: %(details)s'),
-                    params={'status': response.status_code, 'details': response.text},
-                )
-            gnd_data = response.json()
-            # if gnd_overwrite was deactivated we still store the retrieved metadata
-            self.set_external_metadata('gnd', gnd_data)
-            # everything else will only be stored if overwrite is not set
-            if not self.gnd_overwrite:
-                return
-
-            self.set_name_from_gnd_data(gnd_data)
-            self.set_synonyms_from_gnd_data(gnd_data)
-            self.set_birth_death_from_gnd_data(gnd_data)
-
-        elif self.external_metadata:
-            # remove old GND metadata if the GND ID was set to empty
-            self.external_metadata = {}
+        super().clean()
+        process_external_metadata(self)
 
     def set_birth_death_from_gnd_data(self, gnd_data):
         """Sets an Arist name, based on a GND result.
@@ -134,11 +143,22 @@ class Artist(AbstractBaseModel):
         if date_display:
             self.date_display = date_display
 
-    def set_external_metadata(self, key, data):
-        self.external_metadata[key] = {
-            'date_requested': datetime.now().isoformat(),
-            'response_data': data,
-        }
+    def construct_individual_name(self, gnd_name_information):
+        name = ''
+        if 'nameAddition' in gnd_name_information:
+            name += gnd_name_information['nameAddition'][0] + ' '
+        if 'personalName' in gnd_name_information:
+            if 'prefix' in gnd_name_information:
+                name += gnd_name_information['prefix'][0] + ' '
+            name += gnd_name_information['personalName'][0]
+        else:
+            if 'forename' in gnd_name_information:
+                name += gnd_name_information['forename'][0] + ' '
+            if 'prefix' in gnd_name_information:
+                name += gnd_name_information['prefix'][0] + ' '
+            if 'surname' in gnd_name_information:
+                name += gnd_name_information['surname'][0]
+        return name.strip()
 
     def set_name_from_gnd_data(self, gnd_data):
         """Sets an Arist's name, based on a GND result.
@@ -150,22 +170,9 @@ class Artist(AbstractBaseModel):
         :param dict gnd_data: response data of the GND API for the Artist
         """
         if 'preferredNameEntityForThePerson' in gnd_data:
-            n = gnd_data['preferredNameEntityForThePerson']
-            name = ''
-            if 'nameAddition' in n:
-                name += n['nameAddition'][0] + ' '
-            if 'personalName' in n:
-                if 'prefix' in n:
-                    name += n['prefix'][0] + ' '
-                name += n['personalName'][0]
-            else:
-                if 'forename' in n:
-                    name += n['forename'][0] + ' '
-                if 'prefix' in n:
-                    name += n['prefix'][0] + ' '
-                if 'surname' in n:
-                    name += n['surname'][0]
-            self.name = name.strip()
+            self.name = self.construct_individual_name(
+                gnd_data['preferredNameEntityForThePerson'],
+            )
         elif 'preferredName' in gnd_data:
             self.name = gnd_data['preferredName'].strip()
 
@@ -181,24 +188,18 @@ class Artist(AbstractBaseModel):
         if 'variantNameEntityForThePerson' in gnd_data:
             synonyms = []
             for n in gnd_data['variantNameEntityForThePerson']:
-                synonym = ''
-                if 'nameAddition' in n:
-                    synonym += n['nameAddition'][0] + ' '
-                if 'personalName' in n:
-                    if 'prefix' in n:
-                        synonym += n['prefix'][0] + ' '
-                    synonym += n['personalName'][0]
-                else:
-                    if 'forename' in n:
-                        synonym += n['forename'][0] + ' '
-                    if 'prefix' in n:
-                        synonym += n['prefix'][0] + ' '
-                    if 'surname' in n:
-                        synonym += n['surname'][0]
-                synonyms.append(synonym.strip())
+                synonym = self.construct_individual_name(n)
+                synonyms.append(synonym)
             self.synonyms = ', '.join(synonyms)
         elif 'variantName' in gnd_data:
             self.synonyms = ', '.join(gnd_data['variantName'])
+
+    def update_with_gnd_data(self, gnd_data):
+        self.set_external_metadata('gnd', gnd_data)
+        if self.gnd_overwrite:
+            self.set_name_from_gnd_data(gnd_data)
+            self.set_synonyms_from_gnd_data(gnd_data)
+            self.set_birth_death_from_gnd_data(gnd_data)
 
 
 def get_path_to_original_file(instance, filename):
@@ -238,11 +239,19 @@ class Keyword(MPTTModel):
         return self.name
 
 
-class Location(MPTTModel):
+class Location(MPTTModel, MetaDataMixin):
     """Locations are nodes in a fixed hierarchical taxonomy."""
 
-    name = models.CharField(verbose_name=_('Name'), max_length=255)
-    synonyms = models.CharField(verbose_name=_('Synonyms'), max_length=255, blank=True)
+    name = models.CharField(
+        verbose_name=_('Name'),
+        max_length=255,
+        blank=True,
+        null=False,
+    )
+    synonyms = models.CharField(
+        verbose_name=_('Synonyms'),
+        blank=True,
+    )
     parent = TreeForeignKey(
         'self',
         on_delete=models.CASCADE,
@@ -250,6 +259,13 @@ class Location(MPTTModel):
         blank=True,
         related_name='children',
     )
+    gnd_id = models.CharField(max_length=16, null=True, blank=True, unique=True)
+    gnd_overwrite = models.BooleanField(
+        default=True,
+        help_text=_('Overwrite entry with data from GND?'),
+    )
+
+    external_metadata = JSONField(null=True, blank=True, default=dict)
 
     class Meta:
         verbose_name = _('Location')
@@ -266,6 +282,28 @@ class Location(MPTTModel):
             ancestors = [self.name]
 
         return ' > '.join(ancestors[: len(ancestors) + 1])
+
+    def clean(self):
+        super().clean()
+        process_external_metadata(self)
+
+    def set_name_from_gnd_data(self, gnd_data):
+        if 'preferredName' in gnd_data:
+            self.name = gnd_data['preferredName']
+        else:
+            raise ValidationError(_('No preferredName field was found.'))
+
+    def set_synonyms_from_gnd_data(self, gnd_data):
+        if 'variantName' in gnd_data:
+            self.synonyms = ', '.join(gnd_data['variantName'])
+        else:
+            self.synonyms = ''
+
+    def update_with_gnd_data(self, gnd_data):
+        self.set_external_metadata('gnd', gnd_data)
+        if self.gnd_overwrite:
+            self.set_name_from_gnd_data(gnd_data)
+            self.set_synonyms_from_gnd_data(gnd_data)
 
 
 class Artwork(AbstractBaseModel):

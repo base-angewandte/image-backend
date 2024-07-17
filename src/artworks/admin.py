@@ -120,6 +120,8 @@ class KeywordAdmin(MPTTModelAdmin):
 
 @admin.register(Location)
 class LocationAdmin(MPTTModelAdmin):
+    readonly_fields = ['external_metadata']
+    list_display = ('name', 'gnd_id', 'gnd_overwrite')
     search_fields = [
         'parent__' * i + 'name' for i in range(settings.LOCATION_SEARCH_LEVELS)
     ]
