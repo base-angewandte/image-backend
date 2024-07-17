@@ -282,6 +282,8 @@ class Location(MPTTModel, MetaDataMixin):
             if not self.gnd_overwrite:
                 return
             self.update_with_gnd_data(gnd_data)
+        elif self.external_metadata:
+            self.external_metadata = {}
 
     def set_name_from_gnd_data(self, gnd_data):
         if 'preferredName' in gnd_data:
