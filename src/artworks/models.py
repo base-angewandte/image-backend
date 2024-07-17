@@ -75,8 +75,6 @@ def process_external_metadata(instance):
         validate_gnd_id(instance.gnd_id)
         # Fetch the external metadata
         gnd_data = fetch_gnd_data(instance.gnd_id)
-        if not instance.gnd_overwrite:
-            return
         instance.update_with_gnd_data(gnd_data)
     elif instance.external_metadata:
         instance.external_metadata = {}
