@@ -289,7 +289,7 @@ class Location(MPTTModel, MetaDataMixin):
         else:
             raise ValidationError(_('No preferredName field was found.'))
 
-    def set_synonyms_location_from_gnd_data(self, gnd_data):
+    def set_synonyms_from_gnd_data(self, gnd_data):
         if 'variantName' in gnd_data:
             synonyms: list = []
             for n in gnd_data['variantName']:
@@ -302,7 +302,7 @@ class Location(MPTTModel, MetaDataMixin):
         self.set_external_metadata('gnd', gnd_data)
         if self.gnd_overwrite:
             self.set_name_from_gnd_data(gnd_data)
-            self.set_synonyms_location_from_gnd_data(gnd_data)
+            self.set_synonyms_from_gnd_data(gnd_data)
 
 
 class Artwork(AbstractBaseModel):
