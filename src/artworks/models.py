@@ -278,12 +278,9 @@ class Location(MPTTModel, MetaDataMixin):
             validate_gnd_id(self.gnd_id)
             # Fetch the external metadata
             gnd_data = fetch_gnd_data(self.gnd_id)
-            self.set_external_metadata('gnd', gnd_data)
             if not self.gnd_overwrite:
                 return
-
-            self.set_name_from_gnd_data(gnd_data)
-            self.set_synonyms_location_from_gnd_data(gnd_data)
+            self.update_with_gnd_data(gnd_data)
 
     def set_name_from_gnd_data(self, gnd_data):
         if 'preferredName' in gnd_data:
@@ -299,6 +296,12 @@ class Location(MPTTModel, MetaDataMixin):
             self.synonyms = ', '.join(synonyms)
         else:
             self.synonyms = ''
+
+    def update_with_gnd_data(self, gnd_data):
+        self.set_external_metadata('gnd', gnd_data)
+        if self.gnd_overwrite:
+            self.set_name_from_gnd_data(gnd_data)
+            self.set_synonyms_location_from_gnd_data(gnd_data)
 
 
 class Artwork(AbstractBaseModel):
