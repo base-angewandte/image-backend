@@ -71,14 +71,10 @@ def process_external_metadata(instance):
         raise ValidationError(_('Either a name or a valid GND ID need to be set'))
 
     if instance.gnd_id:
-        # Call the clean method of the parent class
-        super(instance.__class__, instance).clean()
         # Validate the gnd_id and fetch the external metadata
         validate_gnd_id(instance.gnd_id)
         # Fetch the external metadata
         gnd_data = fetch_gnd_data(instance.gnd_id)
-        if not instance.gnd_overwrite:
-            return
         instance.update_with_gnd_data(gnd_data)
     elif instance.external_metadata:
         instance.external_metadata = {}
@@ -122,6 +118,7 @@ class Artist(AbstractBaseModel, MetaDataMixin):
         return self.name
 
     def clean(self):
+        super().clean()
         process_external_metadata(self)
 
     def set_birth_death_from_gnd_data(self, gnd_data):
@@ -277,6 +274,7 @@ class Location(MPTTModel, MetaDataMixin):
         return ' > '.join(ancestors[: len(ancestors) + 1])
 
     def clean(self):
+        super().clean()
         process_external_metadata(self)
 
     def set_name_from_gnd_data(self, gnd_data):
