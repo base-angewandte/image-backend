@@ -125,10 +125,8 @@ class Command(BaseCommand):
 
             if data_type == 'artist':
                 artist.gnd_id = entry[1]
-                artist.set_external_metadata('gnd', gnd_data)
-                artist.set_name_from_gnd_data(gnd_data)
-                artist.set_synonyms_from_gnd_data(gnd_data)
-                artist.set_birth_death_from_gnd_data(gnd_data)
+                artist.gnd_overwrite = True
+                artist.update_with_gnd_data(gnd_data)
 
                 # if the name generated from the GND data differs from the one
                 # originally stored in image, we restore the old name and
@@ -159,9 +157,8 @@ class Command(BaseCommand):
                     integrity_errors.append((entry, repr(e)))
             elif data_type == 'location':
                 location.gnd_id = entry[1]
-                location.set_external_metadata('gnd', gnd_data)
-                location.set_synonyms_from_gnd_data(gnd_data)
-                location.set_synonyms_location_from_gnd_data(gnd_data)
+                location.gnd_overwrite = True
+                location.update_with_gnd_data(gnd_data)
 
                 if location.name != entry[0]:
                     location.name = entry[0]
