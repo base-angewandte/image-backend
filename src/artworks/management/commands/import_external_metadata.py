@@ -59,7 +59,6 @@ class Command(BaseCommand):
                 header = False
                 continue
             entries.append([row[0].strip(), row[1].strip()])
-
         invalid_ids = []
         for entry in entries:
             if not re.match(
@@ -72,11 +71,15 @@ class Command(BaseCommand):
                 'Your dataset contains the following invalid GND IDs:\n'
                 + '\n'.join(invalid_ids)
             )
-
+        # entries_not_found: initialize the Artist model and check
+        # if the name from the csv file of the artist exists in the db
         entries_not_found = []
+        # indistinct_names: add all double entries of an artist's name from the db to the list
         indistinct_names = []
         gnd_data_not_found = []
         request_errors = []
+        # updated: if the name generated from the GND data doesn't differ from the one originally stored in image,
+        # we update the whole entry, including the name and if not we update without the name
         updated = []
         updated_without_name = []
         validation_errors = []
@@ -113,7 +116,6 @@ class Command(BaseCommand):
             except requests.RequestException:
                 request_errors.append(entry)
                 continue
-
             if response.status_code != 200:
                 if response.status_code == 404:
                     gnd_data_not_found.append(entry)
@@ -159,7 +161,9 @@ class Command(BaseCommand):
                 location.gnd_id = entry[1]
                 location.gnd_overwrite = True
                 location.update_with_gnd_data(gnd_data)
-
+                # if the name generated from the GND data differs from the one
+                # originally stored in image, we restore the old name and
+                # deactivate the gnd_overwrite flag
                 if location.name != entry[0]:
                     location.name = entry[0]
                     location.gnd_overwrite = False
@@ -171,6 +175,8 @@ class Command(BaseCommand):
         self.stdout.write(
             f'Updated {len(updated_without_name)} entries, without overwriting the name.'
         )
+        # all checks: if the there are entries in the initialized lists from above,
+        # write out there elements/length/count.
         if entries_not_found:
             self.stdout.write(
                 self.style.WARNING(
