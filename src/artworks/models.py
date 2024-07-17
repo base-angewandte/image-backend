@@ -248,6 +248,12 @@ class Location(MPTTModel, MetaDataMixin):
         blank=True,
         null=False,
     )
+    name_en = models.CharField(
+        verbose_name=_('Name_EN'),
+        max_length=255,
+        blank=True,
+        default='',
+    )
     synonyms = models.CharField(
         verbose_name=_('Synonyms'),
         blank=True,
