@@ -110,15 +110,9 @@ class Artist(AbstractBaseModel, MetaDataMixin):
             # Fetch the external metadata
             gnd_data = fetch_gnd_data(self.gnd_id)
             # if gnd_overwrite was deactivated we still store the retrieved metadata
-            self.set_external_metadata('gnd', gnd_data)
-            # everything else will only be stored if overwrite is not set
             if not self.gnd_overwrite:
                 return
-
-            self.set_name_from_gnd_data(gnd_data)
-            self.set_synonyms_from_gnd_data(gnd_data)
-            self.set_birth_death_from_gnd_data(gnd_data)
-
+            self.update_with_gnd_data(gnd_data)
         elif self.external_metadata:
             # remove old GND metadata if the GND ID was set to empty
             self.external_metadata = {}
@@ -194,6 +188,13 @@ class Artist(AbstractBaseModel, MetaDataMixin):
             self.synonyms = ', '.join(synonyms)
         elif 'variantName' in gnd_data:
             self.synonyms = ', '.join(gnd_data['variantName'])
+
+    def update_with_gnd_data(self, gnd_data):
+        self.set_external_metadata('gnd', gnd_data)
+        if self.gnd_overwrite:
+            self.set_name_from_gnd_data(gnd_data)
+            self.set_synonyms_from_gnd_data(gnd_data)
+            self.set_birth_death_from_gnd_data(gnd_data)
 
 
 def get_path_to_original_file(instance, filename):
