@@ -329,6 +329,11 @@ class Location(MPTTModel, MetaDataMixin):
                 'wikidata',
                 fetch_wikidata(self.get_wikidata_link(gnd_data)),
             )
+        else:
+            self.set_external_metadata(
+                'wikidata',
+                None,
+            )
         if self.gnd_overwrite:
             self.set_name_from_gnd_data(gnd_data)
             self.set_synonyms_from_gnd_data(gnd_data)
