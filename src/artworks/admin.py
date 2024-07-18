@@ -1,3 +1,5 @@
+import json
+
 from dal_admin_filters import AutocompleteFilter
 from mptt.admin import MPTTModelAdmin
 
@@ -5,11 +7,28 @@ from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from django.forms import Textarea, TextInput
+from django.templatetags.static import static
 from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
 
 from .forms import ArtworkAdminForm
 from .models import Album, Artist, Artwork, DiscriminatoryTerm, Keyword, Location
+
+
+def external_metadata_html(external_metadata):
+    value = json.dumps(external_metadata, indent=2, ensure_ascii=False)
+    style = static('highlight/styles/intellij-light.min.css')
+    js = static('highlight/highlight.min.js')
+
+    return format_html(
+        '<pre style="max-height:300px"><code class="language-json">{}</code></pre>'
+        '<link rel="stylesheet" href="{}">'
+        '<script src="{}"></script>'
+        '<script>hljs.highlightAll();</script>',
+        value,
+        style,
+        js,
+    )
 
 
 class ArtistFilter(AutocompleteFilter):
@@ -104,13 +123,18 @@ class ArtworkAdmin(admin.ModelAdmin):
 
 @admin.register(Artist)
 class ArtistAdmin(admin.ModelAdmin):
-    readonly_fields = ('date_created', 'date_changed', 'external_metadata')
+    exclude = ['external_metadata']
+    readonly_fields = ('date_created', 'date_changed', 'external_metadata_json')
     list_display = ('name', 'gnd_id', 'gnd_overwrite', 'date_created', 'date_changed')
     ordering = ('-date_created',)
     search_fields = [
         'name',
     ]
     list_filter = ('date_created', 'date_changed')
+
+    @admin.display
+    def external_metadata_json(self, obj):
+        return external_metadata_html(obj.external_metadata)
 
 
 @admin.register(Keyword)
@@ -120,11 +144,16 @@ class KeywordAdmin(MPTTModelAdmin):
 
 @admin.register(Location)
 class LocationAdmin(MPTTModelAdmin):
-    readonly_fields = ['external_metadata']
+    exclude = ['external_metadata']
+    readonly_fields = ['external_metadata_json']
     list_display = ('name', 'gnd_id', 'gnd_overwrite')
     search_fields = [
         'parent__' * i + 'name' for i in range(settings.LOCATION_SEARCH_LEVELS)
     ]
+
+    @admin.display
+    def external_metadata_json(self, obj):
+        return external_metadata_html(obj.external_metadata)
 
 
 @admin.register(DiscriminatoryTerm)
