@@ -346,7 +346,6 @@ class Location(MPTTModel, MetaDataMixin):
             for n in gnd_data['sameAs']:
                 if 'wikidata' in n['id']:
                     return n['id']
-        return None
 
     def set_en_name_from_wikidata(self, wikidata):
         if 'entities' in wikidata:
