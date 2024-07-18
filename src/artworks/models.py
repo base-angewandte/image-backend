@@ -91,10 +91,6 @@ def process_external_metadata(instance):
         # Fetch the external metadata
         gnd_data = fetch_gnd_data(instance.gnd_id)
         instance.update_with_gnd_data(gnd_data)
-        link_wikidata = instance.get_wikidata_link(gnd_data)
-        if link_wikidata:
-            wikidata = fetch_wikidata(link_wikidata)
-            instance.set_en_name_from_wikidata(wikidata)
     elif instance.external_metadata:
         instance.external_metadata = {}
 
@@ -326,9 +322,18 @@ class Location(MPTTModel, MetaDataMixin):
 
     def update_with_gnd_data(self, gnd_data):
         self.set_external_metadata('gnd', gnd_data)
+        if fetch_wikidata(self.get_wikidata_link(gnd_data)):
+            self.set_external_metadata(
+                'wikidata',
+                fetch_wikidata(self.get_wikidata_link(gnd_data)),
+            )
         if self.gnd_overwrite:
             self.set_name_from_gnd_data(gnd_data)
             self.set_synonyms_from_gnd_data(gnd_data)
+            link_wikidata = self.get_wikidata_link(gnd_data)
+            if link_wikidata:
+                wikidata = fetch_wikidata(link_wikidata)
+                self.set_en_name_from_wikidata(wikidata)
 
     def get_wikidata_link(self, gnd_data):
         if 'sameAs' in gnd_data:
