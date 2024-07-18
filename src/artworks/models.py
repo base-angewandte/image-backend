@@ -266,7 +266,7 @@ class Location(MPTTModel, MetaDataMixin):
         null=False,
     )
     name_en = models.CharField(
-        verbose_name=_('Name_EN'),
+        verbose_name=_('Name, English'),
         max_length=255,
         blank=True,
         default='',
