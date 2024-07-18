@@ -354,11 +354,8 @@ class Location(MPTTModel, MetaDataMixin):
                 labels = entity_data.get('labels', {})
                 if 'en-gb' in labels:
                     self.name_en = labels['en-gb'].get('value')
-                else:
-                    if 'en' in labels:
-                        self.name_en = labels['en'].get('value')
-        else:
-            self.name_en = ''
+                elif 'en' in labels:
+                    self.name_en = labels['en'].get('value')
 
 
 class Artwork(AbstractBaseModel):
