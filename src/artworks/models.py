@@ -324,10 +324,13 @@ class Location(MPTTModel, MetaDataMixin):
 
     def update_with_gnd_data(self, gnd_data):
         self.set_external_metadata('gnd', gnd_data)
-        if fetch_wikidata(self.get_wikidata_link(gnd_data)):
+        wikidata_link = self.get_wikidata_link(gnd_data)
+        wikidata_data = None
+        if wikidata_link:
+            wikidata_data = fetch_wikidata(wikidata_link)
             self.set_external_metadata(
                 'wikidata',
-                fetch_wikidata(self.get_wikidata_link(gnd_data)),
+                wikidata_data,
             )
         else:
             self.delete_external_metadata('wikidata')
@@ -335,10 +338,8 @@ class Location(MPTTModel, MetaDataMixin):
             self.set_name_from_gnd_data(gnd_data)
             self.set_synonyms_from_gnd_data(gnd_data)
             self.name_en = ''
-            link_wikidata = self.get_wikidata_link(gnd_data)
-            if link_wikidata:
-                wikidata = fetch_wikidata(link_wikidata)
-                self.set_en_name_from_wikidata(wikidata)
+            if wikidata_data is not None:
+                self.set_en_name_from_wikidata(wikidata_data)
 
     def get_wikidata_link(self, gnd_data):
         if 'sameAs' in gnd_data:
