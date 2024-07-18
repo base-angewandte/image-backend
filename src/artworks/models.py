@@ -339,7 +339,7 @@ class Location(MPTTModel, MetaDataMixin):
             self.set_synonyms_from_gnd_data(gnd_data)
             self.name_en = ''
             if wikidata_data is not None:
-                self.set_en_name_from_wikidata(wikidata_data)
+                self.set_name_en_from_wikidata(wikidata_data)
 
     def get_wikidata_link(self, gnd_data):
         if 'sameAs' in gnd_data:
@@ -347,7 +347,7 @@ class Location(MPTTModel, MetaDataMixin):
                 if 'wikidata' in n['id']:
                     return n['id']
 
-    def set_en_name_from_wikidata(self, wikidata):
+    def set_name_en_from_wikidata(self, wikidata):
         if 'entities' in wikidata:
             for entity_data in wikidata['entities'].values():
                 labels = entity_data.get('labels', {})
