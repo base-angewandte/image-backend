@@ -10,3 +10,10 @@ class MetaDataMixin:
                 'date_requested': datetime.now().isoformat(),
                 'response_data': data,
             }
+
+    def delete_external_metadata(self, key):
+        if self.external_metadata is not None:
+            try:  # noqa: SIM105
+                del self.external_metadata[key]
+            except KeyError:
+                pass
