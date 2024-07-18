@@ -62,6 +62,8 @@ def fetch_gnd_data(gnd_id):
 
 
 def fetch_wikidata(link):
+    if link is None:
+        return None
     try:
         response = requests.get(
             link,
@@ -330,6 +332,7 @@ class Location(MPTTModel, MetaDataMixin):
         if self.gnd_overwrite:
             self.set_name_from_gnd_data(gnd_data)
             self.set_synonyms_from_gnd_data(gnd_data)
+            self.name_en = ''
             link_wikidata = self.get_wikidata_link(gnd_data)
             if link_wikidata:
                 wikidata = fetch_wikidata(link_wikidata)
@@ -337,13 +340,10 @@ class Location(MPTTModel, MetaDataMixin):
 
     def get_wikidata_link(self, gnd_data):
         if 'sameAs' in gnd_data:
-            wikidata_link = ''
             for n in gnd_data['sameAs']:
                 if 'wikidata' in n['id']:
-                    wikidata_link += n['id']
-                    return wikidata_link
-                else:
-                    self.name_en = ''
+                    return n['id']
+        return None
 
     def set_en_name_from_wikidata(self, wikidata):
         if 'entities' in wikidata:
@@ -354,8 +354,8 @@ class Location(MPTTModel, MetaDataMixin):
                 else:
                     if 'en' in labels:
                         self.name_en = labels['en'].get('value')
-                    else:
-                        self.name_en = ''
+        else:
+            self.name_en = ''
 
 
 class Artwork(AbstractBaseModel):
