@@ -93,7 +93,8 @@ def process_external_metadata(instance):
         instance.update_with_gnd_data(gnd_data)
         link_wikidata = instance.get_wikidata_link(gnd_data)
         if link_wikidata:
-            fetch_wikidata(link_wikidata)
+            wikidata = fetch_wikidata(link_wikidata)
+            instance.set_en_name_from_wikidata(wikidata)
     elif instance.external_metadata:
         instance.external_metadata = {}
 
@@ -336,6 +337,20 @@ class Location(MPTTModel, MetaDataMixin):
                 if 'wikidata' in n['id']:
                     wikidata_link += n['id']
                     return wikidata_link
+                else:
+                    self.name_en = ''
+
+    def set_en_name_from_wikidata(self, wikidata):
+        if 'entities' in wikidata:
+            for entity_data in wikidata['entities'].values():
+                labels = entity_data.get('labels', {})
+                if 'en-gb' in labels:
+                    self.name_en = labels['en-gb'].get('value')
+                else:
+                    if 'en' in labels:
+                        self.name_en = labels['en'].get('value')
+                    else:
+                        self.name_en = ''
 
 
 class Artwork(AbstractBaseModel):
