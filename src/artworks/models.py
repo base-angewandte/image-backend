@@ -34,6 +34,11 @@ def validate_gnd_id(gnd_id):
         raise ValidationError(_('Invalid GND ID format.'))
 
 
+def validate_getty_id(getty_url):
+    # TODO: Add regex validation of getty url!
+    pass
+
+
 def fetch_gnd_data(gnd_id):
     try:
         response = requests.get(
