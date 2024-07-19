@@ -282,6 +282,13 @@ class Keyword(MPTTModel):
     def __str__(self):
         return self.name
 
+    def clean(self):
+        super().clean()
+        # TODO: Validate getty data
+        if self.getty_url:
+            getty_data = fetch_getty_data(self.getty_url)
+            self.set_name_from_getty_data(getty_data)
+
 
 class Location(MPTTModel, MetaDataMixin):
     """Locations are nodes in a fixed hierarchical taxonomy."""
