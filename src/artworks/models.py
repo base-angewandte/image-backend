@@ -39,6 +39,23 @@ def validate_getty_id(getty_url):
     pass
 
 
+def fetch_getty_data(getty_link):
+    if getty_link is None:
+        return None
+    try:
+        response = requests.get(
+            getty_link,
+            timeout=settings.REQUESTS_TIMEOUT,
+        )
+    except requests.RequestException as e:
+        raise ValidationError(
+            _('Request error when retrieving getty data. Details: %(details)s'),
+            params={'details': f'{repr(e)}'},
+        ) from e
+    if response.status_code == 200:
+        return response.json()
+
+
 def fetch_gnd_data(gnd_id):
     try:
         response = requests.get(
