@@ -220,12 +220,34 @@ class Keyword(MPTTModel):
     """Keywords are nodes in a fixed hierarchical taxonomy."""
 
     name = models.CharField(verbose_name=_('Name'), max_length=255, unique=True)
+    name_en = models.CharField(
+        verbose_name=_('Name, English'),
+        max_length=255,
+        blank=True,
+        default='',
+    )
     parent = TreeForeignKey(
         'self',
         on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name='children',
+    )
+    getty_url = models.URLField(
+        verbose_name=_('Getty id'),
+        max_length=255,
+        blank=True,
+        null=True,
+        unique=True,
+    )
+    getty_overwrite = models.BooleanField(
+        default=True,
+        help_text=_('Overwrite entry with data from Getty?'),
+    )
+    external_metadata = JSONField(
+        null=True,
+        blank=True,
+        default=dict,
     )
 
     class Meta:
