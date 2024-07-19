@@ -287,9 +287,9 @@ class Keyword(MPTTModel):
         # TODO: Validate getty data
         if self.getty_url:
             getty_data = fetch_getty_data(self.getty_url)
-            self.set_name_from_getty_data(getty_data)
+            self.set_name_en_from_getty_data(getty_data)
 
-    def set_name_from_getty_data(self, getty_data):
+    def set_name_en_from_getty_data(self, getty_data):
         if '_label' in getty_data:
             self.name_en = getty_data['_label']
 
