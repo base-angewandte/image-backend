@@ -43,30 +43,29 @@ def validate_getty_id(getty_url):
 
 
 def fetch_getty_data(getty_link):
-    if getty_link is None:
-        return None
-    try:
-        response = requests.get(
-            getty_link + '.json',
-            timeout=settings.REQUESTS_TIMEOUT,
-        )
-    except requests.RequestException as e:
-        raise ValidationError(
-            _('Request error when retrieving getty data. Details: %(details)s'),
-            params={'details': f'{repr(e)}'},
-        ) from e
-    if response.status_code != 200:
-        if response.status_code == 404:
-            raise ValidationError(
-                _('No getty entry was found with ID %(id)s.'),
-                params={'id': getty_link},
+    if getty_link:
+        try:
+            response = requests.get(
+                getty_link + '.json',
+                timeout=settings.REQUESTS_TIMEOUT,
             )
-        raise ValidationError(
-            _('HTTP error %(status)s when retrieving getty data: %(details)s'),
-            params={'status': response.status_code, 'details': response.text},
-        )
+        except requests.RequestException as e:
+            raise ValidationError(
+                _('Request error when retrieving getty data. Details: %(details)s'),
+                params={'details': f'{repr(e)}'},
+            ) from e
+        if response.status_code != 200:
+            if response.status_code == 404:
+                raise ValidationError(
+                    _('No getty entry was found with ID %(id)s.'),
+                    params={'id': getty_link},
+                )
+            raise ValidationError(
+                _('HTTP error %(status)s when retrieving getty data: %(details)s'),
+                params={'status': response.status_code, 'details': response.text},
+            )
 
-    return response.json()
+        return response.json()
 
 
 def fetch_gnd_data(gnd_id):
