@@ -288,17 +288,21 @@ class Keyword(MPTTModel, MetaDataMixin):
 
     def clean(self):
         super().clean()
-        if self.getty_url and self.getty_overwrite:
+        if self.getty_url:
             # Validate getty url
             validate_getty_id(self.getty_url)
             # Fetch the external metadata
             getty_data = fetch_getty_data(self.getty_url)
-            self.set_name_en_from_getty_data(getty_data)
-            self.set_external_metadata('getty', getty_data)
+            self.update_with_getty_data(getty_data)
 
     def set_name_en_from_getty_data(self, getty_data):
         if '_label' in getty_data:
             self.name_en = getty_data['_label']
+
+    def update_with_getty_data(self, getty_data):
+        self.set_external_metadata('getty', getty_data)
+        if self.getty_overwrite:
+            self.set_name_en_from_getty_data(getty_data)
 
 
 class Location(MPTTModel, MetaDataMixin):
