@@ -35,9 +35,8 @@ def validate_gnd_id(gnd_id):
 
 
 def validate_getty_id(getty_url):
-    reg = r'^http:\/\/vocab\.getty\.edu\/aat\/[0-9]+$'
     if not re.match(
-        reg,
+        settings.GETTY_ID_REGEX,
         getty_url,
     ):
         raise ValidationError(_('Invalid getty ID format.'))
