@@ -11,3 +11,7 @@ class CustomUserAdmin(UserAdmin):
         *UserAdmin.fieldsets,
         (_('Additional info'), {'fields': ('tos_accepted',)}),
     )
+    list_display = (
+        *UserAdmin.list_display,
+        'tos_accepted',
+    )
