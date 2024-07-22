@@ -269,8 +269,8 @@ class Keyword(MPTTModel, MetaDataMixin):
         blank=True,
         related_name='children',
     )
-    getty_url = models.URLField(
-        verbose_name=_('Getty id'),
+    getty_id = models.URLField(
+        verbose_name=_('Getty AAT ID'),
         max_length=255,
         blank=True,
         null=True,
@@ -278,7 +278,7 @@ class Keyword(MPTTModel, MetaDataMixin):
     )
     getty_overwrite = models.BooleanField(
         default=True,
-        help_text=_('Overwrite entry with data from Getty?'),
+        help_text=_('Overwrite entry of Name, English with data from Getty?'),
     )
     external_metadata = JSONField(
         null=True,
@@ -298,11 +298,11 @@ class Keyword(MPTTModel, MetaDataMixin):
 
     def clean(self):
         super().clean()
-        if self.getty_url:
+        if self.getty_id:
             # Validate getty url
-            validate_getty_id(self.getty_url)
+            validate_getty_id(self.getty_id)
             # Fetch the external metadata
-            getty_data = fetch_getty_data(self.getty_url)
+            getty_data = fetch_getty_data(self.getty_id)
             self.update_with_getty_data(getty_data)
 
     def set_name_en_from_getty_data(self, getty_data):

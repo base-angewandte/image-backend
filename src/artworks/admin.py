@@ -116,7 +116,7 @@ class ArtistAdmin(admin.ModelAdmin):
 @admin.register(Keyword)
 class KeywordAdmin(MPTTModelAdmin):
     readonly_fields = ['external_metadata']
-    list_display = ['name', 'getty_url', 'getty_overwrite']
+    list_display = ['name', 'getty_id', 'getty_overwrite']
     search_fields = ['name']
 
 
