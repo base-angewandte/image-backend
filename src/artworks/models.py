@@ -35,8 +35,12 @@ def validate_gnd_id(gnd_id):
 
 
 def validate_getty_id(getty_url):
-    # TODO: Add regex validation of getty url!
-    pass
+    reg = r'http:\/\/vocab\.getty\.edu\/aat\/\d+\.json'
+    if not re.match(
+        reg,
+        getty_url,
+    ):
+        raise ValidationError(_('Invalid getty ID format.'))
 
 
 def fetch_getty_data(getty_link):
@@ -284,8 +288,10 @@ class Keyword(MPTTModel):
 
     def clean(self):
         super().clean()
-        # TODO: Validate getty data
-        if self.getty_url:
+        if self.getty_url and self.getty_overwrite:
+            # Validate getty url
+            validate_getty_id(self.getty_url)
+            # Fetch the external metadata
             getty_data = fetch_getty_data(self.getty_url)
             self.set_name_en_from_getty_data(getty_data)
 
