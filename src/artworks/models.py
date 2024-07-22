@@ -35,7 +35,7 @@ def validate_gnd_id(gnd_id):
 
 
 def validate_getty_id(getty_url):
-    reg = r'http:\/\/vocab\.getty\.edu\/aat\/\d+\.json'
+    reg = r'http:\/\/vocab\.getty\.edu\/aat\/\d+'
     if not re.match(
         reg,
         getty_url,
@@ -48,7 +48,7 @@ def fetch_getty_data(getty_link):
         return None
     try:
         response = requests.get(
-            getty_link,
+            getty_link + '.json',
             timeout=settings.REQUESTS_TIMEOUT,
         )
     except requests.RequestException as e:
