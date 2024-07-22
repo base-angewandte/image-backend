@@ -172,6 +172,10 @@ class Command(BaseCommand):
                     updated_without_name.append(entry)
                 else:
                     updated.append(entry)
+                    try:
+                        location.save()
+                    except IntegrityError as e:
+                        integrity_errors.append((entry, repr(e)))
 
         self.stdout.write(f'Updated {len(updated)} entries.')
         self.stdout.write(
