@@ -242,7 +242,7 @@ def get_path_to_original_file(instance, filename):
     return filename
 
 
-class Keyword(MPTTModel):
+class Keyword(MPTTModel, MetaDataMixin):
     """Keywords are nodes in a fixed hierarchical taxonomy."""
 
     name = models.CharField(verbose_name=_('Name'), max_length=255, unique=True)
@@ -294,6 +294,7 @@ class Keyword(MPTTModel):
             # Fetch the external metadata
             getty_data = fetch_getty_data(self.getty_url)
             self.set_name_en_from_getty_data(getty_data)
+            self.set_external_metadata('getty', getty_data)
 
     def set_name_en_from_getty_data(self, getty_data):
         if '_label' in getty_data:
