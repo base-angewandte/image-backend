@@ -35,7 +35,7 @@ def validate_gnd_id(gnd_id):
 
 
 def validate_getty_id(getty_url):
-    reg = r'http:\/\/vocab\.getty\.edu\/aat\/\d+'
+    reg = r'^http:\/\/vocab\.getty\.edu\/aat\/\d+$'
     if not re.match(
         reg,
         getty_url,
