@@ -35,7 +35,7 @@ def validate_gnd_id(gnd_id):
 
 
 def validate_getty_id(getty_url):
-    reg = r'^http:\/\/vocab\.getty\.edu\/aat\/\d+$'
+    reg = r'^http:\/\/vocab\.getty\.edu\/aat\/[0-9]+$'
     if not re.match(
         reg,
         getty_url,
@@ -56,8 +56,18 @@ def fetch_getty_data(getty_link):
             _('Request error when retrieving getty data. Details: %(details)s'),
             params={'details': f'{repr(e)}'},
         ) from e
-    if response.status_code == 200:
-        return response.json()
+    if response.status_code != 200:
+        if response.status_code == 404:
+            raise ValidationError(
+                _('No getty entry was found with ID %(id)s.'),
+                params={'id': getty_link},
+            )
+        raise ValidationError(
+            _('HTTP error %(status)s when retrieving getty data: %(details)s'),
+            params={'status': response.status_code, 'details': response.text},
+        )
+
+    return response.json()
 
 
 def fetch_gnd_data(gnd_id):
@@ -296,6 +306,7 @@ class Keyword(MPTTModel, MetaDataMixin):
             self.update_with_getty_data(getty_data)
 
     def set_name_en_from_getty_data(self, getty_data):
+        # if fetch_getty_data(self.getty_url) is not None:
         if '_label' in getty_data:
             self.name_en = getty_data['_label']
 
