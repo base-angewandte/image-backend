@@ -42,11 +42,11 @@ def validate_getty_id(getty_url):
         raise ValidationError(_('Invalid Getty AAT ID format.'))
 
 
-def fetch_getty_data(getty_link):
-    if getty_link:
+def fetch_getty_data(getty_id):
+    if getty_id:
         try:
             response = requests.get(
-                getty_link + '.json',
+                getty_id + '.json',
                 timeout=settings.REQUESTS_TIMEOUT,
             )
         except requests.RequestException as e:
@@ -58,7 +58,7 @@ def fetch_getty_data(getty_link):
             if response.status_code == 404:
                 raise ValidationError(
                     _('No Getty AAT entry was found with Getty AAT ID %(id)s.'),
-                    params={'id': getty_link},
+                    params={'id': getty_id},
                 )
             raise ValidationError(
                 _('HTTP error %(status)s when retrieving Getty AAT data: %(details)s'),
