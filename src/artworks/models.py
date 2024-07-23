@@ -276,7 +276,7 @@ class Keyword(MPTTModel, MetaDataMixin):
     )
     getty_overwrite = models.BooleanField(
         default=True,
-        help_text=_('Overwrite entry of Name, English with data from Getty?'),
+        help_text=_('Overwrite Name, English with data from Getty AAT?'),
     )
     external_metadata = JSONField(
         null=True,

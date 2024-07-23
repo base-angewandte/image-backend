@@ -18,12 +18,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='keyword',
             name='getty_overwrite',
-            field=models.BooleanField(default=True, help_text='Overwrite entry with data from Getty?'),
+            field=models.BooleanField(default=True, help_text='Overwrite Name, English with data from Getty AAT?'),
         ),
         migrations.AddField(
             model_name='keyword',
-            name='getty_url',
-            field=models.URLField(blank=True, max_length=255, null=True, unique=True, verbose_name='Getty id'),
+            name='getty_id',
+            field=models.URLField(blank=True, max_length=255, null=True, unique=True, verbose_name='Getty AAT ID'),
         ),
         migrations.AddField(
             model_name='keyword',
