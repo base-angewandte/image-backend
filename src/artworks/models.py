@@ -34,10 +34,10 @@ def validate_gnd_id(gnd_id):
         raise ValidationError(_('Invalid GND ID format.'))
 
 
-def validate_getty_id(getty_url):
+def validate_getty_id(getty_id):
     if not re.match(
         settings.GETTY_ID_REGEX,
-        getty_url,
+        getty_id,
     ):
         raise ValidationError(_('Invalid Getty AAT ID format.'))
 
