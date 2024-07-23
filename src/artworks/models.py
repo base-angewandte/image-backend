@@ -33,6 +33,40 @@ def validate_gnd_id(gnd_id):
         raise ValidationError(_('Invalid GND ID format.'))
 
 
+def validate_getty_id(getty_id):
+    if not re.match(
+        settings.GETTY_ID_REGEX,
+        getty_id,
+    ):
+        raise ValidationError(_('Invalid Getty AAT ID format.'))
+
+
+def fetch_getty_data(getty_id):
+    if getty_id:
+        try:
+            response = requests.get(
+                getty_id + '.json',
+                timeout=settings.REQUESTS_TIMEOUT,
+            )
+        except requests.RequestException as e:
+            raise ValidationError(
+                _('Request error when retrieving Getty AAT data. Details: %(details)s'),
+                params={'details': f'{repr(e)}'},
+            ) from e
+        if response.status_code != 200:
+            if response.status_code == 404:
+                raise ValidationError(
+                    _('No Getty AAT entry was found with Getty AAT ID %(id)s.'),
+                    params={'id': getty_id},
+                )
+            raise ValidationError(
+                _('HTTP error %(status)s when retrieving Getty AAT data: %(details)s'),
+                params={'status': response.status_code, 'details': response.text},
+            )
+
+        return response.json()
+
+
 def fetch_gnd_data(gnd_id):
     try:
         response = requests.get(
@@ -215,16 +249,38 @@ def get_path_to_original_file(instance, filename):
     return filename
 
 
-class Keyword(MPTTModel):
+class Keyword(MPTTModel, MetaDataMixin):
     """Keywords are nodes in a fixed hierarchical taxonomy."""
 
     name = models.CharField(verbose_name=_('Name'), max_length=255, unique=True)
+    name_en = models.CharField(
+        verbose_name=_('Name, English'),
+        max_length=255,
+        blank=True,
+        default='',
+    )
     parent = TreeForeignKey(
         'self',
         on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name='children',
+    )
+    getty_id = models.URLField(
+        verbose_name=_('Getty AAT ID'),
+        max_length=255,
+        blank=True,
+        null=True,
+        unique=True,
+    )
+    getty_overwrite = models.BooleanField(
+        default=True,
+        help_text=_('Overwrite Name, English with data from Getty AAT?'),
+    )
+    external_metadata = JSONField(
+        null=True,
+        blank=True,
+        default=dict,
     )
 
     class Meta:
@@ -236,6 +292,26 @@ class Keyword(MPTTModel):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        super().clean()
+        if self.getty_id:
+            # Validate getty url
+            validate_getty_id(self.getty_id)
+            # Fetch the external metadata
+            getty_data = fetch_getty_data(self.getty_id)
+            self.update_with_getty_data(getty_data)
+        elif self.external_metadata:
+            self.external_metadata = {}
+
+    def set_name_en_from_getty_data(self, getty_data):
+        if '_label' in getty_data:
+            self.name_en = getty_data['_label']
+
+    def update_with_getty_data(self, getty_data):
+        self.set_external_metadata('getty', getty_data)
+        if self.getty_overwrite:
+            self.set_name_en_from_getty_data(getty_data)
 
 
 class Location(MPTTModel, MetaDataMixin):
