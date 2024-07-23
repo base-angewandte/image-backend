@@ -304,7 +304,6 @@ class Keyword(MPTTModel, MetaDataMixin):
             self.update_with_getty_data(getty_data)
 
     def set_name_en_from_getty_data(self, getty_data):
-        # if fetch_getty_data(self.getty_url) is not None:
         if '_label' in getty_data:
             self.name_en = getty_data['_label']
 
