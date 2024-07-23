@@ -32,3 +32,7 @@ run-api-tests:  ## run all available api tests
 .PHONY: migrate-postgres
 migrate-postgres:  ## migrate data from old PostgreSQL database to new one
 	@bash scripts/migrate-postgres.sh
+
+.PHONY: migrate-user-model
+migrate-user-model:  ## migrate user model from django.contrib.auth to accounts
+	@bash scripts/migrate-user-model.sh

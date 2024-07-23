@@ -9,7 +9,6 @@ from mptt.models import MPTTModel, TreeForeignKey
 from versatileimagefield.fields import VersatileImageField
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.contrib.postgres.aggregates import StringAgg
 from django.contrib.postgres.search import SearchVector, SearchVectorField
 from django.core.exceptions import ValidationError
@@ -487,17 +486,21 @@ class Album(AbstractBaseModel):
     id = ShortUUIDField(primary_key=True)
     archive_id = models.BigIntegerField(null=True)
     title = models.CharField(verbose_name=_('Title'), max_length=255)
-    user = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_('User'),
+        on_delete=models.CASCADE,
+    )
     slides = JSONField(verbose_name=_('Slides'), default=list)
     permissions = models.ManyToManyField(
-        User,
+        settings.AUTH_USER_MODEL,
         verbose_name=_('Permissions'),
         through='PermissionsRelation',
         symmetrical=False,
         related_name='permissions',
     )
     last_changed_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         verbose_name=_('Last changed by'),
         related_name='last_album_changes',
         on_delete=models.CASCADE,
@@ -524,7 +527,11 @@ class PermissionsRelation(models.Model):
     PERMISSION_CHOICES = tuple((p, _(p)) for p in settings.PERMISSIONS)
 
     album = models.ForeignKey(Album, related_name='album', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='user',
+        on_delete=models.CASCADE,
+    )
     permissions = models.CharField(
         max_length=20,
         choices=PERMISSION_CHOICES,
@@ -537,13 +544,6 @@ class PermissionsRelation(models.Model):
     def __str__(self):
         return f'{self.user.get_full_name()} <-- {self.get_permissions_display()} --> {self.album.title}'
 
-
-# Monkey patch of String representation of User
-def string_representation(self):
-    return self.get_full_name() or self.username
-
-
-User.add_to_class('__str__', string_representation)
 
 # Monkey patch ManyToManyDescriptor
 ManyToManyDescriptor.get_queryset = lambda self: self.rel.model.objects.get_queryset()
@@ -561,7 +561,7 @@ class Folder(AbstractBaseModel):
         null=False,
     )
     owner = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         verbose_name=_('User'),
         on_delete=models.CASCADE,
         related_name='folder_owner',
@@ -606,7 +606,11 @@ class FolderAlbumRelation(models.Model):
         related_name='rel_to_album',
         on_delete=models.CASCADE,
     )
-    user = models.ForeignKey(User, related_name='rel_to_user', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='rel_to_user',
+        on_delete=models.CASCADE,
+    )
     folder = models.ForeignKey(
         Folder,
         related_name='rel_to_folder',

@@ -117,6 +117,7 @@ INSTALLED_APPS = [
     'ordered_model',
     'corsheaders',
     # Project apps
+    'accounts',
     'core',
     'artworks',
     # API
@@ -128,6 +129,8 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'django_cas_ng.backends.CASBackend',
 ]
+
+AUTH_USER_MODEL = 'accounts.User'
 
 LOGIN_URL = reverse_lazy('cas_ng_login')
 LOGOUT_URL = reverse_lazy('cas_ng_logout')

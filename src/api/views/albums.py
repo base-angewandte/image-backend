@@ -11,7 +11,7 @@ from rest_framework.exceptions import NotFound, ParseError, PermissionDenied
 from rest_framework.response import Response
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
@@ -548,6 +548,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         # update permissions
         for item in serializer.validated_data:
             user = item['user']
+
+            User = get_user_model()  # noqa: N806
 
             try:
                 user = User.objects.get(username=user)

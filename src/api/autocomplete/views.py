@@ -144,12 +144,12 @@ def autocomplete(request, *args, **kwargs):
             query = (
                 MODEL_MAP[t]
                 .objects.annotate(
-                    full_name=Concat('first_name', Value(' '), 'last_name'),
+                    name=Concat('first_name', Value(' '), 'last_name'),
                 )
                 .annotate(
                     similarity=TrigramWordSimilarity(
                         q_param,
-                        'full_name',
+                        'name',
                     ),
                 )
                 .filter(similarity__gte=0.6)
