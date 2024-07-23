@@ -302,6 +302,8 @@ class Keyword(MPTTModel, MetaDataMixin):
             # Fetch the external metadata
             getty_data = fetch_getty_data(self.getty_id)
             self.update_with_getty_data(getty_data)
+        elif self.external_metadata:
+            self.external_metadata = {}
 
     def set_name_en_from_getty_data(self, getty_data):
         if '_label' in getty_data:
