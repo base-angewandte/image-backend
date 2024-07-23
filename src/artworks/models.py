@@ -39,7 +39,7 @@ def validate_getty_id(getty_url):
         settings.GETTY_ID_REGEX,
         getty_url,
     ):
-        raise ValidationError(_('Invalid getty ID format.'))
+        raise ValidationError(_('Invalid Getty AAT ID format.'))
 
 
 def fetch_getty_data(getty_link):
@@ -51,17 +51,17 @@ def fetch_getty_data(getty_link):
             )
         except requests.RequestException as e:
             raise ValidationError(
-                _('Request error when retrieving getty data. Details: %(details)s'),
+                _('Request error when retrieving Getty AAT data. Details: %(details)s'),
                 params={'details': f'{repr(e)}'},
             ) from e
         if response.status_code != 200:
             if response.status_code == 404:
                 raise ValidationError(
-                    _('No getty entry was found with ID %(id)s.'),
+                    _('No Getty AAT entry was found with Getty AAT ID %(id)s.'),
                     params={'id': getty_link},
                 )
             raise ValidationError(
-                _('HTTP error %(status)s when retrieving getty data: %(details)s'),
+                _('HTTP error %(status)s when retrieving Getty AAT data: %(details)s'),
                 params={'status': response.status_code, 'details': response.text},
             )
 
