@@ -39,5 +39,14 @@ services:
       - imagenet
     restart: always
 
+  image-cron:
+    image: paradoxon/alpine-cron
+    container_name: image-cron
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker/cron/crontab:/tmp/crontab
+    network_mode: "none"
+    restart: always
+
 networks:
   imagenet:

@@ -117,6 +117,7 @@ INSTALLED_APPS = [
     'ordered_model',
     'corsheaders',
     # Project apps
+    'accounts',
     'core',
     'artworks',
     # API
@@ -128,6 +129,8 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'django_cas_ng.backends.CASBackend',
 ]
+
+AUTH_USER_MODEL = 'accounts.User'
 
 LOGIN_URL = reverse_lazy('cas_ng_login')
 LOGOUT_URL = reverse_lazy('cas_ng_logout')
@@ -349,9 +352,10 @@ LOGGING = {
         },
         'file': {
             'level': 'DEBUG',
-            'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
+            'class': 'concurrent_log_handler.ConcurrentTimedRotatingFileHandler',
             'filename': LOG_DIR / 'application.log',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'maxBytes': 0,
+            'when': 'midnight',
             'backupCount': 1000,
             'use_gzip': True,
             'delay': True,
@@ -514,4 +518,5 @@ GND_API_BASE_URL = env.str('GND_API_BASE_URL', default='https://lobid.org/gnd/')
 GND_ID_REGEX = r'^(1[0123]?\d{7}[0-9X]|[47]\d{6}-\d|[1-9]\d{0,7}-[0-9X]|3\d{7}[0-9X])$'
 GND_DATE_REGEX = r'^-?[0-9]{1,4}-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])$'
 
+GETTY_ID_REGEX = r'^http:\/\/vocab\.getty\.edu\/aat\/[0-9]+$'
 REQUESTS_TIMEOUT = env.int('REQUESTS_TIMEOUT', default=5)
