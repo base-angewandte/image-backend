@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('artworks', '0077_alter_location_synonyms'),
+        ('artworks', '0078_keyword_external_metadata_keyword_getty_overwrite_and_more'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='location',
             name='name_en',
-            field=models.CharField(blank=True, default='', max_length=255, verbose_name='Name_EN'),
+            field=models.CharField(blank=True, default='', max_length=255, verbose_name='Name, English'),
         ),
     ]
