@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError
 
-from artworks.models import Artist, Location
+from artworks.models import Artist, Keyword, Location
 
 
 class Command(BaseCommand):
@@ -86,6 +86,7 @@ class Command(BaseCommand):
         # indistinct_names: add all double entries of an artist's name from the db to the list
         indistinct_names = []
         gnd_data_not_found = []
+        getty_data_not_found = []
         request_errors = []
         # updated: if the name generated from the GND data doesn't differ from the one originally stored in image,
         # we update the whole entry, including the name and if not we update without the name
@@ -117,22 +118,49 @@ class Command(BaseCommand):
                 except Location.MultipleObjectsReturned:
                     indistinct_names.append(entry)
                     continue
-            try:
-                response = requests.get(
-                    settings.GND_API_BASE_URL + entry[1],
-                    timeout=settings.REQUESTS_TIMEOUT,
-                )
-            except requests.RequestException:
-                request_errors.append(entry)
-                continue
-            if response.status_code != 200:
-                if response.status_code == 404:
-                    gnd_data_not_found.append(entry)
-                else:
-                    request_errors.append(entry)
-                continue
+            elif data_type == 'keyword':
+                try:
+                    keyword = Keyword.objects.get(name=entry[0])
+                except Keyword.DoesNotExist:
+                    entries_not_found.append(entry)
+                    continue
+                except Keyword.MultipleObjectsReturned:
+                    indistinct_names.append(entry)
+                    continue
 
-            gnd_data = response.json()
+            if data_type == 'keyword':
+                try:
+                    response = requests.get(
+                        entry[1] + '.json',
+                        timeout=settings.REQUESTS_TIMEOUT,
+                    )
+                except requests.RequestException:
+                    request_errors.append(entry)
+                    continue
+                if response.status_code != 200:
+                    if response.status_code == 404:
+                        getty_data_not_found.append(entry)
+                    else:
+                        request_errors.append(entry)
+                    continue
+                getty_data = response.json()
+            else:
+                try:
+                    response = requests.get(
+                        settings.GND_API_BASE_URL + entry[1],
+                        timeout=settings.REQUESTS_TIMEOUT,
+                    )
+                except requests.RequestException:
+                    request_errors.append(entry)
+                    continue
+                if response.status_code != 200:
+                    if response.status_code == 404:
+                        gnd_data_not_found.append(entry)
+                    else:
+                        request_errors.append(entry)
+                    continue
+
+                gnd_data = response.json()
 
             if data_type == 'artist':
                 artist.gnd_id = entry[1]
@@ -183,6 +211,20 @@ class Command(BaseCommand):
                     location.save()
                 except IntegrityError as e:
                     integrity_errors.append((entry, repr(e)))
+            elif data_type == 'keyword':
+                keyword.getty_id = entry[1]
+                keyword.getty_overwrite = True
+                keyword.update_with_getty_data(getty_data)
+                if keyword.name != entry[0]:
+                    keyword.name = entry[0]
+                    keyword.getty_overwrite = False
+                    updated_without_name.append(entry)
+                else:
+                    updated.append(entry)
+                try:
+                    keyword.save()
+                except IntegrityError as e:
+                    integrity_errors.append((entry, repr(e)))
 
         self.stdout.write(f'Updated {len(updated)} entries.')
         self.stdout.write(
@@ -213,6 +255,14 @@ class Command(BaseCommand):
                 ),
             )
             for entry in gnd_data_not_found:
+                self.stdout.write(f'{entry[1]} for {entry[0]}')
+        if getty_data_not_found:
+            self.stdout.write(
+                self.style.WARNING(
+                    f'No Getty AAT data entry found for {len(gnd_data_not_found)} IDs:',
+                ),
+            )
+            for entry in getty_data_not_found:
                 self.stdout.write(f'{entry[1]} for {entry[0]}')
         if request_errors:
             self.stdout.write(
