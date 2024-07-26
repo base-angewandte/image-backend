@@ -1,0 +1,2 @@
+class NoWikiDataLinkFoundError(Exception):
+    pass
