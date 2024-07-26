@@ -408,9 +408,16 @@ class Location(MPTTModel, MetaDataMixin):
         wikidata_data = None
         if wikidata_link := self.get_wikidata_link(gnd_data):
             wikidata_data = fetch_wikidata(wikidata_link)
+            entity_id = next(iter(wikidata_data['entities'].keys()))
+            entity_data = wikidata_data['entities'].get(entity_id, {})
+            simplified_wikidata_data = {
+                'modified': entity_data.get('modified', None),
+                'id': entity_data.get('id', None),
+                'labels': entity_data.get('labels', None),
+            }
             self.set_external_metadata(
                 'wikidata',
-                wikidata_data,
+                simplified_wikidata_data,
             )
         else:
             self.delete_external_metadata('wikidata')
