@@ -99,7 +99,7 @@ def fetch_wikidata(link):
     if link:
         try:
             response = requests.get(
-                link,
+                link + '.json',
                 timeout=settings.REQUESTS_TIMEOUT,
             )
         except requests.RequestException as e:
