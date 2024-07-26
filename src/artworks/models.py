@@ -424,9 +424,9 @@ class Location(MPTTModel, MetaDataMixin):
 
     def get_wikidata_link(self, gnd_data):
         if 'sameAs' in gnd_data:
-            for n in gnd_data['sameAs']:
-                if 'wikidata' in n['id']:
-                    return n['id']
+            for concept in gnd_data['sameAs']:
+                if 'wikidata' in concept['id']:
+                    return concept['id']
 
     def set_name_en_from_wikidata(self, wikidata):
         if 'entities' in wikidata:
