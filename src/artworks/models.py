@@ -72,6 +72,7 @@ def fetch_gnd_data(gnd_id):
     try:
         response = requests.get(
             settings.GND_API_BASE_URL + gnd_id,
+            headers={'Accept': 'application/json'},
             timeout=settings.REQUESTS_TIMEOUT,
         )
     except requests.RequestException as e:
