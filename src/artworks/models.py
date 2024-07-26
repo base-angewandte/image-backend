@@ -95,20 +95,19 @@ def fetch_gnd_data(gnd_id):
 
 
 def fetch_wikidata(link):
-    if link is None:
-        return None
-    try:
-        response = requests.get(
-            link,
-            timeout=settings.REQUESTS_TIMEOUT,
-        )
-    except requests.RequestException as e:
-        raise ValidationError(
-            _('Request error when retrieving wikidata data. Details: %(details)s'),
-            params={'details': f'{repr(e)}'},
-        ) from e
-    if response.status_code == 200:
-        return response.json()
+    if link:
+        try:
+            response = requests.get(
+                link,
+                timeout=settings.REQUESTS_TIMEOUT,
+            )
+        except requests.RequestException as e:
+            raise ValidationError(
+                _('Request error when retrieving wikidata data. Details: %(details)s'),
+                params={'details': f'{repr(e)}'},
+            ) from e
+        if response.status_code == 200:
+            return response.json()
 
 
 def process_external_metadata(instance):
