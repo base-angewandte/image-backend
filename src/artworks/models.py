@@ -19,7 +19,7 @@ from django.db.models.functions import Upper
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from .exceptions import NoWikiDataLinkFoundError
+from .exceptions import WikidataNotFoundError
 from .managers import ArtworkManager
 from .mixins import MetaDataMixin
 
@@ -103,7 +103,7 @@ def fetch_wikidata(link):
                 timeout=settings.REQUESTS_TIMEOUT,
             )
         except requests.RequestException as e:
-            raise NoWikiDataLinkFoundError from e
+            raise WikidataNotFoundError from e
         if response.status_code == 200:
             return response.json()
 
