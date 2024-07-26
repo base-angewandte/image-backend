@@ -104,8 +104,17 @@ def fetch_wikidata(link):
             )
         except requests.RequestException as e:
             raise WikidataNotFoundError from e
-        if response.status_code == 200:
-            return response.json()
+        if response.status_code != 200:
+            if response.status_code == 404:
+                raise ValidationError(
+                    _('No Wikidata Link entry was found with ID %(id)s.'),
+                    params={'id': link},
+                )
+            raise ValidationError(
+                _('HTTP error %(status)s when retrieving Wikidata data: %(details)s'),
+                params={'status': response.status_code, 'details': response.text},
+            )
+        return response.json()
 
 
 def process_external_metadata(instance):
