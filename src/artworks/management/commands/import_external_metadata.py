@@ -52,22 +52,29 @@ class Command(BaseCommand):
         reader = csv.reader(file, delimiter=';')
         header = True
 
-        if data_type == 'keyword':
-            raise CommandError('Importing keyword metadata is not yet implemented.')
-
         for row in reader:
             if header and options['skip_header']:
                 header = False
                 continue
             entries.append([row[0].strip(), row[1].strip()])
-        invalid_ids = [
-            f'{entry[1]} for {entry[0]}'
-            for entry in entries
-            if not re.match(
-                settings.GND_ID_REGEX,
-                entry[1],
-            )
-        ]
+        if data_type == 'keyword':
+            invalid_ids = [
+                f'{entry[1]} for {entry[0]}'
+                for entry in entries
+                if not re.match(
+                    settings.GETTY_ID_REGEX,
+                    entry[1],
+                )
+            ]
+        else:
+            invalid_ids = [
+                f'{entry[1]} for {entry[0]}'
+                for entry in entries
+                if not re.match(
+                    settings.GND_ID_REGEX,
+                    entry[1],
+                )
+            ]
         if invalid_ids:
             raise CommandError(
                 'Your dataset contains the following invalid GND IDs:\n'
