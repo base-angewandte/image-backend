@@ -12,8 +12,5 @@ class MetaDataMixin:
             }
 
     def delete_external_metadata(self, key):
-        if self.external_metadata is not None:
-            try:  # noqa: SIM105
-                del self.external_metadata[key]
-            except KeyError:
-                pass
+        if self.external_metadata is not None and key in self.external_metadata:
+            del self.external_metadata[key]
