@@ -405,9 +405,8 @@ class Location(MPTTModel, MetaDataMixin):
 
     def update_with_gnd_data(self, gnd_data):
         self.set_external_metadata('gnd', gnd_data)
-        wikidata_link = self.get_wikidata_link(gnd_data)
         wikidata_data = None
-        if wikidata_link:
+        if wikidata_link := self.get_wikidata_link(gnd_data):
             wikidata_data = fetch_wikidata(wikidata_link)
             self.set_external_metadata(
                 'wikidata',
