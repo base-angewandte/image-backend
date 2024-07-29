@@ -139,9 +139,14 @@ class ArtistAdmin(admin.ModelAdmin):
 
 @admin.register(Keyword)
 class KeywordAdmin(MPTTModelAdmin):
-    readonly_fields = ['external_metadata']
+    exclude = ['external_metadata']
+    readonly_fields = ['external_metadata_json']
     list_display = ['name', 'getty_id', 'getty_overwrite']
     search_fields = ['name']
+
+    @admin.display
+    def external_metadata_json(self, obj):
+        return external_metadata_html(obj.external_metadata)
 
 
 @admin.register(Location)
