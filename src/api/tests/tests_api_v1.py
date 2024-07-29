@@ -2,6 +2,7 @@ import json
 
 from rest_framework import status
 
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -12,10 +13,11 @@ from artworks.models import (
     DiscriminatoryTerm,
     Folder,
     PermissionsRelation,
-    User,
 )
 
 from . import APITestCase, temporary_image
+
+User = get_user_model()
 
 VERSION = 'v1'
 

@@ -9,7 +9,6 @@ from mptt.models import MPTTModel, TreeForeignKey
 from versatileimagefield.fields import VersatileImageField
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.contrib.postgres.aggregates import StringAgg
 from django.contrib.postgres.search import SearchVector, SearchVectorField
 from django.core.exceptions import ValidationError
@@ -20,6 +19,7 @@ from django.db.models.functions import Upper
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
+from .exceptions import WikidataNotFoundError
 from .managers import ArtworkManager
 from .mixins import MetaDataMixin
 
@@ -34,10 +34,45 @@ def validate_gnd_id(gnd_id):
         raise ValidationError(_('Invalid GND ID format.'))
 
 
+def validate_getty_id(getty_id):
+    if not re.match(
+        settings.GETTY_ID_REGEX,
+        getty_id,
+    ):
+        raise ValidationError(_('Invalid Getty AAT ID format.'))
+
+
+def fetch_getty_data(getty_id):
+    if getty_id:
+        try:
+            response = requests.get(
+                getty_id + '.json',
+                timeout=settings.REQUESTS_TIMEOUT,
+            )
+        except requests.RequestException as e:
+            raise ValidationError(
+                _('Request error when retrieving Getty AAT data. Details: %(details)s'),
+                params={'details': f'{repr(e)}'},
+            ) from e
+        if response.status_code != 200:
+            if response.status_code == 404:
+                raise ValidationError(
+                    _('No Getty AAT entry was found with Getty AAT ID %(id)s.'),
+                    params={'id': getty_id},
+                )
+            raise ValidationError(
+                _('HTTP error %(status)s when retrieving Getty AAT data: %(details)s'),
+                params={'status': response.status_code, 'details': response.text},
+            )
+
+        return response.json()
+
+
 def fetch_gnd_data(gnd_id):
     try:
         response = requests.get(
             settings.GND_API_BASE_URL + gnd_id,
+            headers={'Accept': 'application/json'},
             timeout=settings.REQUESTS_TIMEOUT,
         )
     except requests.RequestException as e:
@@ -59,6 +94,28 @@ def fetch_gnd_data(gnd_id):
     gnd_data = response.json()
 
     return gnd_data
+
+
+def fetch_wikidata(link):
+    if link:
+        try:
+            response = requests.get(
+                link + '.json',
+                timeout=settings.REQUESTS_TIMEOUT,
+            )
+        except requests.RequestException as e:
+            raise WikidataNotFoundError from e
+        if response.status_code != 200:
+            if response.status_code == 404:
+                raise ValidationError(
+                    _('No Wikidata Link entry was found with ID %(id)s.'),
+                    params={'id': link},
+                )
+            raise ValidationError(
+                _('HTTP error %(status)s when retrieving Wikidata data: %(details)s'),
+                params={'status': response.status_code, 'details': response.text},
+            )
+        return response.json()
 
 
 def process_external_metadata(instance):
@@ -216,16 +273,38 @@ def get_path_to_original_file(instance, filename):
     return filename
 
 
-class Keyword(MPTTModel):
+class Keyword(MPTTModel, MetaDataMixin):
     """Keywords are nodes in a fixed hierarchical taxonomy."""
 
     name = models.CharField(verbose_name=_('Name'), max_length=255, unique=True)
+    name_en = models.CharField(
+        verbose_name=_('Name, English'),
+        max_length=255,
+        blank=True,
+        default='',
+    )
     parent = TreeForeignKey(
         'self',
         on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name='children',
+    )
+    getty_id = models.URLField(
+        verbose_name=_('Getty AAT ID'),
+        max_length=255,
+        blank=True,
+        null=True,
+        unique=True,
+    )
+    getty_overwrite = models.BooleanField(
+        default=True,
+        help_text=_('Overwrite Name, English with data from Getty AAT?'),
+    )
+    external_metadata = JSONField(
+        null=True,
+        blank=True,
+        default=dict,
     )
 
     class Meta:
@@ -238,6 +317,26 @@ class Keyword(MPTTModel):
     def __str__(self):
         return self.name
 
+    def clean(self):
+        super().clean()
+        if self.getty_id:
+            # Validate getty url
+            validate_getty_id(self.getty_id)
+            # Fetch the external metadata
+            getty_data = fetch_getty_data(self.getty_id)
+            self.update_with_getty_data(getty_data)
+        elif self.external_metadata:
+            self.external_metadata = {}
+
+    def set_name_en_from_getty_data(self, getty_data):
+        if '_label' in getty_data:
+            self.name_en = getty_data['_label']
+
+    def update_with_getty_data(self, getty_data):
+        self.set_external_metadata('getty', getty_data)
+        if self.getty_overwrite:
+            self.set_name_en_from_getty_data(getty_data)
+
 
 class Location(MPTTModel, MetaDataMixin):
     """Locations are nodes in a fixed hierarchical taxonomy."""
@@ -247,6 +346,12 @@ class Location(MPTTModel, MetaDataMixin):
         max_length=255,
         blank=True,
         null=False,
+    )
+    name_en = models.CharField(
+        verbose_name=_('Name, English'),
+        max_length=255,
+        blank=True,
+        default='',
     )
     synonyms = models.CharField(
         verbose_name=_('Synonyms'),
@@ -301,9 +406,43 @@ class Location(MPTTModel, MetaDataMixin):
 
     def update_with_gnd_data(self, gnd_data):
         self.set_external_metadata('gnd', gnd_data)
+        wikidata_data = None
+        if wikidata_link := self.get_wikidata_link(gnd_data):
+            wikidata_data = fetch_wikidata(wikidata_link)
+            entity_id = next(iter(wikidata_data['entities'].keys()))
+            entity_data = wikidata_data['entities'].get(entity_id, {})
+            simplified_wikidata_data = {
+                'modified': entity_data.get('modified', None),
+                'id': entity_data.get('id', None),
+                'labels': entity_data.get('labels', None),
+            }
+            self.set_external_metadata(
+                'wikidata',
+                simplified_wikidata_data,
+            )
+        else:
+            self.delete_external_metadata('wikidata')
         if self.gnd_overwrite:
             self.set_name_from_gnd_data(gnd_data)
             self.set_synonyms_from_gnd_data(gnd_data)
+            self.name_en = ''
+            if wikidata_data is not None:
+                self.set_name_en_from_wikidata(wikidata_data)
+
+    def get_wikidata_link(self, gnd_data):
+        if 'sameAs' in gnd_data:
+            for concept in gnd_data['sameAs']:
+                if 'wikidata' in concept['id']:
+                    return concept['id']
+
+    def set_name_en_from_wikidata(self, wikidata):
+        if 'entities' in wikidata:
+            for entity_data in wikidata['entities'].values():
+                labels = entity_data.get('labels', {})
+                if 'en-gb' in labels:
+                    self.name_en = labels['en-gb'].get('value')
+                elif 'en' in labels:
+                    self.name_en = labels['en'].get('value')
 
 
 class Artwork(AbstractBaseModel):
@@ -487,17 +626,21 @@ class Album(AbstractBaseModel):
     id = ShortUUIDField(primary_key=True)
     archive_id = models.BigIntegerField(null=True)
     title = models.CharField(verbose_name=_('Title'), max_length=255)
-    user = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_('User'),
+        on_delete=models.CASCADE,
+    )
     slides = JSONField(verbose_name=_('Slides'), default=list)
     permissions = models.ManyToManyField(
-        User,
+        settings.AUTH_USER_MODEL,
         verbose_name=_('Permissions'),
         through='PermissionsRelation',
         symmetrical=False,
         related_name='permissions',
     )
     last_changed_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         verbose_name=_('Last changed by'),
         related_name='last_album_changes',
         on_delete=models.CASCADE,
@@ -524,7 +667,11 @@ class PermissionsRelation(models.Model):
     PERMISSION_CHOICES = tuple((p, _(p)) for p in settings.PERMISSIONS)
 
     album = models.ForeignKey(Album, related_name='album', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='user',
+        on_delete=models.CASCADE,
+    )
     permissions = models.CharField(
         max_length=20,
         choices=PERMISSION_CHOICES,
@@ -537,13 +684,6 @@ class PermissionsRelation(models.Model):
     def __str__(self):
         return f'{self.user.get_full_name()} <-- {self.get_permissions_display()} --> {self.album.title}'
 
-
-# Monkey patch of String representation of User
-def string_representation(self):
-    return self.get_full_name() or self.username
-
-
-User.add_to_class('__str__', string_representation)
 
 # Monkey patch ManyToManyDescriptor
 ManyToManyDescriptor.get_queryset = lambda self: self.rel.model.objects.get_queryset()
@@ -561,7 +701,7 @@ class Folder(AbstractBaseModel):
         null=False,
     )
     owner = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         verbose_name=_('User'),
         on_delete=models.CASCADE,
         related_name='folder_owner',
@@ -606,7 +746,11 @@ class FolderAlbumRelation(models.Model):
         related_name='rel_to_album',
         on_delete=models.CASCADE,
     )
-    user = models.ForeignKey(User, related_name='rel_to_user', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='rel_to_user',
+        on_delete=models.CASCADE,
+    )
     folder = models.ForeignKey(
         Folder,
         related_name='rel_to_folder',
