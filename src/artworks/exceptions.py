@@ -1,2 +1,2 @@
-class WikidataNotFoundError(Exception):
+class DataNotFoundError(Exception):
     pass

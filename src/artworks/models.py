@@ -19,7 +19,7 @@ from django.db.models.functions import Upper
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from .exceptions import WikidataNotFoundError
+from .exceptions import DataNotFoundError
 from .managers import ArtworkManager
 from .mixins import MetaDataMixin
 
@@ -51,8 +51,6 @@ def fetch_data(url, type_of_data, id_value, headers=None, params=None):
             timeout=settings.REQUESTS_TIMEOUT,
         )
     except requests.RequestException as e:
-        if type_of_data == 'Wikidata':
-            raise WikidataNotFoundError from e
         raise ValidationError(
             _(
                 f'Request error when retrieving {type_of_data} data. Details: %(details)s',
@@ -61,9 +59,8 @@ def fetch_data(url, type_of_data, id_value, headers=None, params=None):
         ) from e
     if response.status_code != 200:
         if response.status_code == 404:
-            raise ValidationError(
+            raise DataNotFoundError(
                 _(f'No {type_of_data} entry was found with {type_of_data} ID %(id)s.'),
-                params={'id': id_value},
             )
         raise ValidationError(
             _(
@@ -298,8 +295,14 @@ class Keyword(MPTTModel, MetaDataMixin):
             # Validate getty url
             validate_getty_id(self.getty_id)
             # Fetch the external metadata
-            getty_data = fetch_getty_data(self.getty_id)
-            self.update_with_getty_data(getty_data)
+            try:
+                getty_data = fetch_getty_data(self.getty_id)
+                self.update_with_getty_data(getty_data)
+            except DataNotFoundError as err:
+                raise ValidationError(
+                    _('No Getty AAT entry was found with Getty AAT ID %(id)s.'),
+                    params={'id': self.getty_id},
+                ) from err
         elif self.external_metadata:
             self.external_metadata = {}
 
