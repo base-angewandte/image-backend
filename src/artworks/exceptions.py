@@ -1,0 +1,2 @@
+class WikidataNotFoundError(Exception):
+    pass

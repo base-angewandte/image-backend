@@ -19,6 +19,7 @@ from django.db.models.functions import Upper
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
+from .exceptions import WikidataNotFoundError
 from .managers import ArtworkManager
 from .mixins import MetaDataMixin
 
@@ -71,6 +72,7 @@ def fetch_gnd_data(gnd_id):
     try:
         response = requests.get(
             settings.GND_API_BASE_URL + gnd_id,
+            headers={'Accept': 'application/json'},
             timeout=settings.REQUESTS_TIMEOUT,
         )
     except requests.RequestException as e:
@@ -92,6 +94,28 @@ def fetch_gnd_data(gnd_id):
     gnd_data = response.json()
 
     return gnd_data
+
+
+def fetch_wikidata(link):
+    if link:
+        try:
+            response = requests.get(
+                link + '.json',
+                timeout=settings.REQUESTS_TIMEOUT,
+            )
+        except requests.RequestException as e:
+            raise WikidataNotFoundError from e
+        if response.status_code != 200:
+            if response.status_code == 404:
+                raise ValidationError(
+                    _('No Wikidata Link entry was found with ID %(id)s.'),
+                    params={'id': link},
+                )
+            raise ValidationError(
+                _('HTTP error %(status)s when retrieving Wikidata data: %(details)s'),
+                params={'status': response.status_code, 'details': response.text},
+            )
+        return response.json()
 
 
 def process_external_metadata(instance):
@@ -323,6 +347,12 @@ class Location(MPTTModel, MetaDataMixin):
         blank=True,
         null=False,
     )
+    name_en = models.CharField(
+        verbose_name=_('Name, English'),
+        max_length=255,
+        blank=True,
+        default='',
+    )
     synonyms = models.CharField(
         verbose_name=_('Synonyms'),
         blank=True,
@@ -376,9 +406,43 @@ class Location(MPTTModel, MetaDataMixin):
 
     def update_with_gnd_data(self, gnd_data):
         self.set_external_metadata('gnd', gnd_data)
+        wikidata_data = None
+        if wikidata_link := self.get_wikidata_link(gnd_data):
+            wikidata_data = fetch_wikidata(wikidata_link)
+            entity_id = next(iter(wikidata_data['entities'].keys()))
+            entity_data = wikidata_data['entities'].get(entity_id, {})
+            simplified_wikidata_data = {
+                'modified': entity_data.get('modified', None),
+                'id': entity_data.get('id', None),
+                'labels': entity_data.get('labels', None),
+            }
+            self.set_external_metadata(
+                'wikidata',
+                simplified_wikidata_data,
+            )
+        else:
+            self.delete_external_metadata('wikidata')
         if self.gnd_overwrite:
             self.set_name_from_gnd_data(gnd_data)
             self.set_synonyms_from_gnd_data(gnd_data)
+            self.name_en = ''
+            if wikidata_data is not None:
+                self.set_name_en_from_wikidata(wikidata_data)
+
+    def get_wikidata_link(self, gnd_data):
+        if 'sameAs' in gnd_data:
+            for concept in gnd_data['sameAs']:
+                if 'wikidata' in concept['id']:
+                    return concept['id']
+
+    def set_name_en_from_wikidata(self, wikidata):
+        if 'entities' in wikidata:
+            for entity_data in wikidata['entities'].values():
+                labels = entity_data.get('labels', {})
+                if 'en-gb' in labels:
+                    self.name_en = labels['en-gb'].get('value')
+                elif 'en' in labels:
+                    self.name_en = labels['en'].get('value')
 
 
 class Artwork(AbstractBaseModel):
