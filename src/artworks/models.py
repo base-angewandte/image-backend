@@ -42,80 +42,55 @@ def validate_getty_id(getty_id):
         raise ValidationError(_('Invalid Getty AAT ID format.'))
 
 
-def fetch_getty_data(getty_id):
-    if getty_id:
-        try:
-            response = requests.get(
-                getty_id + '.json',
-                timeout=settings.REQUESTS_TIMEOUT,
-            )
-        except requests.RequestException as e:
-            raise ValidationError(
-                _('Request error when retrieving Getty AAT data. Details: %(details)s'),
-                params={'details': f'{repr(e)}'},
-            ) from e
-        if response.status_code != 200:
-            if response.status_code == 404:
-                raise ValidationError(
-                    _('No Getty AAT entry was found with Getty AAT ID %(id)s.'),
-                    params={'id': getty_id},
-                )
-            raise ValidationError(
-                _('HTTP error %(status)s when retrieving Getty AAT data: %(details)s'),
-                params={'status': response.status_code, 'details': response.text},
-            )
-
-        return response.json()
-
-
-def fetch_gnd_data(gnd_id):
+def fetch_data(url, type_of_data, id_value, headers=None, params=None):
     try:
         response = requests.get(
-            settings.GND_API_BASE_URL + gnd_id,
-            headers={'Accept': 'application/json'},
+            url,
+            headers=headers,
+            params=params,
             timeout=settings.REQUESTS_TIMEOUT,
         )
     except requests.RequestException as e:
+        if type_of_data == 'Wikidata':
+            raise WikidataNotFoundError from e
         raise ValidationError(
-            _('Request error when retrieving GND data. Details: %(details)s'),
+            _(
+                f'Request error when retrieving {type_of_data} data. Details: %(details)s',
+            ),
             params={'details': f'{repr(e)}'},
         ) from e
-
     if response.status_code != 200:
         if response.status_code == 404:
             raise ValidationError(
-                _('No GND entry was found with ID %(id)s.'),
-                params={'id': gnd_id},
+                _(f'No {type_of_data} entry was found with {type_of_data} ID %(id)s.'),
+                params={'id': id_value},
             )
         raise ValidationError(
-            _('HTTP error %(status)s when retrieving GND data: %(details)s'),
+            _(
+                f'HTTP error %(status)s when retrieving {type_of_data} data: %(details)s',
+            ),
             params={'status': response.status_code, 'details': response.text},
         )
-    gnd_data = response.json()
 
-    return gnd_data
+    return response.json()
+
+
+def fetch_getty_data(getty_id):
+    if getty_id:
+        url = getty_id + '.json'
+        return fetch_data(url, 'Getty AAT', getty_id)
+
+
+def fetch_gnd_data(gnd_id):
+    url = settings.GND_API_BASE_URL + gnd_id
+    headers = {'Accept': 'application/json'}
+    return fetch_data(url, 'GND', gnd_id, headers=headers)
 
 
 def fetch_wikidata(link):
     if link:
-        try:
-            response = requests.get(
-                link + '.json',
-                timeout=settings.REQUESTS_TIMEOUT,
-            )
-        except requests.RequestException as e:
-            raise WikidataNotFoundError from e
-        if response.status_code != 200:
-            if response.status_code == 404:
-                raise ValidationError(
-                    _('No Wikidata Link entry was found with ID %(id)s.'),
-                    params={'id': link},
-                )
-            raise ValidationError(
-                _('HTTP error %(status)s when retrieving Wikidata data: %(details)s'),
-                params={'status': response.status_code, 'details': response.text},
-            )
-        return response.json()
+        url = link + '.json'
+        return fetch_data(url, 'Wikidata', link)
 
 
 def process_external_metadata(instance):
