@@ -13,7 +13,7 @@ from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
 
 from .forms import ArtworkAdminForm
-from .models import Album, Artist, Artwork, DiscriminatoryTerm, Keyword, Location
+from .models import Artist, Artwork, DiscriminatoryTerm, Keyword, Location
 from .views import ArtworkArtistAutocomplete
 
 
@@ -39,21 +39,6 @@ class ArtistFilter(AutocompleteFilter):
 
     def get_autocomplete_url(self, request, model_admin):
         return reverse('admin:artwork-artist-autocomplete')
-
-
-class CollectionListFilter(admin.SimpleListFilter):
-    title = _('Folder')
-    parameter_name = 'collection'
-
-    def lookups(self, request, model_admin):
-        users_collections = Album.objects.filter(user=request.user)
-        return [(c.id, c.title) for c in users_collections]
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(Album__id=self.value())
-        else:
-            return queryset
 
 
 @admin.register(Artwork)
@@ -101,7 +86,6 @@ class ArtworkAdmin(admin.ModelAdmin):
         ArtistFilter,
         'published',
         'checked',
-        CollectionListFilter,
         'date_created',
         'date_changed',
     )
