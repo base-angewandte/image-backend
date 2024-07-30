@@ -34,7 +34,8 @@ def external_metadata_html(external_metadata):
 
 class ArtistFilter(admin.SimpleListFilter):
     title = _('Artist')
-    parameter_name = 'artists'
+    parameter_name = 'artist'
+    query_filter = 'artists__id'
     template = 'admin/filters/filter-autocomplete.html'
 
     def lookups(self, request, model_admin):
@@ -44,7 +45,7 @@ class ArtistFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         val = self.value()
         if val:
-            return queryset.filter(**{f'{self.parameter_name}__id__exact': val})
+            return queryset.filter(**{self.query_filter: val})
 
 
 @admin.register(Artwork)
