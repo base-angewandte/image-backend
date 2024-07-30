@@ -18,15 +18,14 @@
 
 <script>
 window.addEventListener('load', function() {
-    const $ = django.jQuery;
+  const $ = django.jQuery;
 
-    $('#{{ spec.parameter_name }}-select2-autocomplete').select2({
-      theme: 'admin-autocomplete'
-    });
+  $('#{{ spec.parameter_name }}-select2-autocomplete').select2({
+    theme: 'admin-autocomplete'
+  });
 
-    $('#{{ spec.parameter_name }}-select2-autocomplete').on('change', function () {
-      window.location.href = window.location.pathname + $(this).val();
-    });
-
+  $('#{{ spec.parameter_name }}-select2-autocomplete').on('change', function () {
+    window.location.href = window.location.pathname + $(this).val();
+  });
 });
 </script>
