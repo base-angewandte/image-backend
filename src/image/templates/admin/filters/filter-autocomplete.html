@@ -25,9 +25,7 @@ window.addEventListener('load', function() {
     });
 
     $('#{{ spec.parameter_name }}-select2-autocomplete').on('change', function () {
-        var val = $(this).val()
-        var url = window.location.pathname + val;
-        window.location.href = url;
+      window.location.href = window.location.pathname + $(this).val();
     });
 
 });
