@@ -1,6 +1,6 @@
 import json
 
-from dal_admin_filters import AutocompleteFilter
+from admin_auto_filters.filters import AutocompleteFilter
 from mptt.admin import MPTTModelAdmin
 
 from django.conf import settings
@@ -8,11 +8,13 @@ from django.contrib import admin
 from django.db import models
 from django.forms import Textarea, TextInput
 from django.templatetags.static import static
+from django.urls import path, reverse
 from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
 
 from .forms import ArtworkAdminForm
 from .models import Album, Artist, Artwork, DiscriminatoryTerm, Keyword, Location
+from .views import ArtworkArtistAutocomplete
 
 
 def external_metadata_html(external_metadata):
@@ -34,7 +36,9 @@ def external_metadata_html(external_metadata):
 class ArtistFilter(AutocompleteFilter):
     title = _('Artist')
     field_name = 'artists'
-    autocomplete_url = 'artwork-artist-autocomplete'
+
+    def get_autocomplete_url(self, request, model_admin):
+        return reverse('admin:artwork-artist-autocomplete')
 
 
 class CollectionListFilter(admin.SimpleListFilter):
@@ -105,6 +109,19 @@ class ArtworkAdmin(admin.ModelAdmin):
 
     class Media:
         js = ['js/artwork_form.js']
+
+    def get_urls(self):
+        urls = super().get_urls()
+        return [
+            path(
+                'artwork-artist-autocomplete/',
+                self.admin_site.admin_view(
+                    ArtworkArtistAutocomplete.as_view(model_admin=self),
+                ),
+                name='artwork-artist-autocomplete',
+            ),
+            *urls,
+        ]
 
     @admin.display(description=_('Artists'))
     def get_artists(self, obj):

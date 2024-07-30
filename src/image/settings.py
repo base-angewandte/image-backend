@@ -95,7 +95,6 @@ INSTALLED_APPS = [
     # dal hast to be loaded before django.contrib.admin
     'dal',
     'dal_select2',
-    'dal_admin_filters',
     # Django main components
     'django.contrib.admin',
     'django.contrib.auth',
@@ -116,6 +115,7 @@ INSTALLED_APPS = [
     'massadmin',
     'ordered_model',
     'corsheaders',
+    'admin_auto_filters',
     # Project apps
     'accounts',
     'core',

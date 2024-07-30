@@ -24,8 +24,6 @@ charset-normalizer==3.3.2
     # via requests
 concurrent-log-handler==0.9.25
     # via -r src/requirements.in
-dal-admin-filters==1.1.0
-    # via -r src/requirements.in
 distlib==0.3.8
     # via virtualenv
 django==4.2.14
@@ -33,6 +31,7 @@ django==4.2.14
     #   -r src/requirements.in
     #   base-common
     #   base-common-drf
+    #   django-admin-autocomplete-filter
     #   django-autocomplete-light
     #   django-cas-ng
     #   django-cors-headers
@@ -44,10 +43,10 @@ django==4.2.14
     #   djangorestframework
     #   drf-spectacular
     #   sentry-sdk
+django-admin-autocomplete-filter==0.7.1
+    # via -r src/requirements.in
 django-autocomplete-light==3.11.0
-    # via
-    #   -r src/requirements.in
-    #   dal-admin-filters
+    # via -r src/requirements.in
 django-cas-ng==5.0.1
     # via -r src/requirements.in
 django-cleanup==8.1.0

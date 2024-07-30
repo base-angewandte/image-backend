@@ -30,11 +30,6 @@ urlpatterns = [
         name='collection-delete',
     ),
     path(
-        'artwork-artist-autocomplete/',
-        views.ArtworkArtistAutocomplete.as_view(),
-        name='artwork-artist-autocomplete',
-    ),
-    path(
         'artist-autocomplete/',
         views.ArtistAutocomplete.as_view(),
         name='artist-autocomplete',

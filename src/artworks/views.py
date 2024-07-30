@@ -3,6 +3,7 @@ import operator
 from datetime import datetime
 from functools import reduce
 
+from admin_auto_filters.views import AutocompleteJsonView
 from dal import autocomplete
 
 from django.contrib import messages
@@ -375,19 +376,16 @@ def collections_list(request):
     return render(request, 'artwork/collections_list.html', context)
 
 
-class ArtworkArtistAutocomplete(autocomplete.Select2QuerySetView):
-    """Return dal suggestions for the artist filter."""
+class ArtworkArtistAutocomplete(AutocompleteJsonView):
+    model_admin = None
 
     def get_queryset(self):
-        if not self.request.user.is_authenticated:
-            return Artist.objects.none()
-
         qs = Artist.objects.all().order_by('name')
 
-        if self.q:
+        if self.term:
             return qs.filter(
-                Q(name__unaccent__icontains=self.q)
-                | Q(synonyms__unaccent__icontains=self.q),
+                Q(name__unaccent__icontains=self.term)
+                | Q(synonyms__unaccent__icontains=self.term),
             )
 
         return qs
