@@ -6,7 +6,6 @@ base-common==0.3
 base-common-drf==0.4
 concurrent-log-handler==0.9.25
 django~=4.2
-django-admin-autocomplete-filter==0.7.1
 django-autocomplete-light==3.11.0
 django-cas-ng==5.0.1
 django-cleanup==8.1.0

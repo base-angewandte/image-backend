@@ -1,20 +1,19 @@
 import json
 
-from admin_auto_filters.filters import AutocompleteFilter
 from mptt.admin import MPTTModelAdmin
 
+from django import forms
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.admin.widgets import get_select2_language
 from django.db import models
 from django.forms import Textarea, TextInput
 from django.templatetags.static import static
-from django.urls import path, reverse
 from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
 
 from .forms import ArtworkAdminForm
 from .models import Artist, Artwork, DiscriminatoryTerm, Keyword, Location
-from .views import ArtworkArtistAutocomplete
 
 
 def external_metadata_html(external_metadata):
@@ -33,13 +32,19 @@ def external_metadata_html(external_metadata):
     )
 
 
-class ArtistFilter(AutocompleteFilter):
-    template = 'admin/filters/autocomplete-filter.html'
+class ArtistFilter(admin.SimpleListFilter):
     title = _('Artist')
-    field_name = 'artists'
+    parameter_name = 'artists'
+    template = 'admin/filters/filter-autocomplete.html'
 
-    def get_autocomplete_url(self, request, model_admin):
-        return reverse('admin:artwork-artist-autocomplete')
+    def lookups(self, request, model_admin):
+        artists = [(str(artist.id), artist.name) for artist in Artist.objects.all()]
+        return artists
+
+    def queryset(self, request, queryset):
+        val = self.value()
+        if val:
+            return queryset.filter(**{f'{self.parameter_name}__id__exact': val})
 
 
 @admin.register(Artwork)
@@ -92,21 +97,28 @@ class ArtworkAdmin(admin.ModelAdmin):
     )
     change_list_template = 'admin/artwork/change_list.html'
 
-    class Media:
-        js = ['js/artwork_form.js']
-
-    def get_urls(self):
-        urls = super().get_urls()
-        return [
-            path(
-                'artwork-artist-autocomplete/',
-                self.admin_site.admin_view(
-                    ArtworkArtistAutocomplete.as_view(model_admin=self),
-                ),
-                name='artwork-artist-autocomplete',
+    @property
+    def media(self):
+        extra = '' if settings.DEBUG else '.min'
+        i18n_name = get_select2_language()
+        i18n_file = (
+            (f'admin/js/vendor/select2/i18n/{i18n_name}.js',) if i18n_name else ()
+        )
+        return forms.Media(
+            js=(
+                f'admin/js/vendor/jquery/jquery{extra}.js',
+                f'admin/js/vendor/select2/select2.full{extra}.js',
+                *i18n_file,
+                'admin/js/jquery.init.js',
+                'js/artwork_form.js',
             ),
-            *urls,
-        ]
+            css={
+                'screen': (
+                    f'admin/css/vendor/select2/select2{extra}.css',
+                    'admin/css/autocomplete.css',
+                ),
+            },
+        )
 
     @admin.display(description=_('Artists'))
     def get_artists(self, obj):

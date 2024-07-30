@@ -27,7 +27,6 @@ django==4.2.14
     #   -r src/requirements.in
     #   base-common
     #   base-common-drf
-    #   django-admin-autocomplete-filter
     #   django-autocomplete-light
     #   django-cas-ng
     #   django-cors-headers
@@ -39,8 +38,6 @@ django==4.2.14
     #   djangorestframework
     #   drf-spectacular
     #   sentry-sdk
-django-admin-autocomplete-filter==0.7.1
-    # via -r src/requirements.in
 django-autocomplete-light==3.11.0
     # via -r src/requirements.in
 django-cas-ng==5.0.1

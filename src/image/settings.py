@@ -115,7 +115,6 @@ INSTALLED_APPS = [
     'massadmin',
     'ordered_model',
     'corsheaders',
-    'admin_auto_filters',
     # Project apps
     'accounts',
     'core',

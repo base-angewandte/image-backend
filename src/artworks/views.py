@@ -3,7 +3,6 @@ import operator
 from datetime import datetime
 from functools import reduce
 
-from admin_auto_filters.views import AutocompleteJsonView
 from dal import autocomplete
 
 from django.contrib import messages
@@ -374,21 +373,6 @@ def collections_list(request):
         'my_collections': Album.objects.filter(user=request.user),
     }
     return render(request, 'artwork/collections_list.html', context)
-
-
-class ArtworkArtistAutocomplete(AutocompleteJsonView):
-    model_admin = None
-
-    def get_queryset(self):
-        qs = Artist.objects.all().order_by('name')
-
-        if self.term:
-            return qs.filter(
-                Q(name__unaccent__icontains=self.term)
-                | Q(synonyms__unaccent__icontains=self.term),
-            )
-
-        return qs
 
 
 @method_decorator(login_required, name='dispatch')
