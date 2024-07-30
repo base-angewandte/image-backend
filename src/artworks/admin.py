@@ -34,7 +34,7 @@ def external_metadata_html(external_metadata):
 
 
 class ArtistFilter(AutocompleteFilter):
-    template = 'filters/autocomplete-filter.html'
+    template = 'admin/filters/autocomplete-filter.html'
     title = _('Artist')
     field_name = 'artists'
 
