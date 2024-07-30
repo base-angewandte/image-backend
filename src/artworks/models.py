@@ -42,7 +42,7 @@ def validate_getty_id(getty_id):
         raise ValidationError(_('Invalid Getty AAT ID format.'))
 
 
-def fetch_data(url, type_of_data, headers=None, params=None):
+def fetch_data(url, headers=None, params=None):
     try:
         response = requests.get(
             url,
@@ -51,16 +51,10 @@ def fetch_data(url, type_of_data, headers=None, params=None):
             timeout=settings.REQUESTS_TIMEOUT,
         )
     except requests.RequestException as e:
-        raise RequestError(
-            _(
-                f'Request error when retrieving {type_of_data} data. Details: %(details)s',
-            ),
-        ) from e
+        raise RequestError from e
     if response.status_code != 200:
         if response.status_code == 404:
-            raise DataNotFoundError(
-                _(f'No {type_of_data} entry was found with {type_of_data} ID %(id)s.'),
-            )
+            raise DataNotFoundError
         raise HTTPError(
             response.status_code,
             response.text,
@@ -72,19 +66,19 @@ def fetch_data(url, type_of_data, headers=None, params=None):
 def fetch_getty_data(getty_id):
     if getty_id:
         url = getty_id + '.json'
-        return fetch_data(url, 'Getty AAT')
+        return fetch_data(url)
 
 
 def fetch_gnd_data(gnd_id):
     url = settings.GND_API_BASE_URL + gnd_id
     headers = {'Accept': 'application/json'}
-    return fetch_data(url, 'GND', headers=headers)
+    return fetch_data(url, headers=headers)
 
 
 def fetch_wikidata(link):
     if link:
         url = link + '.json'
-        return fetch_data(url, 'Wikidata')
+        return fetch_data(url)
 
 
 def process_external_metadata(instance):
