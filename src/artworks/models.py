@@ -19,7 +19,7 @@ from django.db.models.functions import Upper
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from .exceptions import DataNotFoundError
+from .exceptions import DataNotFoundError, HTTPError, RequestError
 from .managers import ArtworkManager
 from .mixins import MetaDataMixin
 
@@ -42,7 +42,7 @@ def validate_getty_id(getty_id):
         raise ValidationError(_('Invalid Getty AAT ID format.'))
 
 
-def fetch_data(url, type_of_data, id_value, headers=None, params=None):
+def fetch_data(url, type_of_data, headers=None, params=None):
     try:
         response = requests.get(
             url,
@@ -51,22 +51,20 @@ def fetch_data(url, type_of_data, id_value, headers=None, params=None):
             timeout=settings.REQUESTS_TIMEOUT,
         )
     except requests.RequestException as e:
-        raise ValidationError(
+        raise RequestError(
             _(
                 f'Request error when retrieving {type_of_data} data. Details: %(details)s',
             ),
-            params={'details': f'{repr(e)}'},
         ) from e
     if response.status_code != 200:
         if response.status_code == 404:
             raise DataNotFoundError(
                 _(f'No {type_of_data} entry was found with {type_of_data} ID %(id)s.'),
             )
-        raise ValidationError(
+        raise HTTPError(
             _(
                 f'HTTP error %(status)s when retrieving {type_of_data} data: %(details)s',
             ),
-            params={'status': response.status_code, 'details': response.text},
         )
 
     return response.json()
@@ -75,19 +73,19 @@ def fetch_data(url, type_of_data, id_value, headers=None, params=None):
 def fetch_getty_data(getty_id):
     if getty_id:
         url = getty_id + '.json'
-        return fetch_data(url, 'Getty AAT', getty_id)
+        return fetch_data(url, 'Getty AAT')
 
 
 def fetch_gnd_data(gnd_id):
     url = settings.GND_API_BASE_URL + gnd_id
     headers = {'Accept': 'application/json'}
-    return fetch_data(url, 'GND', gnd_id, headers=headers)
+    return fetch_data(url, 'GND', headers=headers)
 
 
 def fetch_wikidata(link):
     if link:
         url = link + '.json'
-        return fetch_data(url, 'Wikidata', link)
+        return fetch_data(url, 'Wikidata')
 
 
 def process_external_metadata(instance):
@@ -103,8 +101,32 @@ def process_external_metadata(instance):
         # Validate the gnd_id and fetch the external metadata
         validate_gnd_id(instance.gnd_id)
         # Fetch the external metadata
-        gnd_data = fetch_gnd_data(instance.gnd_id)
-        instance.update_with_gnd_data(gnd_data)
+        try:
+            gnd_data = fetch_gnd_data(instance.gnd_id)
+            instance.update_with_gnd_data(gnd_data)
+        except DataNotFoundError as err:
+            raise ValidationError(
+                _('No GND ID entry was found with GND ID %(id)s.'),
+                params={'id': instance.gnd_id},
+            ) from err
+        except HTTPError as err:
+            logger.warning(
+                f'HTTP error {err.status_code} when retrieving GND ID data: {err.details}',
+            )
+            raise ValidationError(
+                _(
+                    'There was a problem retrieving data from GND. Please try again later.',
+                ),
+            ) from err
+        except RequestError as err:
+            logger.warning(
+                f'Request error when retrieving GND ID data. Details: {repr(err)}',
+            )
+            raise ValidationError(
+                _(
+                    'A network error occurred while retrieving GND ID data. Please check your connection and try again.',
+                ),
+            ) from err
     elif instance.external_metadata:
         instance.external_metadata = {}
 
@@ -303,6 +325,25 @@ class Keyword(MPTTModel, MetaDataMixin):
                     _('No Getty AAT entry was found with Getty AAT ID %(id)s.'),
                     params={'id': self.getty_id},
                 ) from err
+            except HTTPError as err:
+                logger.warning(
+                    f'HTTP error {err.status_code} when retrieving Getty AAT data: {err.details}',
+                )
+                raise ValidationError(
+                    _(
+                        'There was a problem retrieving data from Getty AAT. Please try again later.',
+                    ),
+                ) from err
+            except RequestError as err:
+                logger.warning(
+                    f'Request error when retrieving Getty AAT data. Details: {repr(err)}',
+                )
+                raise ValidationError(
+                    _(
+                        'A network error occurred while retrieving Getty AAT data.'
+                        'Please check your connection and try again.',
+                    ),
+                ) from err
         elif self.external_metadata:
             self.external_metadata = {}
 
@@ -386,9 +427,34 @@ class Location(MPTTModel, MetaDataMixin):
         self.set_external_metadata('gnd', gnd_data)
         wikidata_data = None
         if wikidata_link := self.get_wikidata_link(gnd_data):
-            wikidata_data = fetch_wikidata(wikidata_link)
-            entity_id = next(iter(wikidata_data['entities'].keys()))
-            entity_data = wikidata_data['entities'].get(entity_id, {})
+            try:
+                wikidata_data = fetch_wikidata(wikidata_link)
+                entity_id = next(iter(wikidata_data['entities'].keys()))
+                entity_data = wikidata_data['entities'].get(entity_id, {})
+            except DataNotFoundError as err:
+                raise ValidationError(
+                    _('No Wikidata entry was found with Wikidata ID %(id)s.'),
+                    params={'id': wikidata_link},
+                ) from err
+            except HTTPError as err:
+                logger.warning(
+                    f'HTTP error {err.status_code} when retrieving Wikidata data: {err.details}',
+                )
+                raise ValidationError(
+                    _(
+                        'There was a problem retrieving data from Wikidata. Please try again later.',
+                    ),
+                ) from err
+            except RequestError as err:
+                logger.warning(
+                    f'Request error when retrieving Wikidata data. Details: {repr(err)}',
+                )
+                raise ValidationError(
+                    _(
+                        'A network error occurred while retrieving Wikidata. '
+                        'Please check your connection and try again.',
+                    ),
+                ) from err
             simplified_wikidata_data = {
                 'modified': entity_data.get('modified', None),
                 'id': entity_data.get('id', None),
