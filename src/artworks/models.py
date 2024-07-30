@@ -62,9 +62,8 @@ def fetch_data(url, type_of_data, headers=None, params=None):
                 _(f'No {type_of_data} entry was found with {type_of_data} ID %(id)s.'),
             )
         raise HTTPError(
-            _(
-                f'HTTP error %(status)s when retrieving {type_of_data} data: %(details)s',
-            ),
+            response.status_code,
+            response.text,
         )
 
     return response.json()
