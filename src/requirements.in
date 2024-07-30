@@ -21,7 +21,7 @@ django-ordered-model==3.7.4
 django-redis==5.4.0
 djangorestframework==3.14.0
 django-versatileimagefield==3.1
-drf_spectacular==0.27.2
+drf-spectacular[sidecar]==0.27.2
 psycopg[binary]==3.2.1
 python-pptx==0.6.23
 requests==2.32.3
