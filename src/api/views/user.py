@@ -23,5 +23,6 @@ def get_user_data(request, *args, **kwargs):
         'showroom_id': attributes.get('showroom_id'),
         'groups': attributes.get('groups'),
         'permissions': attributes.get('permissions'),
+        'tos_accepted': attributes.get('tos_accepted'),
     }
     return Response(ret, status=200)
