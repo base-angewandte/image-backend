@@ -57,7 +57,7 @@ class ArtworkAdminForm(forms.ModelForm):
         required=False,
     )
 
-    artists = MPTTMultipleChoiceField(
+    artists = ModelMultipleChoiceField(
         Artist.objects.all(),
         widget=FilteredSelectMultiple(_('Artists'), False),
         required=False,
