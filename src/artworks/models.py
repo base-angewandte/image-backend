@@ -541,6 +541,9 @@ class Artwork(AbstractBaseModel):
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
 
+    def get_discriminatory_terms_list(self):
+        return list(self.discriminatory_terms.values_list('term', flat=True))
+
     def update_search_vector(self):
         search_vector = (
             SearchVector('title', weight='A')

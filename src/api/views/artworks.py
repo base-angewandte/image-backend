@@ -100,6 +100,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                             {'id': artist.id, 'value': artist.name}
                             for artist in artwork.artists.all()
                         ],
+                        'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                     }
                     for artwork in results
                 ],
@@ -133,6 +134,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'title': artwork.title,
                 'title_english': artwork.title_english,
                 'title_comment': artwork.title_comment,
+                'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 'date': artwork.date,
                 'material': artwork.material,
                 'dimensions': artwork.dimensions,
