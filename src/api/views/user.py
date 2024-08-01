@@ -50,8 +50,8 @@ def post_tos_accepted(request, *args, **kwargs):
     if not serializer.is_valid():
         return Response(serializer.errors, status=400)
     tos_accepted_user_bool = serializer.validated_data['tos_accepted']
-    attributes = request.session.get('attributes', {})
-    current_tos_on_server_accepted = attributes.get('tos_accepted')
+    user = request.user
+    current_tos_on_server_accepted = user.tos_accepted
     # If tos_accepted is True on the server
     if current_tos_on_server_accepted:
         # User wants to accept TOS again, just confirm it's already True
@@ -67,7 +67,6 @@ def post_tos_accepted(request, *args, **kwargs):
                 status=400,
             )
     # If none of the above are the case, just save the user's decision
-    attributes['tos_accepted'] = tos_accepted_user_bool
-    request.session['attributes'] = attributes
-    request.user.save()
+    user.tos_accepted = tos_accepted_user_bool
+    user.save()
     return Response({'tos_accepted': tos_accepted_user_bool}, status=200)
