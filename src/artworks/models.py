@@ -465,6 +465,11 @@ class Artwork(AbstractBaseModel):
         blank=True,
     )
     title_comment = models.TextField(verbose_name=_('Comment on title'), blank=True)
+    discriminatory_terms = models.ManyToManyField(
+        'artworks.DiscriminatoryTerm',
+        verbose_name=_('Discriminatory terms'),
+        blank=True,
+    )
     artists = models.ManyToManyField(Artist, verbose_name=_('Artists'), blank=True)
     date = models.CharField(
         verbose_name=_('Date'),

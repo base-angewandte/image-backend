@@ -8,7 +8,7 @@ from django.forms import ModelMultipleChoiceField
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
-from artworks.models import Album, Artist, Artwork, Keyword
+from artworks.models import Album, Artist, Artwork, DiscriminatoryTerm, Keyword
 
 
 class ArtworkForm(forms.ModelForm):
@@ -60,6 +60,12 @@ class ArtworkAdminForm(forms.ModelForm):
     artists = MPTTMultipleChoiceField(
         Artist.objects.all(),
         widget=FilteredSelectMultiple(_('Artists'), False),
+        required=False,
+    )
+
+    discriminatory_terms = ModelMultipleChoiceField(
+        DiscriminatoryTerm.objects.all(),
+        widget=FilteredSelectMultiple(_('Discriminatory terms'), False),
         required=False,
     )
 
