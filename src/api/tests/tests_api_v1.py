@@ -291,16 +291,24 @@ class FoldersTests(APITestCase):
 class DiscriminatoryTermsTests(APITestCase):
     def test_discriminatory_terms(self):
         """Test the retrieval of the discriminatory terms list."""
-        DiscriminatoryTerm.objects.create(term='Barbarian')
-        DiscriminatoryTerm.objects.create(term='Colored')
-        DiscriminatoryTerm.objects.create(term='Disabled')
-        url = reverse('discriminatory-terms', kwargs={'version': VERSION})
+        artwork = Artwork.objects.create(
+            title='Test Artwork',
+            image_original=temporary_image(),
+            published=True,
+        )
+        dt1 = DiscriminatoryTerm.objects.create(term='Barbarian')
+        dt2 = DiscriminatoryTerm.objects.create(term='Colored')
+        dt3 = DiscriminatoryTerm.objects.create(term='Disabled')
+        artwork.discriminatory_terms.add(dt1, dt2, dt3)
+        url = reverse('artwork-detail', kwargs={'pk': artwork.pk, 'version': VERSION})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
-        self.assertEqual(type(content), list)
-        self.assertEqual(len(content), 3)
-        self.assertEqual(content[2], 'Disabled')
+        self.assertEqual(type(content), dict)
+        terms = content.get('discriminatory_terms')
+        self.assertEqual(type(terms), list)
+        self.assertEqual(len(terms), 3)
+        self.assertEqual(terms[2], 'Disabled')
 
 
 class PermissionsTests(APITestCase):
