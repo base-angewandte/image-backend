@@ -58,6 +58,7 @@ def slides_with_details(album, request):
                     if artwork.image_original
                     else None,
                     'title': artwork.title,
+                    'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                     'credits': artwork.credits,
                     'date': artwork.date,
                     'artists': [
@@ -93,6 +94,7 @@ def featured_artworks(album, request, num_artworks=4):
                     if artwork.image_original
                     else None,
                     'title': artwork.title,
+                    'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 },
             )
 

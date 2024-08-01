@@ -256,6 +256,7 @@ def search(request, *args, **kwargs):
                 else None,
                 'credits': artwork.credits,
                 'title': artwork.title,
+                'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 'date': artwork.date,
                 'artists': [
                     {'value': artist.name, 'id': artist.id}
