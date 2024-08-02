@@ -108,7 +108,7 @@ def process_external_metadata(instance):
             )
             raise ValidationError(
                 _(
-                    'There was a problem retrieving data from GND. Please try again later.',
+                    f'HTTP error {err.status_code} when retrieving GND ID data: {err.details}',
                 ),
             ) from err
         except RequestError as err:
@@ -117,7 +117,7 @@ def process_external_metadata(instance):
             )
             raise ValidationError(
                 _(
-                    'A network error occurred while retrieving GND ID data. Please check your connection and try again.',
+                    f'Request error when retrieving GND ID data. Details: {repr(err)}',
                 ),
             ) from err
     elif instance.external_metadata:
@@ -324,7 +324,7 @@ class Keyword(MPTTModel, MetaDataMixin):
                 )
                 raise ValidationError(
                     _(
-                        'There was a problem retrieving data from Getty AAT. Please try again later.',
+                        f'HTTP error {err.status_code} when retrieving Getty AAT data: {err.details}',
                     ),
                 ) from err
             except RequestError as err:
@@ -333,8 +333,7 @@ class Keyword(MPTTModel, MetaDataMixin):
                 )
                 raise ValidationError(
                     _(
-                        'A network error occurred while retrieving Getty AAT data.'
-                        'Please check your connection and try again.',
+                        f'Request error when retrieving Getty AAT data. Details: {repr(err)}',
                     ),
                 ) from err
         elif self.external_metadata:
