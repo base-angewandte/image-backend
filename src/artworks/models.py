@@ -423,39 +423,27 @@ class Location(MPTTModel, MetaDataMixin):
                 wikidata_data = fetch_wikidata(wikidata_link)
                 entity_id = next(iter(wikidata_data['entities'].keys()))
                 entity_data = wikidata_data['entities'].get(entity_id, {})
-            except DataNotFoundError as err:
-                raise ValidationError(
-                    _('No Wikidata entry was found with Wikidata ID %(id)s.'),
-                    params={'id': wikidata_link},
-                ) from err
+                simplified_wikidata_data = {
+                    'modified': entity_data.get('modified', None),
+                    'id': entity_data.get('id', None),
+                    'labels': entity_data.get('labels', None),
+                }
+                self.set_external_metadata(
+                    'wikidata',
+                    simplified_wikidata_data,
+                )
+            except DataNotFoundError:
+                # 404 on Wikidata just means we have no translation, but we
+                # continue processing the rest of the GND data as usual
+                pass
             except HTTPError as err:
                 logger.warning(
                     f'HTTP error {err.status_code} when retrieving Wikidata data: {err.details}',
                 )
-                raise ValidationError(
-                    _(
-                        'There was a problem retrieving data from Wikidata. Please try again later.',
-                    ),
-                ) from err
             except RequestError as err:
                 logger.warning(
                     f'Request error when retrieving Wikidata data. Details: {repr(err)}',
                 )
-                raise ValidationError(
-                    _(
-                        'A network error occurred while retrieving Wikidata. '
-                        'Please check your connection and try again.',
-                    ),
-                ) from err
-            simplified_wikidata_data = {
-                'modified': entity_data.get('modified', None),
-                'id': entity_data.get('id', None),
-                'labels': entity_data.get('labels', None),
-            }
-            self.set_external_metadata(
-                'wikidata',
-                simplified_wikidata_data,
-            )
         else:
             self.delete_external_metadata('wikidata')
         if self.gnd_overwrite:
