@@ -51,18 +51,18 @@ class Command(BaseCommand):
 
         reader = csv.reader(file, delimiter=';')
         header = True
-
         for row in reader:
             if header and options['skip_header']:
                 header = False
                 continue
             entries.append([row[0].strip(), row[1].strip()])
-        if data_type == 'keyword':
+        # Validate gnd/getty ids with the regexes
+        if data_type in ['artist', 'location']:
             invalid_ids = [
                 f'{entry[1]} for {entry[0]}'
                 for entry in entries
                 if not re.match(
-                    settings.GETTY_ID_REGEX,
+                    settings.GND_ID_REGEX,
                     entry[1],
                 )
             ]
@@ -71,7 +71,7 @@ class Command(BaseCommand):
                 f'{entry[1]} for {entry[0]}'
                 for entry in entries
                 if not re.match(
-                    settings.GND_ID_REGEX,
+                    settings.GETTY_ID_REGEX,
                     entry[1],
                 )
             ]
@@ -100,25 +100,27 @@ class Command(BaseCommand):
             if options['show_progress'] and count % 10 == 0:
                 self.stdout.write(f'[status] {count} of {total} processed')
             count += 1
-            if data_type == 'artist':
-                try:
-                    artist = Artist.objects.get(name=entry[0])
-                except Artist.DoesNotExist:
-                    entries_not_found.append(entry)
-                    continue
-                except Artist.MultipleObjectsReturned:
-                    indistinct_names.append(entry)
-                    continue
-            elif data_type == 'location':
-                try:
-                    location = Location.objects.get(name=entry[0])
-                except Location.DoesNotExist:
-                    entries_not_found.append(entry)
-                    continue
-                except Location.MultipleObjectsReturned:
-                    indistinct_names.append(entry)
-                    continue
-            elif data_type == 'keyword':
+            # Check if the data exists in the corresponding model and handle special cases
+            if data_type in ['artist', 'location']:
+                if data_type == 'artist':
+                    try:
+                        artist = Artist.objects.get(name=entry[0])
+                    except Artist.DoesNotExist:
+                        entries_not_found.append(entry)
+                        continue
+                    except Artist.MultipleObjectsReturned:
+                        indistinct_names.append(entry)
+                        continue
+                elif data_type == 'location':
+                    try:
+                        location = Location.objects.get(name=entry[0])
+                    except Location.DoesNotExist:
+                        entries_not_found.append(entry)
+                        continue
+                    except Location.MultipleObjectsReturned:
+                        indistinct_names.append(entry)
+                        continue
+            if data_type == 'keyword':
                 try:
                     keyword = Keyword.objects.get(name=entry[0])
                 except Keyword.DoesNotExist:
@@ -127,8 +129,24 @@ class Command(BaseCommand):
                 except Keyword.MultipleObjectsReturned:
                     indistinct_names.append(entry)
                     continue
-
-            if data_type == 'keyword':
+            # Retrieve external metadata
+            if data_type in ['artist', 'location']:
+                try:
+                    response = requests.get(
+                        settings.GND_API_BASE_URL + entry[1],
+                        timeout=settings.REQUESTS_TIMEOUT,
+                    )
+                except requests.RequestException:
+                    request_errors.append(entry)
+                    continue
+                if response.status_code != 200:
+                    if response.status_code == 404:
+                        gnd_data_not_found.append(entry)
+                    else:
+                        request_errors.append(entry)
+                    continue
+                gnd_data = response.json()
+            else:
                 try:
                     response = requests.get(
                         entry[1] + '.json',
@@ -144,24 +162,8 @@ class Command(BaseCommand):
                         request_errors.append(entry)
                     continue
                 getty_data = response.json()
-            else:
-                try:
-                    response = requests.get(
-                        settings.GND_API_BASE_URL + entry[1],
-                        timeout=settings.REQUESTS_TIMEOUT,
-                    )
-                except requests.RequestException:
-                    request_errors.append(entry)
-                    continue
-                if response.status_code != 200:
-                    if response.status_code == 404:
-                        gnd_data_not_found.append(entry)
-                    else:
-                        request_errors.append(entry)
-                    continue
 
-                gnd_data = response.json()
-
+            # Process retrieved data
             if data_type == 'artist':
                 artist.gnd_id = entry[1]
                 artist.gnd_overwrite = True
@@ -176,7 +178,6 @@ class Command(BaseCommand):
                     updated_without_name.append(entry)
                 else:
                     updated.append(entry)
-
                 try:
                     artist.save()
                 except ValidationError:
@@ -215,6 +216,9 @@ class Command(BaseCommand):
                 keyword.getty_id = entry[1]
                 keyword.getty_overwrite = True
                 keyword.update_with_getty_data(getty_data)
+                # if the name generated from the Getty AAT differs from the one
+                # originally stored in image, we restore the old name and
+                # deactivate the getty_overwrite flag
                 if keyword.name != entry[0]:
                     keyword.name = entry[0]
                     keyword.getty_overwrite = False
