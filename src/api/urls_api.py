@@ -14,7 +14,7 @@ from .views.discriminatory_terms import discriminatory_terms
 from .views.folders import FoldersViewSet
 from .views.permissions import PermissionsViewSet
 from .views.search import search, search_filters
-from .views.user import get_user_data, post_tos_accepted
+from .views.user import get_user_data
 
 router = routers.DefaultRouter()
 
@@ -26,7 +26,6 @@ router.register('folders', FoldersViewSet, basename='folder')
 urlpatterns = [
     path('', include(router.urls)),
     path('user/', get_user_data, name='user'),
-    path('user/tos-accepted/', post_tos_accepted, name='user'),
     # Search
     path('search/', search, name='search'),
     path('search/filters/', search_filters, name='search-filters'),

@@ -43,7 +43,3 @@ class UserDataSerializer(serializers.Serializer):
         help_text='The permissions this user has.',
     )
     tos_accepted = serializers.CharField(help_text="The user's tos accepted status")
-
-
-class TosAcceptedSerializer(serializers.Serializer):
-    tos_accepted = serializers.BooleanField()
