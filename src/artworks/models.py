@@ -407,7 +407,11 @@ class Location(MPTTModel, MetaDataMixin):
         if 'preferredName' in gnd_data:
             self.name = gnd_data['preferredName']
         else:
-            raise ValidationError(_('No preferredName field was found.'))
+            raise ValidationError(
+                _(
+                    'The GND database does not provide a preferred name for this GND ID.',
+                ),
+            )
 
     def set_synonyms_from_gnd_data(self, gnd_data):
         if 'variantName' in gnd_data:
