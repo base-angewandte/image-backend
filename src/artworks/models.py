@@ -121,7 +121,7 @@ def process_external_metadata(instance):
                 ),
             ) from err
     elif instance.external_metadata:
-        instance.external_metadata = {}
+        instance.delete_external_metadata('gnd')
 
 
 class Artist(AbstractBaseModel, MetaDataMixin):
