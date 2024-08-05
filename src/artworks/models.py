@@ -468,9 +468,8 @@ class Artwork(AbstractBaseModel):
     discriminatory_terms = models.ManyToManyField(
         'DiscriminatoryTerm',
         verbose_name=_('Discriminatory terms'),
-        blank=True,
     )
-    artists = models.ManyToManyField(Artist, verbose_name=_('Artists'), blank=True)
+    artists = models.ManyToManyField(Artist, verbose_name=_('Artists'))
     date = models.CharField(
         verbose_name=_('Date'),
         max_length=319,
@@ -495,7 +494,7 @@ class Artwork(AbstractBaseModel):
     )
     comments = models.TextField(verbose_name=_('Comments'), blank=True)
     credits = models.TextField(verbose_name=_('Credits'), blank=True)
-    keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'), blank=True)
+    keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'))
     place_of_production = TreeForeignKey(
         Location,
         verbose_name=_('Place of Production'),

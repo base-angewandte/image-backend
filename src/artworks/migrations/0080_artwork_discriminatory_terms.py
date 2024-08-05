@@ -13,6 +13,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='artwork',
             name='discriminatory_terms',
-            field=models.ManyToManyField(blank=True, to='artworks.discriminatoryterm', verbose_name='Discriminatory terms'),
+            field=models.ManyToManyField(to='artworks.discriminatoryterm', verbose_name='Discriminatory terms'),
+        ),
+        migrations.AlterField(
+            model_name='artwork',
+            name='artists',
+            field=models.ManyToManyField(to='artworks.artist', verbose_name='Artists'),
+        ),
+        migrations.AlterField(
+            model_name='artwork',
+            name='keywords',
+            field=models.ManyToManyField(to='artworks.keyword', verbose_name='Keywords'),
         ),
     ]
