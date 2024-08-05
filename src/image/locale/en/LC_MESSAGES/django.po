@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-02 14:17+0200\n"
+"POT-Creation-Date: 2024-08-05 13:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,29 +50,29 @@ msgstr "users"
 msgid "Enter %(label)s"
 msgstr ""
 
-#: api/search/filters.py:15 api/tests/tests_api_v1.py:86 artworks/models.py:483
-#: artworks/models.py:650 artworks/models.py:720
+#: api/search/filters.py:15 api/tests/tests_api_v1.py:86 artworks/models.py:492
+#: artworks/models.py:659 artworks/models.py:729
 #: image/templates/artwork/thumbnailbrowser.html:37
 msgid "Title"
 msgstr ""
 
-#: api/search/filters.py:16 artworks/admin.py:16 artworks/models.py:159
+#: api/search/filters.py:16 artworks/admin.py:16 artworks/models.py:163
 #: image/templates/artwork/thumbnailbrowser.html:38
 msgid "Artist"
 msgstr ""
 
-#: api/search/filters.py:17 artworks/models.py:518
+#: api/search/filters.py:17 artworks/models.py:527
 #: image/templates/artwork/thumbnailbrowser.html:48
 msgid "Place of Production"
 msgstr ""
 
-#: api/search/filters.py:18 artworks/models.py:387 artworks/models.py:526
+#: api/search/filters.py:18 artworks/models.py:392 artworks/models.py:535
 #: image/templates/artwork/thumbnailbrowser.html:51
 msgid "Location"
 msgstr ""
 
 #: api/search/filters.py:19 api/tests/tests_api_v1.py:87 artworks/forms.py:56
-#: artworks/forms.py:69 artworks/models.py:299 artworks/models.py:515
+#: artworks/forms.py:69 artworks/models.py:303 artworks/models.py:524
 #: image/templates/artwork/thumbnailbrowser.html:55
 msgid "Keywords"
 msgstr ""
@@ -178,7 +178,7 @@ msgid "Folder"
 msgstr ""
 
 #: artworks/admin.py:90 artworks/forms.py:62 artworks/forms.py:69
-#: artworks/models.py:160 artworks/models.py:490
+#: artworks/models.py:164 artworks/models.py:499
 msgid "Artists"
 msgstr ""
 
@@ -224,150 +224,151 @@ msgid "No GND ID entry was found with GND ID %(id)s."
 msgstr ""
 
 #: artworks/models.py:111
-#, python-brace-format
-msgid "HTTP error {err.status_code} when retrieving GND ID data: {err.details}"
+#, python-format
+msgid "HTTP error %(status_code)s when retrieving GND ID data: %(details)s"
 msgstr ""
 
-#: artworks/models.py:120
-msgid "Request error when retrieving GND ID data. Details: {repr(err)}"
+#: artworks/models.py:122
+#, python-format
+msgid "Request error when retrieving GND ID data. Details: %(error_repr)s"
 msgstr ""
 
-#: artworks/models.py:131 artworks/models.py:266 artworks/models.py:356
+#: artworks/models.py:135 artworks/models.py:270 artworks/models.py:361
 msgid "Name"
 msgstr ""
 
-#: artworks/models.py:137 artworks/models.py:368
+#: artworks/models.py:141 artworks/models.py:373
 msgid "Synonyms"
 msgstr ""
 
-#: artworks/models.py:140
+#: artworks/models.py:144
 msgid "Comma-separated list of synonyms."
 msgstr ""
 
-#: artworks/models.py:148
+#: artworks/models.py:152
 msgid "Overrides birth and death dates for display, if not empty."
 msgstr ""
 
-#: artworks/models.py:153 artworks/models.py:381
+#: artworks/models.py:157 artworks/models.py:386
 msgid "Overwrite entry with data from GND?"
 msgstr ""
 
-#: artworks/models.py:268 artworks/models.py:362
+#: artworks/models.py:272 artworks/models.py:367
 msgid "Name, English"
 msgstr ""
 
-#: artworks/models.py:281
+#: artworks/models.py:285
 msgid "Getty AAT ID"
 msgstr ""
 
-#: artworks/models.py:289
+#: artworks/models.py:293
 msgid "Overwrite Name, English with data from Getty AAT?"
 msgstr ""
 
-#: artworks/models.py:298
+#: artworks/models.py:302
 msgid "Keyword"
 msgstr ""
 
-#: artworks/models.py:318
+#: artworks/models.py:322
 #, python-format
 msgid "No Getty AAT entry was found with Getty AAT ID %(id)s."
 msgstr ""
 
-#: artworks/models.py:327
-#, python-brace-format
-msgid ""
-"HTTP error {err.status_code} when retrieving Getty AAT data: {err.details}"
+#: artworks/models.py:332
+#, python-format
+msgid "HTTP error %(status_code)s when retrieving Getty AAT data: %(details)s"
 msgstr ""
 
-#: artworks/models.py:336
-msgid "Request error when retrieving Getty AAT data. Details: {repr(err)}"
+#: artworks/models.py:341
+#, python-format
+msgid "Request error when retrieving Getty AAT data. Details: %(error_repr)s"
 msgstr ""
 
-#: artworks/models.py:388
+#: artworks/models.py:393
 msgid "Locations"
 msgstr ""
 
-#: artworks/models.py:410
+#: artworks/models.py:417
 msgid "The GND database does not provide a preferred name for this GND ID."
 msgstr ""
 
-#: artworks/models.py:477
+#: artworks/models.py:486
 msgid "Original Image"
 msgstr ""
 
-#: artworks/models.py:485
+#: artworks/models.py:494
 msgid "Title, English"
 msgstr ""
 
-#: artworks/models.py:489
+#: artworks/models.py:498
 msgid "Comment on title"
 msgstr ""
 
-#: artworks/models.py:492
+#: artworks/models.py:501
 msgid "Date"
 msgstr ""
 
-#: artworks/models.py:498 image/templates/artwork/thumbnailbrowser.html:42
+#: artworks/models.py:507 image/templates/artwork/thumbnailbrowser.html:42
 msgid "Date From"
 msgstr ""
 
-#: artworks/models.py:502 image/templates/artwork/thumbnailbrowser.html:45
+#: artworks/models.py:511 image/templates/artwork/thumbnailbrowser.html:45
 msgid "Date To"
 msgstr ""
 
-#: artworks/models.py:504
+#: artworks/models.py:513
 msgid "Material/Technique"
 msgstr ""
 
-#: artworks/models.py:509
+#: artworks/models.py:518
 msgid "Dimensions"
 msgstr ""
 
-#: artworks/models.py:513
+#: artworks/models.py:522
 msgid "Comments"
 msgstr ""
 
-#: artworks/models.py:514
+#: artworks/models.py:523
 msgid "Credits"
 msgstr ""
 
-#: artworks/models.py:532
+#: artworks/models.py:541
 msgid "Checked"
 msgstr ""
 
-#: artworks/models.py:533
+#: artworks/models.py:542
 msgid "Published"
 msgstr ""
 
-#: artworks/models.py:543
+#: artworks/models.py:552
 msgid "Artwork"
 msgstr ""
 
-#: artworks/models.py:544
+#: artworks/models.py:553
 msgid "Artworks"
 msgstr ""
 
-#: artworks/models.py:653 artworks/models.py:727
+#: artworks/models.py:662 artworks/models.py:736
 msgid "User"
 msgstr ""
 
-#: artworks/models.py:656
+#: artworks/models.py:665
 msgid "Slides"
 msgstr ""
 
-#: artworks/models.py:659
+#: artworks/models.py:668
 msgid "Permissions"
 msgstr ""
 
-#: artworks/models.py:666
+#: artworks/models.py:675
 msgid "Last changed by"
 msgstr ""
 
-#: artworks/models.py:680
+#: artworks/models.py:689
 msgid "Album"
 msgstr ""
 
-#: artworks/models.py:681 artworks/models.py:733
+#: artworks/models.py:690 artworks/models.py:742
 msgid "Albums"
 msgstr ""
 

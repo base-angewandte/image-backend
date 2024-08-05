@@ -99,17 +99,21 @@ def process_external_metadata(instance):
             instance.update_with_gnd_data(gnd_data)
         except DataNotFoundError as err:
             raise ValidationError(
-                _('No GND ID entry was found with GND ID %(id)s.'),
-                params={'id': instance.gnd_id},
+                _('No GND ID entry was found with GND ID %(id)s.')
+                % {
+                    'id': instance.gnd_id,
+                },
             ) from err
         except HTTPError as err:
             logger.warning(
                 f'HTTP error {err.status_code} when retrieving GND ID data: {err.details}',
             )
             raise ValidationError(
-                _(
-                    f'HTTP error {err.status_code} when retrieving GND ID data: {err.details}',
-                ),
+                _('HTTP error %(status_code)s when retrieving GND ID data: %(details)s')
+                % {
+                    'status_code': err.status_code,
+                    'details': err.details,
+                },
             ) from err
         except RequestError as err:
             logger.warning(
@@ -117,8 +121,11 @@ def process_external_metadata(instance):
             )
             raise ValidationError(
                 _(
-                    f'Request error when retrieving GND ID data. Details: {repr(err)}',
-                ),
+                    'Request error when retrieving GND ID data. Details: %(error_repr)s',
+                )
+                % {
+                    'error_repr': repr(err),
+                },
             ) from err
     elif instance.external_metadata:
         instance.delete_external_metadata('gnd')
@@ -315,8 +322,10 @@ class Keyword(MPTTModel, MetaDataMixin):
                 self.update_with_getty_data(getty_data)
             except DataNotFoundError as err:
                 raise ValidationError(
-                    _('No Getty AAT entry was found with Getty AAT ID %(id)s.'),
-                    params={'id': self.getty_id},
+                    _('No Getty AAT entry was found with Getty AAT ID %(id)s.')
+                    % {
+                        'id': self.getty_id,
+                    },
                 ) from err
             except HTTPError as err:
                 logger.warning(
@@ -324,8 +333,9 @@ class Keyword(MPTTModel, MetaDataMixin):
                 )
                 raise ValidationError(
                     _(
-                        f'HTTP error {err.status_code} when retrieving Getty AAT data: {err.details}',
-                    ),
+                        'HTTP error %(status_code)s when retrieving Getty AAT data: %(details)s',
+                    )
+                    % {'status_code': err.status_code, 'details': err.details},
                 ) from err
             except RequestError as err:
                 logger.warning(
@@ -333,8 +343,9 @@ class Keyword(MPTTModel, MetaDataMixin):
                 )
                 raise ValidationError(
                     _(
-                        f'Request error when retrieving Getty AAT data. Details: {repr(err)}',
-                    ),
+                        'Request error when retrieving Getty AAT data. Details: %(error_repr)s',
+                    )
+                    % {'error_repr': repr(err)},
                 ) from err
         elif self.external_metadata:
             self.external_metadata = {}
