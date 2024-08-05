@@ -101,26 +101,25 @@ class Command(BaseCommand):
                 self.stdout.write(f'[status] {count} of {total} processed')
             count += 1
             # Check if the data exists in the corresponding model and handle special cases
-            if data_type in ['artist', 'location']:
-                if data_type == 'artist':
-                    try:
-                        artist = Artist.objects.get(name=entry[0])
-                    except Artist.DoesNotExist:
-                        entries_not_found.append(entry)
-                        continue
-                    except Artist.MultipleObjectsReturned:
-                        indistinct_names.append(entry)
-                        continue
-                elif data_type == 'location':
-                    try:
-                        location = Location.objects.get(name=entry[0])
-                    except Location.DoesNotExist:
-                        entries_not_found.append(entry)
-                        continue
-                    except Location.MultipleObjectsReturned:
-                        indistinct_names.append(entry)
-                        continue
-            if data_type == 'keyword':
+            if data_type == 'artist':
+                try:
+                    artist = Artist.objects.get(name=entry[0])
+                except Artist.DoesNotExist:
+                    entries_not_found.append(entry)
+                    continue
+                except Artist.MultipleObjectsReturned:
+                    indistinct_names.append(entry)
+                    continue
+            elif data_type == 'location':
+                try:
+                    location = Location.objects.get(name=entry[0])
+                except Location.DoesNotExist:
+                    entries_not_found.append(entry)
+                    continue
+                except Location.MultipleObjectsReturned:
+                    indistinct_names.append(entry)
+                    continue
+            elif data_type == 'keyword':
                 try:
                     keyword = Keyword.objects.get(name=entry[0])
                 except Keyword.DoesNotExist:
@@ -129,6 +128,7 @@ class Command(BaseCommand):
                 except Keyword.MultipleObjectsReturned:
                     indistinct_names.append(entry)
                     continue
+
             # Retrieve external metadata
             if data_type in ['artist', 'location']:
                 try:
@@ -146,7 +146,7 @@ class Command(BaseCommand):
                         request_errors.append(entry)
                     continue
                 gnd_data = response.json()
-            else:
+            elif data_type == 'keyword':
                 try:
                     response = requests.get(
                         entry[1] + '.json',
