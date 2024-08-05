@@ -466,7 +466,7 @@ class Artwork(AbstractBaseModel):
     )
     title_comment = models.TextField(verbose_name=_('Comment on title'), blank=True)
     discriminatory_terms = models.ManyToManyField(
-        'artworks.DiscriminatoryTerm',
+        'DiscriminatoryTerm',
         verbose_name=_('Discriminatory terms'),
         blank=True,
     )
