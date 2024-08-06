@@ -11,26 +11,19 @@ from django.template.loader import render_to_string
 
 
 class TosViewSet(viewsets.GenericViewSet):
-    """
-    list:
-    GET tos/
-    status of tos accepted and text of the html template terms_of_service
-
-    create:
-    POST /tos/
-    SET tos status to True
-    """
-
     @extend_schema(
         tags=['tos'],
         responses={
             200: OpenApiResponse(description='OK'),
             404: ERROR_RESPONSES[403],
         },
-        operation_id='tos_accept',
     )
     @action(detail=False, methods=['post'])
     def accept(self, request, *args, **kwargs):
+        """Accept the terms of service.
+
+        This endpoint sets the user's 'tos_accepted' field to 'true'.
+        """
         user = request.user
         user.tos_accepted = True
         user.save()
@@ -43,7 +36,13 @@ class TosViewSet(viewsets.GenericViewSet):
             403: ERROR_RESPONSES[403],
         },
     )
-    def list(self, request, *args, **kwargs):
+    @action(detail=False, methods=['get'])
+    def get_status(self, request, *args, **kwargs):
+        """Retrieve the terms of service and status of acceptance.
+
+        This endpoint returns the current 'tos_accepted' and 'tos_text'
+        content of the user.
+        """
         user = request.user
         tos_accepted = user.tos_accepted
         tos_text = render_to_string('accounts/terms_of_service.html', context=None)
