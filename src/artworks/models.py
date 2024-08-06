@@ -99,9 +99,9 @@ def process_external_metadata(instance):
             instance.update_with_gnd_data(gnd_data)
         except DataNotFoundError as err:
             raise ValidationError(
-                _('No GND ID entry was found with GND ID %(id)s.')
-                % {
-                    'id': instance.gnd_id,
+                {
+                    'gnd_id': _('No GND ID entry was found with GND ID %(gnd_id)s.')
+                    % {'gnd_id': instance.gnd_id},
                 },
             ) from err
         except HTTPError as err:
@@ -109,10 +109,14 @@ def process_external_metadata(instance):
                 f'HTTP error {err.status_code} when retrieving GND ID data: {err.details}',
             )
             raise ValidationError(
-                _('HTTP error %(status_code)s when retrieving GND ID data: %(details)s')
-                % {
-                    'status_code': err.status_code,
-                    'details': err.details,
+                {
+                    'gnd_id': _(
+                        'HTTP error %(status_code)s when retrieving GND ID data: %(details)s',
+                    )
+                    % {
+                        'status_code': err.status_code,
+                        'details': err.details,
+                    },
                 },
             ) from err
         except RequestError as err:
@@ -120,11 +124,13 @@ def process_external_metadata(instance):
                 f'Request error when retrieving GND ID data. Details: {repr(err)}',
             )
             raise ValidationError(
-                _(
-                    'Request error when retrieving GND ID data. Details: %(error_repr)s',
-                )
-                % {
-                    'error_repr': repr(err),
+                {
+                    'gnd_id': _(
+                        'Request error when retrieving GND ID data. Details: %(error)s',
+                    )
+                    % {
+                        'error': repr(err),
+                    },
                 },
             ) from err
     elif instance.external_metadata:
@@ -322,9 +328,11 @@ class Keyword(MPTTModel, MetaDataMixin):
                 self.update_with_getty_data(getty_data)
             except DataNotFoundError as err:
                 raise ValidationError(
-                    _('No Getty AAT entry was found with Getty AAT ID %(id)s.')
-                    % {
-                        'id': self.getty_id,
+                    {
+                        'getty_id': _(
+                            'No Getty AAT entry was found with Getty AAT ID %(getty_id)s.',
+                        )
+                        % {'getty_id': self.getty_id},
                     },
                 ) from err
             except HTTPError as err:
@@ -332,20 +340,24 @@ class Keyword(MPTTModel, MetaDataMixin):
                     f'HTTP error {err.status_code} when retrieving Getty AAT data: {err.details}',
                 )
                 raise ValidationError(
-                    _(
-                        'HTTP error %(status_code)s when retrieving Getty AAT data: %(details)s',
-                    )
-                    % {'status_code': err.status_code, 'details': err.details},
+                    {
+                        'getty_id': _(
+                            'HTTP error %(status_code)s when retrieving Getty AAT data: %(details)s',
+                        )
+                        % {'status_code': err.status_code, 'details': err.details},
+                    },
                 ) from err
             except RequestError as err:
                 logger.warning(
                     f'Request error when retrieving Getty AAT data. Details: {repr(err)}',
                 )
                 raise ValidationError(
-                    _(
-                        'Request error when retrieving Getty AAT data. Details: %(error_repr)s',
-                    )
-                    % {'error_repr': repr(err)},
+                    {
+                        'getty_id': _(
+                            'Request error when retrieving Getty AAT data: %(error)s',
+                        )
+                        % {'error': repr(err)},
+                    },
                 ) from err
         elif self.external_metadata:
             self.external_metadata = {}
