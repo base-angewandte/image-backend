@@ -18,7 +18,7 @@ class UserSerializer(serializers.Serializer):
                 'showroom_id': 'firstname-lastname-xZy2345aceg98QPT0246aC',
                 'groups': ['foo_users', 'bar_members'],
                 'permissions': ['view_foo', 'view_bar', 'edit_bar'],
-                'tos_accepted': 'false',
+                'tos_accepted': False,
             },
         ),
     ],
