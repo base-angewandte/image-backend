@@ -514,7 +514,11 @@ class Artwork(AbstractBaseModel):
         blank=True,
     )
     title_comment = models.TextField(verbose_name=_('Comment on title'), blank=True)
-    artists = models.ManyToManyField(Artist, verbose_name=_('Artists'), blank=True)
+    discriminatory_terms = models.ManyToManyField(
+        'DiscriminatoryTerm',
+        verbose_name=_('Discriminatory terms'),
+    )
+    artists = models.ManyToManyField(Artist, verbose_name=_('Artists'))
     date = models.CharField(
         verbose_name=_('Date'),
         max_length=319,
@@ -539,7 +543,7 @@ class Artwork(AbstractBaseModel):
     )
     comments = models.TextField(verbose_name=_('Comments'), blank=True)
     credits = models.TextField(verbose_name=_('Credits'), blank=True)
-    keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'), blank=True)
+    keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'))
     place_of_production = TreeForeignKey(
         Location,
         verbose_name=_('Place of Production'),
@@ -584,6 +588,9 @@ class Artwork(AbstractBaseModel):
         parts = [artists, title_in_language, self.date]
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
+
+    def get_discriminatory_terms_list(self):
+        return list(self.discriminatory_terms.values_list('term', flat=True))
 
     def update_search_vector(self):
         search_vector = (
