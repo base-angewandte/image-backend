@@ -243,7 +243,7 @@ class Command(BaseCommand):
                 ),
             )
             for entry in entries_not_found:
-                self.stdout.write(f'{entry[0]} with GND ID {entry[1]}')
+                self.stdout.write(f'{entry[0]} with ID {entry[1]}')
         if indistinct_names:
             self.stdout.write(
                 self.style.WARNING(
