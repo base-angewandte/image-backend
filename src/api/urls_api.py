@@ -10,7 +10,6 @@ from django.urls import include, path
 from .autocomplete import urls as autocomplete_urls
 from .views.albums import AlbumsViewSet
 from .views.artworks import ArtworksViewSet
-from .views.discriminatory_terms import discriminatory_terms
 from .views.folders import FoldersViewSet
 from .views.permissions import PermissionsViewSet
 from .views.search import search, search_filters
@@ -33,8 +32,6 @@ urlpatterns = [
     path('search/filters/', search_filters, name='search-filters'),
     # Autocomplete
     path('autocomplete/', include(autocomplete_urls)),
-    # Discriminatory terms
-    path('discriminatory-terms/', discriminatory_terms, name='discriminatory-terms'),
     # Schema
     path('openapi.yaml', SpectacularAPIView.as_view(), name='schema_yaml'),
     path('openapi.json', SpectacularJSONAPIView.as_view(), name='schema_json'),
