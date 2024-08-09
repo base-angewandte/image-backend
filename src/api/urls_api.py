@@ -13,6 +13,7 @@ from .views.artworks import ArtworksViewSet
 from .views.folders import FoldersViewSet
 from .views.permissions import PermissionsViewSet
 from .views.search import search, search_filters
+from .views.tos import TosViewSet
 from .views.user import get_user_data
 
 router = routers.DefaultRouter()
@@ -21,6 +22,7 @@ router.register('artworks', ArtworksViewSet, basename='artwork')
 router.register('albums', AlbumsViewSet, basename='album')
 router.register('permissions', PermissionsViewSet, basename='permission')
 router.register('folders', FoldersViewSet, basename='folder')
+router.register('tos', TosViewSet, basename='tos')
 
 urlpatterns = [
     path('', include(router.urls)),
