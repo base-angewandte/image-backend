@@ -69,6 +69,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'title',
         'title_english',
         'title_comment',
+        'discriminatory_terms',
         'artists',
         'date',
         'date_year_from',

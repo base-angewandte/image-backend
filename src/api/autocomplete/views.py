@@ -191,6 +191,7 @@ def autocomplete(request, *args, **kwargs):
                     {
                         'id': artwork.id,
                         'label': artwork.title,
+                        'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                     },
                 )
 

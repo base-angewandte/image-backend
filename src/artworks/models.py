@@ -19,7 +19,7 @@ from django.db.models.functions import Upper
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from .exceptions import WikidataNotFoundError
+from .exceptions import DataNotFoundError, HTTPError, RequestError
 from .managers import ArtworkManager
 from .mixins import MetaDataMixin
 
@@ -42,80 +42,43 @@ def validate_getty_id(getty_id):
         raise ValidationError(_('Invalid Getty AAT ID format.'))
 
 
-def fetch_getty_data(getty_id):
-    if getty_id:
-        try:
-            response = requests.get(
-                getty_id + '.json',
-                timeout=settings.REQUESTS_TIMEOUT,
-            )
-        except requests.RequestException as e:
-            raise ValidationError(
-                _('Request error when retrieving Getty AAT data. Details: %(details)s'),
-                params={'details': f'{repr(e)}'},
-            ) from e
-        if response.status_code != 200:
-            if response.status_code == 404:
-                raise ValidationError(
-                    _('No Getty AAT entry was found with Getty AAT ID %(id)s.'),
-                    params={'id': getty_id},
-                )
-            raise ValidationError(
-                _('HTTP error %(status)s when retrieving Getty AAT data: %(details)s'),
-                params={'status': response.status_code, 'details': response.text},
-            )
-
-        return response.json()
-
-
-def fetch_gnd_data(gnd_id):
+def fetch_data(url, headers=None, params=None):
     try:
         response = requests.get(
-            settings.GND_API_BASE_URL + gnd_id,
-            headers={'Accept': 'application/json'},
+            url,
+            headers=headers,
+            params=params,
             timeout=settings.REQUESTS_TIMEOUT,
         )
     except requests.RequestException as e:
-        raise ValidationError(
-            _('Request error when retrieving GND data. Details: %(details)s'),
-            params={'details': f'{repr(e)}'},
-        ) from e
-
+        raise RequestError from e
     if response.status_code != 200:
         if response.status_code == 404:
-            raise ValidationError(
-                _('No GND entry was found with ID %(id)s.'),
-                params={'id': gnd_id},
-            )
-        raise ValidationError(
-            _('HTTP error %(status)s when retrieving GND data: %(details)s'),
-            params={'status': response.status_code, 'details': response.text},
+            raise DataNotFoundError
+        raise HTTPError(
+            response.status_code,
+            response.text,
         )
-    gnd_data = response.json()
 
-    return gnd_data
+    return response.json()
+
+
+def fetch_getty_data(getty_id):
+    if getty_id:
+        url = getty_id + '.json'
+        return fetch_data(url)
+
+
+def fetch_gnd_data(gnd_id):
+    url = settings.GND_API_BASE_URL + gnd_id
+    headers = {'Accept': 'application/json'}
+    return fetch_data(url, headers=headers)
 
 
 def fetch_wikidata(link):
     if link:
-        try:
-            response = requests.get(
-                link + '.json',
-                timeout=settings.REQUESTS_TIMEOUT,
-            )
-        except requests.RequestException as e:
-            raise WikidataNotFoundError from e
-        if response.status_code != 200:
-            if response.status_code == 404:
-                raise ValidationError(
-                    _('No Wikidata Link entry was found with ID %(id)s.'),
-                    params={'id': link},
-                )
-            raise ValidationError(
-                _('HTTP error %(status)s when retrieving Wikidata data: %(details)s'),
-                params={'status': response.status_code, 'details': response.text},
-            )
-        return response.json()
+        url = link + '.json'
+        return fetch_data(url)
 
 
 def process_external_metadata(instance):
@@ -131,10 +94,47 @@ def process_external_metadata(instance):
         # Validate the gnd_id and fetch the external metadata
         validate_gnd_id(instance.gnd_id)
         # Fetch the external metadata
-        gnd_data = fetch_gnd_data(instance.gnd_id)
-        instance.update_with_gnd_data(gnd_data)
+        try:
+            gnd_data = fetch_gnd_data(instance.gnd_id)
+            instance.update_with_gnd_data(gnd_data)
+        except DataNotFoundError as err:
+            raise ValidationError(
+                {
+                    'gnd_id': _('No GND ID entry was found with GND ID %(gnd_id)s.')
+                    % {'gnd_id': instance.gnd_id},
+                },
+            ) from err
+        except HTTPError as err:
+            logger.warning(
+                f'HTTP error {err.status_code} when retrieving GND ID data: {err.details}',
+            )
+            raise ValidationError(
+                {
+                    'gnd_id': _(
+                        'HTTP error %(status_code)s when retrieving GND ID data: %(details)s',
+                    )
+                    % {
+                        'status_code': err.status_code,
+                        'details': err.details,
+                    },
+                },
+            ) from err
+        except RequestError as err:
+            logger.warning(
+                f'Request error when retrieving GND ID data. Details: {repr(err)}',
+            )
+            raise ValidationError(
+                {
+                    'gnd_id': _(
+                        'Request error when retrieving GND ID data. Details: %(error)s',
+                    )
+                    % {
+                        'error': repr(err),
+                    },
+                },
+            ) from err
     elif instance.external_metadata:
-        instance.external_metadata = {}
+        instance.delete_external_metadata('gnd')
 
 
 class Artist(AbstractBaseModel, MetaDataMixin):
@@ -323,8 +323,42 @@ class Keyword(MPTTModel, MetaDataMixin):
             # Validate getty url
             validate_getty_id(self.getty_id)
             # Fetch the external metadata
-            getty_data = fetch_getty_data(self.getty_id)
-            self.update_with_getty_data(getty_data)
+            try:
+                getty_data = fetch_getty_data(self.getty_id)
+                self.update_with_getty_data(getty_data)
+            except DataNotFoundError as err:
+                raise ValidationError(
+                    {
+                        'getty_id': _(
+                            'No Getty AAT entry was found with Getty AAT ID %(getty_id)s.',
+                        )
+                        % {'getty_id': self.getty_id},
+                    },
+                ) from err
+            except HTTPError as err:
+                logger.warning(
+                    f'HTTP error {err.status_code} when retrieving Getty AAT data: {err.details}',
+                )
+                raise ValidationError(
+                    {
+                        'getty_id': _(
+                            'HTTP error %(status_code)s when retrieving Getty AAT data: %(details)s',
+                        )
+                        % {'status_code': err.status_code, 'details': err.details},
+                    },
+                ) from err
+            except RequestError as err:
+                logger.warning(
+                    f'Request error when retrieving Getty AAT data. Details: {repr(err)}',
+                )
+                raise ValidationError(
+                    {
+                        'getty_id': _(
+                            'Request error when retrieving Getty AAT data: %(error)s',
+                        )
+                        % {'error': repr(err)},
+                    },
+                ) from err
         elif self.external_metadata:
             self.external_metadata = {}
 
@@ -396,7 +430,11 @@ class Location(MPTTModel, MetaDataMixin):
         if 'preferredName' in gnd_data:
             self.name = gnd_data['preferredName']
         else:
-            raise ValidationError(_('No preferredName field was found.'))
+            raise ValidationError(
+                _(
+                    'The GND database does not provide a preferred name for this GND ID.',
+                ),
+            )
 
     def set_synonyms_from_gnd_data(self, gnd_data):
         if 'variantName' in gnd_data:
@@ -408,26 +446,39 @@ class Location(MPTTModel, MetaDataMixin):
         self.set_external_metadata('gnd', gnd_data)
         wikidata_data = None
         if wikidata_link := self.get_wikidata_link(gnd_data):
-            wikidata_data = fetch_wikidata(wikidata_link)
-            entity_id = next(iter(wikidata_data['entities'].keys()))
-            entity_data = wikidata_data['entities'].get(entity_id, {})
-            simplified_wikidata_data = {
-                'modified': entity_data.get('modified', None),
-                'id': entity_data.get('id', None),
-                'labels': entity_data.get('labels', None),
-            }
-            self.set_external_metadata(
-                'wikidata',
-                simplified_wikidata_data,
-            )
+            try:
+                wikidata_data = fetch_wikidata(wikidata_link)
+                entity_id = next(iter(wikidata_data['entities'].keys()))
+                entity_data = wikidata_data['entities'].get(entity_id, {})
+                simplified_wikidata_data = {
+                    'modified': entity_data.get('modified', None),
+                    'id': entity_data.get('id', None),
+                    'labels': entity_data.get('labels', None),
+                }
+                self.set_external_metadata(
+                    'wikidata',
+                    simplified_wikidata_data,
+                )
+            except DataNotFoundError:
+                # 404 on Wikidata just means we have no translation, but we
+                # continue processing the rest of the GND data as usual
+                pass
+            except HTTPError as err:
+                logger.warning(
+                    f'HTTP error {err.status_code} when retrieving Wikidata data: {err.details}',
+                )
+            except RequestError as err:
+                logger.warning(
+                    f'Request error when retrieving Wikidata data. Details: {repr(err)}',
+                )
         else:
             self.delete_external_metadata('wikidata')
         if self.gnd_overwrite:
             self.set_name_from_gnd_data(gnd_data)
             self.set_synonyms_from_gnd_data(gnd_data)
             self.name_en = ''
-            if wikidata_data is not None:
-                self.set_name_en_from_wikidata(wikidata_data)
+            if wikidata_data:
+                self.set_name_en_from_wikidata(simplified_wikidata_data)
 
     def get_wikidata_link(self, gnd_data):
         if 'sameAs' in gnd_data:
@@ -436,13 +487,11 @@ class Location(MPTTModel, MetaDataMixin):
                     return concept['id']
 
     def set_name_en_from_wikidata(self, wikidata):
-        if 'entities' in wikidata:
-            for entity_data in wikidata['entities'].values():
-                labels = entity_data.get('labels', {})
-                if 'en-gb' in labels:
-                    self.name_en = labels['en-gb'].get('value')
-                elif 'en' in labels:
-                    self.name_en = labels['en'].get('value')
+        labels = wikidata.get('labels', {})
+        if 'en-gb' in labels:
+            self.name_en = labels['en-gb']['value']
+        elif 'en' in labels:
+            self.name_en = labels['en']['value']
 
 
 class Artwork(AbstractBaseModel):
@@ -465,7 +514,11 @@ class Artwork(AbstractBaseModel):
         blank=True,
     )
     title_comment = models.TextField(verbose_name=_('Comment on title'), blank=True)
-    artists = models.ManyToManyField(Artist, verbose_name=_('Artists'), blank=True)
+    discriminatory_terms = models.ManyToManyField(
+        'DiscriminatoryTerm',
+        verbose_name=_('Discriminatory terms'),
+    )
+    artists = models.ManyToManyField(Artist, verbose_name=_('Artists'))
     date = models.CharField(
         verbose_name=_('Date'),
         max_length=319,
@@ -490,7 +543,7 @@ class Artwork(AbstractBaseModel):
     )
     comments = models.TextField(verbose_name=_('Comments'), blank=True)
     credits = models.TextField(verbose_name=_('Credits'), blank=True)
-    keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'), blank=True)
+    keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'))
     place_of_production = TreeForeignKey(
         Location,
         verbose_name=_('Place of Production'),
@@ -535,6 +588,9 @@ class Artwork(AbstractBaseModel):
         parts = [artists, title_in_language, self.date]
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
+
+    def get_discriminatory_terms_list(self):
+        return list(self.discriminatory_terms.values_list('term', flat=True))
 
     def update_search_vector(self):
         search_vector = (

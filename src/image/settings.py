@@ -115,13 +115,13 @@ INSTALLED_APPS = [
     'massadmin',
     'ordered_model',
     'corsheaders',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
     # Project apps
     'accounts',
     'core',
     'artworks',
-    # API
     'api',
-    'drf_spectacular',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -454,6 +454,9 @@ SPECTACULAR_SETTINGS = {
     'SWAGGER_UI_SETTINGS': {
         'displayOperationId': True,
     },
+    'SWAGGER_UI_DIST': 'SIDECAR',
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',
     # OTHER SETTINGS
     # set GLOBAL_PARAMS used in base_common_drf.openapi.AutoSchema
     'GLOBAL_PARAMS': [

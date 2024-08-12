@@ -18,6 +18,7 @@ class UserSerializer(serializers.Serializer):
                 'showroom_id': 'firstname-lastname-xZy2345aceg98QPT0246aC',
                 'groups': ['foo_users', 'bar_members'],
                 'permissions': ['view_foo', 'view_bar', 'edit_bar'],
+                'tos_accepted': False,
             },
         ),
     ],
@@ -41,3 +42,4 @@ class UserDataSerializer(serializers.Serializer):
         child=serializers.CharField(),
         help_text='The permissions this user has.',
     )
+    tos_accepted = serializers.BooleanField(help_text="The user's tos accepted status")
