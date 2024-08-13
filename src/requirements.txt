@@ -22,7 +22,7 @@ charset-normalizer==3.3.2
     # via requests
 concurrent-log-handler==0.9.25
     # via -r src/requirements.in
-django==4.2.14
+django==4.2.15
     # via
     #   -r src/requirements.in
     #   base-common

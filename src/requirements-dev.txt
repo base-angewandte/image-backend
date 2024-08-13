@@ -26,7 +26,7 @@ concurrent-log-handler==0.9.25
     # via -r src/requirements.in
 distlib==0.3.8
     # via virtualenv
-django==4.2.14
+django==4.2.15
     # via
     #   -r src/requirements.in
     #   base-common
