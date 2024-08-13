@@ -8,7 +8,7 @@ from django.forms import ModelMultipleChoiceField
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
-from artworks.models import Album, Artist, Artwork, DiscriminatoryTerm, Keyword
+from artworks.models import Album, Artwork, DiscriminatoryTerm, Keyword, Person
 
 
 class ArtworkForm(forms.ModelForm):
@@ -24,7 +24,7 @@ class ArtworkForm(forms.ModelForm):
         model = Artwork
         exclude = ['id', 'created_at', 'updated_at']  # noqa: DJ006
         widgets = {
-            'artists': autocomplete.ModelSelect2Multiple(url='artist-autocomplete'),
+            'persons': autocomplete.ModelSelect2Multiple(url='person-autocomplete'),
             'keywords': autocomplete.ModelSelect2Multiple(url='keyword-autocomplete'),
             'title': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
             'title_english': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
@@ -35,7 +35,7 @@ class ArtworkForm(forms.ModelForm):
         # remove hard-coded help_text for ManyToManyFields that use a SelectMultiple widget
         # see 10 year old ticket: https://code.djangoproject.com/ticket/9321
         super().__init__(*args, **kwargs)
-        self.fields['artists'].help_text = ''
+        self.fields['persons'].help_text = ''
         self.fields['keywords'].help_text = ''
 
 
@@ -58,7 +58,7 @@ class ArtworkAdminForm(forms.ModelForm):
     )
 
     artists = ModelMultipleChoiceField(
-        Artist.objects.all(),
+        Person.objects.all(),
         widget=FilteredSelectMultiple(_('Artists'), False),
         required=False,
     )

@@ -8,11 +8,11 @@ from django.utils.translation import gettext_lazy as _
 
 from artworks.models import (
     Album,
-    Artist,
     Artwork,
     DiscriminatoryTerm,
     Folder,
     PermissionsRelation,
+    Person,
 )
 
 from . import APITestCase, temporary_image
@@ -105,7 +105,7 @@ class ArtworkTests(APITestCase):
             image_original=temporary_image(),
             published=True,
         )
-        artist = Artist.objects.create(name='TestArtist')
+        artist = Person.objects.create(name='TestArtist')
         artwork.artists.add(artist)
         url = reverse('artwork-download', kwargs={'pk': artwork.pk, 'version': VERSION})
         response = self.client.get(url, format='json')
@@ -328,7 +328,7 @@ class SearchTests(APITestCase):
     def test_search(self):
         """Test the search."""
         # Todo (possible): extend? as there are several usecases
-        artist = Artist.objects.create(name='TestArtist')
+        artist = Person.objects.create(name='TestArtist')
         artwork1 = Artwork.objects.create(
             title='Test Artwork 1',
             image_original=temporary_image(),

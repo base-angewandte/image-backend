@@ -31,7 +31,7 @@ urlpatterns = [
     ),
     path(
         'artist-autocomplete/',
-        views.ArtistAutocomplete.as_view(),
+        views.PersonAutocomplete.as_view(),
         name='artist-autocomplete',
     ),
     path(

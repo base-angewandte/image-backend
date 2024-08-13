@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from versatileimagefield.serializers import VersatileImageFieldSerializer
 
-from artworks.models import Album, Artist, Artwork, Keyword, Location
+from artworks.models import Album, Artwork, Keyword, Location, Person
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -10,9 +10,9 @@ class LocationSerializer(serializers.ModelSerializer):
         fields = 'id', 'name'
 
 
-class ArtistSerializer(serializers.ModelSerializer):
+class PersonSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Artist
+        model = Person
         fields = 'id', 'name'
 
 
@@ -23,7 +23,7 @@ class KeywordSerializer(serializers.ModelSerializer):
 
 
 class ArtworkSerializer(serializers.ModelSerializer):
-    artists = ArtistSerializer(read_only=True, many=True)
+    artists = PersonSerializer(read_only=True, many=True)
     keywords = KeywordSerializer(read_only=True, many=True)
     place_of_production = LocationSerializer(read_only=True, many=False)
     location = LocationSerializer(read_only=True, many=False)
@@ -48,7 +48,7 @@ class ArtworkSerializer(serializers.ModelSerializer):
 
 
 class ThumbnailSerializer(serializers.ModelSerializer):
-    artists = ArtistSerializer(read_only=True, many=True)
+    artists = PersonSerializer(read_only=True, many=True)
     image_original = VersatileImageFieldSerializer(
         sizes=[('thumbnail', 'thumbnail__180x180')],
     )

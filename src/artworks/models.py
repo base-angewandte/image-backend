@@ -85,7 +85,7 @@ def process_external_metadata(instance):
     """Process external metadata for the given instance, to avoid code
     duplication.
 
-    It is used by both clean functions of Artist and Location.
+    It is used by both clean functions of Person and Location.
     """
     if not instance.name and not instance.gnd_id:
         raise ValidationError(_('Either a name or a valid GND ID need to be set'))
@@ -137,8 +137,8 @@ def process_external_metadata(instance):
         instance.delete_external_metadata('gnd')
 
 
-class Artist(AbstractBaseModel, MetaDataMixin):
-    """One Artist can be the maker of 0-n artworks."""
+class Person(AbstractBaseModel, MetaDataMixin):
+    """A Person can can fulfill several roles for 0-n artworks."""
 
     name = models.CharField(
         verbose_name=_('Name'),
@@ -169,8 +169,8 @@ class Artist(AbstractBaseModel, MetaDataMixin):
 
     class Meta:
         ordering = ['name']
-        verbose_name = _('Artist')
-        verbose_name_plural = _('Artists')
+        verbose_name = _('Person')
+        verbose_name_plural = _('Persons')
 
     def __str__(self):
         return self.name
@@ -182,7 +182,7 @@ class Artist(AbstractBaseModel, MetaDataMixin):
     def set_birth_death_from_gnd_data(self, gnd_data):
         """Sets an Arist name, based on a GND result.
 
-        :param dict gnd_data: GND response data for the Artist
+        :param dict gnd_data: GND response data for the Person
         """
         # while theoretically there could be more than one date, it was
         # decided to just use the first listed date if there is one
@@ -224,7 +224,7 @@ class Artist(AbstractBaseModel, MetaDataMixin):
         of the response is used. As a fallback the `preferredName` will be
         used.
 
-        :param dict gnd_data: response data of the GND API for the Artist
+        :param dict gnd_data: response data of the GND API for the Person
         """
         if 'preferredNameEntityForThePerson' in gnd_data:
             self.name = self.construct_individual_name(
@@ -240,7 +240,7 @@ class Artist(AbstractBaseModel, MetaDataMixin):
         of the response is used. As a fallback the `variantName` will be
         used.
 
-        :param dict gnd_data: response data of the GND API for the Artist
+        :param dict gnd_data: response data of the GND API for the Person
         """
         if 'variantNameEntityForThePerson' in gnd_data:
             synonyms = []
@@ -518,7 +518,7 @@ class Artwork(AbstractBaseModel):
         'DiscriminatoryTerm',
         verbose_name=_('Discriminatory terms'),
     )
-    artists = models.ManyToManyField(Artist, verbose_name=_('Artists'))
+    artists = models.ManyToManyField(Person, verbose_name=_('Artists'))
     date = models.CharField(
         verbose_name=_('Date'),
         max_length=319,
@@ -578,14 +578,14 @@ class Artwork(AbstractBaseModel):
         return self.title
 
     def get_short_description(self, language):
-        artists = ', '.join(artist.name for artist in self.artists.all())
+        persons = ', '.join(person.name for person in self.persons.all())
         title_in_language = ''
         if language == 'en':
             if self.title_english:
                 title_in_language = self.title_english
         else:
             title_in_language = self.title
-        parts = [artists, title_in_language, self.date]
+        parts = [persons, title_in_language, self.date]
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
 
