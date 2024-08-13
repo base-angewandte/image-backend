@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-06 13:28+0200\n"
+"POT-Creation-Date: 2024-08-13 15:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,28 +51,28 @@ msgid "Enter %(label)s"
 msgstr ""
 
 #: api/search/filters.py:15 api/tests/tests_api_v1.py:86 artworks/models.py:510
-#: artworks/models.py:677 artworks/models.py:747
+#: artworks/models.py:684 artworks/models.py:754
 #: image/templates/artwork/thumbnailbrowser.html:37
 msgid "Title"
 msgstr ""
 
-#: api/search/filters.py:16 artworks/admin.py:16 artworks/models.py:172
+#: api/search/filters.py:16 artworks/admin.py:36
 #: image/templates/artwork/thumbnailbrowser.html:38
 msgid "Artist"
 msgstr ""
 
-#: api/search/filters.py:17 artworks/models.py:545
+#: api/search/filters.py:17 artworks/models.py:549
 #: image/templates/artwork/thumbnailbrowser.html:48
 msgid "Place of Production"
 msgstr ""
 
-#: api/search/filters.py:18 artworks/models.py:410 artworks/models.py:553
+#: api/search/filters.py:18 artworks/models.py:410 artworks/models.py:557
 #: image/templates/artwork/thumbnailbrowser.html:51
 msgid "Location"
 msgstr ""
 
 #: api/search/filters.py:19 api/tests/tests_api_v1.py:87 artworks/forms.py:56
-#: artworks/forms.py:69 artworks/models.py:312 artworks/models.py:542
+#: artworks/forms.py:75 artworks/models.py:312 artworks/models.py:546
 #: image/templates/artwork/thumbnailbrowser.html:55
 msgid "Keywords"
 msgstr ""
@@ -90,11 +90,11 @@ msgid "No more than two artworks per slide allowed"
 msgstr ""
 
 # ## manual translations
-#: api/tests/tests_api_v1.py:314
+#: api/tests/tests_api_v1.py:322
 msgid "VIEW"
 msgstr "view"
 
-#: api/tests/tests_api_v1.py:316
+#: api/tests/tests_api_v1.py:324
 msgid "EDIT"
 msgstr "edit"
 
@@ -119,9 +119,9 @@ msgstr ""
 msgid "sorting must be a string"
 msgstr ""
 
-#: api/views/__init__.py:50 api/views/__init__.py:85 api/views/albums.py:340
-#: api/views/albums.py:454 api/views/artworks.py:121 api/views/artworks.py:207
-#: api/views/artworks.py:282 api/views/artworks.py:328
+#: api/views/__init__.py:50 api/views/__init__.py:86 api/views/albums.py:340
+#: api/views/albums.py:454 api/views/artworks.py:122 api/views/artworks.py:209
+#: api/views/artworks.py:284 api/views/artworks.py:330
 msgid "Artwork does not exist"
 msgstr ""
 
@@ -140,11 +140,11 @@ msgstr ""
 msgid "Invalid format"
 msgstr ""
 
-#: api/views/artworks.py:123
+#: api/views/artworks.py:124
 msgid "Artwork id must be of type integer"
 msgstr ""
 
-#: api/views/artworks.py:363
+#: api/views/artworks.py:365
 #, python-brace-format
 msgid "File for artwork {pk} not found"
 msgstr ""
@@ -173,12 +173,8 @@ msgstr ""
 msgid "date_from needs to be less than or equal to date_to."
 msgstr ""
 
-#: artworks/admin.py:22
-msgid "Folder"
-msgstr ""
-
-#: artworks/admin.py:90 artworks/forms.py:62 artworks/forms.py:69
-#: artworks/models.py:173 artworks/models.py:517
+#: artworks/admin.py:125 artworks/forms.py:62 artworks/forms.py:75
+#: artworks/models.py:521
 msgid "Artists"
 msgstr ""
 
@@ -202,7 +198,11 @@ msgid ""
 "get('id')}; it's a directory"
 msgstr ""
 
-#: artworks/forms.py:101
+#: artworks/forms.py:68 artworks/models.py:519
+msgid "Discriminatory terms"
+msgstr ""
+
+#: artworks/forms.py:107
 msgid "Images"
 msgstr ""
 
@@ -251,6 +251,14 @@ msgstr ""
 
 #: artworks/models.py:166 artworks/models.py:404
 msgid "Overwrite entry with data from GND?"
+msgstr ""
+
+#: artworks/models.py:172
+msgid "Person"
+msgstr ""
+
+#: artworks/models.py:173
+msgid "Persons"
 msgstr ""
 
 #: artworks/models.py:281 artworks/models.py:385
@@ -304,87 +312,87 @@ msgstr ""
 msgid "Comment on title"
 msgstr ""
 
-#: artworks/models.py:519
+#: artworks/models.py:523
 msgid "Date"
 msgstr ""
 
-#: artworks/models.py:525 image/templates/artwork/thumbnailbrowser.html:42
+#: artworks/models.py:529 image/templates/artwork/thumbnailbrowser.html:42
 msgid "Date From"
 msgstr ""
 
-#: artworks/models.py:529 image/templates/artwork/thumbnailbrowser.html:45
+#: artworks/models.py:533 image/templates/artwork/thumbnailbrowser.html:45
 msgid "Date To"
 msgstr ""
 
-#: artworks/models.py:531
+#: artworks/models.py:535
 msgid "Material/Technique"
 msgstr ""
 
-#: artworks/models.py:536
+#: artworks/models.py:540
 msgid "Dimensions"
 msgstr ""
 
-#: artworks/models.py:540
+#: artworks/models.py:544
 msgid "Comments"
 msgstr ""
 
-#: artworks/models.py:541
+#: artworks/models.py:545
 msgid "Credits"
 msgstr ""
 
-#: artworks/models.py:559
+#: artworks/models.py:563
 msgid "Checked"
 msgstr ""
 
-#: artworks/models.py:560
+#: artworks/models.py:564
 msgid "Published"
 msgstr ""
 
-#: artworks/models.py:570
+#: artworks/models.py:574
 msgid "Artwork"
 msgstr ""
 
-#: artworks/models.py:571
+#: artworks/models.py:575
 msgid "Artworks"
 msgstr ""
 
-#: artworks/models.py:680 artworks/models.py:754
+#: artworks/models.py:687 artworks/models.py:761
 msgid "User"
 msgstr ""
 
-#: artworks/models.py:683
+#: artworks/models.py:690
 msgid "Slides"
 msgstr ""
 
-#: artworks/models.py:686
+#: artworks/models.py:693
 msgid "Permissions"
 msgstr ""
 
-#: artworks/models.py:693
+#: artworks/models.py:700
 msgid "Last changed by"
 msgstr ""
 
-#: artworks/models.py:707
+#: artworks/models.py:714
 msgid "Album"
 msgstr ""
 
-#: artworks/models.py:708 artworks/models.py:760
+#: artworks/models.py:715 artworks/models.py:767
 msgid "Albums"
 msgstr ""
 
-#: artworks/views.py:474
+#: artworks/views.py:456
 msgid "Images successfully uploaded"
 msgstr ""
 
-#: artworks/views.py:480 image/templates/admin/artwork/change_list.html:6
+#: artworks/views.py:462 image/templates/admin/artwork/change_list.html:6
 msgid "Upload multiple images"
 msgstr ""
 
-#: image/settings.py:273
+#: image/settings.py:272
 msgid "German"
 msgstr ""
 
-#: image/settings.py:274
+#: image/settings.py:273
 msgid "English"
 msgstr ""
 
@@ -394,6 +402,11 @@ msgstr ""
 
 #: image/templates/admin/base_site.html:4 image/urls.py:32 image/urls.py:33
 msgid "Image Admin"
+msgstr ""
+
+#: image/templates/admin/filters/filter-autocomplete.html:5
+#, python-format
+msgid " By %(filter_title)s "
 msgstr ""
 
 #: image/templates/artwork/artwork_collect_overlay.html:13
