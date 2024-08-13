@@ -20,7 +20,11 @@ class APITestCase(RestFrameworkAPITestCase):
     def setUp(self):
         # create and log in user
         User = get_user_model()  # noqa: N806
-        self.user = User.objects.create_user('temporary', 'temporary@uni-ak.ac.at')
+        self.user = User.objects.create_user(
+            'temporary',
+            'temporary@uni-ak.ac.at',
+            tos_accepted=True,
+        )
         self.client.force_login(self.user)
 
         # add two other users
