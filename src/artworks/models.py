@@ -578,14 +578,14 @@ class Artwork(AbstractBaseModel):
         return self.title
 
     def get_short_description(self, language):
-        persons = ', '.join(person.name for person in self.persons.all())
+        artists = ', '.join(artist.name for artist in self.artists.all())
         title_in_language = ''
         if language == 'en':
             if self.title_english:
                 title_in_language = self.title_english
         else:
             title_in_language = self.title
-        parts = [persons, title_in_language, self.date]
+        parts = [artists, title_in_language, self.date]
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
 
