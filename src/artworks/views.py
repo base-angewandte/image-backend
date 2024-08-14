@@ -26,7 +26,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 
 from .forms import AlbumForm, ArtworkForm, ImageFieldForm
-from .models import Album, Artist, Artwork, Keyword, Location
+from .models import Album, Artwork, Keyword, Location, Person
 from .serializers import ArtworkSerializer, CollectionSerializer
 
 logger = logging.getLogger(__name__)
@@ -118,8 +118,8 @@ def artworks_list(request):
     def get_basic_queryset_list():
         if query_search:
 
-            def get_artists(term):
-                return Artist.objects.filter(
+            def get_persons(term):
+                return Person.objects.filter(
                     Q(name__unaccent__istartswith=term)
                     | Q(name__unaccent__icontains=' ' + term),
                 )
@@ -135,13 +135,13 @@ def artworks_list(request):
                     rank=Case(
                         When(Q(title__iexact=query_search), then=Value(1)),
                         When(Q(title_english__iexact=query_search), then=Value(1)),
-                        When(Q(artists__in=get_artists(query_search)), then=Value(2)),
+                        When(Q(artists__in=get_persons(query_search)), then=Value(2)),
                         When(Q(title__istartswith=query_search), then=Value(3)),
                         When(Q(title_english__istartswith=query_search), then=Value(3)),
                         When(
                             reduce(
                                 operator.or_,
-                                (Q(artists__in=get_artists(term)) for term in terms),
+                                (Q(artists__in=get_persons(term)) for term in terms),
                             ),
                             then=Value(4),
                         ),
@@ -380,7 +380,7 @@ class ArtistAutocomplete(autocomplete.Select2QuerySetView):
     """Return dal suggestions for the artist input field."""
 
     def get_queryset(self):
-        qs = Artist.objects.all().order_by('name')
+        qs = Person.objects.all().order_by('name')
         if self.q:
             return qs.filter(
                 Q(name__unaccent__istartswith=self.q)
@@ -389,7 +389,7 @@ class ArtistAutocomplete(autocomplete.Select2QuerySetView):
                 | Q(synonyms__unaccent__icontains=' ' + self.q),
             )
         else:
-            return Artist.objects.none()
+            return Person.objects.none()
 
 
 @method_decorator(login_required, name='dispatch')

@@ -17,11 +17,11 @@ from django.utils.translation import gettext_lazy as _
 
 from artworks.models import (
     Album,
-    Artist,
     Artwork,
     Keyword,
     Location,
     PermissionsRelation,
+    Person,
 )
 
 from .serializers import (
@@ -36,7 +36,7 @@ from .serializers import (
 MODEL_MAP = {
     'user_albums_editable': Album,
     'titles': Artwork,
-    'artists': Artist,
+    'artists': Person,
     'keywords': Keyword,
     'locations': Location,
     'users': get_user_model(),

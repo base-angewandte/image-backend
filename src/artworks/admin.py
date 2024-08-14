@@ -13,7 +13,7 @@ from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
 
 from .forms import ArtworkAdminForm
-from .models import Artist, Artwork, DiscriminatoryTerm, Keyword, Location
+from .models import Artwork, DiscriminatoryTerm, Keyword, Location, Person
 
 
 def external_metadata_html(external_metadata):
@@ -39,8 +39,8 @@ class ArtistFilter(admin.SimpleListFilter):
     template = 'admin/filters/filter-autocomplete.html'
 
     def lookups(self, request, model_admin):
-        artists = [(str(artist.id), artist.name) for artist in Artist.objects.all()]
-        return artists
+        persons = [(str(person.id), person.name) for person in Person.objects.all()]
+        return persons
 
     def queryset(self, request, queryset):
         val = self.value()
@@ -137,8 +137,8 @@ class ArtworkAdmin(admin.ModelAdmin):
             return format_html('none')
 
 
-@admin.register(Artist)
-class ArtistAdmin(admin.ModelAdmin):
+@admin.register(Person)
+class PersonAdmin(admin.ModelAdmin):
     exclude = ['external_metadata']
     readonly_fields = ('date_created', 'date_changed', 'external_metadata_json')
     list_display = ('name', 'gnd_id', 'gnd_overwrite', 'date_created', 'date_changed')

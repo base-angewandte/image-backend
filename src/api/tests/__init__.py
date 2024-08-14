@@ -6,7 +6,7 @@ from rest_framework.test import APITestCase as RestFrameworkAPITestCase
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from artworks.models import Album, Artist, Artwork, Keyword, Location
+from artworks.models import Album, Artwork, Keyword, Location, Person
 
 
 def temporary_image():  # from https://stackoverflow.com/a/67611074
@@ -80,15 +80,15 @@ class APITestCase(RestFrameworkAPITestCase):
         )
 
         # add artists
-        artemisia = Artist.objects.create(name='Artemisia Gentileschi')
-        warwara = Artist.objects.create(
+        artemisia = Person.objects.create(name='Artemisia Gentileschi')
+        warwara = Person.objects.create(
             name='Warwara Fjodorowna Stepanowa',
             synonyms='Stepanova',
         )
-        valie = Artist.objects.create(name='VALIE EXPORT')
-        Artist.objects.create(name='Wangechi Mutu')
-        Artist.objects.create(name='Lina Bo Bardi')
-        Artist.objects.create(name='Inés Lombardi', synonyms='Ines Lombardi')
+        valie = Person.objects.create(name='VALIE EXPORT')
+        Person.objects.create(name='Wangechi Mutu')
+        Person.objects.create(name='Lina Bo Bardi')
+        Person.objects.create(name='Inés Lombardi', synonyms='Ines Lombardi')
 
         # add artworks
         Artwork.objects.create(
