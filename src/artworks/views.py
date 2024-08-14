@@ -376,7 +376,7 @@ def collections_list(request):
 
 
 @method_decorator(login_required, name='dispatch')
-class PersonAutocomplete(autocomplete.Select2QuerySetView):
+class ArtistAutocomplete(autocomplete.Select2QuerySetView):
     """Return dal suggestions for the artist input field."""
 
     def get_queryset(self):
