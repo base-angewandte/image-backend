@@ -138,7 +138,7 @@ def process_external_metadata(instance):
 
 
 class Person(AbstractBaseModel, MetaDataMixin):
-    """A Person can can fulfill several roles for 0-n artworks."""
+    """A Person can fulfill several roles for 0-n artworks."""
 
     name = models.CharField(
         verbose_name=_('Name'),
