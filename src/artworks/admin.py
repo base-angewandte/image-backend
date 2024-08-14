@@ -34,7 +34,7 @@ def external_metadata_html(external_metadata):
 
 class ArtistFilter(admin.SimpleListFilter):
     title = _('Artist')
-    parameter_name = 'artists'
+    parameter_name = 'artist'
     query_filter = 'artists__id'
     template = 'admin/filters/filter-autocomplete.html'
 
