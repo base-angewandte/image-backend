@@ -39,7 +39,7 @@ def fetch_gnd_data(gnd_id):
         return fetch_data(url, headers=headers)
 
 
-def fetch_wikidata(link):
-    if link:
-        url = link + '.json'
+def fetch_wikidata(wikidata_id):
+    if wikidata_id:
+        url = wikidata_id + '.json'
         return fetch_data(url)
