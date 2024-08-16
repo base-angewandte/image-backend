@@ -33,9 +33,10 @@ def fetch_getty_data(getty_id):
 
 
 def fetch_gnd_data(gnd_id):
-    url = settings.GND_API_BASE_URL + gnd_id
-    headers = {'Accept': 'application/json'}
-    return fetch_data(url, headers=headers)
+    if gnd_id:
+        url = settings.GND_API_BASE_URL + gnd_id
+        headers = {'Accept': 'application/json'}
+        return fetch_data(url, headers=headers)
 
 
 def fetch_wikidata(link):
