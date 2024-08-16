@@ -1,16 +1,16 @@
-class BaseApiDataError(Exception):
+class FetchDataError(Exception):
     pass
 
 
-class DataNotFoundError(BaseApiDataError):
+class DataNotFoundError(FetchDataError):
     pass
 
 
-class RequestError(BaseApiDataError):
+class RequestError(FetchDataError):
     pass
 
 
-class HTTPError(BaseApiDataError):
+class HTTPError(FetchDataError):
     def __init__(self, status_code, details=None):
         self.status_code = status_code
         self.details = details
