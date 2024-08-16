@@ -36,7 +36,7 @@ urlpatterns = [
     path('', include('artworks.urls')),
     path('api/', include('api.urls')),
     # django admin
-    path('editing/', include('artworks.urls_admin')),
+    path('editing/', include('artworks.admin.urls')),
     path('editing/', admin.site.urls),
     path('editing/', include('massadmin.urls')),
     path(

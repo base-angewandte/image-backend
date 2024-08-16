@@ -6,6 +6,6 @@ urlpatterns = [
     path(
         'multi-artwork-creation/',
         MultiArtworkCreationFormView.as_view(),
-        name='multi_artwork_creation',
+        name='multi-artwork-creation',
     ),
 ]

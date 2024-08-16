@@ -1,51 +1,17 @@
-import json
-
 from mptt.admin import MPTTModelAdmin
 
-from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.widgets import get_select2_language
 from django.db import models
-from django.forms import Textarea, TextInput
-from django.templatetags.static import static
+from django.forms import Media, Textarea, TextInput
 from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
 
+from ..models import Artwork, DiscriminatoryTerm, Keyword, Location, Person
+from .filters import ArtistFilter
 from .forms import ArtworkAdminForm
-from .models import Artwork, DiscriminatoryTerm, Keyword, Location, Person
-
-
-def external_metadata_html(external_metadata):
-    value = json.dumps(external_metadata, indent=2, ensure_ascii=False)
-    style = static('highlight/styles/intellij-light.min.css')
-    js = static('highlight/highlight.min.js')
-
-    return format_html(
-        '<pre style="max-height:300px"><code class="language-json">{}</code></pre>'
-        '<link rel="stylesheet" href="{}">'
-        '<script src="{}"></script>'
-        '<script>hljs.highlightAll();</script>',
-        value,
-        style,
-        js,
-    )
-
-
-class ArtistFilter(admin.SimpleListFilter):
-    title = _('Artist')
-    parameter_name = 'artist'
-    query_filter = 'artists__id'
-    template = 'admin/filters/filter-autocomplete.html'
-
-    def lookups(self, request, model_admin):
-        persons = [(str(person.id), person.name) for person in Person.objects.all()]
-        return persons
-
-    def queryset(self, request, queryset):
-        val = self.value()
-        if val:
-            return queryset.filter(**{self.query_filter: val})
+from .utils import external_metadata_html
 
 
 @admin.register(Artwork)
@@ -97,7 +63,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'date_created',
         'date_changed',
     )
-    change_list_template = 'admin/artwork/change_list.html'
+    change_list_template = 'admin/artworks/change_list.html'
 
     @property
     def media(self):
@@ -106,7 +72,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         i18n_file = (
             (f'admin/js/vendor/select2/i18n/{i18n_name}.js',) if i18n_name else ()
         )
-        return forms.Media(
+        return Media(
             js=(
                 f'admin/js/vendor/jquery/jquery{extra}.js',
                 f'admin/js/vendor/select2/select2.full{extra}.js',
