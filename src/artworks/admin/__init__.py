@@ -78,7 +78,7 @@ class ArtworkAdmin(admin.ModelAdmin):
                 f'admin/js/vendor/select2/select2.full{extra}.js',
                 *i18n_file,
                 'admin/js/jquery.init.js',
-                'js/artwork_form.js',
+                'admin/js/artwork_form.js',
             ),
             css={
                 'screen': (
