@@ -22,24 +22,9 @@ from .fetch import fetch_getty_data, fetch_gnd_data, fetch_wikidata
 from .fetch.exceptions import DataNotFoundError, HTTPError, RequestError
 from .managers import ArtworkManager
 from .mixins import MetaDataMixin
+from .validators import validate_getty_id, validate_gnd_id
 
 logger = logging.getLogger(__name__)
-
-
-def validate_gnd_id(gnd_id):
-    if not re.match(
-        settings.GND_ID_REGEX,
-        gnd_id,
-    ):
-        raise ValidationError(_('Invalid GND ID format.'))
-
-
-def validate_getty_id(getty_id):
-    if not re.match(
-        settings.GETTY_ID_REGEX,
-        getty_id,
-    ):
-        raise ValidationError(_('Invalid Getty AAT ID format.'))
 
 
 def process_external_metadata(instance):
