@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError
 
-from artworks.models import Artist, Keyword, Location
+from artworks.models import Keyword, Location, Person
 
 
 class Command(BaseCommand):
@@ -103,11 +103,11 @@ class Command(BaseCommand):
             # Check if the data exists in the corresponding model and handle special cases
             if data_type == 'artist':
                 try:
-                    artist = Artist.objects.get(name=entry[0])
-                except Artist.DoesNotExist:
+                    artist = Person.objects.get(name=entry[0])
+                except Person.DoesNotExist:
                     entries_not_found.append(entry)
                     continue
-                except Artist.MultipleObjectsReturned:
+                except Person.MultipleObjectsReturned:
                     indistinct_names.append(entry)
                     continue
             elif data_type == 'location':
