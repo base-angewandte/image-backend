@@ -425,7 +425,7 @@ class Location(MPTTModel, MetaDataMixin):
 
     def update_with_gnd_data(self, gnd_data):
         self.set_external_metadata('gnd', gnd_data)
-        wikidata_data = None
+        simplified_wikidata_data = None
         if wikidata_link := self.get_wikidata_link(gnd_data):
             try:
                 wikidata_data = fetch_wikidata(wikidata_link)
@@ -458,7 +458,7 @@ class Location(MPTTModel, MetaDataMixin):
             self.set_name_from_gnd_data(gnd_data)
             self.set_synonyms_from_gnd_data(gnd_data)
             self.name_en = ''
-            if wikidata_data:
+            if simplified_wikidata_data:
                 self.set_name_en_from_wikidata(simplified_wikidata_data)
 
     def get_wikidata_link(self, gnd_data):
