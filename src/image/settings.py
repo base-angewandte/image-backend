@@ -289,10 +289,7 @@ STORAGES = {
     },
 }
 
-STATICFILES_DIRS = (
-    # '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'static')), os.sep),
-    BASE_DIR / 'image' / 'static_dev',
-)
+STATICFILES_DIRS = (BASE_DIR / 'static',)
 
 STATIC_URL = '{}/static/'.format(FORCE_SCRIPT_NAME if FORCE_SCRIPT_NAME else '')
 STATIC_ROOT = '{}{}'.format(
