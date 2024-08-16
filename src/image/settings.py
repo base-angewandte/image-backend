@@ -275,7 +275,7 @@ LANGUAGES = (
 
 LANGUAGES_DICT = dict(LANGUAGES)
 
-LOCALE_PATHS = (BASE_DIR / 'image' / 'locale',)
+LOCALE_PATHS = (BASE_DIR / 'locale',)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
