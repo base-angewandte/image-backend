@@ -20,16 +20,8 @@ from .models import Album, Artwork
 logger = logging.getLogger(__name__)
 
 
-def collection_download_as_pptx_en(request, album_id=None):
-    return collection_download_as_pptx(request, album_id, 'en')
-
-
-def collection_download_as_pptx_de(request, album_id=None):
-    return collection_download_as_pptx(request, album_id, 'de')
-
-
-def collection_download_as_pptx(request, album_id=None, language='de'):
-    """Return a downloadable powerpoint presentation of the collection."""
+def album_download_as_pptx(album_id, language='en'):
+    """Return a downloadable powerpoint presentation of the album."""
 
     def get_new_slide():
         blank_slide_layout = prs.slide_layouts[6]
