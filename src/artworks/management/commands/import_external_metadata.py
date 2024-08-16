@@ -77,7 +77,7 @@ class Command(BaseCommand):
             ]
         if invalid_ids:
             raise CommandError(
-                'Your dataset contains the following invalid GND IDs:\n'
+                f'Your dataset contains the following invalid {settings.GND_LABEL} IDs:\n'
                 + '\n'.join(invalid_ids),
             )
         # entries_not_found: initialize the Artist model and check
@@ -255,7 +255,7 @@ class Command(BaseCommand):
         if gnd_data_not_found:
             self.stdout.write(
                 self.style.WARNING(
-                    f'No GND entry found for {len(gnd_data_not_found)} IDs:',
+                    f'No {settings.GND_LABEL} entry found for {len(gnd_data_not_found)} IDs:',
                 ),
             )
             for entry in gnd_data_not_found:
@@ -263,7 +263,7 @@ class Command(BaseCommand):
         if getty_data_not_found:
             self.stdout.write(
                 self.style.WARNING(
-                    f'No Getty AAT data entry found for {len(gnd_data_not_found)} IDs:',
+                    f'No {settings.GETTY_LABEL} data entry found for {len(gnd_data_not_found)} IDs:',
                 ),
             )
             for entry in getty_data_not_found:

@@ -34,11 +34,15 @@ def process_external_metadata(instance):
     It is used by both clean functions of Person and Location.
     """
     if not instance.name and not instance.gnd_id:
-        raise ValidationError(_('Either a name or a valid GND ID need to be set'))
+        raise ValidationError(
+            _('Either a name or a valid %(label)s ID need to be set')
+            % {'label': settings.GND_LABEL},
+        )
 
     if instance.gnd_id:
         # Validate the gnd_id and fetch the external metadata
         validate_gnd_id(instance.gnd_id)
+
         # Fetch the external metadata
         try:
             gnd_data = fetch_gnd_data(instance.gnd_id)
@@ -46,35 +50,40 @@ def process_external_metadata(instance):
         except DataNotFoundError as err:
             raise ValidationError(
                 {
-                    'gnd_id': _('No GND ID entry was found with GND ID %(gnd_id)s.')
-                    % {'gnd_id': instance.gnd_id},
+                    'gnd_id': _('No %(label)s entry was found for %(label)s ID %(id)s.')
+                    % {
+                        'label': settings.GND_LABEL,
+                        'id': instance.gnd_id,
+                    },
                 },
             ) from err
         except HTTPError as err:
             logger.warning(
-                f'HTTP error {err.status_code} when retrieving GND ID data: {err.details}',
+                f'HTTP error {err.status_code} when retrieving {settings.GND_LABEL} data: {err.details}',
             )
             raise ValidationError(
                 {
                     'gnd_id': _(
-                        'HTTP error %(status_code)s when retrieving GND ID data: %(details)s',
+                        'HTTP error %(status_code)s when retrieving %(label)s data: %(details)s',
                     )
                     % {
                         'status_code': err.status_code,
+                        'label': settings.GND_LABEL,
                         'details': err.details,
                     },
                 },
             ) from err
         except RequestError as err:
             logger.warning(
-                f'Request error when retrieving GND ID data. Details: {repr(err)}',
+                f'Request error when retrieving {settings.GND_LABEL} data. Details: {repr(err)}',
             )
             raise ValidationError(
                 {
                     'gnd_id': _(
-                        'Request error when retrieving GND ID data. Details: %(error)s',
+                        'Request error when retrieving %(label)s data. Details: %(error)s',
                     )
                     % {
+                        'label': settings.GND_LABEL,
                         'error': repr(err),
                     },
                 },
@@ -106,10 +115,17 @@ class Person(AbstractBaseModel, MetaDataMixin):
         blank=True,
         help_text=_('Overrides birth and death dates for display, if not empty.'),
     )
-    gnd_id = models.CharField(max_length=16, null=True, blank=True, unique=True)
+    gnd_id = models.CharField(
+        verbose_name=_('%(label)s ID') % {'label': settings.GND_LABEL},
+        max_length=16,
+        null=True,
+        blank=True,
+        unique=True,
+    )
     gnd_overwrite = models.BooleanField(
         default=True,
-        help_text=_('Overwrite entry with data from GND?'),
+        help_text=_('Overwrite entry with data from %(label)s?')
+        % {'label': settings.GND_LABEL},
     )
     external_metadata = JSONField(null=True, blank=True, default=dict)
 
@@ -237,7 +253,7 @@ class Keyword(MPTTModel, MetaDataMixin):
         related_name='children',
     )
     getty_id = models.URLField(
-        verbose_name=_('Getty AAT ID'),
+        verbose_name=_('%(label)s ID') % {'label': settings.GETTY_LABEL},
         max_length=255,
         blank=True,
         null=True,
@@ -245,7 +261,8 @@ class Keyword(MPTTModel, MetaDataMixin):
     )
     getty_overwrite = models.BooleanField(
         default=True,
-        help_text=_('Overwrite Name, English with data from Getty AAT?'),
+        help_text=_('Overwrite Name, English with data from %(label)s?')
+        % {'label': settings.GETTY_LABEL},
     )
     external_metadata = JSONField(
         null=True,
@@ -276,33 +293,43 @@ class Keyword(MPTTModel, MetaDataMixin):
                 raise ValidationError(
                     {
                         'getty_id': _(
-                            'No Getty AAT entry was found with Getty AAT ID %(getty_id)s.',
+                            'No %(label)s entry was found for %(label)s ID %(id)s.',
                         )
-                        % {'getty_id': self.getty_id},
+                        % {
+                            'label': settings.GETTY_LABEL,
+                            'id': self.getty_id,
+                        },
                     },
                 ) from err
             except HTTPError as err:
                 logger.warning(
-                    f'HTTP error {err.status_code} when retrieving Getty AAT data: {err.details}',
+                    f'HTTP error {err.status_code} when retrieving {settings.GETTY_LABEL} data: {err.details}',
                 )
                 raise ValidationError(
                     {
                         'getty_id': _(
-                            'HTTP error %(status_code)s when retrieving Getty AAT data: %(details)s',
+                            'HTTP error %(status_code)s when retrieving %(label)s data: %(details)s',
                         )
-                        % {'status_code': err.status_code, 'details': err.details},
+                        % {
+                            'status_code': err.status_code,
+                            'label': settings.GETTY_LABEL,
+                            'details': err.details,
+                        },
                     },
                 ) from err
             except RequestError as err:
                 logger.warning(
-                    f'Request error when retrieving Getty AAT data. Details: {repr(err)}',
+                    f'Request error when retrieving {settings.GETTY_LABEL} data. Details: {repr(err)}',
                 )
                 raise ValidationError(
                     {
                         'getty_id': _(
-                            'Request error when retrieving Getty AAT data: %(error)s',
+                            'Request error when retrieving %(label)s data: %(error)s',
                         )
-                        % {'error': repr(err)},
+                        % {
+                            'label': settings.GETTY_LABEL,
+                            'error': repr(err),
+                        },
                     },
                 ) from err
         elif self.external_metadata:
@@ -344,10 +371,17 @@ class Location(MPTTModel, MetaDataMixin):
         blank=True,
         related_name='children',
     )
-    gnd_id = models.CharField(max_length=16, null=True, blank=True, unique=True)
+    gnd_id = models.CharField(
+        verbose_name=_('%(label)s ID') % {'label': settings.GND_LABEL},
+        max_length=16,
+        null=True,
+        blank=True,
+        unique=True,
+    )
     gnd_overwrite = models.BooleanField(
         default=True,
-        help_text=_('Overwrite entry with data from GND?'),
+        help_text=_('Overwrite entry with data from %(label)s?')
+        % {'label': settings.GND_LABEL},
     )
 
     external_metadata = JSONField(null=True, blank=True, default=dict)
@@ -378,8 +412,9 @@ class Location(MPTTModel, MetaDataMixin):
         else:
             raise ValidationError(
                 _(
-                    'The GND database does not provide a preferred name for this GND ID.',
-                ),
+                    'The %(label)s database does not provide a preferred name for this %(label)s ID.',
+                )
+                % {'label': settings.GND_LABEL},
             )
 
     def set_synonyms_from_gnd_data(self, gnd_data):
@@ -411,11 +446,11 @@ class Location(MPTTModel, MetaDataMixin):
                 pass
             except HTTPError as err:
                 logger.warning(
-                    f'HTTP error {err.status_code} when retrieving Wikidata data: {err.details}',
+                    f'HTTP error {err.status_code} when retrieving {settings.WIKIDATA_LABEL} data: {err.details}',
                 )
             except RequestError as err:
                 logger.warning(
-                    f'Request error when retrieving Wikidata data. Details: {repr(err)}',
+                    f'Request error when retrieving {settings.WIKIDATA_LABEL} data. Details: {repr(err)}',
                 )
         else:
             self.delete_external_metadata('wikidata')
