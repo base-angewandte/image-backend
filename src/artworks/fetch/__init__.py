@@ -28,18 +28,18 @@ def fetch_data(url, headers=None, params=None):
 
 def fetch_getty_data(getty_id):
     if getty_id:
-        url = getty_id + '.json'
+        url = f'{getty_id}.json'
         return fetch_data(url)
 
 
 def fetch_gnd_data(gnd_id):
     if gnd_id:
-        url = settings.GND_API_BASE_URL + gnd_id
+        url = f'{settings.GND_API_BASE_URL}{gnd_id}'
         headers = {'Accept': 'application/json'}
         return fetch_data(url, headers=headers)
 
 
 def fetch_wikidata(wikidata_id):
     if wikidata_id:
-        url = wikidata_id + '.json'
+        url = f'{wikidata_id}.json'
         return fetch_data(url)
