@@ -5,17 +5,14 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 
+def validate_id(id_, regex, label):
+    if not re.match(regex, id_):
+        raise ValidationError(_('Invalid %(label)s ID format.') % {'label': label})
+
+
 def validate_gnd_id(gnd_id):
-    if not re.match(
-        settings.GND_ID_REGEX,
-        gnd_id,
-    ):
-        raise ValidationError(_('Invalid GND ID format.'))
+    validate_id(gnd_id, settings.GND_ID_REGEX, settings.GND_LABEL)
 
 
 def validate_getty_id(getty_id):
-    if not re.match(
-        settings.GETTY_ID_REGEX,
-        getty_id,
-    ):
-        raise ValidationError(_('Invalid Getty AAT ID format.'))
+    validate_id(getty_id, settings.GETTY_ID_REGEX, settings.GETTY_LABEL)
