@@ -2,7 +2,6 @@ import logging
 import re
 from pathlib import Path
 
-import requests
 from base_common.fields import ShortUUIDField
 from base_common.models import AbstractBaseModel
 from mptt.models import MPTTModel, TreeForeignKey
@@ -19,7 +18,8 @@ from django.db.models.functions import Upper
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from .exceptions import DataNotFoundError, HTTPError, RequestError
+from .fetch import fetch_getty_data, fetch_gnd_data, fetch_wikidata
+from .fetch.exceptions import DataNotFoundError, HTTPError, RequestError
 from .managers import ArtworkManager
 from .mixins import MetaDataMixin
 
@@ -40,45 +40,6 @@ def validate_getty_id(getty_id):
         getty_id,
     ):
         raise ValidationError(_('Invalid Getty AAT ID format.'))
-
-
-def fetch_data(url, headers=None, params=None):
-    try:
-        response = requests.get(
-            url,
-            headers=headers,
-            params=params,
-            timeout=settings.REQUESTS_TIMEOUT,
-        )
-    except requests.RequestException as e:
-        raise RequestError from e
-    if response.status_code != 200:
-        if response.status_code == 404:
-            raise DataNotFoundError
-        raise HTTPError(
-            response.status_code,
-            response.text,
-        )
-
-    return response.json()
-
-
-def fetch_getty_data(getty_id):
-    if getty_id:
-        url = getty_id + '.json'
-        return fetch_data(url)
-
-
-def fetch_gnd_data(gnd_id):
-    url = settings.GND_API_BASE_URL + gnd_id
-    headers = {'Accept': 'application/json'}
-    return fetch_data(url, headers=headers)
-
-
-def fetch_wikidata(link):
-    if link:
-        url = link + '.json'
-        return fetch_data(url)
 
 
 def process_external_metadata(instance):
