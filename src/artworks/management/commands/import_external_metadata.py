@@ -85,8 +85,7 @@ class Command(BaseCommand):
         entries_not_found = []
         # indistinct_names: add all double entries of an artist's name from the db to the list
         indistinct_names = []
-        gnd_data_not_found = []
-        getty_data_not_found = []
+        data_not_found = []
         request_errors = []
         # updated: if the name generated from the GND data doesn't differ from the one originally stored in image,
         # we update the whole entry, including the name and if not we update without the name
@@ -100,133 +99,101 @@ class Command(BaseCommand):
             if options['show_progress'] and count % 10 == 0:
                 self.stdout.write(f'[status] {count} of {total} processed')
             count += 1
+
             # Check if the data exists in the corresponding model and handle special cases
-            if data_type == 'artist':
-                try:
-                    artist = Person.objects.get(name=entry[0])
-                except Person.DoesNotExist:
-                    entries_not_found.append(entry)
-                    continue
-                except Person.MultipleObjectsReturned:
-                    indistinct_names.append(entry)
-                    continue
-            elif data_type == 'location':
-                try:
-                    location = Location.objects.get(name=entry[0])
-                except Location.DoesNotExist:
-                    entries_not_found.append(entry)
-                    continue
-                except Location.MultipleObjectsReturned:
-                    indistinct_names.append(entry)
-                    continue
-            elif data_type == 'keyword':
-                try:
-                    keyword = Keyword.objects.get(name=entry[0])
-                except Keyword.DoesNotExist:
-                    entries_not_found.append(entry)
-                    continue
-                except Keyword.MultipleObjectsReturned:
-                    indistinct_names.append(entry)
-                    continue
+            Model = {  # noqa: N806
+                'artist': Person,
+                'location': Location,
+                'keyword': Keyword,
+            }[data_type]
+
+            try:
+                instance = Model.objects.get(name=entry[0])
+            except Model.DoesNotExist:
+                entries_not_found.append(entry)
+                continue
+            except Model.MultipleObjectsReturned:
+                indistinct_names.append(entry)
+                continue
 
             # Retrieve external metadata
-            if data_type in ['artist', 'location']:
-                try:
-                    response = requests.get(
-                        settings.GND_API_BASE_URL + entry[1],
-                        timeout=settings.REQUESTS_TIMEOUT,
-                    )
-                except requests.RequestException:
+            gnd_url = f'{settings.GND_API_BASE_URL}{entry[1]}'
+            getty_url = f'{entry[1]}.json'
+            url = {
+                'artist': gnd_url,
+                'location': gnd_url,
+                'keyword': getty_url,
+            }[data_type]
+
+            try:
+                response = requests.get(
+                    url,
+                    timeout=settings.REQUESTS_TIMEOUT,
+                )
+            except requests.RequestException:
+                request_errors.append(entry)
+                continue
+            if response.status_code != 200:
+                if response.status_code == 404:
+                    data_not_found.append(entry)
+                else:
                     request_errors.append(entry)
-                    continue
-                if response.status_code != 200:
-                    if response.status_code == 404:
-                        gnd_data_not_found.append(entry)
-                    else:
-                        request_errors.append(entry)
-                    continue
-                gnd_data = response.json()
-            elif data_type == 'keyword':
-                try:
-                    response = requests.get(
-                        entry[1] + '.json',
-                        timeout=settings.REQUESTS_TIMEOUT,
-                    )
-                except requests.RequestException:
-                    request_errors.append(entry)
-                    continue
-                if response.status_code != 200:
-                    if response.status_code == 404:
-                        getty_data_not_found.append(entry)
-                    else:
-                        request_errors.append(entry)
-                    continue
-                getty_data = response.json()
+                continue
+            data = response.json()
 
             # Process retrieved data
-            if data_type == 'artist':
-                artist.gnd_id = entry[1]
-                artist.gnd_overwrite = True
-                artist.update_with_gnd_data(gnd_data)
+            if data_type in ['artist', 'location']:
+                instance.gnd_id = entry[1]
+                instance.gnd_overwrite = True
+                instance.update_with_gnd_data(data)
 
                 # if the name generated from the GND data differs from the one
                 # originally stored in image, we restore the old name and
                 # deactivate the gnd_overwrite flag
-                if artist.name != entry[0]:
-                    artist.name = entry[0]
-                    artist.gnd_overwrite = False
+                if instance.name != entry[0]:
+                    instance.name = entry[0]
+                    instance.gnd_overwrite = False
                     updated_without_name.append(entry)
                 else:
                     updated.append(entry)
+
                 try:
-                    artist.save()
-                except ValidationError:
-                    # try to store potentially invalid dates in date_display first
-                    # this can happen if a date has valid format but is not a real
-                    # calendar date (e.g. a Feb. 29 in a non-leap-year)
-                    try:
-                        artist.date_display = (
-                            f'{artist.date_birth} - {artist.date_death}'
-                        )
-                        artist.date_birth = None
-                        artist.date_death = None
-                        artist.save()
-                    except ValidationError as e:
-                        validation_errors.append((entry, repr(e)))
-                except IntegrityError as e:
-                    integrity_errors.append((entry, repr(e)))
-            elif data_type == 'location':
-                location.gnd_id = entry[1]
-                location.gnd_overwrite = True
-                location.update_with_gnd_data(gnd_data)
-                # if the name generated from the GND data differs from the one
-                # originally stored in image, we restore the old name and
-                # deactivate the gnd_overwrite flag
-                if location.name != entry[0]:
-                    location.name = entry[0]
-                    location.gnd_overwrite = False
-                    updated_without_name.append(entry)
-                else:
-                    updated.append(entry)
-                try:
-                    location.save()
+                    instance.save()
+                except ValidationError as ve:
+                    if data_type == 'artist':
+                        # try to store potentially invalid dates in date_display first
+                        # this can happen if a date has valid format but is not a real
+                        # calendar date (e.g. a Feb. 29 in a non-leap-year)
+                        try:
+                            instance.date_display = (
+                                f'{instance.date_birth} - {instance.date_death}'
+                            )
+                            instance.date_birth = None
+                            instance.date_death = None
+                            instance.save()
+                        except ValidationError as e:
+                            validation_errors.append((entry, repr(e)))
+                    else:
+                        validation_errors.append((entry, repr(ve)))
                 except IntegrityError as e:
                     integrity_errors.append((entry, repr(e)))
             elif data_type == 'keyword':
-                keyword.getty_id = entry[1]
-                keyword.getty_overwrite = True
-                keyword.update_with_getty_data(getty_data)
+                instance.getty_id = entry[1]
+                instance.getty_overwrite = True
+                instance.update_with_getty_data(data)
+
                 # if the name generated from the Getty AAT differs from the one
                 # originally stored in image, we restore the old name and
                 # deactivate the getty_overwrite flag
-                if keyword.name != entry[0]:
-                    keyword.name = entry[0]
-                    keyword.getty_overwrite = False
+                if instance.name != entry[0]:
+                    instance.name = entry[0]
+                    instance.getty_overwrite = False
                     updated_without_name.append(entry)
                 else:
                     updated.append(entry)
+
                 try:
-                    keyword.save()
+                    instance.save()
                 except IntegrityError as e:
                     integrity_errors.append((entry, repr(e)))
 
@@ -252,21 +219,19 @@ class Command(BaseCommand):
             )
             for entry in indistinct_names:
                 self.stdout.write(entry[0])
-        if gnd_data_not_found:
+        if data_not_found:
+            label = {
+                'artist': settings.GND_LABEL,
+                'location': settings.GND_LABEL,
+                'keyword': settings.GETTY_LABEL,
+            }[data_type]
+
             self.stdout.write(
                 self.style.WARNING(
-                    f'No {settings.GND_LABEL} entry found for {len(gnd_data_not_found)} IDs:',
+                    f'No {label} entry found for {len(data_not_found)} IDs:',
                 ),
             )
-            for entry in gnd_data_not_found:
-                self.stdout.write(f'{entry[1]} for {entry[0]}')
-        if getty_data_not_found:
-            self.stdout.write(
-                self.style.WARNING(
-                    f'No {settings.GETTY_LABEL} data entry found for {len(gnd_data_not_found)} IDs:',
-                ),
-            )
-            for entry in getty_data_not_found:
+            for entry in data_not_found:
                 self.stdout.write(f'{entry[1]} for {entry[0]}')
         if request_errors:
             self.stdout.write(
@@ -274,20 +239,19 @@ class Command(BaseCommand):
             )
             for entry in request_errors:
                 self.stdout.write(f'{entry[1]} for {entry[0]}')
-        if data_type == 'artist':
-            if validation_errors:
-                self.stdout.write(
-                    self.style.ERROR(
-                        f'Validation error for {len(validation_errors)} entries:',
-                    ),
-                )
-                for entry in validation_errors:
-                    self.stdout.write(f'{entry[0][1]} {entry[0][0]}: {entry[1]}')
-            if integrity_errors:
-                self.stdout.write(
-                    self.style.ERROR(
-                        f'Integrity error for {len(integrity_errors)} entries:',
-                    ),
-                )
-                for entry in integrity_errors:
-                    self.stdout.write(f'{entry[0][1]} {entry[0][0]}: {entry[1]}')
+        if validation_errors:
+            self.stdout.write(
+                self.style.ERROR(
+                    f'Validation error for {len(validation_errors)} entries:',
+                ),
+            )
+            for entry in validation_errors:
+                self.stdout.write(f'{entry[0][1]} {entry[0][0]}: {entry[1]}')
+        if integrity_errors:
+            self.stdout.write(
+                self.style.ERROR(
+                    f'Integrity error for {len(integrity_errors)} entries:',
+                ),
+            )
+            for entry in integrity_errors:
+                self.stdout.write(f'{entry[0][1]} {entry[0][0]}: {entry[1]}')
