@@ -1,10 +1,8 @@
+!*.mo
 media
 fixtures
 src/assets/
 dockerdata/
 compose.override.yaml
-secret_key.py
 logs/
 tmp/
-.python-version
-.idea
