@@ -236,7 +236,7 @@ def search(request, *args, **kwargs):
         f'ORDER BY {order_by} '
         'LIMIT %s OFFSET %s',
         params=(*subq_params, limit, offset),
-    ).prefetch_related('artists')
+    ).prefetch_related('artists', 'discriminatory_terms')
 
     total = 0
     results = []
