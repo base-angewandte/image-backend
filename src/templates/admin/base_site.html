@@ -58,7 +58,41 @@
   --object-tools-hover-bg: var(--close-button-hover-bg);
 }
 </style>
-<style>body{background-color:#f0f0f0;}#content{background-color:#fff;}#content-related{background-color:transparent;}#container{box-sizing:border-box;margin:0 auto;max-width:1400px;min-width:305px;padding:76px 8px 8px;position:relative;}@media only screen and (min-width:640px){#container{padding:92px 16px 16px;}}#header{background:none;flex-direction:row !important;height:10px;padding:0 !important;}</style>
+
+{# styles for base header #}
+{% if not form.username and not form.password %}
+<style>
+body{
+  background-color: #f0f0f0;
+}
+#content{
+  background-color: #fff;
+}
+#content-related{
+  background-color: transparent;
+}
+#container{
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 1400px;
+  min-width: 305px;
+  padding: 76px 8px 8px;
+  position: relative;
+}
+#header{
+  background: none;
+  flex-direction: row !important;
+  height: 10px;
+  padding: 0 !important;
+}
+
+@media only screen and (min-width:640px){
+  #container{
+    padding: 92px 16px 16px;
+  }
+}
+</style>
+{% endif %}
 {% endblock %}
 
 {% block branding %}
