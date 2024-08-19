@@ -34,11 +34,13 @@ urlpatterns = [
         RedirectView.as_view(url=reverse_lazy('schema-docs', kwargs={'version': 'v1'})),
         name='index',
     ),
+    # api
     path('api/', include('api.urls')),
     # django admin
     path('editing/', include('artworks.admin.urls')),
     path('editing/', admin.site.urls),
     path('editing/', include('massadmin.urls')),
+    # django cas ng
     path(
         r'accounts/login/',
         django_cas_ng.views.LoginView.as_view(),
@@ -54,6 +56,7 @@ urlpatterns = [
         django_cas_ng.views.CallbackView.as_view(),
         name='cas_ng_proxy_callback',
     ),
+    # i18n
     path('i18n/', include('django.conf.urls.i18n')),
 ]
 
