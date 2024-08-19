@@ -83,6 +83,8 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[urlparse(SITE_URL).hostname])
 
 BEHIND_PROXY = env.bool('BEHIND_PROXY', default=True)
 
+DJANGO_ADMIN_PATH = env.str('DJANGO_ADMIN_PATH', default='editing')
+
 ADMINS = getaddresses(
     [env('DJANGO_ADMINS', default='Philipp Mayer <philipp.mayer@uni-ak.ac.at>')],
 )
