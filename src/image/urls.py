@@ -22,8 +22,6 @@ from django.contrib.auth.decorators import login_required
 from django.urls import include, path
 from django.utils.translation import gettext_lazy as _
 
-js_info_dict = {'packages': ('languages',)}
-
 admin.site.login = login_required(admin.site.login)
 admin.site.index_title = _('Image Admin')
 admin.site.site_header = _('Image Admin')
