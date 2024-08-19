@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-16 17:12+0200\n"
+"POT-Creation-Date: 2024-08-19 15:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -128,11 +128,11 @@ msgstr ""
 msgid "Album does not exist"
 msgstr ""
 
-#: api/views/albums.py:706
+#: api/views/albums.py:705
 msgid "Not implemented yet"
 msgstr ""
 
-#: api/views/albums.py:710
+#: api/views/albums.py:709
 msgid "Invalid format"
 msgstr ""
 
@@ -186,7 +186,7 @@ msgstr "Bilder"
 msgid "Images successfully uploaded"
 msgstr "Bilder erfolgreich hochgeladen"
 
-#: artworks/admin/views.py:40 image/templates/admin/artworks/change_list.html:6
+#: artworks/admin/views.py:40 templates/admin/artworks/change_list.html:6
 msgid "Upload multiple images"
 msgstr "Mehrere Bilder hochladen"
 
@@ -194,17 +194,17 @@ msgstr "Mehrere Bilder hochladen"
 msgid "Image Content"
 msgstr "Image Daten"
 
-#: artworks/exports.py:181
+#: artworks/exports.py:173
 msgid ""
 "Too many artworks per slides. You can only have two artworks per slide. "
 "Please edit slides."
 msgstr ""
 
-#: artworks/exports.py:189
+#: artworks/exports.py:181
 msgid "There is no artwork associated with id {artwork_in_slide.get(\"id\")}."
 msgstr ""
 
-#: artworks/exports.py:197
+#: artworks/exports.py:189
 msgid ""
 "There is no image associated with artwork with id {artwork_in_slide."
 "get('id')}; it's a directory"
@@ -248,11 +248,6 @@ msgid "Overrides birth and death dates for display, if not empty."
 msgstr ""
 "Wird anstatt Geburts- und Todestag bei der Anzeige verwendet, sofern nicht "
 "leergelassen."
-
-#: artworks/models.py:119 artworks/models.py:256 artworks/models.py:375
-#, python-format
-msgid "%(label)s ID"
-msgstr "%(label)s ID"
 
 #: artworks/models.py:127 artworks/models.py:383
 #, python-format
@@ -383,26 +378,30 @@ msgstr "Alben"
 msgid "Invalid %(label)s ID format."
 msgstr "Ungültiges %(label)s ID Format."
 
-#: image/settings.py:272
+#: image/settings.py:279
 msgid "German"
 msgstr "Deutsch"
 
-#: image/settings.py:273
+#: image/settings.py:280
 msgid "English"
 msgstr "Englisch"
 
-#: image/templates/admin/artworks/upload.html:10
+#: templates/admin/artworks/upload.html:10
 msgid "Upload images"
 msgstr "Bilder hochladen"
 
-#: image/templates/admin/base_site.html:4 image/urls.py:32 image/urls.py:33
+#: templates/admin/base_site.html:4
 msgid "Image Admin"
 msgstr "Image Redaktion"
 
-#: image/templates/admin/filters/filter-autocomplete.html:5
+#: templates/admin/filters/filter-autocomplete.html:5
 #, python-format
 msgid " By %(filter_title)s "
 msgstr " Nach %(filter_title)s "
+
+#, python-format
+#~ msgid "%(label)s ID"
+#~ msgstr "%(label)s ID"
 
 #, python-format
 #~ msgid "No %(label)s entry was found with %(label)s ID %(id)s."

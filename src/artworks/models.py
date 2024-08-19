@@ -116,7 +116,7 @@ class Person(AbstractBaseModel, MetaDataMixin):
         help_text=_('Overrides birth and death dates for display, if not empty.'),
     )
     gnd_id = models.CharField(
-        verbose_name=_('%(label)s ID') % {'label': settings.GND_LABEL},
+        verbose_name=f'{settings.GND_LABEL} ID',
         max_length=16,
         null=True,
         blank=True,
@@ -253,7 +253,7 @@ class Keyword(MPTTModel, MetaDataMixin):
         related_name='children',
     )
     getty_id = models.URLField(
-        verbose_name=_('%(label)s ID') % {'label': settings.GETTY_LABEL},
+        verbose_name=f'{settings.GETTY_LABEL} ID',
         max_length=255,
         blank=True,
         null=True,
@@ -372,7 +372,7 @@ class Location(MPTTModel, MetaDataMixin):
         related_name='children',
     )
     gnd_id = models.CharField(
-        verbose_name=_('%(label)s ID') % {'label': settings.GND_LABEL},
+        verbose_name=f'{settings.GND_LABEL} ID',
         max_length=16,
         null=True,
         blank=True,
