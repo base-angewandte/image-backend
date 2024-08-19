@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-19 15:15+0200\n"
+"POT-Creation-Date: 2024-08-19 15:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -378,21 +378,21 @@ msgstr "Alben"
 msgid "Invalid %(label)s ID format."
 msgstr "Ungültiges %(label)s ID Format."
 
-#: image/settings.py:279
+#: image/settings.py:88 templates/admin/base_site.html:4
+msgid "Image Admin"
+msgstr "Image Redaktion"
+
+#: image/settings.py:276
 msgid "German"
 msgstr "Deutsch"
 
-#: image/settings.py:280
+#: image/settings.py:277
 msgid "English"
 msgstr "Englisch"
 
 #: templates/admin/artworks/upload.html:10
 msgid "Upload images"
 msgstr "Bilder hochladen"
-
-#: templates/admin/base_site.html:4
-msgid "Image Admin"
-msgstr "Image Redaktion"
 
 #: templates/admin/filters/filter-autocomplete.html:5
 #, python-format

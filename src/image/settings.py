@@ -85,6 +85,8 @@ BEHIND_PROXY = env.bool('BEHIND_PROXY', default=True)
 
 DJANGO_ADMIN_PATH = env.str('DJANGO_ADMIN_PATH', default='editing')
 
+DJANGO_ADMIN_TITLE = _('Image Admin')
+
 ADMINS = getaddresses(
     [env('DJANGO_ADMINS', default='Philipp Mayer <philipp.mayer@uni-ak.ac.at>')],
 )

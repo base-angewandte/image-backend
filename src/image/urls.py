@@ -20,12 +20,13 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.urls import include, path, reverse_lazy
-from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
 
 admin.site.login = login_required(admin.site.login)
-admin.site.index_title = _('Image Admin')
-admin.site.site_header = _('Image Admin')
+admin.site.index_title = settings.DJANGO_ADMIN_TITLE
+admin.site.site_header = settings.DJANGO_ADMIN_TITLE
+admin.site.site_title = settings.DJANGO_ADMIN_TITLE
+admin.site.site_url = None
 
 urlpatterns = [
     # index
