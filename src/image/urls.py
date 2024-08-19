@@ -19,14 +19,21 @@ import django_cas_ng.views
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
-from django.urls import include, path
+from django.urls import include, path, reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from django.views.generic import RedirectView
 
 admin.site.login = login_required(admin.site.login)
 admin.site.index_title = _('Image Admin')
 admin.site.site_header = _('Image Admin')
 
 urlpatterns = [
+    # index
+    path(
+        '',
+        RedirectView.as_view(url=reverse_lazy('schema-docs', kwargs={'version': 'v1'})),
+        name='index',
+    ),
     path('api/', include('api.urls')),
     # django admin
     path('editing/', include('artworks.admin.urls')),
