@@ -98,6 +98,8 @@ body{
 {% block branding %}
   {% if not form.username and not form.password %}
     {% include 'base_header/base_header.html' %}
+  {% else %}
+    <div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header }}</a></div>
   {% endif %}
 {% endblock %}
 
