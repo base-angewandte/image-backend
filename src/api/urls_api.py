@@ -7,7 +7,6 @@ from rest_framework import routers
 
 from django.urls import include, path
 
-from .autocomplete import urls as autocomplete_urls
 from .views.albums import AlbumsViewSet
 from .views.artworks import ArtworksViewSet
 from .views.folders import FoldersViewSet
@@ -31,7 +30,7 @@ urlpatterns = [
     path('search/', search, name='search'),
     path('search/filters/', search_filters, name='search-filters'),
     # Autocomplete
-    path('autocomplete/', include(autocomplete_urls)),
+    path('autocomplete/', include('api.autocomplete.urls')),
     # Schema
     path('openapi.yaml', SpectacularAPIView.as_view(), name='schema-yaml'),
     path('openapi.json', SpectacularJSONAPIView.as_view(), name='schema-json'),
