@@ -33,12 +33,12 @@ urlpatterns = [
     # Autocomplete
     path('autocomplete/', include(autocomplete_urls)),
     # Schema
-    path('openapi.yaml', SpectacularAPIView.as_view(), name='schema_yaml'),
-    path('openapi.json', SpectacularJSONAPIView.as_view(), name='schema_json'),
+    path('openapi.yaml', SpectacularAPIView.as_view(), name='schema-yaml'),
+    path('openapi.json', SpectacularJSONAPIView.as_view(), name='schema-json'),
     # Schema Docs / Swagger UI
     path(
         'docs/',
-        SpectacularSwaggerView.as_view(url_name='schema_json'),
-        name='schema_docs',
+        SpectacularSwaggerView.as_view(url_name='schema-json'),
+        name='schema-docs',
     ),
 ]
