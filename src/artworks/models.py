@@ -571,7 +571,7 @@ class Artwork(AbstractBaseModel):
         return description
 
     def get_discriminatory_terms_list(self):
-        return list(self.discriminatory_terms.values_list('term', flat=True))
+        return [term.term for term in self.discriminatory_terms.all()]
 
     def update_search_vector(self):
         search_vector = (
