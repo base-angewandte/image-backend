@@ -24,7 +24,6 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.urls import include, path
 from django.utils.translation import gettext_lazy as _
-from django.views.i18n import JavaScriptCatalog
 
 js_info_dict = {'packages': ('languages',)}
 
@@ -54,7 +53,6 @@ urlpatterns = [
         name='cas_ng_proxy_callback',
     ),
     path('i18n/', include('django.conf.urls.i18n')),
-    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 ]
 
 # adding this, so MEDIA dir can be served during development
