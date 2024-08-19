@@ -17,28 +17,31 @@ Including another URLconf
 import django_cas_ng.views
 
 from django.conf import settings
-
-# adding this, so MEDIA dir can be served during development
-from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
-from django.urls import include, path
-from django.utils.translation import gettext_lazy as _
-from django.views.i18n import JavaScriptCatalog
-
-js_info_dict = {'packages': ('languages',)}
+from django.urls import include, path, reverse_lazy
+from django.views.generic import RedirectView
 
 admin.site.login = login_required(admin.site.login)
-admin.site.index_title = _('Image Admin')
-admin.site.site_header = _('Image Admin')
+admin.site.index_title = settings.DJANGO_ADMIN_TITLE
+admin.site.site_header = settings.DJANGO_ADMIN_TITLE
+admin.site.site_title = settings.DJANGO_ADMIN_TITLE
+admin.site.site_url = None
 
 urlpatterns = [
-    path('', include('artworks.urls')),
+    # index
+    path(
+        '',
+        RedirectView.as_view(url=reverse_lazy('schema-docs', kwargs={'version': 'v1'})),
+        name='index',
+    ),
+    # api
     path('api/', include('api.urls')),
     # django admin
-    path('editing/', include('artworks.urls_admin')),
-    path('editing/', admin.site.urls),
-    path('editing/', include('massadmin.urls')),
+    path(f'{settings.DJANGO_ADMIN_PATH}/', include('artworks.admin.urls')),
+    path(f'{settings.DJANGO_ADMIN_PATH}/', admin.site.urls),
+    path(f'{settings.DJANGO_ADMIN_PATH}/', include('massadmin.urls')),
+    # django cas ng
     path(
         r'accounts/login/',
         django_cas_ng.views.LoginView.as_view(),
@@ -54,11 +57,13 @@ urlpatterns = [
         django_cas_ng.views.CallbackView.as_view(),
         name='cas_ng_proxy_callback',
     ),
+    # i18n
     path('i18n/', include('django.conf.urls.i18n')),
-    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 ]
 
-# adding this, so MEDIA dir can be served during development
+# adding this, so static and media files can be served during development
 if settings.DEBUG:
+    from django.conf.urls.static import static
+
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

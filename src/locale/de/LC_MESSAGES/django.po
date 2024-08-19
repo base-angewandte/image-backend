@@ -1,0 +1,544 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-08-19 15:23+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: accounts/admin.py:12
+msgid "Additional info"
+msgstr ""
+
+#: api/autocomplete/views.py:46
+msgid "autocomplete_user_albums_editable"
+msgstr "bearbeitbare Alben"
+
+#: api/autocomplete/views.py:47
+msgid "autocomplete_titles"
+msgstr "Titel"
+
+#: api/autocomplete/views.py:48
+msgid "autocomplete_artists"
+msgstr "Künster*innen"
+
+#: api/autocomplete/views.py:49
+msgid "autocomplete_keywords"
+msgstr "Schlagworte"
+
+#: api/autocomplete/views.py:50
+msgid "autocomplete_locations"
+msgstr "Orte"
+
+#: api/autocomplete/views.py:51
+msgid "autocomplete_users"
+msgstr "Benutzer*innen"
+
+#: api/search/filters.py:12
+#, python-format
+msgid "Enter %(label)s"
+msgstr "%(label)s eingeben"
+
+#: api/search/filters.py:15 api/tests/tests_api_v1.py:86 artworks/models.py:491
+#: artworks/models.py:665 artworks/models.py:735
+msgid "Title"
+msgstr "Titel"
+
+#: api/search/filters.py:16 artworks/admin/filters.py:8
+msgid "Artist"
+msgstr "Künstler*in"
+
+#: api/search/filters.py:17 artworks/models.py:530
+msgid "Place of Production"
+msgstr "Entstehungsort"
+
+#: api/search/filters.py:18 artworks/models.py:390 artworks/models.py:538
+msgid "Location"
+msgstr "Standort"
+
+#: api/search/filters.py:19 api/tests/tests_api_v1.py:87
+#: artworks/admin/forms.py:24 artworks/admin/forms.py:43 artworks/models.py:275
+#: artworks/models.py:527
+msgid "Keywords"
+msgstr "Schlagworte"
+
+#: api/search/filters.py:20
+msgid "Date from, to"
+msgstr "Datierung, von, bis"
+
+#: api/search/filters.py:136
+msgid "Year"
+msgstr "Jahr"
+
+#: api/serializers/artworks.py:53
+msgid "No more than two artworks per slide allowed"
+msgstr ""
+
+# ## manual translations
+#: api/tests/tests_api_v1.py:322
+msgid "VIEW"
+msgstr "ansehen"
+
+#: api/tests/tests_api_v1.py:324
+msgid "EDIT"
+msgstr "bearbeiten"
+
+#: api/views/__init__.py:15
+msgid "limit must be a positive integer"
+msgstr ""
+
+#: api/views/__init__.py:24
+msgid "negative offset is not allowed"
+msgstr ""
+
+#: api/views/__init__.py:26
+msgid "offset must be an integer"
+msgstr ""
+
+#: api/views/__init__.py:35
+#, python-brace-format
+msgid "sorting should be {ordering_fields}"
+msgstr ""
+
+#: api/views/__init__.py:37
+msgid "sorting must be a string"
+msgstr ""
+
+#: api/views/__init__.py:50 api/views/__init__.py:86 api/views/albums.py:340
+#: api/views/albums.py:454 api/views/artworks.py:122 api/views/artworks.py:209
+#: api/views/artworks.py:284 api/views/artworks.py:330
+msgid "Artwork does not exist"
+msgstr ""
+
+#: api/views/albums.py:237 api/views/albums.py:265 api/views/albums.py:300
+#: api/views/albums.py:334 api/views/albums.py:391 api/views/albums.py:436
+#: api/views/albums.py:500 api/views/albums.py:544 api/views/albums.py:633
+#: api/views/albums.py:692
+msgid "Album does not exist"
+msgstr ""
+
+#: api/views/albums.py:705
+msgid "Not implemented yet"
+msgstr ""
+
+#: api/views/albums.py:709
+msgid "Invalid format"
+msgstr ""
+
+#: api/views/artworks.py:124
+msgid "Artwork id must be of type integer"
+msgstr ""
+
+#: api/views/artworks.py:365
+#, python-brace-format
+msgid "File for artwork {pk} not found"
+msgstr ""
+
+#: api/views/folders.py:167
+msgid "Folder does not exist"
+msgstr ""
+
+#: api/views/search.py:30
+msgid "Invalid format of at least one filter_value for title filter."
+msgstr ""
+
+#: api/views/search.py:45
+msgid "Invalid format of at least one filter_value for artists filter."
+msgstr ""
+
+#: api/views/search.py:106 api/views/search.py:111
+msgid "Invalid filter_value format for date filter."
+msgstr ""
+
+#: api/views/search.py:119
+msgid "Invalid format of at least one filter_value for date filter."
+msgstr ""
+
+#: api/views/search.py:123
+msgid "date_from needs to be less than or equal to date_to."
+msgstr ""
+
+#: artworks/admin/__init__.py:91 artworks/admin/forms.py:30
+#: artworks/admin/forms.py:43 artworks/models.py:502
+msgid "Artists"
+msgstr "Künstler*innen"
+
+#: artworks/admin/forms.py:36 artworks/models.py:500
+msgid "Discriminatory terms"
+msgstr "Diskriminierende Begriffe"
+
+#: artworks/admin/forms.py:69
+msgid "Images"
+msgstr "Bilder"
+
+#: artworks/admin/views.py:34
+msgid "Images successfully uploaded"
+msgstr "Bilder erfolgreich hochgeladen"
+
+#: artworks/admin/views.py:40 templates/admin/artworks/change_list.html:6
+msgid "Upload multiple images"
+msgstr "Mehrere Bilder hochladen"
+
+#: artworks/apps.py:33
+msgid "Image Content"
+msgstr "Image Daten"
+
+#: artworks/exports.py:173
+msgid ""
+"Too many artworks per slides. You can only have two artworks per slide. "
+"Please edit slides."
+msgstr ""
+
+#: artworks/exports.py:181
+msgid "There is no artwork associated with id {artwork_in_slide.get(\"id\")}."
+msgstr ""
+
+#: artworks/exports.py:189
+msgid ""
+"There is no image associated with artwork with id {artwork_in_slide."
+"get('id')}; it's a directory"
+msgstr ""
+
+#: artworks/models.py:38
+#, python-format
+msgid "Either a name or a valid %(label)s ID need to be set"
+msgstr "Entweder ein Name oder eine gültige %(label)s ID werden benötigt."
+
+#: artworks/models.py:53 artworks/models.py:296
+#, python-format
+msgid "No %(label)s entry was found for %(label)s ID %(id)s."
+msgstr "Es wurde kein %(label)s Eintrag mit der %(label)s ID %(id)s gefunden."
+
+#: artworks/models.py:67 artworks/models.py:311
+#, python-format
+msgid "HTTP error %(status_code)s when retrieving %(label)s data: %(details)s"
+msgstr ""
+"HTTP-Fehler %(status_code)s beim Abfragen der %(label)s Daten: %(details)s"
+
+#: artworks/models.py:83
+#, python-format
+msgid "Request error when retrieving %(label)s data. Details: %(error)s"
+msgstr "Fehler beim Abfragen der %(label)s Daten. Details: %(error)s"
+
+#: artworks/models.py:99 artworks/models.py:241 artworks/models.py:352
+msgid "Name"
+msgstr ""
+
+#: artworks/models.py:105 artworks/models.py:364
+msgid "Synonyms"
+msgstr "Synonyme"
+
+#: artworks/models.py:108
+msgid "Comma-separated list of synonyms."
+msgstr "Durch Beistrich getrennte Liste von Synonymen."
+
+#: artworks/models.py:116
+msgid "Overrides birth and death dates for display, if not empty."
+msgstr ""
+"Wird anstatt Geburts- und Todestag bei der Anzeige verwendet, sofern nicht "
+"leergelassen."
+
+#: artworks/models.py:127 artworks/models.py:383
+#, python-format
+msgid "Overwrite entry with data from %(label)s?"
+msgstr "Eintrag mit Daten von %(label)s überschreiben?"
+
+#: artworks/models.py:134
+msgid "Person"
+msgstr ""
+
+#: artworks/models.py:135
+msgid "Persons"
+msgstr "Personen"
+
+#: artworks/models.py:243 artworks/models.py:358
+msgid "Name, English"
+msgstr "Name, Englisch"
+
+#: artworks/models.py:264
+#, python-format
+msgid "Overwrite Name, English with data from %(label)s?"
+msgstr "Name, Englisch mit Daten von %(label)s überschreiben?"
+
+#: artworks/models.py:274
+msgid "Keyword"
+msgstr "Schlagwort"
+
+#: artworks/models.py:327
+#, python-format
+msgid "Request error when retrieving %(label)s data: %(error)s"
+msgstr "Fehler beim Abfragen der %(label)s Daten. Details: %(error)s"
+
+#: artworks/models.py:391
+msgid "Locations"
+msgstr "Standorte"
+
+#: artworks/models.py:415
+#, python-format
+msgid ""
+"The %(label)s database does not provide a preferred name for this %(label)s "
+"ID."
+msgstr ""
+"Die %(label)s-Datenbank liefert keinen bevorzugten Namen für diese %(label)s "
+"ID."
+
+#: artworks/models.py:485
+msgid "Original Image"
+msgstr "Originalbild"
+
+#: artworks/models.py:493
+msgid "Title, English"
+msgstr "Titel, Englisch"
+
+#: artworks/models.py:497
+msgid "Comment on title"
+msgstr "Anmerkung zum Titel"
+
+#: artworks/models.py:504
+msgid "Date"
+msgstr "Datierung"
+
+#: artworks/models.py:510
+msgid "Date From"
+msgstr "Datierung, von"
+
+#: artworks/models.py:514
+msgid "Date To"
+msgstr "Datierung, bis"
+
+#: artworks/models.py:516
+msgid "Material/Technique"
+msgstr "Material/Technik"
+
+#: artworks/models.py:521
+msgid "Dimensions"
+msgstr "Format"
+
+#: artworks/models.py:525
+msgid "Comments"
+msgstr "Anmerkungen"
+
+#: artworks/models.py:526
+msgid "Credits"
+msgstr "Abbildungsnachweis"
+
+#: artworks/models.py:544
+msgid "Checked"
+msgstr "Geprüft"
+
+#: artworks/models.py:545
+msgid "Published"
+msgstr "Veröffentlicht"
+
+#: artworks/models.py:555
+msgid "Artwork"
+msgstr "Kunstwerk"
+
+#: artworks/models.py:556
+msgid "Artworks"
+msgstr "Kunstwerke"
+
+#: artworks/models.py:668 artworks/models.py:742
+msgid "User"
+msgstr "Benutzer*in"
+
+#: artworks/models.py:671
+msgid "Slides"
+msgstr "Folien"
+
+#: artworks/models.py:674
+msgid "Permissions"
+msgstr "Berechtigungen"
+
+#: artworks/models.py:681
+msgid "Last changed by"
+msgstr "Zuletzt geändert von"
+
+#: artworks/models.py:695
+msgid "Album"
+msgstr ""
+
+#: artworks/models.py:696 artworks/models.py:748
+msgid "Albums"
+msgstr "Alben"
+
+#: artworks/validators.py:10
+#, python-format
+msgid "Invalid %(label)s ID format."
+msgstr "Ungültiges %(label)s ID Format."
+
+#: image/settings.py:88 templates/admin/base_site.html:4
+msgid "Image Admin"
+msgstr "Image Redaktion"
+
+#: image/settings.py:276
+msgid "German"
+msgstr "Deutsch"
+
+#: image/settings.py:277
+msgid "English"
+msgstr "Englisch"
+
+#: templates/admin/artworks/upload.html:10
+msgid "Upload images"
+msgstr "Bilder hochladen"
+
+#: templates/admin/filters/filter-autocomplete.html:5
+#, python-format
+msgid " By %(filter_title)s "
+msgstr " Nach %(filter_title)s "
+
+#, python-format
+#~ msgid "%(label)s ID"
+#~ msgstr "%(label)s ID"
+
+#, python-format
+#~ msgid "No %(label)s entry was found with %(label)s ID %(id)s."
+#~ msgstr ""
+#~ "Es wurde kein %(label)s Eintrag mit der %(label)s ID %(id)s gefunden."
+
+#~ msgid "Invalid Getty AAT ID format."
+#~ msgstr "Ungültiges Getty AAT ID Format."
+
+#, python-format
+#~ msgid "No GND ID entry was found with GND ID %(gnd_id)s."
+#~ msgstr "Es wurde kein GND ID Eintrag mit der GND ID %(gnd_id)s gefunden."
+
+#, python-format
+#~ msgid "No Getty AAT entry was found with Getty AAT ID %(getty_id)s."
+#~ msgstr ""
+#~ "Es wurde kein Getty AAT Eintrag mit der Getty AAT ID %(getty_id)s "
+#~ "gefunden."
+
+#, python-format
+#~ msgid ""
+#~ "HTTP error %(status_code)s when retrieving Getty AAT data: %(details)s"
+#~ msgstr ""
+#~ "HTTP-Fehler %(status_code)s beim Abfragen von Getty AAT-Daten: %(details)s"
+
+#~ msgid "Add artwork to your collections"
+#~ msgstr "Meine Arbeitsmappen"
+
+#~ msgid "New folder title"
+#~ msgstr "Titel der neuen Arbeitsmappe"
+
+#~ msgid "title"
+#~ msgstr "Titel"
+
+#~ msgid "add"
+#~ msgstr "Hinzufügen"
+
+#~ msgid "remove"
+#~ msgstr "Entfernen"
+
+#~ msgid "NoCollections"
+#~ msgstr "Es sind noch keine Arbeitsmappen erstellt worden."
+
+#~ msgid "addtocollection"
+#~ msgstr "In Arbeitsmappe hinzufügen"
+
+#~ msgid "Edit"
+#~ msgstr "Editieren"
+
+#~ msgid "Cancel"
+#~ msgstr "Abbrechen"
+
+#~ msgid "Save"
+#~ msgstr "Sichern"
+
+#~ msgid "NoArtworks"
+#~ msgstr "Keine Werke gefunden."
+
+#~ msgid "All Artworks"
+#~ msgstr "Alle Kunstwerke"
+
+#~ msgid "Collections"
+#~ msgstr "Arbeitsmappen"
+
+#~ msgid "Unnamed Editor"
+#~ msgstr "Namenloser Editor"
+
+#~ msgid "Edit Collection"
+#~ msgstr "Arbeitsmappe editieren"
+
+#~ msgid "Download PowerPoint"
+#~ msgstr "PowerPoint herunterladen"
+
+#~ msgid "Close"
+#~ msgstr "Schliessen"
+
+#~ msgid "show/hide download options"
+#~ msgstr "Download-Möglichkeiten zeigen/verstecken"
+
+#~ msgid "Download PowerPoint German"
+#~ msgstr "PowerPoint Deutsch herunterladen"
+
+#~ msgid "Download PowerPoint English"
+#~ msgstr "PowerPoint Englisch herunterladen"
+
+#~ msgid "Delete Collection"
+#~ msgstr "Arbeitsmappe löschen"
+
+#~ msgid "My Collections"
+#~ msgstr "Meine Arbeitsmappen"
+
+#~ msgid "Search Artworks"
+#~ msgstr "Suche"
+
+#~ msgid "Search Basic/Advanced Switch"
+#~ msgstr "Suche einfach/erweitert wechseln"
+
+#~ msgid "Expert"
+#~ msgstr "Erw. Suche"
+
+#~ msgid "YYYY"
+#~ msgstr "JJJJ"
+
+#~ msgid "This resolution is not supported."
+#~ msgstr "Diese Auflösung wird nicht unterstützt."
+
+#~ msgid "Folder"
+#~ msgstr "Arbeitsmappe"
+
+#, fuzzy
+#~| msgid "No GND entry was found with ID %(id)s."
+#~ msgid "No {type_of_data} entry was found with {type_of_data} ID %(id)s."
+#~ msgstr "Es wurde kein GND Eintrag mit der ID %(id)s gefunden."
+
+#~ msgid "Created at"
+#~ msgstr "Erstellt"
+
+#~ msgid "Updated at"
+#~ msgstr "Aktualisiert"
+
+#~ msgid "Descriptions"
+#~ msgstr "Anmerkungen"
+
+#~ msgid "Location_of_creation"
+#~ msgstr "Entstehungsort"
+
+#~ msgid "Location_current"
+#~ msgstr "Standort"
+
+#~ msgid "Folders"
+#~ msgstr "Arbeitsmappen"
+
+#~ msgid "Folder Membership"
+#~ msgstr "Arbeitsmappenzugehörigkeit"
+
+#~ msgid "Folder Memberships"
+#~ msgstr "Arbeitsmappenzugehörigkeiten"
+
+#~ msgid "All Collections"
+#~ msgstr "Alle Arbeitsmappen"

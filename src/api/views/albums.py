@@ -39,7 +39,7 @@ from api.views import (
     slides_with_details,
 )
 from api.views.search import filter_albums_for_user
-from artworks.exports import collection_download_as_pptx
+from artworks.exports import album_download_as_pptx
 from artworks.models import (
     Album,
     Artwork,
@@ -695,9 +695,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         language = serializer.validated_data['language']
 
         if download_format == 'pptx':
-            return collection_download_as_pptx(
-                request,
-                album_id=album.id,
+            return album_download_as_pptx(
+                album.id,
                 language=language,
             )
         elif download_format == 'pdf':

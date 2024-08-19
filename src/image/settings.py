@@ -83,6 +83,10 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[urlparse(SITE_URL).hostname])
 
 BEHIND_PROXY = env.bool('BEHIND_PROXY', default=True)
 
+DJANGO_ADMIN_PATH = env.str('DJANGO_ADMIN_PATH', default='editing')
+
+DJANGO_ADMIN_TITLE = _('Image Admin')
+
 ADMINS = getaddresses(
     [env('DJANGO_ADMINS', default='Philipp Mayer <philipp.mayer@uni-ak.ac.at>')],
 )
@@ -202,7 +206,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'image' / 'templates',
+            BASE_DIR / 'templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -224,6 +228,7 @@ CONTEXT_SETTINGS = (
     'DEBUG',
     'BASE_HEADER',
     'FORCE_SCRIPT_NAME',
+    'DJANGO_ADMIN_TITLE',
 )
 
 WSGI_APPLICATION = f'{PROJECT_NAME}.wsgi.application'
@@ -263,7 +268,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'de'
+LANGUAGE_CODE = 'en'
 TIME_ZONE = 'Europe/Vienna'
 USE_I18N = True
 USE_TZ = True
@@ -275,7 +280,7 @@ LANGUAGES = (
 
 LANGUAGES_DICT = dict(LANGUAGES)
 
-LOCALE_PATHS = (BASE_DIR / 'image' / 'locale',)
+LOCALE_PATHS = (BASE_DIR / 'locale',)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
@@ -289,10 +294,7 @@ STORAGES = {
     },
 }
 
-STATICFILES_DIRS = (
-    # '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'static')), os.sep),
-    BASE_DIR / 'image' / 'static_dev',
-)
+STATICFILES_DIRS = (BASE_DIR / 'static',)
 
 STATIC_URL = '{}/static/'.format(FORCE_SCRIPT_NAME if FORCE_SCRIPT_NAME else '')
 STATIC_ROOT = '{}{}'.format(
@@ -522,6 +524,11 @@ if SENTRY_DSN:
 GND_API_BASE_URL = env.str('GND_API_BASE_URL', default='https://lobid.org/gnd/')
 GND_ID_REGEX = r'^(1[0123]?\d{7}[0-9X]|[47]\d{6}-\d|[1-9]\d{0,7}-[0-9X]|3\d{7}[0-9X])$'
 GND_DATE_REGEX = r'^-?[0-9]{1,4}-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])$'
+GND_LABEL = 'GND'
 
 GETTY_ID_REGEX = r'^http:\/\/vocab\.getty\.edu\/aat\/[0-9]+$'
+GETTY_LABEL = 'Getty AAT'
+
+WIKIDATA_LABEL = 'Wikidata'
+
 REQUESTS_TIMEOUT = env.int('REQUESTS_TIMEOUT', default=5)
