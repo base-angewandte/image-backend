@@ -76,11 +76,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         limit = check_limit(request.query_params.get('limit', 100))
         offset = check_offset(request.query_params.get('offset', 0))
 
-        results = self.get_queryset()
+        qs = self.get_queryset()
 
-        total = results.count()
+        total = qs.count()
 
-        results = results[offset : offset + limit]
+        qs = qs[offset : offset + limit]
 
         return Response(
             {
@@ -102,7 +102,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         ],
                         'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                     }
-                    for artwork in results
+                    for artwork in qs
                 ],
             },
         )
