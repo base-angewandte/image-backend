@@ -82,6 +82,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         qs = qs[offset : offset + limit]
 
+        qs = qs.prefetch_related('artists', 'discriminatory_terms')
+
         return Response(
             {
                 'total': total,
