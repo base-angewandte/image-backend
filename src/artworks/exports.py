@@ -88,7 +88,7 @@ def album_download_as_pptx(album_id, language='en'):
         )
 
     def add_picture_to_slide(slide, img_path, padding, position):
-        pic = slide.shapes.add_picture(img_path, 0, padding)
+        pic = slide.shapes.add_picture(img_path.as_posix(), 0, padding)
         image_width = pic.image.size[0]
         image_height = pic.image.size[1]
         aspect_ratio = image_width / image_height
