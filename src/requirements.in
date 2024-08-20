@@ -22,7 +22,7 @@ djangorestframework==3.14.0
 django-versatileimagefield==3.1
 drf-spectacular[sidecar]==0.27.2
 psycopg[binary]==3.2.1
-python-pptx==0.6.23
+python-pptx==1.0.2
 requests==2.32.3
 sentry-sdk[django]==2.8.0
 uv==0.2.24
