@@ -1,5 +1,6 @@
 import logging
 from io import BytesIO
+from pathlib import Path
 
 from pptx import Presentation
 from pptx.dml.color import RGBColor
@@ -87,7 +88,7 @@ def album_download_as_pptx(album_id, language='en'):
             left,
         )
 
-    def add_picture_to_slide(slide, img_path, padding, position):
+    def add_picture_to_slide(slide, img_path: Path, padding, position):
         pic = slide.shapes.add_picture(img_path.as_posix(), 0, padding)
         image_width = pic.image.size[0]
         image_height = pic.image.size[1]
