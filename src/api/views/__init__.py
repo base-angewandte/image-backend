@@ -60,76 +60,79 @@ def get_slides_queryset_iterator(
 def slides_with_details(album, request):
     ret = []
 
-    qs_iterator = get_slides_queryset_iterator(
-        album,
-        prefetch_related=('artists', 'discriminatory_terms'),
+    slide_ids = [artwork.get('id') for slide in album.slides for artwork in slide]
+    qs = Artwork.objects.filter(id__in=slide_ids).prefetch_related(
+        'artists',
+        'discriminatory_terms',
     )
+
+    artworks = {}
+    for artwork in qs:
+        artworks[artwork.pk] = {
+            'id': artwork.pk,
+            'image_original': request.build_absolute_uri(
+                artwork.image_original.url,
+            )
+            if artwork.image_original
+            else None,
+            'title': artwork.title,
+            'discriminatory_terms': artwork.get_discriminatory_terms_list(),
+            'credits': artwork.credits,
+            'date': artwork.date,
+            'artists': [
+                {
+                    'id': artist.id,
+                    'value': artist.name,
+                }
+                for artist in artwork.artists.all()
+            ],
+        }
 
     for slide in album.slides:
         slide_info = []
         for item in slide:
-            artwork = next(qs_iterator)
-            if item.get('id') != artwork.pk:
+            if artwork_info := artworks.get(item.get('id')):
+                slide_info.append(artwork_info)
+            else:
                 raise NotFound(_('Artwork %(id)s does not exist') % {'id': item['id']})
 
-            slide_info.append(
-                {
-                    'id': artwork.id,
-                    'image_original': request.build_absolute_uri(
-                        artwork.image_original.url,
-                    )
-                    if artwork.image_original
-                    else None,
-                    'title': artwork.title,
-                    'discriminatory_terms': artwork.get_discriminatory_terms_list(),
-                    'credits': artwork.credits,
-                    'date': artwork.date,
-                    'artists': [
-                        {
-                            'id': artist.id,
-                            'value': artist.name,
-                        }
-                        for artist in artwork.artists.all()
-                    ],
-                },
-            )
         ret.append(slide_info)
 
     return ret
 
 
 def featured_artworks(album, request, num_artworks=4):
-    artworks = []
+    ret = []
 
-    qs_iterator = get_slides_queryset_iterator(
-        album,
-        prefetch_related=('discriminatory_terms',),
-        limit=num_artworks,
-    )
+    slide_ids = [artwork.get('id') for slide in album.slides for artwork in slide]
+    qs = Artwork.objects.filter(id__in=slide_ids).prefetch_related(
+        'discriminatory_terms',
+    )[:num_artworks]
+
+    artworks = {}
+    for artwork in qs:
+        artworks[artwork.pk] = {
+            'id': artwork.pk,
+            'image_original': request.build_absolute_uri(
+                artwork.image_original.url,
+            )
+            if artwork.image_original
+            else None,
+            'title': artwork.title,
+            'discriminatory_terms': artwork.get_discriminatory_terms_list(),
+        }
 
     for slide in album.slides:
         for item in slide:
-            artwork = next(qs_iterator)
-            if item.get('id') != artwork.pk:
+            if artwork_info := artworks.get(item.get('id')):
+                ret.append(artwork_info)
+            else:
                 raise NotFound(_('Artwork %(id)s does not exist') % {'id': item['id']})
 
-            artworks.append(
-                {
-                    'id': artwork.pk,
-                    'image_original': request.build_absolute_uri(
-                        artwork.image_original.url,
-                    )
-                    if artwork.image_original
-                    else None,
-                    'title': artwork.title,
-                    'discriminatory_terms': artwork.get_discriminatory_terms_list(),
-                },
-            )
+            if len(ret) == num_artworks:
+                return ret
 
-            if len(artworks) == num_artworks:
-                return artworks
-
-    return artworks
+    return ret
 
 
 def album_object(
