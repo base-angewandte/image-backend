@@ -109,7 +109,7 @@ subsections.
   python manage.py loaddata artworks/fixtures/discriminatory_terms.json
   python manage.py loaddata artworks/fixtures/artworks.json
   cd ..
-  cp test-data/*.png image/assets/media
+  cp test-data/*.png src/assets/media
   docker compose exec -T image-postgres psql -U django_image django_image < test-data/set-placeholder-images.sql
   ```
 
