@@ -1,7 +1,6 @@
 from rest_framework.exceptions import NotFound, ParseError
 from rest_framework.request import Request
 
-from django.db.models import Case, When
 from django.utils.translation import gettext_lazy as _
 
 from artworks.models import Album, Artwork, PermissionsRelation
@@ -38,23 +37,6 @@ def check_sorting(sorting, ordering_fields):
         raise ParseError(_('sorting must be a string')) from e
 
     return sorting
-
-
-def get_slides_queryset_iterator(
-    album,
-    prefetch_related: tuple | None = None,
-    limit: int | None = None,
-    chunk_size=2000,
-):
-    slide_ids = [artwork.get('id') for slide in album.slides for artwork in slide]
-    # keep order of slides in queryset
-    order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(slide_ids)])
-    qs = Artwork.objects.filter(id__in=slide_ids).order_by(order)
-    if prefetch_related:
-        qs = qs.prefetch_related(*prefetch_related)
-    if limit:
-        qs = qs[:limit]
-    return qs.iterator(chunk_size=chunk_size)
 
 
 def slides_with_details(album, request):
