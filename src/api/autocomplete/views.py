@@ -184,7 +184,11 @@ def autocomplete(request, *args, **kwargs):
                 )
 
         elif t == 'titles':
-            query = MODEL_MAP[t].objects.filter(title__icontains=q_param)[:limit]
+            query = (
+                MODEL_MAP[t]
+                .objects.filter(title__icontains=q_param)
+                .prefetch_related('discriminatory_terms')[:limit]
+            )
 
             for artwork in query:
                 d['data'].append(
