@@ -386,6 +386,16 @@ LOGGING = {
         },
     },
 }
+
+LOG_DB_BACKEND = env.bool('LOG_DB_BACKEND', default=False)
+
+if LOG_DB_BACKEND:
+    LOGGING['loggers']['django.db.backends'] = {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+        'propagate': False,
+    }
+
 """Cache settings."""
 CACHES = {
     'default': {
