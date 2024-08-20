@@ -120,7 +120,7 @@ python-cas==1.6.0
     # via django-cas-ng
 python-magic==0.4.27
     # via django-versatileimagefield
-python-pptx==0.6.23
+python-pptx==1.0.2
     # via -r src/requirements.in
 pytz==2024.1
     # via djangorestframework
@@ -153,7 +153,9 @@ six==1.16.0
 sqlparse==0.5.0
     # via django
 typing-extensions==4.12.2
-    # via psycopg
+    # via
+    #   psycopg
+    #   python-pptx
 uritemplate==4.1.1
     # via drf-spectacular
 urllib3==2.2.2
