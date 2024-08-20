@@ -59,13 +59,18 @@ def get_slides_queryset_iterator(
 
 def slides_with_details(album, request):
     ret = []
+
+    qs_iterator = get_slides_queryset_iterator(
+        album,
+        prefetch_related=('artists', 'discriminatory_terms'),
+    )
+
     for slide in album.slides:
         slide_info = []
-        for artwork in slide:
-            try:
-                artwork = Artwork.objects.get(id=artwork.get('id'))
-            except Artwork.DoesNotExist as dne:
-                raise NotFound(_('Artwork does not exist')) from dne
+        for item in slide:
+            artwork = next(qs_iterator)
+            if item.get('id') != artwork.pk:
+                raise NotFound(_('Artwork %(id)s does not exist') % {'id': item['id']})
 
             slide_info.append(
                 {
@@ -96,12 +101,17 @@ def slides_with_details(album, request):
 def featured_artworks(album, request, num_artworks=4):
     artworks = []
 
+    qs_iterator = get_slides_queryset_iterator(
+        album,
+        prefetch_related=('discriminatory_terms',),
+        limit=num_artworks,
+    )
+
     for slide in album.slides:
         for item in slide:
-            try:
-                artwork = Artwork.objects.get(id=item['id'])
-            except Artwork.DoesNotExist as dne:
-                raise NotFound(_('Artwork does not exist')) from dne
+            artwork = next(qs_iterator)
+            if item.get('id') != artwork.pk:
+                raise NotFound(_('Artwork %(id)s does not exist') % {'id': item['id']})
 
             artworks.append(
                 {
