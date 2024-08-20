@@ -24,24 +24,19 @@ logger = logging.getLogger(__name__)
 def album_download_as_pptx(album_id, language='en'):
     """Return a downloadable powerpoint presentation of the album."""
 
-    def get_discriminatory_terms():
-        return list(DiscriminatoryTerm.objects.values_list('term', flat=True))
-
-    def strike_through_term(word):
+    def apply_strike_through_formatting(word):
         strike = '\u0336'
         return word[0] + ''.join([char + strike for char in word[1:]])
 
-    def process_text(text, terms):
-        words = text.split()
-        processed_words = []
-        for word in words:
-            for term in terms:
-                if term.lower() in word.lower():
-                    word = strike_through_term(word)
-                    break
-            processed_words.append(word)
-
-        return ' '.join(processed_words)
+    def flag_discriminatory_terms(text, terms):
+        # the condition any(...) checks if any of the dt are in the current word, if true,
+        # the word is processed using strike_through_term()
+        return ' '.join(
+            apply_strike_through_formatting(word)
+            if any(term.lower() in word.lower() for term in terms)
+            else word
+            for word in text.split()
+        )
 
     def get_new_slide():
         blank_slide_layout = prs.slide_layouts[6]
@@ -60,8 +55,13 @@ def album_download_as_pptx(album_id, language='en'):
         text_frame = shape.text_frame
         text_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
         text_frame.word_wrap = True
-        discriminatory_terms = get_discriminatory_terms()
-        processed_description = process_text(description, discriminatory_terms)
+        discriminatory_terms = list(
+            DiscriminatoryTerm.objects.values_list('term', flat=True),
+        )
+        processed_description = flag_discriminatory_terms(
+            description,
+            discriminatory_terms,
+        )
         p = text_frame.paragraphs[0]
         run = p.add_run()
         run.text = processed_description
