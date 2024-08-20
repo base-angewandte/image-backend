@@ -251,7 +251,23 @@ class AlbumsTests(APITestCase):
 
     def test_albums_download(self):
         """Test the download of an album."""
-        album = Album.objects.create(title='Test Album', user=self.user)
+        artwork1 = Artwork.objects.create(
+            title='Test Artwork 1',
+            image_original=temporary_image(),
+        )
+        artwork2 = Artwork.objects.create(
+            title='Test Artwork 2',
+            image_original=temporary_image(),
+        )
+        artwork3 = Artwork.objects.create(
+            title='Test Artwork 3',
+            image_original=temporary_image(),
+        )
+        album = Album.objects.create(
+            title='Test Album',
+            user=self.user,
+            slides=[[{'id': artwork1.id}, {'id': artwork2.id}], [{'id': artwork3.id}]],
+        )
         url = reverse('album-download', kwargs={'pk': album.pk, 'version': VERSION})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
