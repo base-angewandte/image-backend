@@ -28,7 +28,7 @@ def album_download_as_pptx(album_id, language='en'):
         return list(DiscriminatoryTerm.objects.values_list('term', flat=True))
 
     def strike_through_term(word):
-        strike = '\u0036'
+        strike = '\u0336'
         return word[0] + ''.join([char + strike for char in word[1:]])
 
     def process_text(text, terms):
@@ -39,7 +39,7 @@ def album_download_as_pptx(album_id, language='en'):
                 if term.lower() in word.lower():
                     word = strike_through_term(word)
                     break
-                processed_words.append(word)
+            processed_words.append(word)
 
         return ' '.join(processed_words)
 
