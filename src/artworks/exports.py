@@ -29,7 +29,7 @@ def album_download_as_pptx(album_id, language='en'):
         run.font.size = Pt(32)
         run.font.color.rgb = RGBColor(0, 0, 0)
         run.font._element.attrib['strike'] = 'sngStrike'
-        run.font._element.attrib['baseline'] = '-21000'
+        run.font._element.attrib['baseline'] = '-25000'
 
     def get_new_slide():
         blank_slide_layout = prs.slide_layouts[6]
