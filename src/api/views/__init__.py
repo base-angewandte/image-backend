@@ -194,3 +194,14 @@ def album_object(
     if include_featured:
         ret['featured_artworks'] = featured_artworks(album, request)
     return ret
+
+
+def get_person_list(queryset):
+    return [{'id': person.id, 'value': person.name} for person in queryset]
+
+
+def get_person_list_for_download(queryset, label, label_plural=None):
+    label_plural = label_plural or label + 's'
+    content = label_plural if len(queryset) > 1 else label
+    content += f': {", ".join([i.name for i in queryset])} \n'
+    return content

@@ -31,6 +31,24 @@ class ArtworkAdminForm(forms.ModelForm):
         required=False,
     )
 
+    photographers = ModelMultipleChoiceField(
+        Person.objects.all(),
+        widget=FilteredSelectMultiple(_('Photographers'), False),
+        required=False,
+    )
+
+    authors = ModelMultipleChoiceField(
+        Person.objects.all(),
+        widget=FilteredSelectMultiple(_('Authors'), False),
+        required=False,
+    )
+
+    graphic_designers = ModelMultipleChoiceField(
+        Person.objects.all(),
+        widget=FilteredSelectMultiple(_('Graphic designers'), False),
+        required=False,
+    )
+
     discriminatory_terms = ModelMultipleChoiceField(
         DiscriminatoryTerm.objects.all(),
         widget=FilteredSelectMultiple(_('Discriminatory terms'), False),

@@ -500,6 +500,21 @@ class Artwork(AbstractBaseModel):
         verbose_name=_('Discriminatory terms'),
     )
     artists = models.ManyToManyField(Person, verbose_name=_('Artists'))
+    photographers = models.ManyToManyField(
+        Person,
+        verbose_name=_('Photographers'),
+        related_name='photographers',
+    )
+    authors = models.ManyToManyField(
+        Person,
+        verbose_name=_('Authors'),
+        related_name='authors',
+    )
+    graphic_designers = models.ManyToManyField(
+        Person,
+        verbose_name=_('Graphic designers'),
+        related_name='graphic_designers',
+    )
     date = models.CharField(
         verbose_name=_('Date'),
         max_length=319,

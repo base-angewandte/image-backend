@@ -25,7 +25,12 @@ from api.serializers.artworks import (
     ArtworksAlbumsRequestSerializer,
     ArtworksImageRequestSerializer,
 )
-from api.views import check_limit, check_offset
+from api.views import (
+    check_limit,
+    check_offset,
+    get_person_list,
+    get_person_list_for_download,
+)
 from artworks.models import Album, Artwork, PermissionsRelation
 
 logger = logging.getLogger(__name__)
@@ -98,10 +103,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         'credits': artwork.credits,
                         'title': artwork.title,
                         'date': artwork.date,
-                        'artists': [
-                            {'id': artist.id, 'value': artist.name}
-                            for artist in artwork.artists.all()
-                        ],
+                        'artists': get_person_list(artwork.artists.all()),
+                        'photographers': get_person_list(artwork.photographers.all()),
+                        'authors': get_person_list(artwork.authors.all()),
+                        'graphic_designers': get_person_list(
+                            artwork.graphic_designers.all(),
+                        ),
                         'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                     }
                     for artwork in qs
@@ -153,10 +160,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 }
                 if artwork.location
                 else {},
-                'artists': [
-                    {'id': artist.id, 'value': artist.name}
-                    for artist in artwork.artists.all()
-                ],
+                'artists': get_person_list(artwork.artists.all()),
+                'photographers': get_person_list(artwork.photographers.all()),
+                'authors': get_person_list(artwork.authors.all()),
+                'graphic_designers': get_person_list(artwork.graphic_designers.all()),
                 'keywords': [
                     {'id': keyword.id, 'value': keyword.name}
                     for keyword in artwork.keywords.all()
@@ -336,10 +343,22 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         metadata_content += f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n'
         metadata_content += f'{artwork._meta.get_field("title_english").verbose_name.title()}: {artwork.title_english} \n'
         metadata_content += f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {artwork.title_comment} \n'
-        if len(artwork.artists.all()) > 1:
-            metadata_content += f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n'
-        else:
-            metadata_content += f'Artist: {artwork.artists.all()[0]} \n'
+        metadata_content += get_person_list_for_download(
+            artwork.artists.all(),
+            _('Artist'),
+        )
+        metadata_content += get_person_list_for_download(
+            artwork.photographers.all(),
+            _('Photographer'),
+        )
+        metadata_content += get_person_list_for_download(
+            artwork.authors.all(),
+            _('Author'),
+        )
+        metadata_content += get_person_list_for_download(
+            artwork.graphic_designers.all(),
+            _('Graphic designers'),
+        )
         metadata_content += (
             f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n'
         )
@@ -347,7 +366,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         metadata_content += f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n'
         metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {artwork.comments} \n'
         metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
-        metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]} \n'
+        metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([i.name for i in artwork.keywords.all()])} \n'
         metadata_content += f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location if artwork.location else ""} \n'
         metadata_content += f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {artwork.place_of_production} \n'
 
