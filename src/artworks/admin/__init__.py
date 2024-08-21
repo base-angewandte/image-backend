@@ -50,6 +50,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'location',
         'comments',
         'credits',
+        'link',
         'date_created',
         'date_changed',
     )

@@ -540,6 +540,7 @@ class Artwork(AbstractBaseModel):
     comments = models.TextField(verbose_name=_('Comments'), blank=True)
     credits = models.TextField(verbose_name=_('Credits'), blank=True)
     keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'))
+    link = models.URLField(verbose_name=_('Link'), blank=True)
     place_of_production = TreeForeignKey(
         Location,
         verbose_name=_('Place of Production'),
