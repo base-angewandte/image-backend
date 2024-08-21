@@ -538,7 +538,8 @@ class Artwork(AbstractBaseModel):
         blank=True,
     )
     comments = models.TextField(verbose_name=_('Comments'), blank=True)
-    credits = models.TextField(verbose_name=_('Credits'), blank=True)
+    publication = models.TextField(verbose_name=_('Publication title'), blank=True)
+    publication_isbn = models.CharField(verbose_name=_('Publication ISBN'), blank=True)
     keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'))
     link = models.URLField(verbose_name=_('Link'), blank=True)
     place_of_production = TreeForeignKey(
@@ -601,7 +602,7 @@ class Artwork(AbstractBaseModel):
             + SearchVector(Value('place_of_production_synonyms'), weight='B')
             + SearchVector(Value('location_names'), weight='B')
             + SearchVector(Value('location_synonyms'), weight='B')
-            + SearchVector('credits', weight='C')
+            + SearchVector('publication', weight='C')
             + SearchVector('material', weight='C')
             + SearchVector('dimensions', weight='C')
             + SearchVector('date', weight='C')

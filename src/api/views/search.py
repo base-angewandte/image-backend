@@ -254,7 +254,7 @@ def search(request, *args, **kwargs):
                 'image_original': request.build_absolute_uri(artwork.image_original.url)
                 if artwork.image_original
                 else None,
-                'credits': artwork.credits,
+                'publication': artwork.publication,
                 'title': artwork.title,
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 'date': artwork.date,

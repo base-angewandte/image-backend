@@ -100,7 +100,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         )
                         if artwork.image_original
                         else None,
-                        'credits': artwork.credits,
+                        'publication': artwork.publication,
                         'title': artwork.title,
                         'date': artwork.date,
                         'artists': get_person_list(artwork.artists.all()),
@@ -138,7 +138,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'image_original': request.build_absolute_uri(artwork.image_original.url)
                 if artwork.image_original
                 else None,
-                'credits': artwork.credits,
                 'license': '',  # placeholder for future field change, see ticket 2070
                 'title': artwork.title,
                 'title_english': artwork.title_english,
@@ -148,6 +147,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'material': artwork.material,
                 'dimensions': artwork.dimensions,
                 'comments': artwork.comments,
+                'publication': artwork.publication,
+                'publication_isbn': artwork.publication_isbn,
                 'link': artwork.link,
                 'place_of_production': {
                     'id': artwork.place_of_production.id,
@@ -366,7 +367,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
         metadata_content += f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n'
         metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {artwork.comments} \n'
-        metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
+        metadata_content += f'{artwork._meta.get_field("publication").verbose_name.title()}: {artwork.publication} \n'
+        metadata_content += f'{artwork._meta.get_field("publication_isbn").verbose_name.title()}: {artwork.publication_isbn} \n'
         metadata_content += (
             f'{artwork._meta.get_field("link").verbose_name.title()}: {artwork.link} \n'
         )
