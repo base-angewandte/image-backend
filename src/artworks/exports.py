@@ -4,7 +4,6 @@ from pathlib import Path
 
 from pptx import Presentation
 from pptx.dml.color import RGBColor
-from pptx.enum.dml import MSO_THEME_COLOR
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR
 from pptx.util import Pt
@@ -24,19 +23,14 @@ logger = logging.getLogger(__name__)
 def album_download_as_pptx(album_id, language='en'):
     """Return a downloadable powerpoint presentation of the album."""
 
-    def apply_strike_through_formatting(word):
+    def apply_strike_through_and_formatting(p, matched_term):
         strike = '\u0336'
-        return word[0] + ''.join([char + strike for char in word[1:]])
-
-    def flag_discriminatory_terms(text, terms):
-        # the condition any(...) checks if any of the dt are in the current word, if true,
-        # the word is processed using strike_through_term()
-        return ' '.join(
-            apply_strike_through_formatting(word)
-            if any(term.lower() in word.lower() for term in terms)
-            else word
-            for word in text.split()
-        )
+        run = p.add_run()
+        run.text = matched_term[1:] + ' '
+        run.font.size = Pt(24)  # Smaller size for subscript effect
+        run.font.color.rgb = RGBColor(0, 0, 0)
+        run.font.subscript = True
+        run.text = ''.join([char + strike for char in matched_term[1:]])
 
     def get_new_slide():
         blank_slide_layout = prs.slide_layouts[6]
@@ -55,19 +49,49 @@ def album_download_as_pptx(album_id, language='en'):
         text_frame = shape.text_frame
         text_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
         text_frame.word_wrap = True
-        discriminatory_terms = list(
+        discriminatory_terms = sorted(
             DiscriminatoryTerm.objects.values_list('term', flat=True),
-        )
-        processed_description = flag_discriminatory_terms(
-            description,
-            discriminatory_terms,
+            key=len,
+            reverse=True,
         )
         p = text_frame.paragraphs[0]
-        run = p.add_run()
-        run.text = processed_description
-        font = run.font
-        font.size = Pt(36)
-        font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+
+        # Process each term found in the description
+        for term in discriminatory_terms:
+            if term.lower() in description.lower():
+                parts = description.partition(term)
+                before_text, matched_term, after_text = parts
+                # First run: The text before the term
+                if before_text:
+                    run = p.add_run()
+                    run.text = before_text
+                    run.font.size = Pt(36)
+                    run.font.color.rgb = RGBColor(0, 0, 0)
+                # Second run: The discriminatory term
+                if matched_term:
+                    # First character of the term remains unmodified
+                    run = p.add_run()
+                    run.text = matched_term[0]
+                    run.font.size = Pt(36)
+                    run.font.color.rgb = RGBColor(0, 0, 0)
+                    apply_strike_through_and_formatting(p, matched_term)
+                # Third run: The text after the term
+                if after_text:
+                    run = p.add_run()
+                    run.text = after_text
+                    run.font.size = Pt(36)
+                    run.font.color.rgb = RGBColor(0, 0, 0)
+                # Update description to only the remaining text after the first match
+                description = after_text
+
+            # If no discriminatory terms found, add the whole description normally
+        if not any(
+            term.lower() in description.lower() for term in discriminatory_terms
+        ):
+            run = p.add_run()
+            run.text = description
+            run.font.size = Pt(36)
+            run.font.color.rgb = RGBColor(0, 0, 0)
 
     def add_slide_with_one_picture(artwork, padding):
         img_relative_path = artwork.image_original.thumbnail[
