@@ -24,13 +24,12 @@ def album_download_as_pptx(album_id, language='en'):
     """Return a downloadable powerpoint presentation of the album."""
 
     def apply_strike_through_and_formatting(p, matched_term):
-        strike = '\u0336'
         run = p.add_run()
-        run.text = matched_term[1:] + ' '
-        run.font.size = Pt(24)  # Smaller size for subscript effect
+        run.text = matched_term[1:]
+        run.font.size = Pt(32)
         run.font.color.rgb = RGBColor(0, 0, 0)
-        run.font.subscript = True
-        run.text = ''.join([char + strike for char in matched_term[1:]])
+        run.font._element.attrib['strike'] = 'sngStrike'
+        run.font._element.attrib['baseline'] = '-21000'
 
     def get_new_slide():
         blank_slide_layout = prs.slide_layouts[6]
@@ -55,43 +54,37 @@ def album_download_as_pptx(album_id, language='en'):
             reverse=True,
         )
         p = text_frame.paragraphs[0]
-
-        # Process each term found in the description
-        for term in discriminatory_terms:
-            if term.lower() in description.lower():
-                parts = description.partition(term)
-                before_text, matched_term, after_text = parts
-                # First run: The text before the term
-                if before_text:
-                    run = p.add_run()
-                    run.text = before_text
-                    run.font.size = Pt(36)
-                    run.font.color.rgb = RGBColor(0, 0, 0)
-                # Second run: The discriminatory term
-                if matched_term:
-                    # First character of the term remains unmodified
-                    run = p.add_run()
-                    run.text = matched_term[0]
-                    run.font.size = Pt(36)
-                    run.font.color.rgb = RGBColor(0, 0, 0)
-                    apply_strike_through_and_formatting(p, matched_term)
-                # Third run: The text after the term
-                if after_text:
-                    run = p.add_run()
-                    run.text = after_text
-                    run.font.size = Pt(36)
-                    run.font.color.rgb = RGBColor(0, 0, 0)
-                # Update description to only the remaining text after the first match
-                description = after_text
-
-            # If no discriminatory terms found, add the whole description normally
-        if not any(
-            term.lower() in description.lower() for term in discriminatory_terms
-        ):
+        # Process the text by finding all occurrences of the terms
+        index = 0  # Track the position within the description
+        while index < len(description):
+            found_term = None
+            found_position = len(description)
+            for term in discriminatory_terms:
+                pos = description.lower().find(term.lower(), index)
+                if pos != -1 and pos < found_position:
+                    found_term = term
+                    found_position = pos
+            # If no more terms are found, add the remaining text and break
+            if not found_term:
+                run = p.add_run()
+                run.text = description[index:]
+                run.font.size = Pt(36)
+                run.font.color.rgb = RGBColor(0, 0, 0)
+                break
+            # Add the text before the found term
+            if index < found_position:
+                run = p.add_run()
+                run.text = description[index:found_position]
+                run.font.size = Pt(36)
+                run.font.color.rgb = RGBColor(0, 0, 0)
+            # Add the found term with special formatting
             run = p.add_run()
-            run.text = description
+            run.text = found_term[0]
             run.font.size = Pt(36)
             run.font.color.rgb = RGBColor(0, 0, 0)
+            apply_strike_through_and_formatting(p, found_term)
+            # Move the index forward after processing the found term
+            index = found_position + len(found_term)
 
     def add_slide_with_one_picture(artwork, padding):
         img_relative_path = artwork.image_original.thumbnail[
