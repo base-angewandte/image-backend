@@ -45,6 +45,9 @@ def slides_with_details(album, request):
     slide_ids = [artwork.get('id') for slide in album.slides for artwork in slide]
     qs = Artwork.objects.filter(id__in=slide_ids).prefetch_related(
         'artists',
+        'photographers',
+        'authors',
+        'graphic_designers',
         'discriminatory_terms',
     )
 

@@ -88,7 +88,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         qs = qs[offset : offset + limit]
 
-        qs = qs.prefetch_related('artists', 'discriminatory_terms')
+        qs = qs.prefetch_related(
+            'artists',
+            'photographers',
+            'authors',
+            'graphic_designers',
+            'discriminatory_terms',
+        )
 
         return Response(
             {
