@@ -626,6 +626,12 @@ class Artwork(AbstractBaseModel):
             + SearchVector('title_english', weight='A')
             + SearchVector(Value('artists_names'), weight='A')
             + SearchVector(Value('artists_synonyms'), weight='A')
+            + SearchVector(Value('photographers_names'), weight='A')
+            + SearchVector(Value('photographers_synonyms'), weight='A')
+            + SearchVector(Value('authors_names'), weight='A')
+            + SearchVector(Value('authors_synonyms'), weight='A')
+            + SearchVector(Value('graphic_designers_names'), weight='A')
+            + SearchVector(Value('graphic_designers_synonyms'), weight='A')
             + SearchVector('comments', weight='B')
             + SearchVector(Value('keywords_names'), weight='B')
             + SearchVector(Value('place_of_production_names'), weight='B')
@@ -633,8 +639,10 @@ class Artwork(AbstractBaseModel):
             + SearchVector(Value('location_names'), weight='B')
             + SearchVector(Value('location_synonyms'), weight='B')
             + SearchVector('publication', weight='C')
+            + SearchVector('publication_isbn', weight='C')
             + SearchVector(Value('material_names'), weight='C')
             + SearchVector('dimensions_freetext', weight='C')
+            + SearchVector('link', weight='C')
             + SearchVector('date', weight='C')
         )
 
@@ -642,6 +650,21 @@ class Artwork(AbstractBaseModel):
             artists_names=StringAgg('artists__name', delimiter=' '),
         ).annotate(
             artists_synonyms=StringAgg('artists__synonyms', delimiter=' '),
+        ).annotate(
+            phtotographers_names=StringAgg('photographers__name', delimiter=' '),
+        ).annotate(
+            phtotographers_synonyms=StringAgg('photographers__synonyms', delimiter=' '),
+        ).annotate(
+            authors_names=StringAgg('authors__name', delimiter=' '),
+        ).annotate(
+            authors_synonyms=StringAgg('authors__synonyms', delimiter=' '),
+        ).annotate(
+            graphic_designers_names=StringAgg('graphic_designers__name', delimiter=' '),
+        ).annotate(
+            graphic_designers_synonyms=StringAgg(
+                'graphic_designers__synonyms',
+                delimiter=' ',
+            ),
         ).annotate(
             keywords_names=StringAgg('keywords__name', delimiter=' '),
         ).annotate(
