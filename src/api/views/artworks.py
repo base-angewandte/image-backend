@@ -348,15 +348,15 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         metadata_content += f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {artwork.title_comment} \n'
         metadata_content += get_person_list_for_download(
             artwork.artists.all(),
-            _('Artist'),
+            _('Artists'),
         )
         metadata_content += get_person_list_for_download(
             artwork.photographers.all(),
-            _('Photographer'),
+            _('Photographers'),
         )
         metadata_content += get_person_list_for_download(
             artwork.authors.all(),
-            _('Author'),
+            _('Authors'),
         )
         metadata_content += get_person_list_for_download(
             artwork.graphic_designers.all(),
