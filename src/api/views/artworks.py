@@ -28,6 +28,7 @@ from api.serializers.artworks import (
 from api.views import (
     check_limit,
     check_offset,
+    get_artwork_dimensions,
     get_person_list,
     get_person_list_for_download,
 )
@@ -145,7 +146,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 'date': artwork.date,
                 'material': artwork.material,
-                'dimensions': artwork.dimensions,
+                'dimensions': get_artwork_dimensions(artwork),
                 'comments': artwork.comments,
                 'publication': artwork.publication,
                 'publication_isbn': artwork.publication_isbn,
@@ -365,7 +366,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n'
         )
         metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
-        metadata_content += f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n'
+        metadata_content += f'{artwork._meta.get_field("dimensions_freetext").verbose_name.title()}: {get_artwork_dimensions(artwork)} \n'
         metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {artwork.comments} \n'
         metadata_content += f'{artwork._meta.get_field("publication").verbose_name.title()}: {artwork.publication} \n'
         metadata_content += f'{artwork._meta.get_field("publication_isbn").verbose_name.title()}: {artwork.publication_isbn} \n'

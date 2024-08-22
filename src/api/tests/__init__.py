@@ -124,7 +124,7 @@ class APITestCase(RestFrameworkAPITestCase):
             date_year_from=1976,
             date_year_to=1976,
             material='4 s/w Fotografien, Vintage prints, Unikate',
-            dimensions='je 40,5 x 28,5 cm',
+            dimensions_freetext='je 40,5 x 28,5 cm',
             published=True,
             checked=True,
             comments='Essen, Brot',
