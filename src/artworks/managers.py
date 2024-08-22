@@ -37,6 +37,11 @@ class ArtworkManager(models.Manager):
         return (
             self.get_queryset()
             .annotate(rank=rank)
+            .annotate(similarity_title=trigram_word_similarity_title)
+            .annotate(similarity_artists_name=trigram_word_similarity_artists_name)
+            .annotate(
+                similarity_artists_synonyms=trigram_word_similarity_artists_synonyms,
+            )
             .filter(rank__gte=0.1)
             .order_by('-rank')
         )
