@@ -206,7 +206,11 @@ def search(request, *args, **kwargs):
     else:
         subq = Artwork.objects.annotate(rank=Value(1.0, FloatField()))
         # if user is using search, sort by title, else show the newest changes first
-        order_by = '"title"' if filters else '"date_changed" DESC, "title"'
+        order_by = (
+            '"title", "date_changed" DESC'
+            if filters
+            else '"date_changed" DESC, "title"'
+        )
 
     # only search for published artworks
     subq = subq.filter(published=True)
