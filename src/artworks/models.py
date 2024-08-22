@@ -16,7 +16,7 @@ from django.db.models import JSONField, Value
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.db.models.functions import Upper
 from django.dispatch import receiver
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 
 from .fetch import fetch_getty_data, fetch_gnd_data, fetch_wikidata
 from .fetch.exceptions import DataNotFoundError, HTTPError, RequestError
@@ -475,6 +475,22 @@ class Location(MPTTModel, MetaDataMixin):
             self.name_en = labels['en']['value']
 
 
+class Material(AbstractBaseModel):
+    """Material types for artworks."""
+
+    name = models.TextField(
+        verbose_name=_('Material/Technique'),
+    )
+    name_en = models.TextField(
+        verbose_name=_('Material/Technique, English'),
+        blank=True,
+        default='',
+    )
+
+    def __str__(self):
+        return self.name_en if get_language() == 'en' else self.name
+
+
 class Artwork(AbstractBaseModel):
     """Each Artwork has an metadata and image and various versions (renditions)
     of that image."""
@@ -527,8 +543,16 @@ class Artwork(AbstractBaseModel):
         blank=True,
     )
     date_year_to = models.IntegerField(verbose_name=_('Date To'), null=True, blank=True)
-    material = models.TextField(  # noqa: DJ001
+    material = models.ForeignKey(
+        Material,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
         verbose_name=_('Material/Technique'),
+    )
+    material_old = models.TextField(  # noqa: DJ001
+        verbose_name=_('Material/Technique (old)'),
+        help_text=_('Deprecated. Used only if material is not chosen.'),
         null=True,
         blank=True,
     )
@@ -609,7 +633,7 @@ class Artwork(AbstractBaseModel):
             + SearchVector(Value('location_names'), weight='B')
             + SearchVector(Value('location_synonyms'), weight='B')
             + SearchVector('publication', weight='C')
-            + SearchVector('material', weight='C')
+            + SearchVector(Value('material_names'), weight='C')
             + SearchVector('dimensions_freetext', weight='C')
             + SearchVector('date', weight='C')
         )
@@ -634,6 +658,8 @@ class Artwork(AbstractBaseModel):
             location_names=StringAgg('location__name', delimiter=' '),
         ).annotate(
             location_synonyms=StringAgg('location__synonyms', delimiter=' '),
+        ).annotate(
+            material_names=StringAgg('material__name', delimiter=' '),
         ).update(
             search_vector=search_vector,
         )

@@ -145,7 +145,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'title_comment': artwork.title_comment,
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 'date': artwork.date,
-                'material': artwork.material,
+                'material': str(artwork.material),
                 'dimensions': get_artwork_dimensions(artwork),
                 'comments': artwork.comments,
                 'publication': artwork.publication,

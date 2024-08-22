@@ -8,7 +8,7 @@ from django.forms import Media, Textarea, TextInput
 from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
 
-from ..models import Artwork, DiscriminatoryTerm, Keyword, Location, Person
+from ..models import Artwork, DiscriminatoryTerm, Keyword, Location, Material, Person
 from .filters import ArtistFilter
 from .forms import ArtworkAdminForm
 from .utils import external_metadata_html
@@ -44,6 +44,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'date_year_from',
         'date_year_to',
         'material',
+        'material_old',
         'width',
         'height',
         'depth',
@@ -151,6 +152,12 @@ class LocationAdmin(MPTTModelAdmin):
     @admin.display
     def external_metadata_json(self, obj):
         return external_metadata_html(obj.external_metadata)
+
+
+@admin.register(Material)
+class MaterialAdmin(admin.ModelAdmin):
+    list_display = ('name', 'name_en')
+    search_fields = ['name', 'name_en']
 
 
 @admin.register(DiscriminatoryTerm)

@@ -6,7 +6,7 @@ from rest_framework.test import APITestCase as RestFrameworkAPITestCase
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from artworks.models import Album, Artwork, Keyword, Location, Person
+from artworks.models import Album, Artwork, Keyword, Location, Material, Person
 
 
 def temporary_image():  # from https://stackoverflow.com/a/67611074
@@ -79,6 +79,17 @@ class APITestCase(RestFrameworkAPITestCase):
             synonyms='Galerija Vprega',
         )
 
+        # add materials
+        material_canvas = Material.objects.create(
+            name='Öl auf Leinwand',
+            name_en='Oil on canvas',
+        )
+        material_paper = Material.objects.create(
+            name='Bleistift auf Papier',
+            name_en='Pencil on paper',
+        )
+        material_poster = Material.objects.create(name='Plakat', name_en='Poster')
+
         # add artists
         artemisia = Person.objects.create(name='Artemisia Gentileschi')
         warwara = Person.objects.create(
@@ -97,7 +108,7 @@ class APITestCase(RestFrameworkAPITestCase):
             date='1642/1643',
             date_year_from=1642,
             date_year_to=1643,
-            material='Öl auf Leinwand',
+            material=material_canvas,
             published=True,
             checked=True,
             comments='Neapel, Palazzo Reale\n(Zuschreibung durch Mary D. Garrard, bisland Massimo Stanzione zugeschrieben)',
@@ -110,7 +121,7 @@ class APITestCase(RestFrameworkAPITestCase):
             date='1935',
             date_year_from=1935,
             date_year_to=1935,
-            material='Plakat',
+            material=material_poster,
             published=True,
             checked=True,
             comments='Propagandazeitschrift der Sowjetunion, 1930-1991',
@@ -123,7 +134,7 @@ class APITestCase(RestFrameworkAPITestCase):
             date='1976',
             date_year_from=1976,
             date_year_to=1976,
-            material='4 s/w Fotografien, Vintage prints, Unikate',
+            material=material_paper,
             dimensions_freetext='je 40,5 x 28,5 cm',
             published=True,
             checked=True,
