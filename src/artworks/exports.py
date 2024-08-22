@@ -11,11 +11,12 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from django.conf import settings
+from django.db.models.functions import Length
 from django.http import HttpResponse
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
 
-from .models import Album, Artwork, DiscriminatoryTerm
+from .models import Album, Artwork
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ def album_download_as_pptx(album_id, language='en'):
         fill.fore_color.rgb = RGBColor(217, 217, 217)
         return slide
 
-    def add_description(slide, description, width, left):
+    def add_description(slide, artwork, width, left):
         shapes = slide.shapes
         top = prs.slide_height - textbox_height - prs_padding
         shape = shapes.add_shape(MSO_SHAPE.RECTANGLE, left, top, width, textbox_height)
@@ -48,10 +49,9 @@ def album_download_as_pptx(album_id, language='en'):
         text_frame = shape.text_frame
         text_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
         text_frame.word_wrap = True
-        discriminatory_terms = sorted(
-            DiscriminatoryTerm.objects.values_list('term', flat=True),
-            key=len,
-            reverse=True,
+        description = artwork.get_short_description(language)
+        discriminatory_terms = artwork.discriminatory_terms.order_by(
+            Length('term').asc(),
         )
         p = text_frame.paragraphs[0]
         # Process the text by finding all occurrences of the terms
@@ -59,10 +59,10 @@ def album_download_as_pptx(album_id, language='en'):
         while index < len(description):
             found_term = None
             found_position = len(description)
-            for term in discriminatory_terms:
-                pos = description.lower().find(term.lower(), index)
+            for discriminatory_term in discriminatory_terms:
+                pos = description.lower().find(discriminatory_term.term.lower(), index)
                 if pos != -1 and pos < found_position:
-                    found_term = term
+                    found_term = discriminatory_term.term
                     found_position = pos
             # If no more terms are found, add the remaining text and break
             if not found_term:
@@ -82,6 +82,7 @@ def album_download_as_pptx(album_id, language='en'):
             run.text = found_term[0]
             run.font.size = Pt(36)
             run.font.color.rgb = RGBColor(0, 0, 0)
+            # run.color.theme_
             apply_strike_through_and_formatting(p, found_term)
             # Move the index forward after processing the found term
             index = found_position + len(found_term)
@@ -96,7 +97,7 @@ def album_download_as_pptx(album_id, language='en'):
         picture_width = prs.slide_width - (padding * 2)
         add_description(
             slide,
-            artwork.get_short_description(language),
+            artwork,
             picture_width,
             padding,
         )
@@ -114,14 +115,14 @@ def album_download_as_pptx(album_id, language='en'):
         text_width = int((prs.slide_width - (padding * 2) - distance_between) / 2)
         add_description(
             slide,
-            artwork_left.get_short_description(language),
+            artwork_left,
             text_width,
             padding,
         )
         left = padding + text_width + distance_between
         add_description(
             slide,
-            artwork_right.get_short_description(language),
+            artwork_right,
             text_width,
             left,
         )
