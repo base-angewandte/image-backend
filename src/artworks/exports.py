@@ -1,4 +1,5 @@
 import logging
+import re
 from io import BytesIO
 from pathlib import Path
 
@@ -25,12 +26,17 @@ def album_download_as_pptx(album_id, language='en'):
     """Return a downloadable powerpoint presentation of the album."""
 
     def apply_strike_through_and_formatting(p, matched_term):
-        run = p.add_run()
-        run.text = matched_term[1:]
-        run.font.size = Pt(32)
-        run.font.color.rgb = RGBColor(0, 0, 0)
-        run.font._element.attrib['strike'] = 'sngStrike'
-        run.font._element.attrib['baseline'] = '-25000'
+        matched_term.replace(',', '')
+        first_letter_run = p.add_run()
+        first_letter_run.text = matched_term[:1]
+        first_letter_run.font.size = Pt(36)
+        first_letter_run.font.color.rgb = RGBColor(0, 0, 0)
+        run_rest_of_term = p.add_run()
+        run_rest_of_term.text = matched_term[1:]
+        run_rest_of_term.font.size = Pt(32)
+        run_rest_of_term.font.color.rgb = RGBColor(0, 0, 0)
+        run_rest_of_term.font._element.attrib['strike'] = 'sngStrike'
+        run_rest_of_term.font._element.attrib['baseline'] = '-25000'
 
     def get_new_slide():
         blank_slide_layout = prs.slide_layouts[6]
@@ -54,38 +60,19 @@ def album_download_as_pptx(album_id, language='en'):
             Length('term').asc(),
         )
         p = text_frame.paragraphs[0]
-        # Process the text by finding all occurrences of the terms
-        index = 0  # Track the position within the description
-        while index < len(description):
-            found_term = None
-            found_position = len(description)
-            for discriminatory_term in discriminatory_terms:
-                pos = description.lower().find(discriminatory_term.term.lower(), index)
-                if pos != -1 and pos < found_position:
-                    found_term = discriminatory_term.term
-                    found_position = pos
-            # If no more terms are found, add the remaining text and break
-            if not found_term:
+        description_words = description.split()
+        for word in description_words:
+            matched = False
+            for term in discriminatory_terms:
+                if re.search(term.term, word, flags=re.IGNORECASE):
+                    apply_strike_through_and_formatting(p, word)
+                    matched = True
+                    break
+            if not matched:
                 run = p.add_run()
-                run.text = description[index:]
+                run.text = word + ' '
                 run.font.size = Pt(36)
                 run.font.color.rgb = RGBColor(0, 0, 0)
-                break
-            # Add the text before the found term
-            if index < found_position:
-                run = p.add_run()
-                run.text = description[index:found_position]
-                run.font.size = Pt(36)
-                run.font.color.rgb = RGBColor(0, 0, 0)
-            # Add the found term with special formatting
-            run = p.add_run()
-            run.text = found_term[0]
-            run.font.size = Pt(36)
-            run.font.color.rgb = RGBColor(0, 0, 0)
-            # run.color.theme_
-            apply_strike_through_and_formatting(p, found_term)
-            # Move the index forward after processing the found term
-            index = found_position + len(found_term)
 
     def add_slide_with_one_picture(artwork, padding):
         img_relative_path = artwork.image_original.thumbnail[
