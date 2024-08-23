@@ -556,16 +556,31 @@ class Artwork(AbstractBaseModel):
         null=True,
         blank=True,
     )
-    # TODO: discuss in review (or with PO): should we add a help text here, that it is in "cm"
-    #   or just render the dimensions in the api view with a " cm" prefix?
-    width = models.FloatField(verbose_name=_('Width'), null=True, blank=True)
-    height = models.FloatField(verbose_name=_('Height'), null=True, blank=True)
-    depth = models.FloatField(verbose_name=_('Depth'), null=True, blank=True)
-    dimensions_freetext = models.CharField(
+    width = models.FloatField(
+        verbose_name=_('Width'),
+        help_text='in cm',
+        null=True,
+        blank=True,
+    )
+    height = models.FloatField(
+        verbose_name=_('Height'),
+        help_text='in cm',
+        null=True,
+        blank=True,
+    )
+    depth = models.FloatField(
+        verbose_name=_('Depth'),
+        help_text='in cm',
+        null=True,
+        blank=True,
+    )
+    dimensions_display = models.CharField(
         verbose_name=_('Dimensions'),
         max_length=255,
         blank=True,
-        help_text=_('Free text, can be used to overrule width x height x depth'),
+        help_text=_(
+            'Generated from width, height, and depth, but can also be set manually.',
+        ),
     )
     comments = models.TextField(verbose_name=_('Comments'), blank=True)
     publication = models.TextField(verbose_name=_('Publication title'), blank=True)
@@ -641,7 +656,7 @@ class Artwork(AbstractBaseModel):
             + SearchVector('publication', weight='C')
             + SearchVector('publication_isbn', weight='C')
             + SearchVector(Value('material_names'), weight='C')
-            + SearchVector('dimensions_freetext', weight='C')
+            + SearchVector('dimensions_display', weight='C')
             + SearchVector('link', weight='C')
             + SearchVector('date', weight='C')
         )

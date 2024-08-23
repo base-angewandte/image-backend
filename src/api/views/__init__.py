@@ -205,17 +205,3 @@ def get_person_list(queryset):
 
 def get_person_list_for_download(queryset, label):
     return f'{label}: {", ".join([i.name for i in queryset])} \n'
-
-
-def get_artwork_dimensions(artwork):
-    if artwork.dimensions_freetext:
-        return artwork.dimensions_freetext
-    # TODO: discuss in review (or with PO): is this conditional rendering of dimensions
-    #   accurate, or are there different use cases, e.g. f'height: {artwork.height} cm' if only height is set
-    dimensions = ''
-    if artwork.width and artwork.height:
-        dimensions += f'{artwork.width} x {artwork.height}'
-        if artwork.depth:
-            dimensions += f' x {artwork.depth}'
-        dimensions += ' cm'
-    return dimensions

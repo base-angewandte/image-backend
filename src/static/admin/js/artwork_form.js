@@ -1,6 +1,25 @@
 window.addEventListener('load', function () {
   const $ = django.jQuery;
 
+  function processDimensions() {
+    const $dimensions_display = $('#id_dimensions_display');
+    const width = $('#id_width').val();
+    const height = $('#id_height').val();
+    const depth = $('#id_depth').val();
+
+    // TODO: discuss whether this is the preferred conditional rendering of the dimensions
+    //   and whether we should always overwrite the dimensions_display field
+    if (width && height) {
+      let dimensions = `${width} x ${height}`;
+      if (depth) dimensions += ` x ${height}`;
+      dimensions += ' cm';
+      $dimensions_display.val(dimensions);
+    }
+  }
+  $('#id_width').keyup(processDimensions);
+  $('#id_height').keyup(processDimensions);
+  $('#id_depth').keyup(processDimensions);
+
   $('#id_date').keyup(function () {
     function updateInputFields(yearFrom, yearTo) {
       yearFrom = parseInt(yearFrom);

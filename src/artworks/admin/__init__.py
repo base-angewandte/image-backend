@@ -48,7 +48,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'width',
         'height',
         'depth',
-        'dimensions_freetext',
+        'dimensions_display',
         'keywords',
         'place_of_production',
         'location',

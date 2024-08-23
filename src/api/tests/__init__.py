@@ -135,7 +135,7 @@ class APITestCase(RestFrameworkAPITestCase):
             date_year_from=1976,
             date_year_to=1976,
             material=material_paper,
-            dimensions_freetext='je 40,5 x 28,5 cm',
+            dimensions_display='je 40,5 x 28,5 cm',
             published=True,
             checked=True,
             comments='Essen, Brot',
