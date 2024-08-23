@@ -5,6 +5,7 @@ from pathlib import Path
 
 from pptx import Presentation
 from pptx.dml.color import RGBColor
+from pptx.enum.dml import MSO_THEME_COLOR
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR
 from pptx.util import Pt
@@ -26,17 +27,36 @@ def album_download_as_pptx(album_id, language='en'):
     """Return a downloadable powerpoint presentation of the album."""
 
     def apply_strike_through_and_formatting(p, matched_term):
-        matched_term.replace(',', '')
+        # Add first letter to run with normal formatting
         first_letter_run = p.add_run()
         first_letter_run.text = matched_term[:1]
-        first_letter_run.font.size = Pt(36)
-        first_letter_run.font.color.rgb = RGBColor(0, 0, 0)
+        font = first_letter_run.font
+        font.size = Pt(36)
+        font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+
+        # Adjust the run, if a comma is present
+        if matched_term[-1] == ',':
+            main_text = matched_term[1:-1]
+            comma = matched_term[-1] + ' '
+        else:
+            main_text = matched_term[1:]
+            comma = ' '
+
+        # Strike through the main part of the discriminatory term
         run_rest_of_term = p.add_run()
-        run_rest_of_term.text = matched_term[1:]
-        run_rest_of_term.font.size = Pt(32)
-        run_rest_of_term.font.color.rgb = RGBColor(0, 0, 0)
+        run_rest_of_term.text = main_text
+        font = run_rest_of_term.font
+        font.size = Pt(36)
+        font.color.theme_color = MSO_THEME_COLOR.TEXT_1
         run_rest_of_term.font._element.attrib['strike'] = 'sngStrike'
         run_rest_of_term.font._element.attrib['baseline'] = '-25000'
+
+        # Add space or comma and space to the run:
+        run_with_comma = p.add_run()
+        run_with_comma.text = comma
+        font = run_with_comma.font
+        font.size = Pt(36)
+        font.color.theme_color = MSO_THEME_COLOR.TEXT_1
 
     def get_new_slide():
         blank_slide_layout = prs.slide_layouts[6]
@@ -71,8 +91,9 @@ def album_download_as_pptx(album_id, language='en'):
             if not matched:
                 run = p.add_run()
                 run.text = word + ' '
-                run.font.size = Pt(36)
-                run.font.color.rgb = RGBColor(0, 0, 0)
+                font = run.font
+                font.size = Pt(36)
+                font.color.theme_color = MSO_THEME_COLOR.TEXT_1
 
     def add_slide_with_one_picture(artwork, padding):
         img_relative_path = artwork.image_original.thumbnail[
