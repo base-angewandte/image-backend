@@ -125,13 +125,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         except ValueError as ve:
             raise ParseError(_('Artwork id must be of type integer')) from ve
 
-        current_language = get_language() or settings.LANGUAGE_CODE
-        licence_text = {
-            'de': settings.COPYRIGHT_TEXT_DE + ' ' + settings.COPYRIGHT_LINK,
-            'en': settings.COPYRIGHT_TEXT_EN + ' ' + settings.COPYRIGHT_LINK,
-        }
-        licence_note = licence_text.get(current_language)
-
         return Response(
             {
                 'id': artwork.id,
@@ -139,7 +132,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 if artwork.image_original
                 else None,
                 'credits': artwork.credits,
-                'license': licence_note,
+                'license': settings.COPYRIGHT_DE
+                if get_language() == 'de'
+                else settings.COPYRIGHT_EN,
                 'title': artwork.title,
                 'title_english': artwork.title_english,
                 'title_comment': artwork.title_comment,
