@@ -39,7 +39,7 @@ def check_sorting(sorting, ordering_fields):
     return sorting
 
 
-def slides_with_details(album, request):
+def slides_with_details(album, request, raise_not_found=False):
     ret = []
 
     slide_ids = [artwork.get('id') for slide in album.slides for artwork in slide]
@@ -75,10 +75,12 @@ def slides_with_details(album, request):
         for item in slide:
             if artwork_info := artworks.get(item.get('id')):
                 slide_info.append(artwork_info)
-            else:
+            elif raise_not_found:
+                # TODO: discuss: should we add an Album.repair_slides() method which we could call here?
                 raise NotFound(_('Artwork %(id)s does not exist') % {'id': item['id']})
 
-        ret.append(slide_info)
+        if slide_info:
+            ret.append(slide_info)
 
     return ret
 
