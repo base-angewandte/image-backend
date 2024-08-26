@@ -541,4 +541,14 @@ GETTY_LABEL = 'Getty AAT'
 
 WIKIDATA_LABEL = 'Wikidata'
 
+COPYRIGHT_TEXT_DE = env.str(
+    'COPYRIGHT_TEXT_DE',
+    default='Bildnutzung für wissenschafftliches Arbeiten mit Bildzitat möglich. Weitere Informationen zum Bildrecht:',
+)
+COPYRIGHT_TEXT_EN = env.str(
+    'COPYRIGHT_TEXT_EN',
+    default='Image use for scientific work with image citation possible. Further information on image rights:',
+)
+COPYRIGHT_LINK = env.str('COPYRIGHT_LINK', default='https://base.uni-ak.ac.at')
+
 REQUESTS_TIMEOUT = env.int('REQUESTS_TIMEOUT', default=5)

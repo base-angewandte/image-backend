@@ -19,7 +19,7 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.utils.text import slugify
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 
 from api.serializers.artworks import (
     ArtworksAlbumsRequestSerializer,
@@ -125,6 +125,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         except ValueError as ve:
             raise ParseError(_('Artwork id must be of type integer')) from ve
 
+        current_language = get_language() or settings.LANGUAGE_CODE
+        licence_text = {
+            'de': settings.COPYRIGHT_TEXT_DE + ' ' + settings.COPYRIGHT_LINK,
+            'en': settings.COPYRIGHT_TEXT_EN + ' ' + settings.COPYRIGHT_LINK,
+        }
+        licence_note = licence_text.get(current_language)
+
         return Response(
             {
                 'id': artwork.id,
@@ -132,7 +139,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 if artwork.image_original
                 else None,
                 'credits': artwork.credits,
-                'license': '',  # placeholder for future field change, see ticket 2070
+                'license': licence_note,
                 'title': artwork.title,
                 'title_english': artwork.title_english,
                 'title_comment': artwork.title_comment,
