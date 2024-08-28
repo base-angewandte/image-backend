@@ -87,8 +87,8 @@ REQUESTS_TIMEOUT=5
 ## Use the following link for development:
 ## https://***REMOVED***/image2/terms-of-service
 # COPYRIGHT_TEXT_DE=Bildnutzung für wissenschaftliches Arbeiten mit Bildzitat möglich. Weitere Informationen zum Bildrecht:
-#COPYRIGHT_TEXT_EN=Image use for scientific work with image citation possible. Further information on image rights:
-#COPYRIGHT_LINK=https://base.uni-ak.ac.at
+# COPYRIGHT_TEXT_EN=Image use for scientific work with image citation possible. Further information on image rights:
+# COPYRIGHT_LINK=https://base.uni-ak.ac.at
 
 ## If you want to activate Sentry monitoring, set the following parameters
 # SENTRY_DSN=
