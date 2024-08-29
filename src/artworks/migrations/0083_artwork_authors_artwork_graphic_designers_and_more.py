@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='artwork',
             name='material',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='artworks.material', verbose_name='Material/Technique'),
+            field=models.ManyToManyField(to='artworks.material', verbose_name='Material/Technique'),
         ),
         migrations.RenameField(
             model_name='artwork',

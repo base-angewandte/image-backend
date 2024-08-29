@@ -543,11 +543,8 @@ class Artwork(AbstractBaseModel):
         blank=True,
     )
     date_year_to = models.IntegerField(verbose_name=_('Date To'), null=True, blank=True)
-    material = models.ForeignKey(
+    material = models.ManyToManyField(
         Material,
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
         verbose_name=_('Material/Technique'),
     )
     material_old = models.TextField(  # noqa: DJ001

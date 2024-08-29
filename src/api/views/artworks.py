@@ -150,7 +150,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'title_comment': artwork.title_comment,
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 'date': artwork.date,
-                'material': str(artwork.material),
+                'material': ', '.join([m.name for m in artwork.material.all()]),
                 'dimensions': artwork.dimensions_display,
                 'comments': artwork.comments,
                 'credits': artwork.credits,
@@ -370,7 +370,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         metadata_content += (
             f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n'
         )
-        metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
+        metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {", ".join([m.name for m in artwork.material.all()])} \n'
         metadata_content += f'{artwork._meta.get_field("dimensions_display").verbose_name.title()}: {artwork.dimensions_display} \n'
         metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {artwork.comments} \n'
         metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'

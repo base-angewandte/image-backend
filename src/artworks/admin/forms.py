@@ -4,7 +4,7 @@ from django.forms import ModelMultipleChoiceField
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
-from ..models import Artwork, DiscriminatoryTerm, Keyword, Person
+from ..models import Artwork, DiscriminatoryTerm, Keyword, Material, Person
 
 
 class MPTTMultipleChoiceField(ModelMultipleChoiceField):
@@ -52,6 +52,12 @@ class ArtworkAdminForm(forms.ModelForm):
     discriminatory_terms = ModelMultipleChoiceField(
         DiscriminatoryTerm.objects.all(),
         widget=FilteredSelectMultiple(_('Discriminatory terms'), False),
+        required=False,
+    )
+
+    material = ModelMultipleChoiceField(
+        Material.objects.all(),
+        widget=FilteredSelectMultiple(_('Material/Technique'), False),
         required=False,
     )
 
