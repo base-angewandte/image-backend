@@ -27,66 +27,57 @@ def album_download_as_pptx(album_id, language='en'):
     """Return a downloadable powerpoint presentation of the album."""
 
     def apply_strike_through_and_formatting(p, matched_term, discriminatory_term):
-        leading_punct = ''
-        trailing_punct = ''
-        # Check for leading punctuation
-        if matched_term[0] in ['"', "'", '(', '[', '{']:
-            leading_punct = matched_term[0]
-            matched_term = matched_term[1:]
+        pattern = re.compile(re.escape(discriminatory_term), re.IGNORECASE)
 
-        # Check for trailing punctuation
-        if matched_term[-1] in ['"', "'", ')', ']', '}', ',']:
-            trailing_punct = matched_term[-1]
-            matched_term = matched_term[:-1]
+        # Split the word into parts: before, match, and after
+        match = pattern.search(matched_term)
+        if match:
+            before_term = matched_term[: match.start()]
+            term = match.group()
+            first_letter = term[0]
+            rest_of_term = term[1:]
+            after_term = matched_term[match.end() :]
 
-        # Add leading punctuation if it exists
-        if leading_punct:
-            run_leading_punct = p.add_run()
-            run_leading_punct.text = leading_punct
-            font = run_leading_punct.font
+            if before_term:
+                run_before = p.add_run()
+                run_before.text = before_term
+                font = run_before.font
+                font.size = Pt(36)
+                font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+
+            run_first_letter = p.add_run()
+            run_first_letter.text = first_letter
+            font = run_first_letter.font
             font.size = Pt(36)
             font.color.theme_color = MSO_THEME_COLOR.TEXT_1
 
-        # Add first letter to run with normal formatting
-        first_letter_run = p.add_run()
-        first_letter_run.text = matched_term[:1]
-        font = first_letter_run.font
-        font.size = Pt(36)
-        font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+            if rest_of_term:
+                run_rest_of_term = p.add_run()
+                run_rest_of_term.text = rest_of_term
+                font = run_rest_of_term.font
+                font.size = Pt(36)
+                font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+                run_rest_of_term.font._element.attrib['strike'] = 'sngStrike'
+                run_rest_of_term.font._element.attrib['baseline'] = '-25000'
 
-        # Find the position of the discriminatory term in the term
-        start_index = matched_term.lower().find(discriminatory_term.lower())
-        end_index = start_index + len(discriminatory_term)
-
-        # Strike through the discriminatory part of the term
-        run_rest_of_term = p.add_run()
-        run_rest_of_term.text = matched_term[start_index + 1 : end_index]
-        font = run_rest_of_term.font
-        font.size = Pt(36)
-        font.color.theme_color = MSO_THEME_COLOR.TEXT_1
-        run_rest_of_term.font._element.attrib['strike'] = 'sngStrike'
-        run_rest_of_term.font._element.attrib['baseline'] = '-25000'
-
-        # Handle any remaining text (after the discriminatory term)
-        remaining_text = matched_term[end_index:]
-        if remaining_text:
-            run_remaining = p.add_run()
-            run_remaining.text = remaining_text
-            font = run_remaining.font
-            font.size = Pt(36)
-            font.color.theme_color = MSO_THEME_COLOR.TEXT_1
-
-        # Add trailing punctuation if it exists
-        if trailing_punct:
-            run_trailing_punct = p.add_run()
-            run_trailing_punct.text = trailing_punct + ' '
-            font = run_trailing_punct.font
-            font.size = Pt(36)
-            font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+            # Apply normal formatting to the part after the term and handle white space use cases
+            if after_term:
+                run_after = p.add_run()
+                run_after.text = after_term + ' '
+                font = run_after.font
+                font.size = Pt(36)
+                font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+            else:
+                run_after = p.add_run()
+                run_after.text = ' '
+                font = run_after.font
+                font.size = Pt(36)
+                font.color.theme_color = MSO_THEME_COLOR.TEXT_1
         else:
-            run_space = p.add_run()
-            run_space.text = ' '
-            font = run_space.font
+            # If term isn't found:
+            run_full = p.add_run()
+            run_full.text = matched_term + ' '
+            font = run_full.font
             font.size = Pt(36)
             font.color.theme_color = MSO_THEME_COLOR.TEXT_1
 
