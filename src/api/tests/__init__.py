@@ -112,7 +112,7 @@ class APITestCase(RestFrameworkAPITestCase):
             published=True,
             checked=True,
             comments='Neapel, Palazzo Reale\n(Zuschreibung durch Mary D. Garrard, bisland Massimo Stanzione zugeschrieben)',
-            publication='Stolzenwald, Susanna: Artemisia Gentileschi. Bindung und Befreiung in Leben und Werk einer Malerin, Belser Verlag, Stuttgart/Zürich, 1991, S. 96.',
+            credits='Stolzenwald, Susanna: Artemisia Gentileschi. Bindung und Befreiung in Leben und Werk einer Malerin, Belser Verlag, Stuttgart/Zürich, 1991, S. 96.',
             image_original=temporary_image(),
         ).artists.add(artemisia)
         Artwork.objects.create(
@@ -125,7 +125,7 @@ class APITestCase(RestFrameworkAPITestCase):
             published=True,
             checked=True,
             comments='Propagandazeitschrift der Sowjetunion, 1930-1991',
-            publication='Margarita Tupitsyn/ Museum Fokwang Essen (Hg.), Glaube, Hoffnung - Anpassung, Sowjetische Bilder 1928 - 1945, 1996 Okart, S.131',
+            credits='Margarita Tupitsyn/ Museum Fokwang Essen (Hg.), Glaube, Hoffnung - Anpassung, Sowjetische Bilder 1928 - 1945, 1996 Okart, S.131',
             image_original=temporary_image(),
         ).artists.add(warwara)
         Artwork.objects.create(
@@ -139,7 +139,7 @@ class APITestCase(RestFrameworkAPITestCase):
             published=True,
             checked=True,
             comments='Essen, Brot',
-            publication='Mahlzeit - Essen in der Kunst, Ausstellungskatalog, Galerie im Traklhaus, Salzburg 2009. S.51',
+            credits='Mahlzeit - Essen in der Kunst, Ausstellungskatalog, Galerie im Traklhaus, Salzburg 2009. S.51',
             image_original=temporary_image(),
         ).artists.add(valie)
         Artwork.objects.create(

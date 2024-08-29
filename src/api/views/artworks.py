@@ -106,7 +106,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         )
                         if artwork.image_original
                         else None,
-                        'publication': artwork.publication,
+                        'credits': artwork.credits,
                         'title': artwork.title,
                         'date': artwork.date,
                         'artists': get_person_list(artwork.artists.all()),
@@ -153,8 +153,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'material': str(artwork.material),
                 'dimensions': artwork.dimensions_display,
                 'comments': artwork.comments,
-                'publication': artwork.publication,
-                'publication_isbn': artwork.publication_isbn,
+                'credits': artwork.credits,
+                'credits_link': artwork.credits_link,
                 'link': artwork.link,
                 'place_of_production': {
                     'id': artwork.place_of_production.id,
@@ -373,8 +373,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
         metadata_content += f'{artwork._meta.get_field("dimensions_display").verbose_name.title()}: {artwork.dimensions_display} \n'
         metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {artwork.comments} \n'
-        metadata_content += f'{artwork._meta.get_field("publication").verbose_name.title()}: {artwork.publication} \n'
-        metadata_content += f'{artwork._meta.get_field("publication_isbn").verbose_name.title()}: {artwork.publication_isbn} \n'
+        metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
+        metadata_content += f'{artwork._meta.get_field("credits_link").verbose_name.title()}: {artwork.credits_link} \n'
         metadata_content += (
             f'{artwork._meta.get_field("link").verbose_name.title()}: {artwork.link} \n'
         )

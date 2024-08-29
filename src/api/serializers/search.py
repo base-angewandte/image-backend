@@ -20,7 +20,7 @@ class SearchFilterSerializer(serializers.Serializer):
 class SearchItemSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     image_original = serializers.URLField()
-    publication = serializers.CharField()
+    credits = serializers.CharField()
     title = serializers.CharField()
     date = serializers.CharField()
     artists = SearchArtistsSerializer(many=True)

@@ -31,20 +31,10 @@ class Migration(migrations.Migration):
             name='link',
             field=models.URLField(blank=True, verbose_name='Link'),
         ),
-        migrations.RenameField(
-            model_name='artwork',
-            old_name='credits',
-            new_name='publication',
-        ),
-        migrations.AlterField(
-            model_name='artwork',
-            name='publication',
-            field=models.TextField(blank=True, verbose_name='Publication title'),
-        ),
         migrations.AddField(
             model_name='artwork',
-            name='publication_isbn',
-            field=models.CharField(blank=True, verbose_name='Publication ISBN'),
+            name='credits_link',
+            field=models.URLField(blank=True, verbose_name='Credits URL'),
         ),
         migrations.CreateModel(
             name='Material',

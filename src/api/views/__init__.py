@@ -62,7 +62,7 @@ def slides_with_details(album, request):
             else None,
             'title': artwork.title,
             'discriminatory_terms': artwork.get_discriminatory_terms_list(),
-            'publication': artwork.publication,
+            'credits': artwork.credits,
             'date': artwork.date,
             'artists': [
                 {
