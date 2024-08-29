@@ -26,7 +26,13 @@ logger = logging.getLogger(__name__)
 def album_download_as_pptx(album_id, language='en'):
     """Return a downloadable powerpoint presentation of the album."""
 
-    def apply_strike_through_and_formatting(p, matched_term):
+    def apply_strike_through_and_formatting(p, matched_term, discriminatory_term):
+        # Determine if the term ends with a comma and remove it temporarily for processing
+        comma = ''
+        if matched_term[-1] == ',':
+            matched_term = matched_term[:-1]
+            comma = ','
+
         # Add first letter to run with normal formatting
         first_letter_run = p.add_run()
         first_letter_run.text = matched_term[:1]
@@ -34,29 +40,34 @@ def album_download_as_pptx(album_id, language='en'):
         font.size = Pt(36)
         font.color.theme_color = MSO_THEME_COLOR.TEXT_1
 
-        # Adjust the run, if a comma is present
-        if matched_term[-1] == ',':
-            main_text = matched_term[1:-1]
-            comma = matched_term[-1] + ' '
-        else:
-            main_text = matched_term[1:]
-            comma = ' '
+        # Find the position of the discriminatory term in the term
+        start_index = matched_term.lower().find(discriminatory_term.lower())
+        end_index = start_index + len(discriminatory_term)
 
-        # Strike through the main part of the discriminatory term
+        # Strike through the discriminatory part of the term
         run_rest_of_term = p.add_run()
-        run_rest_of_term.text = main_text
+        run_rest_of_term.text = matched_term[start_index + 1 : end_index]
         font = run_rest_of_term.font
         font.size = Pt(36)
         font.color.theme_color = MSO_THEME_COLOR.TEXT_1
         run_rest_of_term.font._element.attrib['strike'] = 'sngStrike'
         run_rest_of_term.font._element.attrib['baseline'] = '-25000'
 
-        # Add space or comma and space to the run:
-        run_with_comma = p.add_run()
-        run_with_comma.text = comma
-        font = run_with_comma.font
-        font.size = Pt(36)
-        font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+        # Handle any remaining text (after the discriminatory term)
+        remaining_text = matched_term[end_index:]
+        if remaining_text:
+            run_remaining = p.add_run()
+            run_remaining.text = remaining_text
+            font = run_remaining.font
+            font.size = Pt(36)
+            font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+
+        if comma:
+            run_with_comma = p.add_run()
+            run_with_comma.text = comma + ' '
+            font = run_with_comma.font
+            font.size = Pt(36)
+            font.color.theme_color = MSO_THEME_COLOR.TEXT_1
 
     def get_new_slide():
         blank_slide_layout = prs.slide_layouts[6]
@@ -85,7 +96,7 @@ def album_download_as_pptx(album_id, language='en'):
             matched = False
             for term in discriminatory_terms:
                 if re.search(term.term, word, flags=re.IGNORECASE):
-                    apply_strike_through_and_formatting(p, word)
+                    apply_strike_through_and_formatting(p, word, term.term)
                     matched = True
                     break
             if not matched:
