@@ -83,6 +83,12 @@ def album_download_as_pptx(album_id, language='en'):
             font = run_trailing_punct.font
             font.size = Pt(36)
             font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+        else:
+            run_space = p.add_run()
+            run_space.text = ' '
+            font = run_space.font
+            font.size = Pt(36)
+            font.color.theme_color = MSO_THEME_COLOR.TEXT_1
 
     def get_new_slide():
         blank_slide_layout = prs.slide_layouts[6]
