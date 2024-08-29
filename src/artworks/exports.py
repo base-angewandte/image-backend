@@ -28,16 +28,24 @@ def album_download_as_pptx(album_id, language='en'):
 
     def apply_strike_through_and_formatting(p, matched_term, discriminatory_term):
         pattern = re.compile(re.escape(discriminatory_term), re.IGNORECASE)
+        # Initialize the position to start searching
+        start_pos = 0
+        while True:
+            match = pattern.search(matched_term, start_pos)
+            if not match:
+                # If no more matches are found, add the rest of the text normally
+                if start_pos < len(matched_term):
+                    run_remaining = p.add_run()
+                    run_remaining.text = matched_term[start_pos:]
+                    font = run_remaining.font
+                    font.size = Pt(36)
+                    font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+                break
 
-        # Split the word into parts: before, match, and after
-        match = pattern.search(matched_term)
-        if match:
-            before_term = matched_term[: match.start()]
+            before_term = matched_term[start_pos : match.start()]
             term = match.group()
             first_letter = term[0]
             rest_of_term = term[1:]
-            after_term = matched_term[match.end() :]
-
             if before_term:
                 run_before = p.add_run()
                 run_before.text = before_term
@@ -60,26 +68,15 @@ def album_download_as_pptx(album_id, language='en'):
                 run_rest_of_term.font._element.attrib['strike'] = 'sngStrike'
                 run_rest_of_term.font._element.attrib['baseline'] = '-25000'
 
-            # Apply normal formatting to the part after the term and handle white space use cases
-            if after_term:
-                run_after = p.add_run()
-                run_after.text = after_term + ' '
-                font = run_after.font
-                font.size = Pt(36)
-                font.color.theme_color = MSO_THEME_COLOR.TEXT_1
-            else:
-                run_after = p.add_run()
-                run_after.text = ' '
-                font = run_after.font
-                font.size = Pt(36)
-                font.color.theme_color = MSO_THEME_COLOR.TEXT_1
-        else:
-            # If term isn't found:
-            run_full = p.add_run()
-            run_full.text = matched_term + ' '
-            font = run_full.font
-            font.size = Pt(36)
-            font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+            # Update the start position to continue searching
+            start_pos = match.end()
+
+        # Ensure a space is added after the whole word
+        run_space = p.add_run()
+        run_space.text = ' '
+        font = run_space.font
+        font.size = Pt(36)
+        font.color.theme_color = MSO_THEME_COLOR.TEXT_1
 
     def get_new_slide():
         blank_slide_layout = prs.slide_layouts[6]
