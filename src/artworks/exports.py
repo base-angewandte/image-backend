@@ -27,11 +27,25 @@ def album_download_as_pptx(album_id, language='en'):
     """Return a downloadable powerpoint presentation of the album."""
 
     def apply_strike_through_and_formatting(p, matched_term, discriminatory_term):
-        # Determine if the term ends with a comma and remove it temporarily for processing
-        comma = ''
-        if matched_term[-1] == ',':
+        leading_punct = ''
+        trailing_punct = ''
+        # Check for leading punctuation
+        if matched_term[0] in ['"', "'", '(', '[', '{']:
+            leading_punct = matched_term[0]
+            matched_term = matched_term[1:]
+
+        # Check for trailing punctuation
+        if matched_term[-1] in ['"', "'", ')', ']', '}', ',']:
+            trailing_punct = matched_term[-1]
             matched_term = matched_term[:-1]
-            comma = ','
+
+        # Add leading punctuation if it exists
+        if leading_punct:
+            run_leading_punct = p.add_run()
+            run_leading_punct.text = leading_punct
+            font = run_leading_punct.font
+            font.size = Pt(36)
+            font.color.theme_color = MSO_THEME_COLOR.TEXT_1
 
         # Add first letter to run with normal formatting
         first_letter_run = p.add_run()
@@ -62,10 +76,11 @@ def album_download_as_pptx(album_id, language='en'):
             font.size = Pt(36)
             font.color.theme_color = MSO_THEME_COLOR.TEXT_1
 
-        if comma:
-            run_with_comma = p.add_run()
-            run_with_comma.text = comma + ' '
-            font = run_with_comma.font
+        # Add trailing punctuation if it exists
+        if trailing_punct:
+            run_trailing_punct = p.add_run()
+            run_trailing_punct.text = trailing_punct + ' '
+            font = run_trailing_punct.font
             font.size = Pt(36)
             font.color.theme_color = MSO_THEME_COLOR.TEXT_1
 
