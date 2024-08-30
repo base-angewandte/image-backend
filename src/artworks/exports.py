@@ -1,5 +1,4 @@
 import logging
-import re
 from io import BytesIO
 from pathlib import Path
 
@@ -26,57 +25,14 @@ logger = logging.getLogger(__name__)
 def album_download_as_pptx(album_id, language='en'):
     """Return a downloadable powerpoint presentation of the album."""
 
-    def apply_strike_through_and_formatting(p, matched_term, discriminatory_term):
-        pattern = re.compile(re.escape(discriminatory_term), re.IGNORECASE)
-        # Initialize the position to start searching
-        start_pos = 0
-        while True:
-            match = pattern.search(matched_term, start_pos)
-            if not match:
-                # If no more matches are found, add the rest of the text normally
-                if start_pos < len(matched_term):
-                    run_remaining = p.add_run()
-                    run_remaining.text = matched_term[start_pos:]
-                    font = run_remaining.font
-                    font.size = Pt(36)
-                    font.color.theme_color = MSO_THEME_COLOR.TEXT_1
-                break
-
-            before_term = matched_term[start_pos : match.start()]
-            term = match.group()
-            first_letter = term[0]
-            rest_of_term = term[1:]
-            if before_term:
-                run_before = p.add_run()
-                run_before.text = before_term
-                font = run_before.font
-                font.size = Pt(36)
-                font.color.theme_color = MSO_THEME_COLOR.TEXT_1
-
-            run_first_letter = p.add_run()
-            run_first_letter.text = first_letter
-            font = run_first_letter.font
-            font.size = Pt(36)
-            font.color.theme_color = MSO_THEME_COLOR.TEXT_1
-
-            if rest_of_term:
-                run_rest_of_term = p.add_run()
-                run_rest_of_term.text = rest_of_term
-                font = run_rest_of_term.font
-                font.size = Pt(36)
-                font.color.theme_color = MSO_THEME_COLOR.TEXT_1
-                run_rest_of_term.font._element.attrib['strike'] = 'sngStrike'
-                run_rest_of_term.font._element.attrib['baseline'] = '-25000'
-
-            # Update the start position to continue searching
-            start_pos = match.end()
-
-        # Ensure a space is added after the whole word
-        run_space = p.add_run()
-        run_space.text = ' '
-        font = run_space.font
+    def apply_strike_through_and_formatting(p, matched_term):
+        run = p.add_run()
+        run.text = matched_term[1:]
+        font = run.font
         font.size = Pt(36)
         font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+        run.font._element.attrib['strike'] = 'sngStrike'
+        run.font._element.attrib['baseline'] = '-21000'
 
     def get_new_slide():
         blank_slide_layout = prs.slide_layouts[6]
@@ -95,25 +51,44 @@ def album_download_as_pptx(album_id, language='en'):
         text_frame = shape.text_frame
         text_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
         text_frame.word_wrap = True
-        description = artwork.get_short_description(language)
         discriminatory_terms = artwork.discriminatory_terms.order_by(
-            Length('term').asc(),
+            Length('term').desc(),
         )
         p = text_frame.paragraphs[0]
-        description_words = description.split()
-        for word in description_words:
-            matched = False
+        # Process the text by finding all occurrences of the terms
+        index = 0  # Track the position within the description
+        description = artwork.get_short_description(language)
+
+        while index < len(description):
+            found_term = None
+            found_position = len(description)
             for term in discriminatory_terms:
-                if re.search(term.term, word, flags=re.IGNORECASE):
-                    apply_strike_through_and_formatting(p, word, term.term)
-                    matched = True
-                    break
-            if not matched:
+                pos = description.lower().find(term.term.lower(), index)
+                if pos != -1 and pos < found_position:
+                    found_term = term.term
+                    found_position = pos
+            if not found_term:
                 run = p.add_run()
-                run.text = word + ' '
+                run.text = description[index:]
                 font = run.font
                 font.size = Pt(36)
                 font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+                break
+            # Add the text before the found term
+            if index < found_position:
+                run = p.add_run()
+                run.text = description[index:found_position]
+                font = run.font
+                font.size = Pt(36)
+                font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+            run = p.add_run()
+            run.text = found_term[0]
+            font = run.font
+            font.size = Pt(36)
+            font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+            apply_strike_through_and_formatting(p, found_term)
+            # Move the index forward after processing the found term
+            index = found_position + len(found_term)
 
     def add_slide_with_one_picture(artwork, padding):
         img_relative_path = artwork.image_original.thumbnail[
