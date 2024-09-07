@@ -1,4 +1,4 @@
-from rest_framework.exceptions import NotFound, ParseError
+from rest_framework.exceptions import ParseError
 from rest_framework.request import Request
 
 from django.utils.translation import gettext_lazy as _
@@ -76,8 +76,11 @@ def slides_with_details(album, request, raise_not_found=False):
             if artwork_info := artworks.get(item.get('id')):
                 slide_info.append(artwork_info)
             elif raise_not_found:
-                # TODO: discuss: should we add an Album.repair_slides() method which we could call here?
-                raise NotFound(_('Artwork %(id)s does not exist') % {'id': item['id']})
+                # TODO: for now we just drop artworks which do not exist any more from the slides
+                #   in a future feature we need to discuss whether there should be some information left, that there was
+                #   an artwork but got deleted, and whether we should retain some artwork title in that case, or just
+                #   display a blank). technically, we could add an Album.repair_slides() method which handles this
+                pass
 
         if slide_info:
             ret.append(slide_info)
@@ -111,7 +114,11 @@ def featured_artworks(album, request, num_artworks=4):
             if artwork_info := artworks.get(item.get('id')):
                 ret.append(artwork_info)
             else:
-                raise NotFound(_('Artwork %(id)s does not exist') % {'id': item['id']})
+                # TODO: for now we just drop artworks which do not exist any more from the slides
+                #   in a future feature we need to discuss whether there should be some information left, that there was
+                #   an artwork but got deleted, and whether we should retain some artwork title in that case, or just
+                #   display a blank). technically, we could add an Album.repair_slides() method which handles this
+                pass
 
             if len(ret) == num_artworks:
                 return ret
