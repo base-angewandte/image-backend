@@ -1,4 +1,4 @@
-from rest_framework.exceptions import ParseError
+from rest_framework.exceptions import NotFound, ParseError
 from rest_framework.request import Request
 
 from django.utils.translation import gettext_lazy as _
@@ -76,6 +76,8 @@ def slides_with_details(album, request, raise_not_found=False):
             if artwork_info := artworks.get(item.get('id')):
                 slide_info.append(artwork_info)
             elif raise_not_found:
+                raise NotFound(_('Artwork %(id)s does not exist') % {'id': item['id']})
+            else:
                 # TODO: for now we just drop artworks which do not exist any more from the slides
                 #   in a future feature we need to discuss whether there should be some information left, that there was
                 #   an artwork but got deleted, and whether we should retain some artwork title in that case, or just
@@ -88,7 +90,7 @@ def slides_with_details(album, request, raise_not_found=False):
     return ret
 
 
-def featured_artworks(album, request, num_artworks=4):
+def featured_artworks(album, request, num_artworks=4, raise_not_found=False):
     ret = []
 
     slide_ids = [artwork.get('id') for slide in album.slides for artwork in slide]
@@ -113,6 +115,8 @@ def featured_artworks(album, request, num_artworks=4):
         for item in slide:
             if artwork_info := artworks.get(item.get('id')):
                 ret.append(artwork_info)
+            elif raise_not_found:
+                raise NotFound(_('Artwork %(id)s does not exist') % {'id': item['id']})
             else:
                 # TODO: for now we just drop artworks which do not exist any more from the slides
                 #   in a future feature we need to discuss whether there should be some information left, that there was
