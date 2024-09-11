@@ -16,6 +16,7 @@ from rest_framework.response import Response
 
 from django.conf import settings
 from django.db.models import Q
+from django.db.models.functions import Length
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.utils.text import slugify
@@ -332,12 +333,23 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
+        discriminatory_terms = artwork.discriminatory_terms.order_by(
+            Length('term').desc(),
+        )
+
+        def apply_strikethrough(text, terms):
+            for term in terms:
+                strikethrough_term = term.term[0] + ''.join(
+                    [char + '\u0336' for char in term.term[1:]],
+                )
+                text = text.replace(term.term, strikethrough_term)
+            return text
 
         # create metadata file content
         metadata_content = ''
-        metadata_content += f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n'
-        metadata_content += f'{artwork._meta.get_field("title_english").verbose_name.title()}: {artwork.title_english} \n'
-        metadata_content += f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {artwork.title_comment} \n'
+        metadata_content += f'{artwork._meta.get_field("title").verbose_name.title()}: {apply_strikethrough(artwork.title, discriminatory_terms)} \n'
+        metadata_content += f'{artwork._meta.get_field("title_english").verbose_name.title()}: {apply_strikethrough(artwork.title_english, discriminatory_terms)} \n'
+        metadata_content += f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {apply_strikethrough(artwork.title_comment, discriminatory_terms)} \n'
         if len(artwork.artists.all()) > 1:
             metadata_content += f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n'
         else:
@@ -347,8 +359,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         )
         metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
         metadata_content += f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n'
-        metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {artwork.comments} \n'
-        metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
+        metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {apply_strikethrough(artwork.comments, discriminatory_terms)} \n'
+        metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {apply_strikethrough(artwork.credits, discriminatory_terms)} \n'
         metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]} \n'
         metadata_content += f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location if artwork.location else ""} \n'
         metadata_content += f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {artwork.place_of_production} \n'
