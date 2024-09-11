@@ -339,7 +339,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         def apply_strikethrough(text, terms):
             for term in terms:
-                strikethrough_term = ''.join([char + '\u0336' for char in term.term])
+                strikethrough_term = term.term[0] + ''.join(
+                    [char + '\u0336' for char in term.term[1:]],
+                )
                 text = text.replace(term.term, strikethrough_term)
             return text
 
