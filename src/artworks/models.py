@@ -110,8 +110,7 @@ class Person(AbstractBaseModel, MetaDataMixin):
 
     date_birth = models.DateField(null=True, blank=True)
     date_death = models.DateField(null=True, blank=True)
-    date_display = models.CharField(  # noqa: DJ001
-        null=True,
+    date_display = models.CharField(
         blank=True,
         help_text=_('Overrides birth and death dates for display, if not empty.'),
     )
@@ -547,10 +546,9 @@ class Artwork(AbstractBaseModel):
         Material,
         verbose_name=_('Material/Technique'),
     )
-    material_old = models.TextField(  # noqa: DJ001
+    material_old = models.TextField(
         verbose_name=_('Material/Technique (old)'),
         help_text=_('Deprecated. Used only if material is not chosen.'),
-        null=True,
         blank=True,
     )
     width = models.FloatField(
