@@ -226,19 +226,6 @@ class Person(AbstractBaseModel, MetaDataMixin):
             self.set_name_from_gnd_data(gnd_data)
             self.set_synonyms_from_gnd_data(gnd_data)
             self.set_birth_death_from_gnd_data(gnd_data)
-        # else:
-        #     if 'preferredNameEntityForThePerson' in gnd_data:
-        #         preferred_name = self.construct_individual_name(
-        #             gnd_data['preferredNameEntityForThePerson'],
-        #         )
-        #         if self.synonyms:
-        #             synonyms_list = self.synonyms.split(', ')
-        #             synonyms_list[0] = preferred_name
-        #             self.synonyms = ', '.join(synonyms_list)
-        #         else:
-        #             self.synonyms = preferred_name
-        #     else:
-        #         add_preferred_name_to_synonyms(self, gnd_data)
 
 
 def get_path_to_original_file(instance, filename):
