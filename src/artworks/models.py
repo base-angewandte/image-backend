@@ -29,12 +29,9 @@ logger = logging.getLogger(__name__)
 
 def add_preferred_name_to_synonyms(instance, gnd_data):
     if 'preferredName' in gnd_data:
-        if instance.synonyms:
-            synonyms_list = instance.synonyms.split(', ')
-            synonyms_list[0] = gnd_data['preferredName']
-            instance.synonyms = ', '.join(synonyms_list)
-        else:
-            instance.synonyms = gnd_data['preferredName']
+        list_of_synonyms = instance.synonyms.split(',')
+        if list_of_synonyms[0] != gnd_data['preferredName']:
+            instance.synonyms = f'{gnd_data["preferredName"]}, {instance.synonyms}'
 
 
 def process_external_metadata(instance):
@@ -229,19 +226,19 @@ class Person(AbstractBaseModel, MetaDataMixin):
             self.set_name_from_gnd_data(gnd_data)
             self.set_synonyms_from_gnd_data(gnd_data)
             self.set_birth_death_from_gnd_data(gnd_data)
-        else:
-            if 'preferredNameEntityForThePerson' in gnd_data:
-                preferred_name = self.construct_individual_name(
-                    gnd_data['preferredNameEntityForThePerson'],
-                )
-                if self.synonyms:
-                    synonyms_list = self.synonyms.split(', ')
-                    synonyms_list[0] = preferred_name
-                    self.synonyms = ', '.join(synonyms_list)
-                else:
-                    self.synonyms = preferred_name
-            else:
-                add_preferred_name_to_synonyms(self, gnd_data)
+        # else:
+        #     if 'preferredNameEntityForThePerson' in gnd_data:
+        #         preferred_name = self.construct_individual_name(
+        #             gnd_data['preferredNameEntityForThePerson'],
+        #         )
+        #         if self.synonyms:
+        #             synonyms_list = self.synonyms.split(', ')
+        #             synonyms_list[0] = preferred_name
+        #             self.synonyms = ', '.join(synonyms_list)
+        #         else:
+        #             self.synonyms = preferred_name
+        #     else:
+        #         add_preferred_name_to_synonyms(self, gnd_data)
 
 
 def get_path_to_original_file(instance, filename):
