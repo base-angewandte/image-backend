@@ -16,7 +16,7 @@ from django.db.models import JSONField, Value
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.db.models.functions import Upper
 from django.dispatch import receiver
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 
 from .fetch import fetch_getty_data, fetch_gnd_data, fetch_wikidata
 from .fetch.exceptions import DataNotFoundError, HTTPError, RequestError
@@ -117,8 +117,7 @@ class Person(AbstractBaseModel, MetaDataMixin):
 
     date_birth = models.DateField(null=True, blank=True)
     date_death = models.DateField(null=True, blank=True)
-    date_display = models.CharField(  # noqa: DJ001
-        null=True,
+    date_display = models.CharField(
         blank=True,
         help_text=_('Overrides birth and death dates for display, if not empty.'),
     )
@@ -484,6 +483,22 @@ class Location(MPTTModel, MetaDataMixin):
             self.name_en = labels['en']['value']
 
 
+class Material(AbstractBaseModel):
+    """Material types for artworks."""
+
+    name = models.TextField(
+        verbose_name=_('Material/Technique'),
+    )
+    name_en = models.TextField(
+        verbose_name=_('Material/Technique, English'),
+        blank=True,
+        default='',
+    )
+
+    def __str__(self):
+        return self.name_en if get_language() == 'en' and self.name_en else self.name
+
+
 class Artwork(AbstractBaseModel):
     """Each Artwork has an metadata and image and various versions (renditions)
     of that image."""
@@ -509,6 +524,21 @@ class Artwork(AbstractBaseModel):
         verbose_name=_('Discriminatory terms'),
     )
     artists = models.ManyToManyField(Person, verbose_name=_('Artists'))
+    photographers = models.ManyToManyField(
+        Person,
+        verbose_name=_('Photographers'),
+        related_name='photographers',
+    )
+    authors = models.ManyToManyField(
+        Person,
+        verbose_name=_('Authors'),
+        related_name='authors',
+    )
+    graphic_designers = models.ManyToManyField(
+        Person,
+        verbose_name=_('Graphic designers'),
+        related_name='graphic_designers',
+    )
     date = models.CharField(
         verbose_name=_('Date'),
         max_length=319,
@@ -521,19 +551,46 @@ class Artwork(AbstractBaseModel):
         blank=True,
     )
     date_year_to = models.IntegerField(verbose_name=_('Date To'), null=True, blank=True)
-    material = models.TextField(  # noqa: DJ001
+    material = models.ManyToManyField(
+        Material,
         verbose_name=_('Material/Technique'),
+    )
+    material_old = models.TextField(
+        verbose_name=_('Material/Technique (old)'),
+        help_text=_('Deprecated. Used only if material is not chosen.'),
+        blank=True,
+    )
+    width = models.FloatField(
+        verbose_name=_('Width'),
+        help_text='in cm',
         null=True,
         blank=True,
     )
-    dimensions = models.CharField(
+    height = models.FloatField(
+        verbose_name=_('Height'),
+        help_text='in cm',
+        null=True,
+        blank=True,
+    )
+    depth = models.FloatField(
+        verbose_name=_('Depth'),
+        help_text='in cm',
+        null=True,
+        blank=True,
+    )
+    dimensions_display = models.CharField(
         verbose_name=_('Dimensions'),
         max_length=255,
         blank=True,
+        help_text=_(
+            'Generated from width, height, and depth, but can also be set manually.',
+        ),
     )
     comments = models.TextField(verbose_name=_('Comments'), blank=True)
     credits = models.TextField(verbose_name=_('Credits'), blank=True)
+    credits_link = models.URLField(verbose_name=_('Credits URL'), blank=True)
     keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'))
+    link = models.URLField(verbose_name=_('Link'), blank=True)
     place_of_production = TreeForeignKey(
         Location,
         verbose_name=_('Place of Production'),
@@ -588,6 +645,12 @@ class Artwork(AbstractBaseModel):
             + SearchVector('title_english', weight='A')
             + SearchVector(Value('artists_names'), weight='A')
             + SearchVector(Value('artists_synonyms'), weight='A')
+            + SearchVector(Value('photographers_names'), weight='A')
+            + SearchVector(Value('photographers_synonyms'), weight='A')
+            + SearchVector(Value('authors_names'), weight='A')
+            + SearchVector(Value('authors_synonyms'), weight='A')
+            + SearchVector(Value('graphic_designers_names'), weight='A')
+            + SearchVector(Value('graphic_designers_synonyms'), weight='A')
             + SearchVector('comments', weight='B')
             + SearchVector(Value('keywords_names'), weight='B')
             + SearchVector(Value('place_of_production_names'), weight='B')
@@ -595,8 +658,10 @@ class Artwork(AbstractBaseModel):
             + SearchVector(Value('location_names'), weight='B')
             + SearchVector(Value('location_synonyms'), weight='B')
             + SearchVector('credits', weight='C')
-            + SearchVector('material', weight='C')
-            + SearchVector('dimensions', weight='C')
+            + SearchVector('credits_link', weight='C')
+            + SearchVector(Value('material_names'), weight='C')
+            + SearchVector('dimensions_display', weight='C')
+            + SearchVector('link', weight='C')
             + SearchVector('date', weight='C')
         )
 
@@ -604,6 +669,21 @@ class Artwork(AbstractBaseModel):
             artists_names=StringAgg('artists__name', delimiter=' '),
         ).annotate(
             artists_synonyms=StringAgg('artists__synonyms', delimiter=' '),
+        ).annotate(
+            phtotographers_names=StringAgg('photographers__name', delimiter=' '),
+        ).annotate(
+            phtotographers_synonyms=StringAgg('photographers__synonyms', delimiter=' '),
+        ).annotate(
+            authors_names=StringAgg('authors__name', delimiter=' '),
+        ).annotate(
+            authors_synonyms=StringAgg('authors__synonyms', delimiter=' '),
+        ).annotate(
+            graphic_designers_names=StringAgg('graphic_designers__name', delimiter=' '),
+        ).annotate(
+            graphic_designers_synonyms=StringAgg(
+                'graphic_designers__synonyms',
+                delimiter=' ',
+            ),
         ).annotate(
             keywords_names=StringAgg('keywords__name', delimiter=' '),
         ).annotate(
@@ -620,6 +700,8 @@ class Artwork(AbstractBaseModel):
             location_names=StringAgg('location__name', delimiter=' '),
         ).annotate(
             location_synonyms=StringAgg('location__synonyms', delimiter=' '),
+        ).annotate(
+            material_names=StringAgg('material__name', delimiter=' '),
         ).update(
             search_vector=search_vector,
         )

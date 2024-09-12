@@ -45,6 +45,9 @@ def slides_with_details(album, request, raise_not_found=False):
     slide_ids = [artwork.get('id') for slide in album.slides for artwork in slide]
     qs = Artwork.objects.filter(id__in=slide_ids).prefetch_related(
         'artists',
+        'photographers',
+        'authors',
+        'graphic_designers',
         'discriminatory_terms',
     )
 
@@ -207,3 +210,11 @@ def album_object(
     if include_featured:
         ret['featured_artworks'] = featured_artworks(album, request)
     return ret
+
+
+def get_person_list(queryset):
+    return [{'id': person.id, 'value': person.name} for person in queryset]
+
+
+def get_person_list_for_download(queryset, label):
+    return f'{label}: {", ".join([i.name for i in queryset])} \n'
