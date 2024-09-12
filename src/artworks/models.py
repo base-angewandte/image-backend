@@ -27,6 +27,13 @@ from .validators import validate_getty_id, validate_gnd_id
 logger = logging.getLogger(__name__)
 
 
+def add_preferred_name_to_synonyms(instance, gnd_data):
+    if 'preferredName' in gnd_data:
+        list_of_synonyms = instance.synonyms.split(',')
+        if list_of_synonyms[0] != gnd_data['preferredName']:
+            instance.synonyms = f'{gnd_data["preferredName"]}, {instance.synonyms}'
+
+
 def process_external_metadata(instance):
     """Process external metadata for the given instance, to avoid code
     duplication.
@@ -460,6 +467,8 @@ class Location(MPTTModel, MetaDataMixin):
             self.name_en = ''
             if simplified_wikidata_data:
                 self.set_name_en_from_wikidata(simplified_wikidata_data)
+        else:
+            add_preferred_name_to_synonyms(self, gnd_data)
 
     def get_wikidata_link(self, gnd_data):
         if 'sameAs' in gnd_data:
