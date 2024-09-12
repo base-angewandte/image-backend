@@ -16,10 +16,11 @@ from rest_framework.response import Response
 
 from django.conf import settings
 from django.db.models import Q
+from django.db.models.functions import Length
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.utils.text import slugify
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 
 from api.serializers.artworks import (
     ArtworksAlbumsRequestSerializer,
@@ -29,7 +30,6 @@ from api.views import (
     check_limit,
     check_offset,
     get_person_list,
-    get_person_list_for_download,
 )
 from artworks.models import Album, Artwork, PermissionsRelation
 
@@ -144,7 +144,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'image_original': request.build_absolute_uri(artwork.image_original.url)
                 if artwork.image_original
                 else None,
-                'license': '',  # placeholder for future field change, see ticket 2070
                 'title': artwork.title,
                 'title_english': artwork.title_english,
                 'title_comment': artwork.title_comment,
@@ -156,6 +155,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'credits': artwork.credits,
                 'credits_link': artwork.credits_link,
                 'link': artwork.link,
+                'license': settings.COPYRIGHT_DE
+                if get_language() == 'de'
+                else settings.COPYRIGHT_EN,
                 'place_of_production': {
                     'id': artwork.place_of_production.id,
                     'value': artwork.place_of_production.name,
@@ -345,35 +347,34 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
+        discriminatory_terms = artwork.discriminatory_terms.order_by(
+            Length('term').desc(),
+        )
+
+        def apply_strikethrough(text, terms):
+            for term in terms:
+                strikethrough_term = term.term[0] + ''.join(
+                    [char + '\u0336' for char in term.term[1:]],
+                )
+                text = text.replace(term.term, strikethrough_term)
+            return text
 
         # create metadata file content
         metadata_content = ''
-        metadata_content += f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n'
-        metadata_content += f'{artwork._meta.get_field("title_english").verbose_name.title()}: {artwork.title_english} \n'
-        metadata_content += f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {artwork.title_comment} \n'
-        metadata_content += get_person_list_for_download(
-            artwork.artists.all(),
-            _('Artists'),
-        )
-        metadata_content += get_person_list_for_download(
-            artwork.photographers.all(),
-            _('Photographers'),
-        )
-        metadata_content += get_person_list_for_download(
-            artwork.authors.all(),
-            _('Authors'),
-        )
-        metadata_content += get_person_list_for_download(
-            artwork.graphic_designers.all(),
-            _('Graphic designers'),
-        )
+        metadata_content += f'{artwork._meta.get_field("title").verbose_name.title()}: {apply_strikethrough(artwork.title, discriminatory_terms)} \n'
+        metadata_content += f'{artwork._meta.get_field("title_english").verbose_name.title()}: {apply_strikethrough(artwork.title_english, discriminatory_terms)} \n'
+        metadata_content += f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {apply_strikethrough(artwork.title_comment, discriminatory_terms)} \n'
+        if len(artwork.artists.all()) > 1:
+            metadata_content += f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n'
+        else:
+            metadata_content += f'Artist: {artwork.artists.all()[0]} \n'
         metadata_content += (
             f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n'
         )
         metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {", ".join([m.name for m in artwork.material.all()])} \n'
         metadata_content += f'{artwork._meta.get_field("dimensions_display").verbose_name.title()}: {artwork.dimensions_display} \n'
-        metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {artwork.comments} \n'
-        metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
+        metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {apply_strikethrough(artwork.comments, discriminatory_terms)} \n'
+        metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {apply_strikethrough(artwork.credits, discriminatory_terms)} \n'
         metadata_content += f'{artwork._meta.get_field("credits_link").verbose_name.title()}: {artwork.credits_link} \n'
         metadata_content += (
             f'{artwork._meta.get_field("link").verbose_name.title()}: {artwork.link} \n'
