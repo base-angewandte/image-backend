@@ -202,11 +202,15 @@ def search(request, *args, **kwargs):
 
     if q_param:
         subq = Artwork.objects.search(q_param)
-        order_by = '"rank" DESC'
+        order_by = '"rank" DESC, "similarity_title" DESC, "similarity_artists_name" DESC, "similarity_artists_synonyms" DESC, "date_changed" DESC'
     else:
         subq = Artwork.objects.annotate(rank=Value(1.0, FloatField()))
         # if user is using search, sort by title, else show the newest changes first
-        order_by = '"title"' if filters else '"date_changed" DESC, "title"'
+        order_by = (
+            '"title", "date_changed" DESC'
+            if filters
+            else '"date_changed" DESC, "title"'
+        )
 
     # only search for published artworks
     subq = subq.filter(published=True)
@@ -236,7 +240,13 @@ def search(request, *args, **kwargs):
         f'ORDER BY {order_by} '
         'LIMIT %s OFFSET %s',
         params=(*subq_params, limit, offset),
-    ).prefetch_related('artists', 'discriminatory_terms')
+    ).prefetch_related(
+        'artists',
+        'photographers',
+        'authors',
+        'graphic_designers',
+        'discriminatory_terms',
+    )
 
     total = 0
     results = []

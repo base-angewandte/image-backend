@@ -6,7 +6,7 @@ from rest_framework.test import APITestCase as RestFrameworkAPITestCase
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from artworks.models import Album, Artwork, Keyword, Location, Person
+from artworks.models import Album, Artwork, Keyword, Location, Material, Person
 
 
 def temporary_image():  # from https://stackoverflow.com/a/67611074
@@ -79,6 +79,17 @@ class APITestCase(RestFrameworkAPITestCase):
             synonyms='Galerija Vprega',
         )
 
+        # add materials
+        material_canvas = Material.objects.create(
+            name='Öl auf Leinwand',
+            name_en='Oil on canvas',
+        )
+        material_paper = Material.objects.create(
+            name='Bleistift auf Papier',
+            name_en='Pencil on paper',
+        )
+        material_poster = Material.objects.create(name='Plakat', name_en='Poster')
+
         # add artists
         artemisia = Person.objects.create(name='Artemisia Gentileschi')
         warwara = Person.objects.create(
@@ -91,46 +102,49 @@ class APITestCase(RestFrameworkAPITestCase):
         Person.objects.create(name='Inés Lombardi', synonyms='Ines Lombardi')
 
         # add artworks
-        Artwork.objects.create(
+        aw1 = Artwork.objects.create(
             title='Lucretia',
             title_english='Lucretia',
             date='1642/1643',
             date_year_from=1642,
             date_year_to=1643,
-            material='Öl auf Leinwand',
             published=True,
             checked=True,
             comments='Neapel, Palazzo Reale\n(Zuschreibung durch Mary D. Garrard, bisland Massimo Stanzione zugeschrieben)',
             credits='Stolzenwald, Susanna: Artemisia Gentileschi. Bindung und Befreiung in Leben und Werk einer Malerin, Belser Verlag, Stuttgart/Zürich, 1991, S. 96.',
             image_original=temporary_image(),
-        ).artists.add(artemisia)
-        Artwork.objects.create(
+        )
+        aw1.artists.add(artemisia)
+        aw1.material.add(material_canvas)
+        aw2 = Artwork.objects.create(
             title='Die UDSSR im Aufbau [СССР на стройке] Nr. 12',  # noqa: RUF001
             title_english='The USSR in Construction [СССР на стройке] , No. 12',  # noqa: RUF001
             date='1935',
             date_year_from=1935,
             date_year_to=1935,
-            material='Plakat',
             published=True,
             checked=True,
             comments='Propagandazeitschrift der Sowjetunion, 1930-1991',
             credits='Margarita Tupitsyn/ Museum Fokwang Essen (Hg.), Glaube, Hoffnung - Anpassung, Sowjetische Bilder 1928 - 1945, 1996 Okart, S.131',
             image_original=temporary_image(),
-        ).artists.add(warwara)
-        Artwork.objects.create(
+        )
+        aw2.artists.add(warwara)
+        aw2.material.add(material_poster)
+        aw3 = Artwork.objects.create(
             title='Homometer II',
             title_english='Homometer II',
             date='1976',
             date_year_from=1976,
             date_year_to=1976,
-            material='4 s/w Fotografien, Vintage prints, Unikate',
-            dimensions='je 40,5 x 28,5 cm',
+            dimensions_display='je 40,5 x 28,5 cm',
             published=True,
             checked=True,
             comments='Essen, Brot',
             credits='Mahlzeit - Essen in der Kunst, Ausstellungskatalog, Galerie im Traklhaus, Salzburg 2009. S.51',
             image_original=temporary_image(),
-        ).artists.add(valie)
+        )
+        aw3.artists.add(valie)
+        aw3.material.add(material_paper)
         Artwork.objects.create(
             title='multiple artists test',
             published=True,

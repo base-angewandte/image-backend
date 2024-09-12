@@ -16,16 +16,21 @@ from rest_framework.response import Response
 
 from django.conf import settings
 from django.db.models import Q
+from django.db.models.functions import Length
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.utils.text import slugify
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 
 from api.serializers.artworks import (
     ArtworksAlbumsRequestSerializer,
     ArtworksImageRequestSerializer,
 )
-from api.views import check_limit, check_offset
+from api.views import (
+    check_limit,
+    check_offset,
+    get_person_list,
+)
 from artworks.models import Album, Artwork, PermissionsRelation
 
 logger = logging.getLogger(__name__)
@@ -82,7 +87,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         qs = qs[offset : offset + limit]
 
-        qs = qs.prefetch_related('artists', 'discriminatory_terms')
+        qs = qs.prefetch_related(
+            'artists',
+            'photographers',
+            'authors',
+            'graphic_designers',
+            'discriminatory_terms',
+        )
 
         return Response(
             {
@@ -98,10 +109,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         'credits': artwork.credits,
                         'title': artwork.title,
                         'date': artwork.date,
-                        'artists': [
-                            {'id': artist.id, 'value': artist.name}
-                            for artist in artwork.artists.all()
-                        ],
+                        'artists': get_person_list(artwork.artists.all()),
+                        'photographers': get_person_list(artwork.photographers.all()),
+                        'authors': get_person_list(artwork.authors.all()),
+                        'graphic_designers': get_person_list(
+                            artwork.graphic_designers.all(),
+                        ),
                         'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                     }
                     for artwork in qs
@@ -131,16 +144,20 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'image_original': request.build_absolute_uri(artwork.image_original.url)
                 if artwork.image_original
                 else None,
-                'credits': artwork.credits,
-                'license': '',  # placeholder for future field change, see ticket 2070
                 'title': artwork.title,
                 'title_english': artwork.title_english,
                 'title_comment': artwork.title_comment,
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 'date': artwork.date,
-                'material': artwork.material,
-                'dimensions': artwork.dimensions,
+                'material': ', '.join([m.name for m in artwork.material.all()]),
+                'dimensions': artwork.dimensions_display,
                 'comments': artwork.comments,
+                'credits': artwork.credits,
+                'credits_link': artwork.credits_link,
+                'link': artwork.link,
+                'license': settings.COPYRIGHT_DE
+                if get_language() == 'de'
+                else settings.COPYRIGHT_EN,
                 'place_of_production': {
                     'id': artwork.place_of_production.id,
                     'value': artwork.place_of_production.name,
@@ -153,10 +170,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 }
                 if artwork.location
                 else {},
-                'artists': [
-                    {'id': artist.id, 'value': artist.name}
-                    for artist in artwork.artists.all()
-                ],
+                'artists': get_person_list(artwork.artists.all()),
+                'photographers': get_person_list(artwork.photographers.all()),
+                'authors': get_person_list(artwork.authors.all()),
+                'graphic_designers': get_person_list(artwork.graphic_designers.all()),
                 'keywords': [
                     {'id': keyword.id, 'value': keyword.name}
                     for keyword in artwork.keywords.all()
@@ -330,12 +347,23 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
+        discriminatory_terms = artwork.discriminatory_terms.order_by(
+            Length('term').desc(),
+        )
+
+        def apply_strikethrough(text, terms):
+            for term in terms:
+                strikethrough_term = term.term[0] + ''.join(
+                    [char + '\u0336' for char in term.term[1:]],
+                )
+                text = text.replace(term.term, strikethrough_term)
+            return text
 
         # create metadata file content
         metadata_content = ''
-        metadata_content += f'{artwork._meta.get_field("title").verbose_name.title()}: {artwork.title} \n'
-        metadata_content += f'{artwork._meta.get_field("title_english").verbose_name.title()}: {artwork.title_english} \n'
-        metadata_content += f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {artwork.title_comment} \n'
+        metadata_content += f'{artwork._meta.get_field("title").verbose_name.title()}: {apply_strikethrough(artwork.title, discriminatory_terms)} \n'
+        metadata_content += f'{artwork._meta.get_field("title_english").verbose_name.title()}: {apply_strikethrough(artwork.title_english, discriminatory_terms)} \n'
+        metadata_content += f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {apply_strikethrough(artwork.title_comment, discriminatory_terms)} \n'
         if len(artwork.artists.all()) > 1:
             metadata_content += f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n'
         else:
@@ -343,11 +371,15 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         metadata_content += (
             f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n'
         )
-        metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material} \n'
-        metadata_content += f'{artwork._meta.get_field("dimensions").verbose_name.title()}: {artwork.dimensions} \n'
-        metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {artwork.comments} \n'
-        metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {artwork.credits} \n'
-        metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {[i.name for i in artwork.keywords.all()]} \n'
+        metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {", ".join([m.name for m in artwork.material.all()])} \n'
+        metadata_content += f'{artwork._meta.get_field("dimensions_display").verbose_name.title()}: {artwork.dimensions_display} \n'
+        metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {apply_strikethrough(artwork.comments, discriminatory_terms)} \n'
+        metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {apply_strikethrough(artwork.credits, discriminatory_terms)} \n'
+        metadata_content += f'{artwork._meta.get_field("credits_link").verbose_name.title()}: {artwork.credits_link} \n'
+        metadata_content += (
+            f'{artwork._meta.get_field("link").verbose_name.title()}: {artwork.link} \n'
+        )
+        metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([i.name for i in artwork.keywords.all()])} \n'
         metadata_content += f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location if artwork.location else ""} \n'
         metadata_content += f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {artwork.place_of_production} \n'
 

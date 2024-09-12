@@ -376,7 +376,7 @@ class SearchTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
         self.assertEqual(content['total'], 2)
-        self.assertEqual(content['results'][0]['title'], artwork1.title)
+        self.assertEqual(content['results'][0]['title'], artwork2.title)
         self.assertEqual(content['results'][1]['artists'][0]['value'], artist.name)
 
     def test_search_labels_list(self):

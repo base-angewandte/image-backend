@@ -1,7 +1,6 @@
 from rest_framework.exceptions import NotFound, ParseError
 from rest_framework.request import Request
 
-from django.db.models import Case, When
 from django.utils.translation import gettext_lazy as _
 
 from artworks.models import Album, Artwork, PermissionsRelation
@@ -40,96 +39,98 @@ def check_sorting(sorting, ordering_fields):
     return sorting
 
 
-def get_slides_queryset_iterator(
-    album,
-    prefetch_related: tuple | None = None,
-    limit: int | None = None,
-    chunk_size=2000,
-):
-    slide_ids = [artwork.get('id') for slide in album.slides for artwork in slide]
-    # keep order of slides in queryset
-    order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(slide_ids)])
-    qs = Artwork.objects.filter(id__in=slide_ids).order_by(order)
-    if prefetch_related:
-        qs = qs.prefetch_related(*prefetch_related)
-    if limit:
-        qs = qs[:limit]
-    return qs.iterator(chunk_size=chunk_size)
-
-
-def slides_with_details(album, request):
+def slides_with_details(album, request, raise_not_found=False):
     ret = []
 
-    qs_iterator = get_slides_queryset_iterator(
-        album,
-        prefetch_related=('artists', 'discriminatory_terms'),
+    slide_ids = [artwork.get('id') for slide in album.slides for artwork in slide]
+    qs = Artwork.objects.filter(id__in=slide_ids).prefetch_related(
+        'artists',
+        'photographers',
+        'authors',
+        'graphic_designers',
+        'discriminatory_terms',
     )
+
+    artworks = {}
+    for artwork in qs:
+        artworks[artwork.pk] = {
+            'id': artwork.pk,
+            'image_original': request.build_absolute_uri(
+                artwork.image_original.url,
+            )
+            if artwork.image_original
+            else None,
+            'title': artwork.title,
+            'discriminatory_terms': artwork.get_discriminatory_terms_list(),
+            'credits': artwork.credits,
+            'date': artwork.date,
+            'artists': [
+                {
+                    'id': artist.id,
+                    'value': artist.name,
+                }
+                for artist in artwork.artists.all()
+            ],
+        }
 
     for slide in album.slides:
         slide_info = []
         for item in slide:
-            artwork = next(qs_iterator)
-            if item.get('id') != artwork.pk:
+            if artwork_info := artworks.get(item.get('id')):
+                slide_info.append(artwork_info)
+            elif raise_not_found:
                 raise NotFound(_('Artwork %(id)s does not exist') % {'id': item['id']})
+            else:
+                # TODO: for now we just drop artworks which do not exist any more from the slides
+                #   in a future feature we need to discuss whether there should be some information left, that there was
+                #   an artwork but got deleted, and whether we should retain some artwork title in that case, or just
+                #   display a blank). technically, we could add an Album.repair_slides() method which handles this
+                pass
 
-            slide_info.append(
-                {
-                    'id': artwork.id,
-                    'image_original': request.build_absolute_uri(
-                        artwork.image_original.url,
-                    )
-                    if artwork.image_original
-                    else None,
-                    'title': artwork.title,
-                    'discriminatory_terms': artwork.get_discriminatory_terms_list(),
-                    'credits': artwork.credits,
-                    'date': artwork.date,
-                    'artists': [
-                        {
-                            'id': artist.id,
-                            'value': artist.name,
-                        }
-                        for artist in artwork.artists.all()
-                    ],
-                },
-            )
-        ret.append(slide_info)
+        if slide_info:
+            ret.append(slide_info)
 
     return ret
 
 
-def featured_artworks(album, request, num_artworks=4):
-    artworks = []
+def featured_artworks(album, request, num_artworks=4, raise_not_found=False):
+    ret = []
 
-    qs_iterator = get_slides_queryset_iterator(
-        album,
-        prefetch_related=('discriminatory_terms',),
-        limit=num_artworks,
-    )
+    slide_ids = [artwork.get('id') for slide in album.slides for artwork in slide]
+    qs = Artwork.objects.filter(id__in=slide_ids).prefetch_related(
+        'discriminatory_terms',
+    )[:num_artworks]
+
+    artworks = {}
+    for artwork in qs:
+        artworks[artwork.pk] = {
+            'id': artwork.pk,
+            'image_original': request.build_absolute_uri(
+                artwork.image_original.url,
+            )
+            if artwork.image_original
+            else None,
+            'title': artwork.title,
+            'discriminatory_terms': artwork.get_discriminatory_terms_list(),
+        }
 
     for slide in album.slides:
         for item in slide:
-            artwork = next(qs_iterator)
-            if item.get('id') != artwork.pk:
+            if artwork_info := artworks.get(item.get('id')):
+                ret.append(artwork_info)
+            elif raise_not_found:
                 raise NotFound(_('Artwork %(id)s does not exist') % {'id': item['id']})
+            else:
+                # TODO: for now we just drop artworks which do not exist any more from the slides
+                #   in a future feature we need to discuss whether there should be some information left, that there was
+                #   an artwork but got deleted, and whether we should retain some artwork title in that case, or just
+                #   display a blank). technically, we could add an Album.repair_slides() method which handles this
+                pass
 
-            artworks.append(
-                {
-                    'id': artwork.pk,
-                    'image_original': request.build_absolute_uri(
-                        artwork.image_original.url,
-                    )
-                    if artwork.image_original
-                    else None,
-                    'title': artwork.title,
-                    'discriminatory_terms': artwork.get_discriminatory_terms_list(),
-                },
-            )
+            if len(ret) == num_artworks:
+                return ret
 
-            if len(artworks) == num_artworks:
-                return artworks
-
-    return artworks
+    return ret
 
 
 def album_object(
@@ -209,3 +210,11 @@ def album_object(
     if include_featured:
         ret['featured_artworks'] = featured_artworks(album, request)
     return ret
+
+
+def get_person_list(queryset):
+    return [{'id': person.id, 'value': person.name} for person in queryset]
+
+
+def get_person_list_for_download(queryset, label):
+    return f'{label}: {", ".join([i.name for i in queryset])} \n'

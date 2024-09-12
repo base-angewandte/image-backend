@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError
 
-from artworks.models import Keyword, Location, Person
+from artworks.models import Keyword, Location, Person, add_preferred_name_to_synonyms
 
 
 class Command(BaseCommand):
@@ -153,6 +153,24 @@ class Command(BaseCommand):
                 if instance.name != entry[0]:
                     instance.name = entry[0]
                     instance.gnd_overwrite = False
+                    list_of_synonyms = instance.synonyms.split(',')
+                    if data_type == 'artist':
+                        if 'preferredNameEntityForThePerson' in data:
+                            preferred_name = instance.construct_individual_name(
+                                data['preferredNameEntityForThePerson'],
+                            )
+                            if list_of_synonyms[0] != preferred_name:
+                                instance.synonyms = (
+                                    f'{preferred_name}, {instance.synonyms}'
+                                )
+                        elif 'preferredName' in data:
+                            add_preferred_name_to_synonyms(instance, data)
+                    elif (
+                        data_type == 'location'
+                        and 'preferredName' in data
+                        and list_of_synonyms[0] != data['preferredName']
+                    ):
+                        add_preferred_name_to_synonyms(instance, data)
                     updated_without_name.append(entry)
                 else:
                     updated.append(entry)
