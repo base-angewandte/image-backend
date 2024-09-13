@@ -1,7 +1,8 @@
 from rest_framework.exceptions import NotFound, ParseError
 from rest_framework.request import Request
 
-from django.utils.translation import gettext_lazy as _
+from django.conf import settings
+from django.utils.translation import get_language, gettext_lazy as _
 
 from artworks.models import Album, Artwork, PermissionsRelation
 
@@ -218,3 +219,12 @@ def get_person_list(queryset):
 
 def get_person_list_for_download(queryset, label):
     return f'{label}: {", ".join([i.name for i in queryset])} \n'
+
+
+def add_label(instance):
+    current_language = get_language() or settings.LANGUAGE_CODE
+    return (
+        instance.name_en
+        if current_language == 'en' and instance.name_en
+        else instance.name
+    )
