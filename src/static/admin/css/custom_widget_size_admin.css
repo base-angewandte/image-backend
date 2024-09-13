@@ -1,0 +1,6 @@
+.selector select {
+    /* Disable height */
+    height: auto !important;
+
+    min-height: 75px;
+}

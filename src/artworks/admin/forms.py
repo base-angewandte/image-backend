@@ -66,6 +66,11 @@ class ArtworkAdminForm(forms.ModelForm):
         fields = '__all__'  # noqa: DJ007
         labels = {'Keywords': _('Keywords'), 'Artists': _('Artists')}
 
+    class Media:
+        css = {
+            'all': ('admin/css/custom_widget_size_admin.css',),
+        }
+
 
 # Multi File Upload
 # from https://docs.djangoproject.com/en/4.2/topics/http/file-uploads/#uploading-multiple-files
