@@ -94,6 +94,7 @@ class ArtworkAdmin(admin.ModelAdmin):
                     f'admin/css/vendor/select2/select2{extra}.css',
                     'admin/css/autocomplete.css',
                 ),
+                'all': ('admin/css/artwork_form.css',),
             },
         )
 
