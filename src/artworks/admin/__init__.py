@@ -93,8 +93,8 @@ class ArtworkAdmin(admin.ModelAdmin):
                 'screen': (
                     f'admin/css/vendor/select2/select2{extra}.css',
                     'admin/css/autocomplete.css',
+                    'admin/css/artwork_form.css',
                 ),
-                'all': ('admin/css/artwork_form.css',),
             },
         )
 
