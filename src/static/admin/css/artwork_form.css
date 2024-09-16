@@ -1,0 +1,4 @@
+.selector select {
+    height: auto !important;
+    min-height: 75px;
+}
