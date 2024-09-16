@@ -58,10 +58,13 @@ def album_download_as_pptx(album_id, language='en'):
         # Process the text by finding all occurrences of the terms
         index = 0  # Track the position within the description
         description = artwork.get_short_description(language)
-
+        # while a regexp based approach could be desirable, we still need to walk
+        # through the whole description index-wise, because we cannot simply replace
+        # but need to build the whole paragraph with runs
         while index < len(description):
             found_term = None
             found_position = len(description)
+            # find the lowest position of any matched term
             for term in discriminatory_terms:
                 pos = description.lower().find(term.term.lower(), index)
                 if pos != -1 and pos < found_position:
@@ -82,11 +85,16 @@ def album_download_as_pptx(album_id, language='en'):
                 font.size = Pt(36)
                 font.color.theme_color = MSO_THEME_COLOR.TEXT_1
             run = p.add_run()
-            run.text = found_term[0]
+            run.text = description[found_position]
             font = run.font
             font.size = Pt(36)
             font.color.theme_color = MSO_THEME_COLOR.TEXT_1
-            apply_strike_through_and_formatting(p, found_term)
+
+            apply_strike_through_and_formatting(
+                p,
+                description[found_position : found_position + len(found_term)],
+            )
+
             # Move the index forward after processing the found term
             index = found_position + len(found_term)
 
