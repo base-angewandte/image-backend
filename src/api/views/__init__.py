@@ -223,6 +223,12 @@ def get_person_list_for_download(queryset, label):
 
 def add_label(instance):
     current_language = get_language() or settings.LANGUAGE_CODE
+    if isinstance(instance, Artwork):
+        return (
+            instance.title_english
+            if current_language == 'en' and instance.title_english
+            else instance.title
+        )
     return (
         instance.name_en
         if current_language == 'en' and instance.name_en
