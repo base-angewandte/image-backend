@@ -22,7 +22,7 @@ from .models import Album, Artwork
 logger = logging.getLogger(__name__)
 
 
-def album_download_as_pptx(album_id, language='en'):
+def album_download_as_pptx(album_id, language='en', return_raw=False):
     """Return a downloadable powerpoint presentation of the album."""
 
     def apply_strike_through_and_formatting(p, matched_term):
@@ -245,6 +245,10 @@ def album_download_as_pptx(album_id, language='en'):
     output = BytesIO()
     prs.save(output)
     output.seek(0)
+
+    if return_raw:
+        return output
+
     response = HttpResponse(
         output.read(),
         content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation',
