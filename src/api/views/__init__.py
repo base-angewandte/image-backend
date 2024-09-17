@@ -99,10 +99,6 @@ def featured_artworks(album, request, num_artworks=4, raise_not_found=False):
     for slide in album.slides:
         for item in slide:
             artwork_id = item.get('id')
-            if type(artwork_id) is not int:
-                # this case should not really happen. in case it does happen nevertheless,
-                # should we generate a specific error, or just ignore it?
-                continue
             # an image could be included several times in the slides, but should only be featured once
             if artwork_id in found_ids:
                 continue
