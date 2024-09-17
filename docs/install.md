@@ -64,8 +64,18 @@ subsections.
   To stop all services again hit CTRL-C to stop following the logs and then use `make stop`.
 
 - To additionally get some initial test data into the database:
+
   ```bash
   make test-data
+  ```
+
+  If you also want to include a test data set with artworks containing
+  discriminatory terms that should be contextualised (and sometimes, depending
+  on context not), you need to do the following (after you loaded the
+  test-data with the last command):
+
+  ```bash
+  docker compose exec image-django python manage.py loaddata artworks/fixtures/artworks_word_filter_test.json
   ```
 
 ### The full developer setup
@@ -111,6 +121,15 @@ subsections.
   cd ..
   cp test-data/*.png src/assets/media
   docker compose exec -T image-postgres psql -U django_image django_image < test-data/set-placeholder-images.sql
+  ```
+
+  If you also want to include a test data set with artworks containing
+  discriminatory terms that should be contextualised (and sometimes, depending
+  on context not), you need to do the following (after you loaded the
+  discriminatory terms):
+
+  ```bash
+  python manage.py loaddata artworks/fixtures/artworks_word_filter_test.json
   ```
 
 ### Resetting your database and/or the cache
