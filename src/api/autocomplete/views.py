@@ -185,9 +185,12 @@ def autocomplete(request, *args, **kwargs):
                 )
 
         elif t == 'titles':
+            q_filters = Q(title__icontains=q_param) | Q(
+                title_english__icontains=q_param,
+            )
             query = (
                 MODEL_MAP[t]
-                .objects.filter(title__icontains=q_param)
+                .objects.filter(q_filters)
                 .prefetch_related('discriminatory_terms')[:limit]
             )
 
@@ -199,27 +202,16 @@ def autocomplete(request, *args, **kwargs):
                         'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                     },
                 )
-        elif t == 'keywords' or t == 'locations':
-            query = MODEL_MAP[t].objects.filter(name__icontains=q_param)[:limit]
-            for l_k in query:
-                d['data'].append(
-                    {
-                        'id': l_k.id,
-                        'name': l_k.name,
-                        'label': get_localised_label(l_k),
-                    },
-                )
-
         else:
-            query = MODEL_MAP[t].objects.filter(name__icontains=q_param)[:limit]
+            q_filters = Q(name__icontains=q_param) | Q(name_en__icontains=q_param)
+            query = MODEL_MAP[t].objects.filter(q_filters)[:limit]
             for item in query:
                 d['data'].append(
                     {
                         'id': item.id,
-                        'label': item.name,
+                        'label': get_localised_label(item),
                     },
                 )
-
         ret.append(d)
 
     if len(ret) == 1:
