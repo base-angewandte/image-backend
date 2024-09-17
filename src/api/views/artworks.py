@@ -181,7 +181,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                     {
                         'id': keyword.id,
                         'value': keyword.name,
-                        'label': add_label(keyword),
                     }
                     for keyword in artwork.keywords.all()
                 ],

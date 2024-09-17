@@ -27,9 +27,7 @@ FILTERS = {
             'type': 'object',
             'properties': {
                 'id': {'type': 'integer'},
-                'name': {'type': 'string'},
                 'label': {'type': 'string'},
-                'discriminatory_terms': {'type': 'array', 'items': {'type': 'string'}},
             },
         },
         'title': FILTER_LABELS['title'],
@@ -89,7 +87,6 @@ FILTERS = {
             'type': 'object',
             'properties': {
                 'id': {'type': 'integer'},
-                'name': {'type': 'string'},
                 'label': {'type': 'string'},
             },
         },
@@ -110,7 +107,6 @@ FILTERS = {
             'type': 'object',
             'properties': {
                 'id': {'type': 'integer'},
-                'name': {'type': 'string'},
                 'label': {'type': 'string'},
             },
         },

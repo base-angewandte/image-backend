@@ -195,7 +195,6 @@ def autocomplete(request, *args, **kwargs):
                 d['data'].append(
                     {
                         'id': artwork.id,
-                        'name': artwork.title,
                         'label': add_label(artwork),
                         'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                     },
