@@ -554,3 +554,8 @@ COPYRIGHT_DE = f'{COPYRIGHT_TEXT_DE} {COPYRIGHT_LINK}'
 COPYRIGHT_EN = f'{COPYRIGHT_TEXT_EN} {COPYRIGHT_LINK}'
 
 REQUESTS_TIMEOUT = env.int('REQUESTS_TIMEOUT', default=5)
+
+GOTENBERG_API_URL = env.str(
+    'GOTENBERG_API_URL',
+    default='http://image-gotenberg:3000/forms/libreoffice/convert',
+)
