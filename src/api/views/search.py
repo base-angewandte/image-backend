@@ -14,6 +14,8 @@ from api.serializers.search import SearchRequestSerializer, SearchResultSerializ
 from api.views import check_limit, check_offset
 from artworks.models import Artwork, Keyword, Location, PermissionsRelation
 
+from . import add_label
+
 
 def filter_title(filter_values):
     filters_list = []
@@ -267,6 +269,19 @@ def search(request, *args, **kwargs):
                 'credits': artwork.credits,
                 'title': artwork.title,
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
+                'location': {
+                    'name': artwork.location.name,
+                    'label': add_label(artwork.location),
+                }
+                if artwork.location
+                else None,
+                'keywords': [
+                    {
+                        'name': keyword.name,
+                        'label': add_label(keyword),
+                    }
+                    for keyword in artwork.keywords.all()
+                ],
                 'date': artwork.date,
                 'artists': [
                     {'value': artist.name, 'id': artist.id}
