@@ -33,7 +33,7 @@ from api.views import (
 )
 from artworks.models import Album, Artwork, PermissionsRelation
 
-from . import add_label
+from . import get_localised_label
 
 logger = logging.getLogger(__name__)
 
@@ -168,8 +168,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 else {},
                 'location': {
                     'id': artwork.location.id,
-                    'value': artwork.location.name,
-                    'label': add_label(artwork.location),
+                    'value': get_localised_label(artwork.location),
                 }
                 if artwork.location
                 else {},
@@ -180,7 +179,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'keywords': [
                     {
                         'id': keyword.id,
-                        'value': keyword.name,
+                        'value': get_localised_label(keyword),
                     }
                     for keyword in artwork.keywords.all()
                 ],
@@ -385,9 +384,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         metadata_content += (
             f'{artwork._meta.get_field("link").verbose_name.title()}: {artwork.link} \n'
         )
-        metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([f"{i.name} ({add_label(i)})" for i in artwork.keywords.all()])} \n'
+        metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([f"{i.name} ({get_localised_label(i)})" for i in artwork.keywords.all()])} \n'
         if artwork.location:
-            metadata_content += f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location.name} ({add_label(artwork.location)}) \n'
+            metadata_content += f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location.name} ({get_localised_label(artwork.location)}) \n'
         else:
             metadata_content += (
                 f'{artwork._meta.get_field("location").verbose_name.title()}: "" \n'

@@ -221,7 +221,7 @@ def get_person_list_for_download(queryset, label):
     return f'{label}: {", ".join([i.name for i in queryset])} \n'
 
 
-def add_label(instance):
+def get_localised_label(instance):
     current_language = get_language() or settings.LANGUAGE_CODE
     if isinstance(instance, Artwork):
         return (
