@@ -28,6 +28,10 @@
                 69,
                 80,
                 13
+            ],
+            "discriminatory_terms": [
+                19,
+                6
             ]
         }
     },
@@ -58,6 +62,9 @@
                 61,
                 16,
                 109
+            ],
+            "discriminatory_terms": [
+                28
             ]
         }
     },
@@ -88,6 +95,9 @@
                 61,
                 171,
                 107
+            ],
+            "discriminatory_terms": [
+                35
             ]
         }
     },
@@ -117,7 +127,8 @@
             "keywords": [
                 98,
                 107
-            ]
+            ],
+            "discriminatory_terms": []
         }
     },
     {
@@ -147,7 +158,8 @@
                 118,
                 98,
                 109
-            ]
+            ],
+            "discriminatory_terms": []
         }
     },
     {
@@ -178,6 +190,11 @@
                 169,
                 6,
                 139
+            ],
+            "discriminatory_terms": [
+                28,
+                29,
+                31
             ]
         }
     },
@@ -210,6 +227,9 @@
                 169,
                 139,
                 107
+            ],
+            "discriminatory_terms": [
+                28
             ]
         }
     },
@@ -239,6 +259,11 @@
             "keywords": [
                 176,
                 98
+            ],
+            "discriminatory_terms": [
+                29,
+                30,
+                31
             ]
         }
     },
@@ -268,7 +293,8 @@
             ],
             "keywords": [
                 98
-            ]
+            ],
+            "discriminatory_terms": []
         }
     },
     {
@@ -296,7 +322,8 @@
             ],
             "keywords": [
                 13
-            ]
+            ],
+            "discriminatory_terms": []
         }
     }
 ]
