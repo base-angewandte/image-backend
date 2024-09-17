@@ -75,7 +75,8 @@ def filter_mptt_model(filter_values, model, search_field):
     for val in filter_values:
         if isinstance(val, str):
             filters_list.append(
-                Q(**{f'{search_field}__name__unaccent__icontains': val}),
+                Q(**{f'{search_field}__name__unaccent__icontains': val})
+                | Q(**{f'{search_field}__name_en__unaccent__icontains': val}),
             )
         elif isinstance(val, dict) and 'id' in val:
             entries = model.objects.filter(pk=val.get('id')).get_descendants(
@@ -267,7 +268,7 @@ def search(request, *args, **kwargs):
                 if artwork.image_original
                 else None,
                 'credits': artwork.credits,
-                'title': artwork.title,
+                'title': get_localised_label(artwork),
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 'location': {
                     'name': artwork.location.name,
