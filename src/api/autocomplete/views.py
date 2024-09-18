@@ -203,7 +203,9 @@ def autocomplete(request, *args, **kwargs):
                     },
                 )
         else:
-            q_filters = Q(name__icontains=q_param) | Q(name_en__icontains=q_param)
+            q_filters = Q(name__icontains=q_param)
+            if t in ['keywords', 'locations']:
+                q_filters |= Q(name_en__icontains=q_param)
             query = MODEL_MAP[t].objects.filter(q_filters)[:limit]
             for item in query:
                 d['data'].append(
