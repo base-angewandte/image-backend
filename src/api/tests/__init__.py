@@ -271,6 +271,24 @@ class APITestCase(RestFrameworkAPITestCase):
             checked=True,
             image_original=temporary_image(),
         ).keywords.add(epochs)
+        Artwork.objects.create(
+            title='title test 1',
+            title_english='',
+            date_year_from=-200,
+            date_year_to=200,
+            published=True,
+            checked=True,
+            image_original=temporary_image(),
+        )
+        Artwork.objects.create(
+            title='Titel Test 2 DE',
+            title_english='title test 2 EN',
+            date_year_from=-200,
+            date_year_to=200,
+            published=True,
+            checked=True,
+            image_original=temporary_image(),
+        )
 
         # add albums
         Album.objects.create(title='My own album 1', user=self.user)

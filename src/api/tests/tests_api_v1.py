@@ -31,8 +31,8 @@ class ArtworkTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
-        self.assertEqual(content['total'], 19)
-        self.assertEqual(len(content['results']), 19)
+        self.assertEqual(content['total'], 21)
+        self.assertEqual(len(content['results']), 21)
 
     def test_artworks_retrieve(self):
         """Test the retrieval of an artwork."""
@@ -465,7 +465,7 @@ class AutocompleteTests(APITestCase):
         response = self.client.get(f'{url}?q=e&type=titles&limit=100', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
-        self.assertEqual(len(content), 19)
+        self.assertEqual(len(content), 21)
         response = self.client.get(f'{url}?q=e&type=titles&limit=5', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
@@ -537,3 +537,24 @@ class AutocompleteTests(APITestCase):
         content = json.loads(response.content)[0]
         self.assertEqual(len(content), 2)
         self.assertEqual(content['label'], 'Byzanz')
+
+        # test title querying for artworks
+        response = self.client.get(
+            f'{url}?q=title test 1&type=titles',
+            format='json',
+            headers={'accept-language': 'en'},
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)[0]
+        self.assertEqual(len(content), 3)
+        self.assertEqual(content['label'], 'title test 1')
+
+        response = self.client.get(
+            f'{url}?q=Titel Test 2 DE&type=titles',
+            format='json',
+            headers={'accept-language': 'en'},
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)[0]
+        self.assertEqual(len(content), 3)
+        self.assertEqual(content['label'], 'title test 2 EN')
