@@ -270,19 +270,6 @@ def search(request, *args, **kwargs):
                 'credits': artwork.credits,
                 'title': get_localised_label(artwork),
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
-                'location': {
-                    'name': artwork.location.name,
-                    'label': get_localised_label(artwork.location),
-                }
-                if artwork.location
-                else None,
-                'keywords': [
-                    {
-                        'name': keyword.name,
-                        'label': get_localised_label(keyword),
-                    }
-                    for keyword in artwork.keywords.all()
-                ],
                 'date': artwork.date,
                 'artists': [
                     {'value': artist.name, 'id': artist.id}
