@@ -54,8 +54,12 @@ class APITestCase(RestFrameworkAPITestCase):
         Keyword.objects.create(name='Profaner Repräsentationsbau', parent=profan)
         Keyword.objects.create(name='Wohnbau', parent=profan)
 
+        Keyword.objects.create(name='Barock', name_en='Baroque', parent=epochs)
+        Keyword.objects.create(name='Byzanz', name_en='', parent=epochs)
+
         # add locations
         au = Location.objects.create(name='Australien')
+        be = Location.objects.create(name='Belgium')
         syd = Location.objects.create(name='Sydney', parent=au)
         Location.objects.create(name='Museum of Contemporary Art', parent=syd)
         aut = Location.objects.create(name='Österreich')
@@ -77,6 +81,16 @@ class APITestCase(RestFrameworkAPITestCase):
             name='Galerie Vorspann',
             parent=zelez,
             synonyms='Galerija Vprega',
+        )
+        Location.objects.create(
+            name='Koninklijk Museum voor Schone Kunsten (Antwerpen)',
+            name_en='',
+            parent=be,
+        )
+        Location.objects.create(
+            name='Königliche Bibliothek',
+            name_en='Royal Library of Belgium',
+            parent=be,
         )
 
         # add materials
@@ -229,6 +243,34 @@ class APITestCase(RestFrameworkAPITestCase):
             checked=True,
             image_original=temporary_image(),
         )
+        Artwork.objects.create(
+            title='loc test name_en',
+            location=be,
+            published=True,
+            checked=True,
+            image_original=temporary_image(),
+        )
+        Artwork.objects.create(
+            title='loc test name',
+            location=be,
+            published=True,
+            checked=True,
+            image_original=temporary_image(),
+        )
+        Artwork.objects.create(
+            title='keyword test name_en',
+            location=be,
+            published=True,
+            checked=True,
+            image_original=temporary_image(),
+        ).keywords.add(epochs)
+        Artwork.objects.create(
+            title='keyword test name',
+            location=be,
+            published=True,
+            checked=True,
+            image_original=temporary_image(),
+        ).keywords.add(epochs)
 
         # add albums
         Album.objects.create(title='My own album 1', user=self.user)

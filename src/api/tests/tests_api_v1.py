@@ -31,8 +31,8 @@ class ArtworkTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
-        self.assertEqual(content['total'], 15)
-        self.assertEqual(len(content['results']), 15)
+        self.assertEqual(content['total'], 19)
+        self.assertEqual(len(content['results']), 19)
 
     def test_artworks_retrieve(self):
         """Test the retrieval of an artwork."""
@@ -465,7 +465,7 @@ class AutocompleteTests(APITestCase):
         response = self.client.get(f'{url}?q=e&type=titles&limit=100', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
-        self.assertEqual(len(content), 15)
+        self.assertEqual(len(content), 19)
         response = self.client.get(f'{url}?q=e&type=titles&limit=5', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
@@ -492,3 +492,48 @@ class AutocompleteTests(APITestCase):
         content = json.loads(response.content)
         self.assertEqual(len(content[0]['data']), 5)
         self.assertEqual(len(content[0]['data']), 5)
+
+        # test name querying for locations
+        response = self.client.get(
+            f'{url}?q=Königliche Bibliothek&type=locations',
+            format='json',
+            headers={'accept-language': 'en'},
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)[0]
+        self.assertEqual(len(content), 2)
+        self.assertEqual(content['label'], 'Royal Library of Belgium')
+
+        response = self.client.get(
+            f'{url}?q=Koninklijk Museum voor Schone Kunsten (Antwerpen)&type=locations',
+            format='json',
+            headers={'accept-language': 'en'},
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)[0]
+        self.assertEqual(len(content), 2)
+        self.assertEqual(
+            content['label'],
+            'Koninklijk Museum voor Schone Kunsten (Antwerpen)',
+        )
+
+        # test name querying for keywords
+        response = self.client.get(
+            f'{url}?q=Barock&type=keywords',
+            format='json',
+            headers={'accept-language': 'en'},
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)[0]
+        self.assertEqual(len(content), 2)
+        self.assertEqual(content['label'], 'Baroque')
+
+        response = self.client.get(
+            f'{url}?q=Byzanz&type=keywords',
+            format='json',
+            headers={'accept-language': 'en'},
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)[0]
+        self.assertEqual(len(content), 2)
+        self.assertEqual(content['label'], 'Byzanz')
