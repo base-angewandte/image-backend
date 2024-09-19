@@ -31,8 +31,8 @@ class ArtworkTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
-        self.assertEqual(content['total'], 21)
-        self.assertEqual(len(content['results']), 21)
+        self.assertEqual(content['total'], 23)
+        self.assertEqual(len(content['results']), 23)
 
     def test_artworks_retrieve(self):
         """Test the retrieval of an artwork."""
@@ -344,6 +344,7 @@ class SearchTests(APITestCase):
     def test_search(self):
         """Test the search."""
         # Todo (possible): extend? as there are several usecases
+
         artist = Person.objects.create(name='TestArtist')
         artwork1 = Artwork.objects.create(
             title='Test Artwork 1',
@@ -378,6 +379,26 @@ class SearchTests(APITestCase):
         self.assertEqual(content['total'], 2)
         self.assertEqual(content['results'][0]['title'], artwork2.title)
         self.assertEqual(content['results'][1]['artists'][0]['value'], artist.name)
+        # location test title_english
+        data_loc_name_en = {
+            'limit': 30,
+            'offset': 0,
+            'exclude': [],
+            'filters': [
+                {
+                    'id': 'location',
+                    'filter_values': ['weißenstein'],
+                },
+            ],
+        }
+        url = reverse('search', kwargs={'version': VERSION})
+        response = self.client.post(url, data_loc_name_en, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertEqual(
+            content['results'][0]['title'],
+            self.artwork_search_test_title_english.title_english,
+        )
 
     def test_search_labels_list(self):
         url = reverse('search-filters', kwargs={'version': VERSION})
@@ -465,7 +486,7 @@ class AutocompleteTests(APITestCase):
         response = self.client.get(f'{url}?q=e&type=titles&limit=100', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
-        self.assertEqual(len(content), 21)
+        self.assertEqual(len(content), 23)
         response = self.client.get(f'{url}?q=e&type=titles&limit=5', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)

@@ -60,6 +60,7 @@ class APITestCase(RestFrameworkAPITestCase):
         # add locations
         au = Location.objects.create(name='Australien')
         be = Location.objects.create(name='Belgium')
+        de = Location.objects.create(name='Deutschland')
         syd = Location.objects.create(name='Sydney', parent=au)
         Location.objects.create(name='Museum of Contemporary Art', parent=syd)
         aut = Location.objects.create(name='Österreich')
@@ -91,6 +92,11 @@ class APITestCase(RestFrameworkAPITestCase):
             name='Königliche Bibliothek',
             name_en='Royal Library of Belgium',
             parent=be,
+        )
+        loc_search_test = Location.objects.create(
+            name='Schloss Weißenstein',
+            name_en='Schloss Weißenstein EN',
+            parent=de,
         )
 
         # add materials
@@ -285,6 +291,14 @@ class APITestCase(RestFrameworkAPITestCase):
             title_english='title test 2 EN',
             date_year_from=-200,
             date_year_to=200,
+            published=True,
+            checked=True,
+            image_original=temporary_image(),
+        )
+        self.artwork_search_test_title_english = Artwork.objects.create(
+            title='DE test',
+            title_english='EN test',
+            location=loc_search_test,
             published=True,
             checked=True,
             image_original=temporary_image(),
