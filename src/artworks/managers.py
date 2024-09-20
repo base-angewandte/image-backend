@@ -27,12 +27,28 @@ class ArtworkManager(models.Manager):
             text,
             'artists__synonyms',
         )
+        trigram_word_similarity_authors_name = TrigramWordSimilarity(
+            text,
+            'authors__name',
+        )
+        trigram_word_similarity_photographers_name = TrigramWordSimilarity(
+            text,
+            'photographers__name',
+        )
+        trigram_word_similarity_graphic_designers_name = TrigramWordSimilarity(
+            text,
+            'graphic_designers__name',
+        )
+
         rank = (
             search_rank
             + trigram_word_similarity_title
             + trigram_word_similarity_title_english
             + trigram_word_similarity_artists_name
             + trigram_word_similarity_artists_synonyms
+            + trigram_word_similarity_authors_name
+            + trigram_word_similarity_photographers_name
+            + trigram_word_similarity_graphic_designers_name
         )
         return (
             self.get_queryset()
@@ -41,6 +57,13 @@ class ArtworkManager(models.Manager):
             .annotate(similarity_artists_name=trigram_word_similarity_artists_name)
             .annotate(
                 similarity_artists_synonyms=trigram_word_similarity_artists_synonyms,
+            )
+            .annotate(similarity_authors_name=trigram_word_similarity_authors_name)
+            .annotate(
+                similarity_photographers_name=trigram_word_similarity_photographers_name,
+            )
+            .annotate(
+                similarity_graphic_designers_name=trigram_word_similarity_graphic_designers_name,
             )
             .filter(rank__gte=0.1)
             .order_by('-rank')

@@ -37,9 +37,19 @@ def filter_artists(filter_values):
     filters_list = []
     for val in filter_values:
         if isinstance(val, str):
-            filters_list.append(Q(artists__name__unaccent__icontains=val))
+            filters_list.append(
+                Q(artists__name__unaccent__icontains=val)
+                | Q(authors__name__unaccent__icontains=val)
+                | Q(photographers__name__unaccent__icontains=val)
+                | Q(graphic_designers__name__unaccent__icontains=val),
+            )
         elif isinstance(val, dict) and 'id' in val:
-            filters_list.append(Q(artists__id=val.get('id')))
+            filters_list.append(
+                Q(artists__id=val.get('id'))
+                | Q(authors__id=val.get('id'))
+                | Q(photographers__id=val.get('id'))
+                | Q(graphic_designers__id=val.get('id')),
+            )
         else:
             raise ParseError(
                 _('Invalid format of at least one filter_value for artists filter.'),
@@ -222,7 +232,6 @@ def search(request, *args, **kwargs):
         for f in filters:
             if f['id'] not in FILTERS_KEYS:
                 raise ParseError(f'Invalid filter id {repr(f["id"])}')
-
             filters_list = FILTERS_MAP[f['id']](f['filter_values'])
             for filter_item in filters_list:
                 subq = subq.filter(filter_item)
