@@ -44,7 +44,11 @@ class APITestCase(RestFrameworkAPITestCase):
         # add keywords
         epochs = Keyword.objects.create(name='Epochen / Stile')
         art_brut = Keyword.objects.create(name='Art Brut', parent=epochs)
-        art_deco = Keyword.objects.create(name='Art Déco', parent=epochs)
+        art_deco = Keyword.objects.create(
+            name='Art Déco',
+            name_en='Art Déco, English',
+            parent=epochs,
+        )
         topics = Keyword.objects.create(name='Gattungen / Medien / Themen')
         Keyword.objects.create(name='Angewandte Kunst', parent=topics)
         Keyword.objects.create(name='Partizipatorische Kunst', parent=topics)
@@ -53,14 +57,8 @@ class APITestCase(RestFrameworkAPITestCase):
         profan = Keyword.objects.create(name='Profanbau', parent=arch)
         Keyword.objects.create(name='Profaner Repräsentationsbau', parent=profan)
         Keyword.objects.create(name='Wohnbau', parent=profan)
-
-        Keyword.objects.create(name='Barock', name_en='Baroque', parent=epochs)
-        Keyword.objects.create(name='Byzanz', name_en='', parent=epochs)
-
         # add locations
         au = Location.objects.create(name='Australien')
-        be = Location.objects.create(name='Belgium')
-        de = Location.objects.create(name='Deutschland')
         syd = Location.objects.create(name='Sydney', parent=au)
         Location.objects.create(name='Museum of Contemporary Art', parent=syd)
         aut = Location.objects.create(name='Österreich')
@@ -75,6 +73,7 @@ class APITestCase(RestFrameworkAPITestCase):
         Location.objects.create(name='Archiv Peichl', parent=mak)
         zelez = Location.objects.create(
             name='Bad Eisenkappel',
+            name_en='Bad Eisenkappel, English',
             parent=aut,
             synonyms='Železna Kapla',
         )
@@ -82,21 +81,6 @@ class APITestCase(RestFrameworkAPITestCase):
             name='Galerie Vorspann',
             parent=zelez,
             synonyms='Galerija Vprega',
-        )
-        Location.objects.create(
-            name='Koninklijk Museum voor Schone Kunsten (Antwerpen)',
-            name_en='',
-            parent=be,
-        )
-        Location.objects.create(
-            name='Königliche Bibliothek',
-            name_en='Royal Library of Belgium',
-            parent=be,
-        )
-        loc_search_test = Location.objects.create(
-            name='Schloss Weißenstein',
-            name_en='Schloss Weißenstein EN',
-            parent=de,
         )
 
         # add materials
@@ -223,6 +207,7 @@ class APITestCase(RestFrameworkAPITestCase):
         ).keywords.add(arch, profan)
         Artwork.objects.create(
             title='loc test zelez',
+            title_english='loc test zelez, English',
             location=zelez,
             published=True,
             checked=True,
@@ -245,60 +230,6 @@ class APITestCase(RestFrameworkAPITestCase):
         Artwork.objects.create(
             title='loc test aut',
             location=aut,
-            published=True,
-            checked=True,
-            image_original=temporary_image(),
-        )
-        Artwork.objects.create(
-            title='loc test name_en',
-            location=be,
-            published=True,
-            checked=True,
-            image_original=temporary_image(),
-        )
-        Artwork.objects.create(
-            title='loc test name',
-            location=be,
-            published=True,
-            checked=True,
-            image_original=temporary_image(),
-        )
-        Artwork.objects.create(
-            title='keyword test name_en',
-            location=be,
-            published=True,
-            checked=True,
-            image_original=temporary_image(),
-        ).keywords.add(epochs)
-        Artwork.objects.create(
-            title='keyword test name',
-            location=be,
-            published=True,
-            checked=True,
-            image_original=temporary_image(),
-        ).keywords.add(epochs)
-        Artwork.objects.create(
-            title='title test 1',
-            title_english='',
-            date_year_from=-200,
-            date_year_to=200,
-            published=True,
-            checked=True,
-            image_original=temporary_image(),
-        )
-        Artwork.objects.create(
-            title='Titel Test 2 DE',
-            title_english='title test 2 EN',
-            date_year_from=-200,
-            date_year_to=200,
-            published=True,
-            checked=True,
-            image_original=temporary_image(),
-        )
-        self.artwork_search_test_title_english = Artwork.objects.create(
-            title='DE test',
-            title_english='EN test',
-            location=loc_search_test,
             published=True,
             checked=True,
             image_original=temporary_image(),
