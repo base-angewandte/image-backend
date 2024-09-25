@@ -12,6 +12,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from django.conf import settings
+from django.db.models.functions import Length
 from django.http import HttpResponse
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
@@ -24,6 +25,15 @@ logger = logging.getLogger(__name__)
 def album_download_as_pptx(album_id, language='en'):
     """Return a downloadable powerpoint presentation of the album."""
 
+    def apply_strike_through_and_formatting(p, matched_term):
+        run = p.add_run()
+        run.text = matched_term[1:]
+        font = run.font
+        font.size = Pt(36)
+        font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+        run.font._element.attrib['strike'] = 'sngStrike'
+        run.font._element.attrib['baseline'] = '-21000'
+
     def get_new_slide():
         blank_slide_layout = prs.slide_layouts[6]
         slide = prs.slides.add_slide(blank_slide_layout)
@@ -32,7 +42,7 @@ def album_download_as_pptx(album_id, language='en'):
         fill.fore_color.rgb = RGBColor(217, 217, 217)
         return slide
 
-    def add_description(slide, description, width, left):
+    def add_description(slide, artwork, width, left):
         shapes = slide.shapes
         top = prs.slide_height - textbox_height - prs_padding
         shape = shapes.add_shape(MSO_SHAPE.RECTANGLE, left, top, width, textbox_height)
@@ -41,12 +51,52 @@ def album_download_as_pptx(album_id, language='en'):
         text_frame = shape.text_frame
         text_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
         text_frame.word_wrap = True
+        discriminatory_terms = artwork.discriminatory_terms.order_by(
+            Length('term').desc(),
+        )
         p = text_frame.paragraphs[0]
-        run = p.add_run()
-        run.text = description
-        font = run.font
-        font.size = Pt(36)
-        font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+        # Process the text by finding all occurrences of the terms
+        index = 0  # Track the position within the description
+        description = artwork.get_short_description(language)
+        # while a regexp based approach could be desirable, we still need to walk
+        # through the whole description index-wise, because we cannot simply replace
+        # but need to build the whole paragraph with runs
+        while index < len(description):
+            found_term = None
+            found_position = len(description)
+            # find the lowest position of any matched term
+            for term in discriminatory_terms:
+                pos = description.lower().find(term.term.lower(), index)
+                if pos != -1 and pos < found_position:
+                    found_term = term.term
+                    found_position = pos
+            if not found_term:
+                run = p.add_run()
+                run.text = description[index:]
+                font = run.font
+                font.size = Pt(36)
+                font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+                break
+            # Add the text before the found term
+            if index < found_position:
+                run = p.add_run()
+                run.text = description[index:found_position]
+                font = run.font
+                font.size = Pt(36)
+                font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+            run = p.add_run()
+            run.text = description[found_position]
+            font = run.font
+            font.size = Pt(36)
+            font.color.theme_color = MSO_THEME_COLOR.TEXT_1
+
+            apply_strike_through_and_formatting(
+                p,
+                description[found_position : found_position + len(found_term)],
+            )
+
+            # Move the index forward after processing the found term
+            index = found_position + len(found_term)
 
     def add_slide_with_one_picture(artwork, padding):
         img_relative_path = artwork.image_original.thumbnail[
@@ -58,7 +108,7 @@ def album_download_as_pptx(album_id, language='en'):
         picture_width = prs.slide_width - (padding * 2)
         add_description(
             slide,
-            artwork.get_short_description(language),
+            artwork,
             picture_width,
             padding,
         )
@@ -76,14 +126,14 @@ def album_download_as_pptx(album_id, language='en'):
         text_width = int((prs.slide_width - (padding * 2) - distance_between) / 2)
         add_description(
             slide,
-            artwork_left.get_short_description(language),
+            artwork_left,
             text_width,
             padding,
         )
         left = padding + text_width + distance_between
         add_description(
             slide,
-            artwork_right.get_short_description(language),
+            artwork_right,
             text_width,
             left,
         )
