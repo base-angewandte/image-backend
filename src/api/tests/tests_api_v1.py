@@ -383,9 +383,6 @@ class SearchTests(APITestCase):
     def test_search_location(self):
         # location test title_english
         data = {
-            'limit': 30,
-            'offset': 0,
-            'exclude': [],
             'filters': [
                 {
                     'id': 'location',
@@ -423,9 +420,6 @@ class SearchTests(APITestCase):
 
         # Check if the 'title' is returned when 'accept-language' header is 'en', although 'title_english' is empty
         data = {
-            'limit': 30,
-            'offset': 0,
-            'exclude': [],
             'filters': [
                 {
                     'id': 'location',
