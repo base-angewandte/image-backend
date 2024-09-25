@@ -689,7 +689,7 @@ class Artwork(AbstractBaseModel):
         ).annotate(
             keywords_names=StringAgg('keywords__name', delimiter=' '),
         ).annotate(
-            keywords_name_en=StringAgg('keywords__name_en', delimiter=' '),
+            keywords_names_en=StringAgg('keywords__name_en', delimiter=' '),
         ).annotate(
             place_of_production_names=StringAgg(
                 'place_of_production__name',
@@ -703,7 +703,7 @@ class Artwork(AbstractBaseModel):
         ).annotate(
             location_names=StringAgg('location__name', delimiter=' '),
         ).annotate(
-            location_name_en=StringAgg('location__name_en', delimiter=' '),
+            location_names_en=StringAgg('location__name_en', delimiter=' '),
         ).annotate(
             location_synonyms=StringAgg('location__synonyms', delimiter=' '),
         ).annotate(
