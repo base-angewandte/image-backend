@@ -4,7 +4,8 @@ from django.contrib.postgres.search import (
     TrigramWordSimilarity,
 )
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Value
+from django.db.models.functions import Coalesce
 
 
 class ArtworkManager(models.Manager):
@@ -29,15 +30,27 @@ class ArtworkManager(models.Manager):
         )
         trigram_word_similarity_authors_name = TrigramWordSimilarity(
             text,
-            'authors__name',
+            Coalesce('authors__name', Value('')),
+        )
+        trigram_word_similarity_authors_synonyms = TrigramWordSimilarity(
+            text,
+            Coalesce('authors__synonyms', Value('')),
         )
         trigram_word_similarity_photographers_name = TrigramWordSimilarity(
             text,
-            'photographers__name',
+            Coalesce('photographers__name', Value('')),
+        )
+        trigram_word_similarity_photographers_synonyms = TrigramWordSimilarity(
+            text,
+            Coalesce('photographers__synonyms', Value('')),
         )
         trigram_word_similarity_graphic_designers_name = TrigramWordSimilarity(
             text,
-            'graphic_designers__name',
+            Coalesce('graphic_designers__name', Value('')),
+        )
+        trigram_word_similarity_graphic_designers_synonyms = TrigramWordSimilarity(
+            text,
+            Coalesce('graphic_designers__synonyms', Value('')),
         )
 
         rank = (
@@ -47,8 +60,11 @@ class ArtworkManager(models.Manager):
             + trigram_word_similarity_artists_name
             + trigram_word_similarity_artists_synonyms
             + trigram_word_similarity_authors_name
+            + trigram_word_similarity_authors_synonyms
             + trigram_word_similarity_photographers_name
+            + trigram_word_similarity_photographers_synonyms
             + trigram_word_similarity_graphic_designers_name
+            + trigram_word_similarity_graphic_designers_synonyms
         )
         return (
             self.get_queryset()
@@ -60,10 +76,19 @@ class ArtworkManager(models.Manager):
             )
             .annotate(similarity_authors_name=trigram_word_similarity_authors_name)
             .annotate(
+                similarity_authors_synonyms=trigram_word_similarity_authors_synonyms,
+            )
+            .annotate(
                 similarity_photographers_name=trigram_word_similarity_photographers_name,
             )
             .annotate(
+                similarity_photographers_synonyms=trigram_word_similarity_photographers_synonyms,
+            )
+            .annotate(
                 similarity_graphic_designers_name=trigram_word_similarity_graphic_designers_name,
+            )
+            .annotate(
+                similarity_graphic_designers_synonyms=trigram_word_similarity_graphic_designers_synonyms,
             )
             .filter(rank__gte=0.1)
             .order_by('-rank')
