@@ -33,6 +33,8 @@ from api.views import (
 )
 from artworks.models import Album, Artwork, PermissionsRelation
 
+from . import get_localised_label
+
 logger = logging.getLogger(__name__)
 
 
@@ -166,7 +168,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 else {},
                 'location': {
                     'id': artwork.location.id,
-                    'value': artwork.location.name,
+                    'value': get_localised_label(artwork.location),
                 }
                 if artwork.location
                 else {},
@@ -175,7 +177,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'authors': get_person_list(artwork.authors.all()),
                 'graphic_designers': get_person_list(artwork.graphic_designers.all()),
                 'keywords': [
-                    {'id': keyword.id, 'value': keyword.name}
+                    {
+                        'id': keyword.id,
+                        'value': get_localised_label(keyword),
+                    }
                     for keyword in artwork.keywords.all()
                 ],
             },
@@ -379,8 +384,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         metadata_content += (
             f'{artwork._meta.get_field("link").verbose_name.title()}: {artwork.link} \n'
         )
-        metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([i.name for i in artwork.keywords.all()])} \n'
-        metadata_content += f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location if artwork.location else ""} \n'
+        metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([f"{i.name} ({get_localised_label(i)})" for i in artwork.keywords.all()])} \n'
+        if artwork.location:
+            metadata_content += f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location.name} ({get_localised_label(artwork.location)}) \n'
+        else:
+            metadata_content += (
+                f'{artwork._meta.get_field("location").verbose_name.title()}: "" \n'
+            )
         metadata_content += f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {artwork.place_of_production} \n'
 
         output_zip = BytesIO()

@@ -653,9 +653,11 @@ class Artwork(AbstractBaseModel):
             + SearchVector(Value('graphic_designers_synonyms'), weight='A')
             + SearchVector('comments', weight='B')
             + SearchVector(Value('keywords_names'), weight='B')
+            + SearchVector(Value('keywords_names_en'), weight='B')
             + SearchVector(Value('place_of_production_names'), weight='B')
             + SearchVector(Value('place_of_production_synonyms'), weight='B')
             + SearchVector(Value('location_names'), weight='B')
+            + SearchVector(Value('location_names_en'), weight='B')
             + SearchVector(Value('location_synonyms'), weight='B')
             + SearchVector('credits', weight='C')
             + SearchVector('credits_link', weight='C')
@@ -687,6 +689,8 @@ class Artwork(AbstractBaseModel):
         ).annotate(
             keywords_names=StringAgg('keywords__name', delimiter=' '),
         ).annotate(
+            keywords_names_en=StringAgg('keywords__name_en', delimiter=' '),
+        ).annotate(
             place_of_production_names=StringAgg(
                 'place_of_production__name',
                 delimiter=' ',
@@ -698,6 +702,8 @@ class Artwork(AbstractBaseModel):
             ),
         ).annotate(
             location_names=StringAgg('location__name', delimiter=' '),
+        ).annotate(
+            location_names_en=StringAgg('location__name_en', delimiter=' '),
         ).annotate(
             location_synonyms=StringAgg('location__synonyms', delimiter=' '),
         ).annotate(

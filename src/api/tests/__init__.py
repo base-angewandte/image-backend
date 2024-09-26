@@ -44,7 +44,11 @@ class APITestCase(RestFrameworkAPITestCase):
         # add keywords
         epochs = Keyword.objects.create(name='Epochen / Stile')
         art_brut = Keyword.objects.create(name='Art Brut', parent=epochs)
-        art_deco = Keyword.objects.create(name='Art Déco', parent=epochs)
+        art_deco = Keyword.objects.create(
+            name='Art Déco',
+            name_en='Art Déco, English',
+            parent=epochs,
+        )
         topics = Keyword.objects.create(name='Gattungen / Medien / Themen')
         Keyword.objects.create(name='Angewandte Kunst', parent=topics)
         Keyword.objects.create(name='Partizipatorische Kunst', parent=topics)
@@ -53,7 +57,6 @@ class APITestCase(RestFrameworkAPITestCase):
         profan = Keyword.objects.create(name='Profanbau', parent=arch)
         Keyword.objects.create(name='Profaner Repräsentationsbau', parent=profan)
         Keyword.objects.create(name='Wohnbau', parent=profan)
-
         # add locations
         au = Location.objects.create(name='Australien')
         syd = Location.objects.create(name='Sydney', parent=au)
@@ -70,6 +73,7 @@ class APITestCase(RestFrameworkAPITestCase):
         Location.objects.create(name='Archiv Peichl', parent=mak)
         zelez = Location.objects.create(
             name='Bad Eisenkappel',
+            name_en='Bad Eisenkappel, English',
             parent=aut,
             synonyms='Železna Kapla',
         )
@@ -203,6 +207,7 @@ class APITestCase(RestFrameworkAPITestCase):
         ).keywords.add(arch, profan)
         Artwork.objects.create(
             title='loc test zelez',
+            title_english='loc test zelez, English',
             location=zelez,
             published=True,
             checked=True,

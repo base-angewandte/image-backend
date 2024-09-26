@@ -15,6 +15,7 @@ from django.db.models import Q, Value
 from django.db.models.functions import Concat
 from django.utils.translation import gettext_lazy as _
 
+from api.views import get_localised_label
 from artworks.models import (
     Album,
     Artwork,
@@ -184,9 +185,12 @@ def autocomplete(request, *args, **kwargs):
                 )
 
         elif t == 'titles':
+            q_filters = Q(title__icontains=q_param) | Q(
+                title_english__icontains=q_param,
+            )
             query = (
                 MODEL_MAP[t]
-                .objects.filter(title__icontains=q_param)
+                .objects.filter(q_filters)
                 .prefetch_related('discriminatory_terms')[:limit]
             )
 
@@ -194,22 +198,22 @@ def autocomplete(request, *args, **kwargs):
                 d['data'].append(
                     {
                         'id': artwork.id,
-                        'label': artwork.title,
+                        'label': get_localised_label(artwork),
                         'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                     },
                 )
-
         else:
-            query = MODEL_MAP[t].objects.filter(name__icontains=q_param)[:limit]
-
+            q_filters = Q(name__icontains=q_param)
+            if t in ['keywords', 'locations']:
+                q_filters |= Q(name_en__icontains=q_param)
+            query = MODEL_MAP[t].objects.filter(q_filters)[:limit]
             for item in query:
                 d['data'].append(
                     {
                         'id': item.id,
-                        'label': item.name,
+                        'label': get_localised_label(item),
                     },
                 )
-
         ret.append(d)
 
     if len(ret) == 1:
