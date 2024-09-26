@@ -22,11 +22,11 @@ class ArtworkManager(models.Manager):
         )
         trigram_word_similarity_artists_name = TrigramWordSimilarity(
             text,
-            'artists__name',
+            Coalesce('artists__name', Value('')),
         )
         trigram_word_similarity_artists_synonyms = TrigramWordSimilarity(
             text,
-            'artists__synonyms',
+            Coalesce('artists__synonyms', Value('')),
         )
         trigram_word_similarity_authors_name = TrigramWordSimilarity(
             text,
