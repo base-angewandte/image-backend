@@ -20,5 +20,12 @@ class User(AbstractUser):
     def full_name(self):
         return self.get_full_name()
 
+    @property
+    def preferences(self):
+        return {
+            'display_images': self.display_images,
+            'display_folders': self.display_folders,
+        }
+
     def __str__(self):
         return self.get_full_name() or self.username

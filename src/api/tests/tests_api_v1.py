@@ -452,7 +452,7 @@ class SearchTests(APITestCase):
 class UserDataTests(APITestCase):
     def test_user_data(self):
         """Test the retrieval of current user data."""
-        url = reverse('user', kwargs={'version': VERSION})
+        url = reverse('user-list', kwargs={'version': VERSION})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
