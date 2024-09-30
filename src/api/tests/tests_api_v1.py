@@ -212,11 +212,19 @@ class AlbumsTests(APITestCase):
             image_original=temporary_image(),
         )
         url = reverse('album-slides', kwargs={'pk': album.pk, 'version': VERSION})
-        data = [[{'id': artwork1.pk}, {'id': artwork2.pk}], [{'id': artwork3.pk}]]
+        data = [
+            {'items': [{'id': artwork1.pk}, {'id': artwork2.pk}]},
+            {'items': [{'id': artwork3.pk}]},
+        ]
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
-        self.assertEqual(content, data)
+        self.assertEqual(type(content), list)
+        self.assertEqual(len(content), 2)
+        self.assertEqual(type(content[0]), dict)
+        self.assertEqual(type(content[1]), dict)
+        self.assertEqual(content[0].get('items'), data[0]['items'])
+        self.assertEqual(content[1].get('items'), data[1]['items'])
 
     def test_albums_permissions(self):
         """Test the retrieval of album permissions."""

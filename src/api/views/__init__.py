@@ -43,7 +43,9 @@ def check_sorting(sorting, ordering_fields):
 def slides_with_details(album, request, raise_not_found=False):
     ret = []
 
-    slide_ids = [artwork.get('id') for slide in album.slides for artwork in slide]
+    slide_ids = [
+        artwork.get('id') for slide in album.slides for artwork in slide['items']
+    ]
     qs = Artwork.objects.filter(id__in=slide_ids).prefetch_related(
         'artists',
         'photographers',
@@ -75,10 +77,10 @@ def slides_with_details(album, request, raise_not_found=False):
         }
 
     for slide in album.slides:
-        slide_info = []
-        for item in slide:
+        slide_info = {'id': slide['id'], 'items': []}
+        for item in slide['items']:
             if artwork_info := artworks.get(item.get('id')):
-                slide_info.append(artwork_info)
+                slide_info['items'].append(artwork_info)
             elif raise_not_found:
                 raise NotFound(_('Artwork %(id)s does not exist') % {'id': item['id']})
             else:
@@ -98,7 +100,7 @@ def featured_artworks(album, request, num_artworks=4, raise_not_found=False):
     artworks = []
     found_ids = []
     for slide in album.slides:
-        for item in slide:
+        for item in slide['items']:
             artwork_id = item.get('id')
             # an image could be included several times in the slides, but should only be featured once
             if artwork_id in found_ids:

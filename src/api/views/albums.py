@@ -1,3 +1,4 @@
+import shortuuid
 from base_common_drf.openapi.responses import ERROR_RESPONSES
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -347,7 +348,10 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                 permissions='EDIT',
             ).exists()
         ):
-            slide = [serializer.validated_data]
+            slide = {
+                'id': shortuuid.uuid(),
+                'items': [serializer.validated_data],
+            }
             album.slides.append(slide)
             album.last_changed_by = request.user
             album.save()
@@ -435,14 +439,17 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         ):
             slides_list = []
             for slide in serializer.validated_data:
-                current_slide = []
-                for artwork in slide:
+                current_slide = {
+                    'id': slide['id'] if 'id' in slide else shortuuid.uuid(),
+                    'items': [],
+                }
+                for artwork in slide['items']:
                     # check if artwork exists
                     try:
                         Artwork.objects.get(id=artwork.get('id'))
                     except Artwork.DoesNotExist as dne:
                         raise NotFound(_('Artwork does not exist')) from dne
-                    current_slide.append({'id': artwork['id']})
+                    current_slide['items'].append({'id': artwork['id']})
                 slides_list.append(current_slide)
             album.slides = slides_list
             album.last_changed_by = request.user
