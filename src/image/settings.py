@@ -448,7 +448,7 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
     'DEFAULT_VERSION': 'v1',
-    'DEFAULT_SCHEMA_CLASS': 'base_common_drf.openapi.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS': 'api.AutoSchema',
 }
 
 SPECTACULAR_SETTINGS = {

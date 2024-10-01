@@ -96,6 +96,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
 
     queryset = Album.objects.all()
     ordering_fields = ['title', 'date_created', 'date_changed']
+    exclude_language_header = [('get', 'download')]
 
     @extend_schema(
         parameters=[
