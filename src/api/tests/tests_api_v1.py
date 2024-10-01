@@ -449,6 +449,31 @@ class SearchTests(APITestCase):
         self.assertEqual(len(content['place_of_production']['items']), 2)
 
 
+class TosTests(APITestCase):
+    def test_tos_accept(self):
+        self.user.tos_accepted = False
+        self.user.save()
+        url_get = reverse('tos-list', kwargs={'version': VERSION})
+        response = self.client.get(url_get, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertEqual(type(content), dict)
+        self.assertEqual(content['tos_accepted'], False)
+        self.assertEqual(type(content['tos_text']), str)
+        url_post = reverse('tos-accept', kwargs={'version': VERSION})
+        response = self.client.post(url_post, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.client.post(url_post, format='json')  # try once more
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.client.get(url_get, format='json')
+        content = json.loads(response.content)
+        self.assertEqual(content['tos_accepted'], True)
+
+    def test_permitted_endpoints(self):
+        # TODO: add checks for all endpoints
+        pass
+
+
 class UserDataTests(APITestCase):
     def test_user_data(self):
         """Test the retrieval of current user data."""
