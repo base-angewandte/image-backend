@@ -470,8 +470,35 @@ class TosTests(APITestCase):
         self.assertEqual(content['tos_accepted'], True)
 
     def test_permitted_endpoints(self):
-        # TODO: add checks for all endpoints
-        pass
+        self.user.tos_accepted = False
+        self.user.save()
+        # routes which should be accessible without accepted ToS
+        # excluding tos-list and tos-accepted, which are tested above
+        routes_200 = ['api-root', 'user-list']
+        # sample (and simple get) routes which should not be accessible without accepted ToS
+        routes_403 = [
+            'album-list',
+            'artwork-list',
+            'artwork-labels',
+            'folder-list',
+            'permission-list',
+            'search-filters',
+        ]
+        for route in routes_200:
+            url = reverse(route, kwargs={'version': VERSION})
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+        for route in routes_403:
+            url = reverse(route, kwargs={'version': VERSION})
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        # now again with accepted tos
+        self.user.tos_accepted = True
+        self.user.save()
+        for route in routes_403:
+            url = reverse(route, kwargs={'version': VERSION})
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class UserDataTests(APITestCase):
