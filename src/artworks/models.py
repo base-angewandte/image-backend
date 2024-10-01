@@ -637,6 +637,15 @@ class Artwork(AbstractBaseModel):
     def get_discriminatory_terms_list(self):
         return [term.term for term in self.discriminatory_terms.all()]
 
+    def get_place_of_production_list(self):
+        return [
+            {
+                'id': location.id,
+                'value': location.name,
+            }
+            for location in self.place_of_production.all()
+        ]
+
     def update_search_vector(self):
         search_vector = (
             SearchVector('title', weight='A')
