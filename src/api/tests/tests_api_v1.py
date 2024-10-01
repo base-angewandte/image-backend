@@ -459,6 +459,62 @@ class UserDataTests(APITestCase):
         self.assertEqual(content['id'], 'temporary')
         self.assertEqual(content['email'], 'temporary@uni-ak.ac.at')
 
+    def test_user_preferences(self):
+        """Test retrieving and setting user preferences."""
+
+        def test_get_user(images, folders):
+            url = reverse('user-list', kwargs={'version': VERSION})
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            content = json.loads(response.content)
+            self.assertEqual(type(content['preferences']), dict)
+            self.assertEqual(content['preferences']['display_images'], images)
+            self.assertEqual(content['preferences']['display_folders'], folders)
+
+        def test_get_preferences(images, folders):
+            url = reverse('user-preferences', kwargs={'version': VERSION})
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            content = json.loads(response.content)
+            self.assertEqual(type(content), dict)
+            self.assertEqual(content['display_images'], images)
+            self.assertEqual(content['display_folders'], folders)
+
+        # retrieve from /user/ endpoint
+        test_get_user('crop', 'list')
+        # retrieve from /user/preferences/ endpoint
+        test_get_preferences('crop', 'list')
+        # change both preferences through POST to /user/preferences/
+        url = reverse('user-preferences', kwargs={'version': VERSION})
+        data = {'display_images': 'resize', 'display_folders': 'grid'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertEqual(type(content), dict)
+        self.assertEqual(content['display_images'], 'resize')
+        self.assertEqual(content['display_folders'], 'grid')
+        test_get_preferences('resize', 'grid')
+        test_get_user('resize', 'grid')
+        # change one option at a time through PATCH to /user/preferences/
+        url = reverse('user-preferences', kwargs={'version': VERSION})
+        response = self.client.patch(url, {'display_images': 'crop'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertEqual(type(content), dict)
+        self.assertEqual(content['display_images'], 'crop')
+        response = self.client.patch(url, {'display_folders': 'list'}, format='json')
+        content = json.loads(response.content)
+        self.assertEqual(content['display_folders'], 'list')
+        test_get_preferences('crop', 'list')
+        # test invalid parameters, once with POST and once with PATCH
+        response = self.client.patch(url, {'display_folders': 'abc'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        data = {'display_images': 'abc', 'display_folders': 'grid'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.post(url, {'display_folders': 'grid'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class AutocompleteTests(APITestCase):
     def test_autocomplete(self):
