@@ -397,6 +397,16 @@ class AlbumsViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         request=CreateSlidesRequestSerializer,
+        parameters=[
+            OpenApiParameter(
+                name='details',
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description='Boolean indicating if the response should contain details of the artworks',
+                default=False,
+            ),
+        ],
         responses={
             # TODO better response definition
             200: OpenApiResponse(description='OK'),
