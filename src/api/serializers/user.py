@@ -10,6 +10,39 @@ class UserSerializer(serializers.Serializer):
 @extend_schema_serializer(
     examples=[
         OpenApiExample(
+            name='example user preferences',
+            value={
+                'display_images': 'crop',
+                'display_folders': 'list',
+            },
+        ),
+    ],
+)
+class UserPreferencesSerializer(serializers.Serializer):
+    display_images = serializers.CharField()
+    display_folders = serializers.CharField()
+
+    def validate_display_images(self, value):
+        valid = ['crop', 'resize']
+        if value in valid:
+            return value
+        raise serializers.ValidationError(f'display_images must be one of {valid}')
+
+    def validate_display_folders(self, value):
+        valid = ['list', 'grid']
+        if value in valid:
+            return value
+        raise serializers.ValidationError(f'display_folders must be one of {valid}')
+
+
+class UserPreferencesPatchSerializer(UserPreferencesSerializer):
+    display_images = serializers.CharField(required=False)
+    display_folders = serializers.CharField(required=False)
+
+
+@extend_schema_serializer(
+    examples=[
+        OpenApiExample(
             name='example user',
             value={
                 'id': '0123456789ABCDEF0123456789ABCDEF',
@@ -19,6 +52,10 @@ class UserSerializer(serializers.Serializer):
                 'groups': ['foo_users', 'bar_members'],
                 'permissions': ['view_foo', 'view_bar', 'edit_bar'],
                 'tos_accepted': False,
+                'preferences': {
+                    'display_images': 'crop',
+                    'display_folders': 'list',
+                },
             },
         ),
     ],
@@ -43,3 +80,4 @@ class UserDataSerializer(serializers.Serializer):
         help_text='The permissions this user has.',
     )
     tos_accepted = serializers.BooleanField(help_text="The user's tos accepted status")
+    preferences = UserPreferencesSerializer()
