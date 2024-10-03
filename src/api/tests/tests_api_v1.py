@@ -514,7 +514,8 @@ class UserDataTests(APITestCase):
     def test_user_preferences(self):
         """Test retrieving and setting user preferences."""
 
-        def test_get_user(images, folders):
+        def check_get_user(images, folders):
+            """Sends a GET request to /user/ and tests the result."""
             url = reverse('user-list', kwargs={'version': VERSION})
             response = self.client.get(url, format='json')
             self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -523,7 +524,9 @@ class UserDataTests(APITestCase):
             self.assertEqual(content['preferences']['display_images'], images)
             self.assertEqual(content['preferences']['display_folders'], folders)
 
-        def test_get_preferences(images, folders):
+        def check_get_preferences(images, folders):
+            """Sends a GET request to /user/preferences/ and tests the
+            result."""
             url = reverse('user-preferences', kwargs={'version': VERSION})
             response = self.client.get(url, format='json')
             self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -532,11 +535,11 @@ class UserDataTests(APITestCase):
             self.assertEqual(content['display_images'], images)
             self.assertEqual(content['display_folders'], folders)
 
-        # retrieve from /user/ endpoint
-        test_get_user('crop', 'list')
-        # retrieve from /user/preferences/ endpoint
-        test_get_preferences('crop', 'list')
-        # change both preferences through POST to /user/preferences/
+        # check the default response from /user/ and /user/prefereces/ endpoint
+        check_get_user('crop', 'list')
+        check_get_preferences('crop', 'list')
+
+        # change and check both preferences through POST to /user/preferences/
         url = reverse('user-preferences', kwargs={'version': VERSION})
         data = {'display_images': 'resize', 'display_folders': 'grid'}
         response = self.client.post(url, data, format='json')
@@ -545,10 +548,10 @@ class UserDataTests(APITestCase):
         self.assertEqual(type(content), dict)
         self.assertEqual(content['display_images'], 'resize')
         self.assertEqual(content['display_folders'], 'grid')
-        test_get_preferences('resize', 'grid')
-        test_get_user('resize', 'grid')
-        # change one option at a time through PATCH to /user/preferences/
-        url = reverse('user-preferences', kwargs={'version': VERSION})
+        check_get_preferences('resize', 'grid')
+        check_get_user('resize', 'grid')
+
+        # change and check one option at a time through PATCH to /user/preferences/
         response = self.client.patch(url, {'display_images': 'crop'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
@@ -557,8 +560,11 @@ class UserDataTests(APITestCase):
         response = self.client.patch(url, {'display_folders': 'list'}, format='json')
         content = json.loads(response.content)
         self.assertEqual(content['display_folders'], 'list')
-        test_get_preferences('crop', 'list')
-        # test invalid parameters, once with POST and once with PATCH
+        check_get_preferences('crop', 'list')
+
+    def test_user_preferences_parameters(self):
+        """Test for the validity of POST/PATCH request parameters."""
+        url = reverse('user-preferences', kwargs={'version': VERSION})
         response = self.client.patch(url, {'display_folders': 'abc'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         data = {'display_images': 'abc', 'display_folders': 'grid'}
