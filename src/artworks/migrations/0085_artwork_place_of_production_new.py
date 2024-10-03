@@ -3,8 +3,18 @@
 from django.db import migrations, models
 
 
-class Migration(migrations.Migration):
+def migrate_fk_to_m2m(apps, schema_editor):
+    """Migrate data from ForeignKey place_of_production to ManyToManyField place_of_production_new."""
+    Artwork = apps.get_model('artworks', 'Artwork')
 
+    for artwork in Artwork.objects.all():
+        if artwork.place_of_production:
+            # Migrate data from FK to M2M
+            artwork.place_of_production_new.add(artwork.place_of_production)
+            artwork.save()  # Ensure the changes are saved
+
+
+class Migration(migrations.Migration):
     dependencies = [
         ('artworks', '0084_alter_artwork_material_old_alter_person_date_display'),
     ]
@@ -13,6 +23,23 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='artwork',
             name='place_of_production_new',
-            field=models.ManyToManyField(blank=True, related_name='artworks_created_here_new', to='artworks.location', verbose_name='Place of Production'),
+            field=models.ManyToManyField(
+                related_name='artworks_created_here_new',
+                to='artworks.location',
+                verbose_name='Place of Production (New)'
+            ),
+        ),
+
+        migrations.RunPython(migrate_fk_to_m2m),
+
+        migrations.RemoveField(
+            model_name='artwork',
+            name='place_of_production',
+        ),
+
+        migrations.RenameField(
+            model_name='artwork',
+            old_name='place_of_production_new',
+            new_name='place_of_production',
         ),
     ]
