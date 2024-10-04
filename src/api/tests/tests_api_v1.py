@@ -16,6 +16,10 @@ from artworks.models import (
 )
 
 from . import APITestCase, temporary_image
+from .test_utils import (
+    assert_limit_responses,
+    assert_offset_responses,
+)
 
 User = get_user_model()
 
@@ -28,11 +32,25 @@ class ArtworkTests(APITestCase):
     ):
         """Test the retrieval of all artworks for a user."""
         url = reverse('artwork-list', kwargs={'version': VERSION})
+        max_items = 15
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
         self.assertEqual(content['total'], 15)
         self.assertEqual(len(content['results']), 15)
+
+        # check limit
+        assert_limit_responses(self, url, limit=5, max_items=max_items)
+
+        # check offset
+        # Define limit and offset combinations for testing
+        combinations = [
+            {'limit': 5, 'offset': 5},
+            {'limit': 3, 'offset': 6},
+            {'limit': 10, 'offset': 2},
+            {'limit': 4, 'offset': 4},
+        ]
+        assert_offset_responses(self, url, combinations, max_items=max_items)
 
     def test_artworks_retrieve(self):
         """Test the retrieval of an artwork."""
