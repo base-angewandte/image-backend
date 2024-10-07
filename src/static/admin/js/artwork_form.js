@@ -11,7 +11,7 @@ window.addEventListener('load', function () {
     //   and whether we should always overwrite the dimensions_display field
     if (width && height) {
       let dimensions = `${width} x ${height}`;
-      if (depth) dimensions += ` x ${height}`;
+      if (depth) dimensions += ` x ${depth}`;
       dimensions += ' cm';
       $dimensions_display.val(dimensions);
     }
