@@ -83,7 +83,3 @@ def assert_offset_responses(test_case, url, combinations, max_items, test_type):
         test_case.assertEqual(len(content['results']), 1)
     elif test_type == 'folders':
         test_case.assertEqual(len(content), 1)
-
-
-def assert_response_codes(test_case, url, response, expected_codes):
-    pass

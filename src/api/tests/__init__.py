@@ -1,10 +1,12 @@
 from io import BytesIO
 
 from PIL import Image
+from rest_framework import status
 from rest_framework.test import APITestCase as RestFrameworkAPITestCase
 
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.urls import reverse
 
 from artworks.models import Album, Artwork, Keyword, Location, Material, Person
 
@@ -247,3 +249,25 @@ class APITestCase(RestFrameworkAPITestCase):
 
         # No test folders, as currently only a root folder is implemented,
         # which should be created on demand.
+
+
+class BaseTestCase(APITestCase):
+    def setUp(self):
+        user = get_user_model()
+        self.user = user.objects.create_user(username='testuser', password='12345')  # noqa
+        self.url = reverse('artwork-list', kwargs={'version': 'v1'})
+        self.check_unauthorized_requests(self.url)
+
+    def check_unauthorized_requests(self, url):
+        """Helper to check that all methods return 401 when user is logged
+        out."""
+        self.client.logout()
+        methods = ['get', 'post', 'put', 'patch', 'delete']
+        for method in methods:
+            client_method = getattr(self.client, method.lower(), None)
+            if client_method is not None:
+                if method in ['get', 'delete']:
+                    response = client_method(url, format='json')
+                elif method in ['post', 'patch', 'put']:
+                    response = client_method(url, {}, format='json')
+                self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
