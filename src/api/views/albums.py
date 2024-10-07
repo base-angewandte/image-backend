@@ -664,6 +664,13 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                 default='pptx',
                 description='At the moment, only "pptx" is available. Later on, "pdf" will also be available',
             ),
+            # for this specific endpoint we don't need this parameter from the GLOBAL_PARAMS
+            # because the language parameter defines the language of the exported album
+            OpenApiParameter(
+                name='Accept-Language',
+                location=OpenApiParameter.HEADER,
+                exclude=True,
+            ),
         ],
         responses={
             # TODO better response definition
