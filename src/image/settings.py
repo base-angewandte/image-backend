@@ -555,7 +555,8 @@ COPYRIGHT_EN = f'{COPYRIGHT_TEXT_EN} {COPYRIGHT_LINK}'
 
 REQUESTS_TIMEOUT = env.int('REQUESTS_TIMEOUT', default=5)
 
+GOTENBERG_SERVER_NAME = f'{PROJECT_NAME}-gotenberg' if DOCKER else 'localhost'
 GOTENBERG_API_URL = env.str(
     'GOTENBERG_API_URL',
-    default='http://image-gotenberg:3000/forms/libreoffice/convert',
+    default=f'http://{GOTENBERG_SERVER_NAME}:3000/forms/libreoffice/convert',
 )
