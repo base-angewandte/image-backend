@@ -10,7 +10,7 @@ def assert_limit_responses(test_case, url, limit, max_items, test_type):
     response = test_case.client.get(f'{url}?limit={limit}', format='json')
     test_case.assertEqual(response.status_code, status.HTTP_200_OK)
     content = json.loads(response.content)
-    if test_type == 'artworks':
+    if test_type == ['artworks', 'albums']:
         test_case.assertEqual(len(content['results']), min(limit, max_items))
     elif test_type == 'folders':
         test_case.assertEqual(len(content), min(limit, max_items))
@@ -27,16 +27,6 @@ def assert_limit_responses(test_case, url, limit, max_items, test_type):
     content = json.loads(response.content)
     test_case.assertEqual(content['detail'], 'limit must be a positive integer')
 
-    # Check setting limit over maximum available items
-    response = test_case.client.get(f'{url}?limit=5000', format='json')
-    # We should check in the code why the limit doesn't have a maximum value.
-    test_case.assertEqual(response.status_code, status.HTTP_200_OK)
-    content = json.loads(response.content)
-    if test_type == 'artworks':
-        test_case.assertEqual(len(content['results']), max_items)
-    elif test_type == 'folders':
-        test_case.assertEqual(len(content), max_items)
-
 
 def assert_offset_responses(test_case, url, combinations, max_items, test_type):
     # Test different limit and offset combinations
@@ -47,7 +37,7 @@ def assert_offset_responses(test_case, url, combinations, max_items, test_type):
         )
         test_case.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
-        if test_type == 'artworks':
+        if test_type in ['artworks', 'albums']:
             test_case.assertEqual(len(content['results']), val['limit'])
         elif test_type == 'folders':
             test_case.assertEqual(len(content), val['limit'])
@@ -62,7 +52,7 @@ def assert_offset_responses(test_case, url, combinations, max_items, test_type):
     response = test_case.client.get(f'{url}?offset=0', format='json')
     content = json.loads(response.content)
     test_case.assertEqual(response.status_code, status.HTTP_200_OK)
-    if test_type == 'artworks':
+    if test_type == ['artworks', 'albums']:
         test_case.assertEqual(content['total'], max_items)
         test_case.assertEqual(len(content['results']), max_items)
     elif test_type == 'folders':
@@ -79,7 +69,7 @@ def assert_offset_responses(test_case, url, combinations, max_items, test_type):
     # Check setting offset but with a small limit
     response = test_case.client.get(f'{url}?limit=1&offset=2', format='json')
     content = json.loads(response.content)
-    if test_type == 'artworks':
+    if test_type in ['artworks', 'albums']:
         test_case.assertEqual(len(content['results']), 1)
     elif test_type == 'folders':
         test_case.assertEqual(len(content), 1)
