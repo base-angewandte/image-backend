@@ -1,3 +1,4 @@
+import requests
 from base_common_drf.openapi.responses import ERROR_RESPONSES
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -14,6 +15,8 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Q
+from django.http import HttpResponse
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from api.serializers.albums import (
@@ -397,6 +400,16 @@ class AlbumsViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         request=CreateSlidesRequestSerializer,
+        parameters=[
+            OpenApiParameter(
+                name='details',
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description='Boolean indicating if the response should contain details of the artworks',
+                default=False,
+            ),
+        ],
         responses={
             # TODO better response definition
             200: OpenApiResponse(description='OK'),
@@ -654,6 +667,13 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                 default='pptx',
                 description='At the moment, only "pptx" is available. Later on, "pdf" will also be available',
             ),
+            # for this specific endpoint we don't need this parameter from the GLOBAL_PARAMS
+            # because the language parameter defines the language of the exported album
+            OpenApiParameter(
+                name='Accept-Language',
+                location=OpenApiParameter.HEADER,
+                exclude=True,
+            ),
         ],
         responses={
             # TODO better response definition
@@ -690,10 +710,26 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                 language=language,
             )
         elif download_format == 'pdf':
-            # TODO implement pdf creation
-            return Response(
-                _('Not implemented yet'),
-                status.HTTP_501_NOT_IMPLEMENTED,
+            pptx_file = album_download_as_pptx(
+                album.id,
+                language=language,
+                return_raw=True,
+            )
+            filename = f'{slugify(album.title)}.pdf'
+            mime_type = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+            r = requests.post(
+                settings.GOTENBERG_API_URL,
+                timeout=settings.REQUESTS_TIMEOUT,
+                files={
+                    ('files', (filename, pptx_file, mime_type)),
+                },
+            )
+            return HttpResponse(
+                r.content,
+                content_type='application/pdf',
+                headers={
+                    'Content-Disposition': f'attachment; filename={filename}',
+                },
             )
         else:
             raise ParseError(_('Invalid format'))

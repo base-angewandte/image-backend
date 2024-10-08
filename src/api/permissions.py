@@ -9,7 +9,7 @@ class TosAcceptedPermission(permissions.BasePermission):
     def __init__(self):
         super().__init__()
         versions = ['v1']
-        view_names = ['api-root', 'user', 'tos-list', 'tos-accept']
+        view_names = ['api-root', 'user-list', 'tos-list', 'tos-accept']
         self.allowed_paths = [
             reverse_lazy(view_name, kwargs={'version': version})
             for view_name in view_names
