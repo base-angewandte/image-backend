@@ -591,12 +591,9 @@ class Artwork(AbstractBaseModel):
     credits_link = models.URLField(verbose_name=_('Credits URL'), blank=True)
     keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'))
     link = models.URLField(verbose_name=_('Link'), blank=True)
-    place_of_production = TreeForeignKey(
+    place_of_production = models.ManyToManyField(
         Location,
         verbose_name=_('Place of Production'),
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
         related_name='artworks_created_here',
     )
     location = TreeForeignKey(
@@ -638,6 +635,15 @@ class Artwork(AbstractBaseModel):
 
     def get_discriminatory_terms_list(self):
         return [term.term for term in self.discriminatory_terms.all()]
+
+    def get_place_of_production_list(self):
+        return [
+            {
+                'id': location.id,
+                'value': location.name,
+            }
+            for location in self.place_of_production.all()
+        ]
 
     def update_search_vector(self):
         search_vector = (
