@@ -254,7 +254,7 @@ class APITestCase(RestFrameworkAPITestCase):
 
 
 class AuthenticationTestCase(RestFrameworkAPITestCase):
-    def check_unauthorized_requests(self):
+    def test_unauthorized_requests(self):
         """Helper to check that all methods return 401 when user is logged
         out."""
         urls = [
@@ -292,13 +292,11 @@ class AuthenticationTestCase(RestFrameworkAPITestCase):
             reverse('user-preferences', kwargs={'version': VERSION}),
             reverse('autocomplete', kwargs={'version': VERSION}),
         ]
-        methods = ['get', 'post', 'put', 'patch', 'delete']
         for url in urls:
-            for method in methods:
+            for method in ['get', 'post', 'put', 'patch', 'delete']:
                 client_method = getattr(self.client, method.lower(), None)
-                if client_method is not None:
-                    if method in ['get', 'delete']:
-                        response = client_method(url, format='json')
-                    elif method in ['post', 'patch', 'put']:
-                        response = client_method(url, {}, format='json')
-                    self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+                if method in ['get', 'delete']:
+                    response = client_method(url, format='json')
+                elif method in ['post', 'patch', 'put']:
+                    response = client_method(url, {}, format='json')
+                self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
