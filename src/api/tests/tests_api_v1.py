@@ -148,18 +148,10 @@ class AlbumsTests(APITestCase):
         self.assertEqual(content['total'], 5)
         self.assertEqual(len(content['results']), 5)
         assert_limit_responses(self, url, limit=5, max_items=5, test_type='albums')
-        # In this test scenario similar to folders and artworks, I want to test different combinations of setting
-        # limit and offset. Although there are 9 Albums in total,
-        # for some reason the test returns a "AssertionError: 3 != 6:" ,
-        # when setting limit to 6 and offset to 2, the test should return (starting from) 3 to 4,5,6,7,8 results,
-        # but it doesn't. It's stuck by a total of 5 Albums and that's why I get 3 != 6 (the set limit).
-        # Comment out the print and the limit to test it out yourselfs.
-        # print(Album.objects.count())
         combinations = [
             {'limit': 1, 'offset': 2},
             {'limit': 2, 'offset': 3},
             {'limit': 2, 'offset': 1},
-            #    {'limit': 6, 'offset': 2},
         ]
         assert_offset_responses(
             self,
