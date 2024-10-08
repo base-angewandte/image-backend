@@ -13,7 +13,8 @@ cleanup:  ## clear sessions
 start-dev:  ## start containers for local development
 	docker compose up -d --build \
 		${PROJECT_NAME}-redis \
-		${PROJECT_NAME}-postgres
+		${PROJECT_NAME}-postgres \
+		${PROJECT_NAME}-gotenberg
 
 .PHONY: test-data
 test-data:  ## load test/placeholder data (fixtures and image files)
