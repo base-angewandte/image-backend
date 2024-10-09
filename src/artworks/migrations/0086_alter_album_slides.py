@@ -28,7 +28,7 @@ def remove_slide_ids(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('artworks', '0084_alter_artwork_material_old_alter_person_date_display'),
+        ('artworks', '0085_artwork_place_of_production_new'),
     ]
 
     operations = [
