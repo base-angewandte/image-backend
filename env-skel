@@ -93,3 +93,7 @@ REQUESTS_TIMEOUT=5
 # SENTRY_ENVIRONMENT=development
 # SENTRY_TRACES_SAMPLE_RATE=0.2
 # SENTRY_PROFILES_SAMPLE_RATE=0.2
+
+## URL for a Gotenberg serivce to convert a .pptx to a .pdf
+## For local dev change the hostname (image-gotenberg) to localhost
+# GOTENBERG_API_URL=http://image-gotenberg:3000/forms/libreoffice/convert
