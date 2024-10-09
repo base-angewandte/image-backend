@@ -160,12 +160,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'license': settings.COPYRIGHT_DE
                 if get_language() == 'de'
                 else settings.COPYRIGHT_EN,
-                'place_of_production': {
-                    'id': artwork.place_of_production.id,
-                    'value': artwork.place_of_production.name,
-                }
-                if artwork.place_of_production
-                else {},
+                'place_of_production': artwork.get_place_of_production_list()
+                if artwork.place_of_production.exists()
+                else [],
                 'location': {
                     'id': artwork.location.id,
                     'value': get_localised_label(artwork.location),

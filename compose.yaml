@@ -39,6 +39,15 @@ services:
       - imagenet
     restart: always
 
+  image-gotenberg:
+    image: gotenberg/gotenberg
+    container_name: image-gotenberg
+    expose:
+      - 3000
+    networks:
+      - imagenet
+    restart: always
+
   image-cron:
     image: paradoxon/alpine-cron
     container_name: image-cron

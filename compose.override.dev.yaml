@@ -24,3 +24,9 @@ services:
     container_name: image-django
     ports:
       - "127.0.0.1:8300:8300"
+
+  # Django need to be able to access gotenberg for album PDF downloads
+  # So for local development, the port has to be available on localhost
+  image-gotenberg:
+    ports:
+      - "127.0.0.1:3000:3000"
