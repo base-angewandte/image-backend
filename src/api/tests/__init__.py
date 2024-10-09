@@ -8,6 +8,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 from artworks.models import Album, Artwork, Keyword, Location, Material, Person
 
+VERSION = 'v1'
+
 
 def temporary_image():  # from https://stackoverflow.com/a/67611074
     bts = BytesIO()
