@@ -17,6 +17,10 @@ from artworks.models import (
 )
 
 from . import APITestCase, temporary_image
+from .test_utils import (
+    assert_limit_responses,
+    assert_offset_responses,
+)
 
 User = get_user_model()
 
@@ -34,6 +38,26 @@ class ArtworkTests(APITestCase):
         content = json.loads(response.content)
         self.assertEqual(content['total'], 15)
         self.assertEqual(len(content['results']), 15)
+        assert_limit_responses(
+            self,
+            url,
+            limit=5,
+            max_items=15,
+            test_type='artworks',
+        )
+        combinations = [
+            {'limit': 5, 'offset': 5},
+            {'limit': 3, 'offset': 6},
+            {'limit': 10, 'offset': 2},
+            {'limit': 4, 'offset': 4},
+        ]
+        assert_offset_responses(
+            self,
+            url,
+            combinations,
+            max_items=15,
+            test_type='artworks',
+        )
 
     def test_artworks_retrieve(self):
         """Test the retrieval of an artwork."""
@@ -124,6 +148,19 @@ class AlbumsTests(APITestCase):
         content = json.loads(response.content)
         self.assertEqual(content['total'], 5)
         self.assertEqual(len(content['results']), 5)
+        assert_limit_responses(self, url, limit=5, max_items=5, test_type='albums')
+        combinations = [
+            {'limit': 1, 'offset': 2},
+            {'limit': 2, 'offset': 3},
+            {'limit': 2, 'offset': 1},
+        ]
+        assert_offset_responses(
+            self,
+            url,
+            combinations=combinations,
+            max_items=5,
+            test_type='albums',
+        )
 
     def test_albums_create(self):
         """Test the creation of a new album."""
@@ -313,15 +350,37 @@ class FoldersTests(APITestCase):
         """Test the retrieval of all albums for a user."""
         folder1 = Folder.objects.create(title='Test Folder', owner=self.user)
         folder2 = Folder.objects.create(title='Test Folder2', owner=self.user)
+        Folder.objects.create(title='Test Folder3', owner=self.user)
+        Folder.objects.create(title='Test Folder4', owner=self.user)
         url = reverse('folder-list', kwargs={'version': VERSION})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
-        self.assertEqual(len(content), 2)
+        self.assertEqual(len(content), 4)
         self.assertEqual(content[0]['title'], folder1.title)
         self.assertEqual(content[0]['id'], folder1.id)
         self.assertEqual(content[1]['title'], folder2.title)
         self.assertEqual(content[1]['id'], folder2.id)
+        assert_limit_responses(
+            self,
+            url,
+            limit=4,
+            max_items=4,
+            test_type='folders',
+        )
+        combinations = [
+            {'limit': 1, 'offset': 0},
+            {'limit': 1, 'offset': 1},
+            {'limit': 2, 'offset': 2},
+            {'limit': 3, 'offset': 0},
+        ]
+        assert_offset_responses(
+            self,
+            url,
+            combinations,
+            max_items=4,
+            test_type='folders',
+        )
 
     def test_folder_retrieve(self):
         """Test the retrieval of an album."""
