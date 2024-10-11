@@ -54,7 +54,7 @@ class Command(BaseCommand):
                 ),
             )
             for entry in pil_not_verified_images:
-                self.stdout.write(entry)
+                self.stdout.write(str(entry))
 
         if renamed_images:
             self.stdout.write(
@@ -63,4 +63,4 @@ class Command(BaseCommand):
                 ),
             )
             for entry in renamed_images:
-                self.stdout.write(entry)
+                self.stdout.write(str(entry))
