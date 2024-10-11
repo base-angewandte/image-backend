@@ -12,9 +12,12 @@ class Command(BaseCommand):
     help = 'Loops through all Artwork objects, extracts the paths of the images and changes them if necessary'
 
     def handle(self, *args, **kwargs):
+        image_not_found = []
         pil_verified_images = []
         pil_not_verified_images = []
+        error_loading_images = []
         renamed_images = []
+        registered_extensions = Image.registered_extensions()
         # Loop through all Artwork objects
         for artwork in Artwork.objects.all():
             try:
@@ -23,29 +26,46 @@ class Command(BaseCommand):
                 # Extract the file extension
                 file_extension = image_path.suffix.lower()
             except (ObjectDoesNotExist, ValueError):
-                self.stdout.write(
-                    f'For Artwork ID {artwork.id}: No image was found or path is unavailable.',
-                )
+                image_not_found.append(artwork.id)
                 continue
             try:
                 with Image.open(image_path) as img:
                     img.verify()
                     pil_verified_images.append(image_path)
-                    pil_extracted_extension = f'.{img.format.lower()}'
+                    img_format = img.format.lower()
             except UnidentifiedImageError:
-                self.stdout.write(
-                    f'{image_path}: PIL cannot identify or load the image.',
-                )
                 pil_not_verified_images.append(image_path)
                 continue
-            except Exception as e:
-                self.stdout.write(f'{image_path}: Error loading image with PIL: {e}')
+            except Exception:
+                error_loading_images.append(image_path)
                 continue
 
-            if pil_extracted_extension != file_extension:
-                new_image_path = image_path.with_suffix(pil_extracted_extension)
+            valid_extensions = [
+                ext
+                for ext, fmt in registered_extensions.items()
+                if fmt.lower() == img_format
+            ]
+
+            if file_extension not in valid_extensions:
+                new_image_path = image_path.with_suffix(valid_extensions[0])
                 image_path.rename(new_image_path)
                 renamed_images.append(new_image_path)
+                artwork.image_original.name = str(
+                    new_image_path.relative_to(
+                        Path(artwork.image_original.storage.location),
+                    ),
+                )
+                artwork.save()
+
+        if image_not_found:
+            label = 'image'
+            self.stdout.write(
+                self.style.WARNING(
+                    f'No {label} found for {len(image_not_found)} artworks:',
+                ),
+            )
+            for artwork_id in image_not_found:
+                self.stdout.write(f'Artwork ID {artwork_id}')
 
         if pil_not_verified_images:
             self.stdout.write(
@@ -54,6 +74,15 @@ class Command(BaseCommand):
                 ),
             )
             for entry in pil_not_verified_images:
+                self.stdout.write(str(entry))
+
+        if error_loading_images:
+            self.stdout.write(
+                self.style.WARNING(
+                    f'Unverified image-errors were detected in {len(error_loading_images)} cases:',
+                ),
+            )
+            for entry in error_loading_images:
                 self.stdout.write(str(entry))
 
         if renamed_images:
