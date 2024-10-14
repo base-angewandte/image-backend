@@ -791,7 +791,7 @@ class Album(AbstractBaseModel):
         return f'{self.title} by {self.user.get_full_name()}'
 
     def size(self):
-        return sum([len(slide) for slide in self.slides])
+        return sum([len(slide['items']) for slide in self.slides])
 
     class Meta:
         permissions = (('can_download_pptx', 'Can download as PowerPoint file'),)
