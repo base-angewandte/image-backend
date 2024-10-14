@@ -120,8 +120,12 @@ def filter_date(filter_values):
 
     date_from = filter_values.get('date_from')
     date_to = filter_values.get('date_to')
+
+    # ensure at least one parameter is provided
     if not date_from and not date_to:
         raise ParseError(_('Invalid filter_value format for date filter.'))
+
+    # check if provided parameters are integers
     try:
         date_from = int(date_from) if date_from else None
         date_to = int(date_to) if date_to else None
@@ -130,6 +134,7 @@ def filter_date(filter_values):
             _('Invalid format of at least one filter_value for date filter.'),
         ) from err
 
+    # if both parameters are provided, check that date_from < date_to
     if date_from is not None and date_to is not None and date_to < date_from:
         raise ParseError(_('date_from needs to be less than or equal to date_to.'))
 
