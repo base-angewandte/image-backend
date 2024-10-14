@@ -41,20 +41,29 @@ window.addEventListener('load', function () {
           yearTo += 5;
           break;
       }
+
+      if (['BC', 'v.Chr.'].includes(postposition)) {
+        yearFrom = -yearFrom;
+        yearTo = -yearTo;
+      }
+
       $('#id_date_year_from').val(yearFrom);
       $('#id_date_year_to').val(yearTo);
     }
 
-    var regexp, matchedParts, preposition;
+    var regexp, matchedParts, preposition, postposition;
     var userinput = $('#id_date').val().replace(/ /g, ''); // remove spaces
 
-    // detect prepositions
-    regexp = /^(ca\.|um|vor|nach|Ende|Anfang)(.*)/;
+    // detect pre- and postpositions
+    regexp = /^(ca\.|um|vor|nach|Ende|Anfang)?(.*?)(BC|v.Chr.)?$/;
     matchedParts = userinput.match(regexp);
     if (matchedParts) {
       if (matchedParts.length > 1) {
         preposition = matchedParts[1];
         userinput = matchedParts[2];
+      }
+      if (matchedParts.length > 2) {
+        postposition = matchedParts[3];
       }
     }
 

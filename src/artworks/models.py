@@ -543,7 +543,7 @@ class Artwork(AbstractBaseModel):
         verbose_name=_('Date'),
         max_length=319,
         blank=True,
-        help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende/Anfang 14. Jh., 5.3.1799, ca./um/vor/nach 1700',
+        help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende/Anfang 14. Jh., 5.3.1799, ca./um/vor/nach 1700, 4000 BC/v.Chr.',
     )
     date_year_from = models.IntegerField(
         verbose_name=_('Date From'),
