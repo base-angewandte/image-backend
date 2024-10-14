@@ -4,7 +4,7 @@ from rest_framework.request import Request
 from django.conf import settings
 from django.utils.translation import get_language, gettext_lazy as _
 
-from artworks.models import Album, Artwork, PermissionsRelation, Person
+from artworks.models import Album, Artwork, PermissionsRelation
 
 
 def check_limit(limit):
@@ -231,8 +231,6 @@ def get_localised_label(instance):
             if current_language == 'en' and instance.title_english
             else instance.title
         )
-    elif isinstance(instance, Person):
-        return instance.name
     return (
         instance.name_en
         if current_language == 'en' and instance.name_en
