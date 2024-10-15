@@ -120,26 +120,29 @@ def filter_date(filter_values):
 
     date_from = filter_values.get('date_from')
     date_to = filter_values.get('date_to')
+
+    # ensure at least one parameter is provided
     if not date_from and not date_to:
         raise ParseError(_('Invalid filter_value format for date filter.'))
+
+    # check if provided parameters are integers
     try:
-        if date_from:
-            date_from = int(date_from)
-        if date_to:
-            date_to = int(date_to)
+        date_from = int(date_from) if date_from else None
+        date_to = int(date_to) if date_to else None
     except ValueError as err:
         raise ParseError(
             _('Invalid format of at least one filter_value for date filter.'),
         ) from err
 
-    if date_from and date_to and date_to < date_from:
+    # if both parameters are provided, check that date_from <= date_to
+    if date_from is not None and date_to is not None and date_to < date_from:
         raise ParseError(_('date_from needs to be less than or equal to date_to.'))
 
     # in case only date_from is provided, all dates in its future should be found
-    if not date_to:
+    if date_to is None:
         return [Q(date_year_from__gte=date_from) | Q(date_year_to__gte=date_from)]
     # in case only date_to is provided, all dates past this date should be found
-    elif not date_from:
+    elif date_from is None:
         return [Q(date_year_from__lte=date_to) | Q(date_year_to__lte=date_to)]
     # if both parameters are provided, we search within the given date range
     else:
