@@ -97,3 +97,6 @@ REQUESTS_TIMEOUT=5
 ## URL for a Gotenberg serivce to convert a .pptx to a .pdf
 ## For local dev change the hostname (image-gotenberg) to localhost
 # GOTENBERG_API_URL=http://image-gotenberg:3000/forms/libreoffice/convert
+
+## If you want to activate additional logging set this to True
+# LOG_DB_BACKEND=False
