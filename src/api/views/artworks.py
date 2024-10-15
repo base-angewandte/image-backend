@@ -319,7 +319,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 ).values_list('album__pk', flat=True),
             )
 
-        albums = Album.objects.filter(slides__contains=[[{'id': artwork.pk}]]).filter(
+        albums = Album.objects.filter(
+            slides__contains=[{'items': [{'id': artwork.pk}]}],
+        ).filter(
             q_filters,
         )
 
