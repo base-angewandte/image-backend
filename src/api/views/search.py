@@ -134,7 +134,7 @@ def filter_date(filter_values):
             _('Invalid format of at least one filter_value for date filter.'),
         ) from err
 
-    # if both parameters are provided, check that date_from < date_to
+    # if both parameters are provided, check that date_from <= date_to
     if date_from is not None and date_to is not None and date_to < date_from:
         raise ParseError(_('date_from needs to be less than or equal to date_to.'))
 
