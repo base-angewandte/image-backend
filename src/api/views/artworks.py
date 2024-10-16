@@ -409,12 +409,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                     arcname=f'{artwork_title}.{image_suffix}',
                 )
             except FileNotFoundError:
-                error_info = _('File for artwork {pk} not found')
-                logger.exception(error_info.format(pk=pk))
-                return Response(
-                    error_info.format(pk=pk),
-                    status.HTTP_500_INTERNAL_SERVER_ERROR,
+                error_info = (
+                    _('File for artwork %(id)s not found') % {'id': artwork.pk},
                 )
+                logger.exception(error_info)
+                return Response(error_info, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             image_zip.writestr(f'{artwork_title}_metadata.txt', metadata_content)
             image_zip.close()
