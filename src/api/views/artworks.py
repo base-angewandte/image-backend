@@ -402,9 +402,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         image_suffix = artwork.image_original.name.split('.')[-1]
 
         #  image to zipfile & metadata
-        with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as image_zip:
+        with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as zip_file:
             try:
-                image_zip.write(
+                zip_file.write(
                     artwork.image_original.path,
                     arcname=f'{artwork_title}.{image_suffix}',
                 )
@@ -415,8 +415,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 logger.exception(error_info)
                 return Response(error_info, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            image_zip.writestr(f'{artwork_title}_metadata.txt', metadata_content)
-            image_zip.close()
+            zip_file.writestr(f'{artwork_title}_metadata.txt', metadata_content)
+            zip_file.close()
 
             return HttpResponse(
                 output_zip.getvalue(),
