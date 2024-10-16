@@ -264,6 +264,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             if field.name not in exclude and hasattr(field, 'verbose_name'):
                 ret[field.name] = field.verbose_name
 
+        # the license property is not a field on the Artwork model but part of the serialisation
+        ret['license'] = Artwork.get_license_label()
+
         return Response(ret)
 
     @extend_schema(

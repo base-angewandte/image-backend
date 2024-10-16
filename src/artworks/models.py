@@ -621,6 +621,10 @@ class Artwork(AbstractBaseModel):
     def __str__(self):
         return self.title
 
+    @staticmethod
+    def get_license_label():
+        return _('Rights of use')
+
     def get_short_description(self, language):
         artists = ', '.join(artist.name for artist in self.artists.all())
         title_in_language = ''
