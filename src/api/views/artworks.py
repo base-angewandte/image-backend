@@ -364,33 +364,37 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             return text
 
         # create metadata file content
-        metadata_content = ''
-        metadata_content += f'{artwork._meta.get_field("title").verbose_name.title()}: {apply_strikethrough(artwork.title, discriminatory_terms)} \n'
-        metadata_content += f'{artwork._meta.get_field("title_english").verbose_name.title()}: {apply_strikethrough(artwork.title_english, discriminatory_terms)} \n'
-        metadata_content += f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {apply_strikethrough(artwork.title_comment, discriminatory_terms)} \n'
-        if len(artwork.artists.all()) > 1:
-            metadata_content += f'{artwork._meta.get_field("artists").verbose_name.title()}: {[i.name for i in artwork.artists.all()]} \n'
-        else:
-            metadata_content += f'Artist: {artwork.artists.all()[0]} \n'
-        metadata_content += (
-            f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date} \n'
+        metadata_persons = (
+            f'{artwork._meta.get_field("artists").verbose_name.title()}: {", ".join([a.name for a in artwork.artists.all()])}\n'
+            if artwork.artists.exists()
+            else ''
+            + f'{artwork._meta.get_field("photographers").verbose_name.title()}: {", ".join([a.name for a in artwork.photographers.all()])}\n'
+            if artwork.photographers.exists()
+            else ''
+            + f'{artwork._meta.get_field("authors").verbose_name.title()}: {", ".join([a.name for a in artwork.authors.all()])}\n'
+            if artwork.authors.exists()
+            else ''
+            + f'{artwork._meta.get_field("graphic_designers").verbose_name.title()}: {", ".join([a.name for a in artwork.graphic_designers.all()])}\n'
+            if artwork.graphic_designers.exists()
+            else ''
         )
-        metadata_content += f'{artwork._meta.get_field("material").verbose_name.title()}: {", ".join([m.name for m in artwork.material.all()])} \n'
-        metadata_content += f'{artwork._meta.get_field("dimensions_display").verbose_name.title()}: {artwork.dimensions_display} \n'
-        metadata_content += f'{artwork._meta.get_field("comments").verbose_name.title()}: {apply_strikethrough(artwork.comments, discriminatory_terms)} \n'
-        metadata_content += f'{artwork._meta.get_field("credits").verbose_name.title()}: {apply_strikethrough(artwork.credits, discriminatory_terms)} \n'
-        metadata_content += f'{artwork._meta.get_field("credits_link").verbose_name.title()}: {artwork.credits_link} \n'
-        metadata_content += (
-            f'{artwork._meta.get_field("link").verbose_name.title()}: {artwork.link} \n'
+
+        metadata_content = (
+            f'{artwork._meta.get_field("title").verbose_name.title()}: {apply_strikethrough(artwork.title, discriminatory_terms)}\n'
+            f'{artwork._meta.get_field("title_english").verbose_name.title()}: {apply_strikethrough(artwork.title_english, discriminatory_terms)}\n'
+            f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {apply_strikethrough(artwork.title_comment, discriminatory_terms)}\n'
+            f'{metadata_persons}'
+            f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date}\n'
+            f'{artwork._meta.get_field("material").verbose_name.title()}: {", ".join([m.name for m in artwork.material.all()])}\n'
+            f'{artwork._meta.get_field("dimensions_display").verbose_name.title()}: {artwork.dimensions_display}\n'
+            f'{artwork._meta.get_field("comments").verbose_name.title()}: {apply_strikethrough(artwork.comments, discriminatory_terms)}\n'
+            f'{artwork._meta.get_field("credits").verbose_name.title()}: {apply_strikethrough(artwork.credits, discriminatory_terms)}\n'
+            f'{artwork._meta.get_field("credits_link").verbose_name.title()}: {artwork.credits_link}\n'
+            f'{artwork._meta.get_field("link").verbose_name.title()}: {artwork.link}\n'
+            f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([f"{get_localised_label(i)}" for i in artwork.keywords.all()])}\n'
+            f'{artwork._meta.get_field("location").verbose_name.title()}: {get_localised_label(artwork.location) if artwork.location else ""}\n'
+            f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {", ".join([f"{get_localised_label(p)}" for p in artwork.place_of_production.all()])}\n'
         )
-        metadata_content += f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([f"{i.name} ({get_localised_label(i)})" for i in artwork.keywords.all()])} \n'
-        if artwork.location:
-            metadata_content += f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location.name} ({get_localised_label(artwork.location)}) \n'
-        else:
-            metadata_content += (
-                f'{artwork._meta.get_field("location").verbose_name.title()}: "" \n'
-            )
-        metadata_content += f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {artwork.place_of_production} \n'
 
         output_zip = BytesIO()
 
