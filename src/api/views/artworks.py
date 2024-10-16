@@ -351,6 +351,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
+
         discriminatory_terms = artwork.discriminatory_terms.order_by(
             Length('term').desc(),
         )
