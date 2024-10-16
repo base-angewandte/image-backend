@@ -38,7 +38,7 @@ class Command(BaseCommand):
                 with Image.open(image_path) as img:
                     img.verify()
                     pil_verified_images.append(image_path)
-                    img_format = img.format.lower()
+                    img_format = img.format
             except UnidentifiedImageError:
                 pil_not_verified_images.append(image_path)
                 continue
@@ -46,8 +46,8 @@ class Command(BaseCommand):
                 error_loading_images.append(image_path)
                 continue
 
-            if file_extension not in valid_extensions[img_format.upper()]:
-                new_image_path = image_path.with_suffix(valid_extensions[0])
+            if file_extension not in valid_extensions[img_format]:
+                new_image_path = image_path.with_suffix(valid_extensions[img_format][0])
                 image_path.rename(new_image_path)
                 renamed_images.append(new_image_path)
                 artwork.image_original.name = str(
