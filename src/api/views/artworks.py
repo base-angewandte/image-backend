@@ -397,12 +397,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         )
 
         output_zip = BytesIO()
+        artwork_title = slugify(artwork.title)
+        image_suffix = artwork.image_original.name.split('.')[-1]
 
         #  image to zipfile & metadata
         with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as image_zip:
-            artwork_title = slugify(artwork.title)
-            image_suffix = artwork.image_original.name.split('.')[-1]
-
             try:
                 image_zip.write(
                     artwork.image_original.path,
