@@ -17,7 +17,7 @@ from rest_framework.response import Response
 from django.conf import settings
 from django.db.models import Q
 from django.db.models.functions import Length
-from django.http import HttpResponse
+from django.http import FileResponse
 from django.shortcuts import redirect
 from django.utils.text import slugify
 from django.utils.translation import get_language, gettext_lazy as _
@@ -416,12 +416,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 return Response(error_info, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             zip_file.writestr(f'{artwork_title}_metadata.txt', metadata_content)
-            zip_file.close()
 
-            return HttpResponse(
-                output_zip.getvalue(),
-                content_type='application/x-zip-compressed',
-                headers={
-                    'Content-Disposition': f'attachment; filename={artwork_title}.zip',
-                },
-            )
+        output_zip.seek(0)
+
+        return FileResponse(
+            output_zip,
+            as_attachment=True,
+            filename=f'{artwork_title}.zip',
+        )
