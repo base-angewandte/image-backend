@@ -17,7 +17,13 @@ class Command(BaseCommand):
         pil_not_verified_images = []
         error_loading_images = []
         renamed_images = []
-        registered_extensions = Image.registered_extensions()
+
+        valid_extensions = {}
+        for extension, img_format in Image.registered_extensions().items():
+            if img_format not in valid_extensions:
+                valid_extensions[img_format] = []
+            valid_extensions[img_format].append(extension)
+
         # Loop through all Artwork objects
         for artwork in Artwork.objects.all():
             try:
@@ -40,13 +46,7 @@ class Command(BaseCommand):
                 error_loading_images.append(image_path)
                 continue
 
-            valid_extensions = [
-                ext
-                for ext, fmt in registered_extensions.items()
-                if fmt.lower() == img_format
-            ]
-
-            if file_extension not in valid_extensions:
+            if file_extension not in valid_extensions[img_format.upper()]:
                 new_image_path = image_path.with_suffix(valid_extensions[0])
                 image_path.rename(new_image_path)
                 renamed_images.append(new_image_path)
