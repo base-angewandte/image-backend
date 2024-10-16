@@ -40,16 +40,16 @@ class Command(BaseCommand):
                     pil_verified_images.append(image_path)
                     img_format = img.format
             except UnidentifiedImageError:
-                pil_not_verified_images.append(image_path)
+                pil_not_verified_images.append((artwork.id, image_path))
                 continue
             except Exception:
-                error_loading_images.append(image_path)
+                error_loading_images.append((artwork.id, image_path))
                 continue
 
             if file_extension not in valid_extensions[img_format]:
                 new_image_path = image_path.with_suffix(valid_extensions[img_format][0])
                 image_path.rename(new_image_path)
-                renamed_images.append(new_image_path)
+                renamed_images.append((artwork.id, image_path, new_image_path))
                 artwork.image_original.name = str(
                     new_image_path.relative_to(
                         Path(artwork.image_original.storage.location),
@@ -58,10 +58,9 @@ class Command(BaseCommand):
                 artwork.save()
 
         if image_not_found:
-            label = 'image'
             self.stdout.write(
                 self.style.WARNING(
-                    f'No {label} found for {len(image_not_found)} artworks:',
+                    f'No image found for {len(image_not_found)} artworks:',
                 ),
             )
             for artwork_id in image_not_found:
@@ -70,26 +69,28 @@ class Command(BaseCommand):
         if pil_not_verified_images:
             self.stdout.write(
                 self.style.WARNING(
-                    f'Unverified image-formats were detected by PIL in {len(pil_not_verified_images)} cases:',
+                    f'Detected unverified image formats in {len(pil_not_verified_images)} cases:',
                 ),
             )
-            for entry in pil_not_verified_images:
-                self.stdout.write(str(entry))
+            for artwork_id, path in pil_not_verified_images:
+                self.stdout.write(f'Artwork {artwork_id}: {path}')
 
         if error_loading_images:
             self.stdout.write(
                 self.style.WARNING(
-                    f'Unverified image-errors were detected in {len(error_loading_images)} cases:',
+                    f'Detected unverified image errors in {len(error_loading_images)} cases:',
                 ),
             )
-            for entry in error_loading_images:
-                self.stdout.write(str(entry))
+            for artwork_id, path in error_loading_images:
+                self.stdout.write(f'Artwork {artwork_id}: {path}')
 
         if renamed_images:
             self.stdout.write(
                 self.style.WARNING(
-                    f'Images with false endings found in {len(renamed_images)} cases:',
+                    f'Renamed images with false endings in {len(renamed_images)} cases:',
                 ),
             )
-            for entry in renamed_images:
-                self.stdout.write(str(entry))
+            for artwork_id, old_path, new_path in renamed_images:
+                self.stdout.write(
+                    f'Artwork {artwork_id}: renamed {old_path} to {new_path}',
+                )
