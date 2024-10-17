@@ -157,9 +157,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'credits': artwork.credits,
                 'credits_link': artwork.credits_link,
                 'link': artwork.link,
-                'license': settings.COPYRIGHT_DE
-                if get_language() == 'de'
-                else settings.COPYRIGHT_EN,
+                'license': settings.COPYRIGHT_TEXT.get(get_language(), ''),
                 'place_of_production': artwork.get_place_of_production_list()
                 if artwork.place_of_production.exists()
                 else [],

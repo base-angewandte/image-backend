@@ -550,8 +550,11 @@ COPYRIGHT_TEXT_EN = env.str(
     default='Image use for scientific work with image citation possible. Further information on image rights:',
 )
 COPYRIGHT_LINK = env.str('COPYRIGHT_LINK', default='https://base.uni-ak.ac.at')
-COPYRIGHT_DE = f'{COPYRIGHT_TEXT_DE} {COPYRIGHT_LINK}'
-COPYRIGHT_EN = f'{COPYRIGHT_TEXT_EN} {COPYRIGHT_LINK}'
+COPYRIGHT_TEXT = {
+    'de': f'{COPYRIGHT_TEXT_DE} {COPYRIGHT_LINK}'.strip(),
+    'en': f'{COPYRIGHT_TEXT_EN} {COPYRIGHT_LINK}'.strip(),
+}
+
 
 REQUESTS_TIMEOUT = env.int('REQUESTS_TIMEOUT', default=5)
 
