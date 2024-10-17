@@ -1,10 +1,13 @@
+import io
 import json
+import zipfile
 
 import shortuuid
 from rest_framework import status
 
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from artworks.models import (
@@ -125,16 +128,42 @@ class ArtworkTests(APITestCase):
 
     def test_artworks_download(self):
         """Test the download of an artwork + metadata."""
+
+        # create artwork
         artwork = Artwork.objects.create(
             title='Test Artwork',
             image_original=temporary_image(),
             published=True,
         )
+
+        # create person and add as artist
         artist = Person.objects.create(name='TestArtist')
         artwork.artists.add(artist)
+
         url = reverse('artwork-download', kwargs={'pk': artwork.pk, 'version': VERSION})
         response = self.client.get(url, format='json')
+
+        file_name = slugify(artwork.title)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.get('Content-Disposition'),
+            f'attachment; filename="{file_name}.zip"',
+        )
+
+        with (
+            io.BytesIO(b''.join(response.streaming_content)) as buf_bytes,
+            zipfile.ZipFile(buf_bytes, 'r') as zip_file,
+        ):
+            self.assertIsNone(zip_file.testzip())
+
+            metadata_file = f'{file_name}_metadata.txt'
+            self.assertIn(metadata_file, zip_file.namelist())
+
+            with zip_file.open(metadata_file) as f:
+                metadata_content = f.read().decode('utf-8')
+                self.assertIn(artwork.title, metadata_content)
+                self.assertIn(artist.name, metadata_content)
 
 
 class AlbumsTests(APITestCase):
