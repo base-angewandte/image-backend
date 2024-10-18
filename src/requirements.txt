@@ -4,7 +4,7 @@ asgiref==3.8.1
     # via
     #   django
     #   django-cors-headers
-attrs==23.2.0
+attrs==24.2.0
     # via
     #   jsonschema
     #   referencing
@@ -14,15 +14,15 @@ base-common-drf==0.4
     # via -r src/requirements.in
 brotli==1.1.0
     # via whitenoise
-certifi==2024.7.4
+certifi==2024.8.30
     # via
     #   requests
     #   sentry-sdk
-charset-normalizer==3.3.2
+charset-normalizer==3.4.0
     # via requests
 concurrent-log-handler==0.9.25
     # via -r src/requirements.in
-django==4.2.15
+django==4.2.16
     # via
     #   -r src/requirements.in
     #   base-common
@@ -32,6 +32,7 @@ django==4.2.15
     #   django-cors-headers
     #   django-filter
     #   django-js-asset
+    #   django-jsonform
     #   django-mass-edit
     #   django-redis
     #   django-versatileimagefield
@@ -53,6 +54,8 @@ django-filter==24.2
     # via -r src/requirements.in
 django-js-asset==2.2.0
     # via django-mptt
+django-jsonform==2.23.1
+    # via -r src/requirements.in
 django-mass-edit==3.5.0
     # via -r src/requirements.in
 django-mptt==0.16.0
@@ -76,27 +79,27 @@ drf-spectacular-sidecar==2024.7.1
     # via drf-spectacular
 gunicorn==22.0.0
     # via -r src/requirements.in
-idna==3.7
+idna==3.10
     # via requests
 inflection==0.5.1
     # via drf-spectacular
 jsonschema==4.23.0
     # via drf-spectacular
-jsonschema-specifications==2023.12.1
+jsonschema-specifications==2024.10.1
     # via jsonschema
-lxml==5.2.2
+lxml==5.3.0
     # via
     #   python-cas
     #   python-pptx
 packaging==24.1
     # via gunicorn
-pillow==10.4.0
+pillow==11.0.0
     # via
     #   django-versatileimagefield
     #   python-pptx
-portalocker==2.10.0
+portalocker==2.10.1
     # via concurrent-log-handler
-psutil==6.0.0
+psutil==6.1.0
     # via rainbow-saddle
 psycopg==3.2.1
     # via -r src/requirements.in
@@ -108,13 +111,13 @@ python-magic==0.4.27
     # via django-versatileimagefield
 python-pptx==1.0.2
     # via -r src/requirements.in
-pytz==2024.1
+pytz==2024.2
     # via djangorestframework
-pyyaml==6.0.1
+pyyaml==6.0.2
     # via drf-spectacular
 rainbow-saddle==0.4.0
     # via -r src/requirements.in
-redis==5.0.7
+redis==5.1.1
     # via django-redis
 referencing==0.35.1
     # via
@@ -124,7 +127,7 @@ requests==2.32.3
     # via
     #   -r src/requirements.in
     #   python-cas
-rpds-py==0.19.0
+rpds-py==0.20.0
     # via
     #   jsonschema
     #   referencing
@@ -134,7 +137,7 @@ shortuuid==1.0.13
     # via base-common
 six==1.16.0
     # via python-cas
-sqlparse==0.5.0
+sqlparse==0.5.1
     # via django
 typing-extensions==4.12.2
     # via
@@ -142,7 +145,7 @@ typing-extensions==4.12.2
     #   python-pptx
 uritemplate==4.1.1
     # via drf-spectacular
-urllib3==2.2.2
+urllib3==2.2.3
     # via
     #   requests
     #   sentry-sdk
