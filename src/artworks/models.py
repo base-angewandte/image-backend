@@ -590,6 +590,7 @@ class Artwork(AbstractBaseModel):
     place_of_production = models.ManyToManyField(
         Location,
         verbose_name=_('Place of Production'),
+        blank=True,
         related_name='artworks_created_here',
     )
     location = TreeForeignKey(
