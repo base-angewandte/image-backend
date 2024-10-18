@@ -9,11 +9,10 @@ from mptt.models import MPTTModel, TreeForeignKey
 from versatileimagefield.fields import VersatileImageField
 
 from django.conf import settings
-from django.contrib.postgres.aggregates import StringAgg
 from django.contrib.postgres.search import SearchVector, SearchVectorField
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import JSONField, Value
+from django.db.models import JSONField
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.db.models.functions import Upper
 from django.dispatch import receiver
@@ -615,6 +614,11 @@ class Artwork(AbstractBaseModel):
     checked = models.BooleanField(verbose_name=_('Checked'), default=False)
     published = models.BooleanField(verbose_name=_('Published'), default=False)
 
+    # search fields
+    search_persons = models.CharField(blank=True, default='')
+    search_locations = models.CharField(blank=True, default='')
+    search_keywords = models.CharField(blank=True, default='')
+    search_materials = models.CharField(blank=True, default='')
     search_vector = SearchVectorField(null=True, editable=False)
 
     objects = ArtworkManager()
@@ -658,75 +662,73 @@ class Artwork(AbstractBaseModel):
         ]
 
     def update_search_vector(self):
+        # Update search fields
+        # persons
+        persons_ids = []
+        persons = []
+
+        persons_ids.extend(self.artists.values_list('pk', flat=True))
+        persons_ids.extend(self.photographers.values_list('pk', flat=True))
+        persons_ids.extend(self.authors.values_list('pk', flat=True))
+        persons_ids.extend(self.graphic_designers.values_list('pk', flat=True))
+
+        for person in Person.objects.filter(pk__in=set(persons_ids)):
+            persons.append(person.name)
+            persons.extend(person.synonyms)
+
+        # TODO decide if we also want to store ancestors for locations and keywords
+        # we could use functions get_queryset_ancestors() and get_ancestors()
+
+        # locations
+        locations_ids = []
+        locations = []
+
+        locations_ids.extend(self.place_of_production.values_list('pk', flat=True))
+        if self.location:
+            locations_ids.append(self.location.pk)
+
+        for location in Location.objects.filter(id__in=set(locations_ids)):
+            locations.append(location.name)
+            if location.name_en:
+                locations.append(location.name_en)
+            locations.extend(location.synonyms)
+
+        # keywords
+        keywords = []
+
+        for keyword in self.keywords.all():
+            keywords.append(keyword.name)
+            if keyword.name_en:
+                keywords.append(keyword.name_en)
+
+        # materials
+        materials = []
+
+        for material in self.material.all():
+            materials.append(material.name)
+            if material.name_en:
+                materials.append(material.name_en)
+
         search_vector = (
             SearchVector('title', weight='A')
             + SearchVector('title_english', weight='A')
-            + SearchVector(Value('artists_names'), weight='A')
-            + SearchVector(Value('artists_synonyms'), weight='A')
-            + SearchVector(Value('photographers_names'), weight='A')
-            + SearchVector(Value('photographers_synonyms'), weight='A')
-            + SearchVector(Value('authors_names'), weight='A')
-            + SearchVector(Value('authors_synonyms'), weight='A')
-            + SearchVector(Value('graphic_designers_names'), weight='A')
-            + SearchVector(Value('graphic_designers_synonyms'), weight='A')
+            + SearchVector('search_persons', weight='A')
             + SearchVector('comments', weight='B')
-            + SearchVector(Value('keywords_names'), weight='B')
-            + SearchVector(Value('keywords_names_en'), weight='B')
-            + SearchVector(Value('place_of_production_names'), weight='B')
-            + SearchVector(Value('place_of_production_synonyms'), weight='B')
-            + SearchVector(Value('location_names'), weight='B')
-            + SearchVector(Value('location_names_en'), weight='B')
-            + SearchVector(Value('location_synonyms'), weight='B')
+            + SearchVector('search_keywords', weight='B')
+            + SearchVector('search_locations', weight='B')
             + SearchVector('credits', weight='C')
             + SearchVector('credits_link', weight='C')
-            + SearchVector(Value('material_names'), weight='C')
+            + SearchVector('search_materials', weight='C')
             + SearchVector('dimensions_display', weight='C')
             + SearchVector('link', weight='C')
             + SearchVector('date', weight='C')
         )
 
-        Artwork.objects.filter(pk=self.pk).annotate(
-            artists_names=StringAgg('artists__name', delimiter=' '),
-        ).annotate(
-            artists_synonyms=StringAgg('artists__synonyms', delimiter=' '),
-        ).annotate(
-            phtotographers_names=StringAgg('photographers__name', delimiter=' '),
-        ).annotate(
-            phtotographers_synonyms=StringAgg('photographers__synonyms', delimiter=' '),
-        ).annotate(
-            authors_names=StringAgg('authors__name', delimiter=' '),
-        ).annotate(
-            authors_synonyms=StringAgg('authors__synonyms', delimiter=' '),
-        ).annotate(
-            graphic_designers_names=StringAgg('graphic_designers__name', delimiter=' '),
-        ).annotate(
-            graphic_designers_synonyms=StringAgg(
-                'graphic_designers__synonyms',
-                delimiter=' ',
-            ),
-        ).annotate(
-            keywords_names=StringAgg('keywords__name', delimiter=' '),
-        ).annotate(
-            keywords_names_en=StringAgg('keywords__name_en', delimiter=' '),
-        ).annotate(
-            place_of_production_names=StringAgg(
-                'place_of_production__name',
-                delimiter=' ',
-            ),
-        ).annotate(
-            place_of_production_synonyms=StringAgg(
-                'place_of_production__synonyms',
-                delimiter=' ',
-            ),
-        ).annotate(
-            location_names=StringAgg('location__name', delimiter=' '),
-        ).annotate(
-            location_names_en=StringAgg('location__name_en', delimiter=' '),
-        ).annotate(
-            location_synonyms=StringAgg('location__synonyms', delimiter=' '),
-        ).annotate(
-            material_names=StringAgg('material__name', delimiter=' '),
-        ).update(
+        Artwork.objects.filter(pk=self.pk).update(
+            search_persons=' '.join(persons),
+            search_locations=' '.join(locations),
+            search_keywords=' '.join(keywords),
+            search_materials=' '.join(materials),
             search_vector=search_vector,
         )
 

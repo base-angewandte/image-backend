@@ -253,6 +253,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             'published',
             'date_created',
             'date_changed',
+            'search_persons',
+            'search_locations',
+            'search_keywords',
+            'search_materials',
             'search_vector',
         )
 
