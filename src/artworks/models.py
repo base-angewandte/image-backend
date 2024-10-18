@@ -4,6 +4,7 @@ from pathlib import Path
 
 from base_common.fields import ShortUUIDField
 from base_common.models import AbstractBaseModel
+from django_jsonform.models.fields import ArrayField
 from mptt.models import MPTTModel, TreeForeignKey
 from versatileimagefield.fields import VersatileImageField
 
@@ -28,10 +29,11 @@ logger = logging.getLogger(__name__)
 
 
 def add_preferred_name_to_synonyms(instance, gnd_data):
-    if 'preferredName' in gnd_data:
-        list_of_synonyms = instance.synonyms.split(', ')
-        if gnd_data['preferredName'] not in list_of_synonyms:
-            instance.synonyms = f'{gnd_data["preferredName"]}, {instance.synonyms}'
+    if (
+        'preferredName' in gnd_data
+        and gnd_data['preferredName'] not in instance.synonyms
+    ):
+        instance.synonyms.insert(0, gnd_data['preferredName'])
 
 
 def process_external_metadata(instance):
@@ -108,11 +110,15 @@ class Person(AbstractBaseModel, MetaDataMixin):
         null=False,
         blank=True,
     )
-    synonyms = models.CharField(
+    synonyms = ArrayField(
+        models.CharField(),
         verbose_name=_('Synonyms'),
+        default=list,
+    )
+    synonyms_old = models.CharField(
+        verbose_name=_('Synonyms (old)'),
         null=False,
         blank=True,
-        help_text=_('Comma-separated list of synonyms.'),
     )
 
     date_birth = models.DateField(null=True, blank=True)
@@ -215,9 +221,9 @@ class Person(AbstractBaseModel, MetaDataMixin):
             for n in gnd_data['variantNameEntityForThePerson']:
                 synonym = self.construct_individual_name(n)
                 synonyms.append(synonym)
-            self.synonyms = ', '.join(synonyms)
+            self.synonyms = synonyms
         elif 'variantName' in gnd_data:
-            self.synonyms = ', '.join(gnd_data['variantName'])
+            self.synonyms = gnd_data['variantName']
 
     def update_with_gnd_data(self, gnd_data):
         self.set_external_metadata('gnd', gnd_data)
@@ -366,8 +372,13 @@ class Location(MPTTModel, MetaDataMixin):
         blank=True,
         default='',
     )
-    synonyms = models.CharField(
+    synonyms = ArrayField(
+        models.CharField(),
         verbose_name=_('Synonyms'),
+        default=list,
+    )
+    synonyms_old = models.CharField(
+        verbose_name=_('Synonyms (old)'),
         blank=True,
     )
     parent = TreeForeignKey(
@@ -424,10 +435,7 @@ class Location(MPTTModel, MetaDataMixin):
             )
 
     def set_synonyms_from_gnd_data(self, gnd_data):
-        if 'variantName' in gnd_data:
-            self.synonyms = ', '.join(gnd_data['variantName'])
-        else:
-            self.synonyms = ''
+        self.synonyms = gnd_data.get('variantName', [])
 
     def update_with_gnd_data(self, gnd_data):
         self.set_external_metadata('gnd', gnd_data)

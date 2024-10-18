@@ -77,12 +77,12 @@ class APITestCase(RestFrameworkAPITestCase):
             name='Bad Eisenkappel',
             name_en='Bad Eisenkappel, English',
             parent=aut,
-            synonyms='Železna Kapla',
+            synonyms=['Železna Kapla'],
         )
         Location.objects.create(
             name='Galerie Vorspann',
             parent=zelez,
-            synonyms='Galerija Vprega',
+            synonyms=['Galerija Vprega'],
         )
 
         # add materials
@@ -100,12 +100,12 @@ class APITestCase(RestFrameworkAPITestCase):
         artemisia = Person.objects.create(name='Artemisia Gentileschi')
         warwara = Person.objects.create(
             name='Warwara Fjodorowna Stepanowa',
-            synonyms='Stepanova',
+            synonyms=['Stepanova'],
         )
         valie = Person.objects.create(name='VALIE EXPORT')
         Person.objects.create(name='Wangechi Mutu')
         Person.objects.create(name='Lina Bo Bardi')
-        Person.objects.create(name='Inés Lombardi', synonyms='Ines Lombardi')
+        Person.objects.create(name='Inés Lombardi', synonyms=['Ines Lombardi'])
 
         # add artworks
         aw1 = Artwork.objects.create(

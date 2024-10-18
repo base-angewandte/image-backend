@@ -121,6 +121,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_spectacular',
     'drf_spectacular_sidecar',
+    'django_jsonform',
     # Project apps
     'accounts',
     'core',
