@@ -29,8 +29,8 @@ logger = logging.getLogger(__name__)
 
 def add_preferred_name_to_synonyms(instance, gnd_data):
     if 'preferredName' in gnd_data:
-        list_of_synonyms = instance.synonyms.split(',')
-        if list_of_synonyms[0] != gnd_data['preferredName']:
+        list_of_synonyms = instance.synonyms.split(', ')
+        if gnd_data['preferredName'] not in list_of_synonyms:
             instance.synonyms = f'{gnd_data["preferredName"]}, {instance.synonyms}'
 
 
