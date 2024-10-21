@@ -14,7 +14,7 @@ from api.serializers.search import SearchRequestSerializer, SearchResultSerializ
 from api.views import check_limit, check_offset
 from artworks.models import Artwork, Keyword, Location, PermissionsRelation
 
-from . import get_localised_label
+from . import get_localized_label
 
 
 def filter_title(filter_values):
@@ -280,7 +280,7 @@ def search(request, *args, **kwargs):
                 if artwork.image_original
                 else None,
                 'credits': artwork.credits,
-                'title': get_localised_label(artwork),
+                'title': get_localized_label(artwork),
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 'date': artwork.date,
                 'artists': [

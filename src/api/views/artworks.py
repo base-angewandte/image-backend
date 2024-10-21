@@ -33,7 +33,7 @@ from api.views import (
 )
 from artworks.models import Album, Artwork, PermissionsRelation
 
-from . import get_localised_label
+from . import get_localized_label
 
 logger = logging.getLogger(__name__)
 
@@ -163,7 +163,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 else [],
                 'location': {
                     'id': artwork.location.id,
-                    'value': get_localised_label(artwork.location),
+                    'value': get_localized_label(artwork.location),
                 }
                 if artwork.location
                 else {},
@@ -174,7 +174,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'keywords': [
                     {
                         'id': keyword.id,
-                        'value': get_localised_label(keyword),
+                        'value': get_localized_label(keyword),
                     }
                     for keyword in artwork.keywords.all()
                 ],
@@ -393,9 +393,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             f'{artwork._meta.get_field("credits").verbose_name.title()}: {apply_strikethrough(artwork.credits, discriminatory_terms)}\n'
             f'{artwork._meta.get_field("credits_link").verbose_name.title()}: {artwork.credits_link}\n'
             f'{artwork._meta.get_field("link").verbose_name.title()}: {artwork.link}\n'
-            f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([f"{get_localised_label(i)}" for i in artwork.keywords.all()])}\n'
-            f'{artwork._meta.get_field("location").verbose_name.title()}: {get_localised_label(artwork.location) if artwork.location else ""}\n'
-            f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {", ".join([f"{get_localised_label(p)}" for p in artwork.place_of_production.all()])}\n'
+            f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([f"{get_localized_label(i)}" for i in artwork.keywords.all()])}\n'
+            f'{artwork._meta.get_field("location").verbose_name.title()}: {get_localized_label(artwork.location) if artwork.location else ""}\n'
+            f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {", ".join([f"{get_localized_label(p)}" for p in artwork.place_of_production.all()])}\n'
         )
 
         output_zip = BytesIO()
