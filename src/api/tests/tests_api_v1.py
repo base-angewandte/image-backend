@@ -374,7 +374,11 @@ class AlbumsTests(APITestCase):
         album = Album.objects.create(
             title='Test Album',
             user=self.user,
-            slides=[[{'id': artwork1.id}, {'id': artwork2.id}], [{'id': artwork3.id}]],
+            slides=[
+                {'items': [{'id': artwork1.id}]},
+                {'items': [{'id': artwork2.id}]},
+                {'items': [{'id': artwork3.id}]},
+            ],
         )
         url = reverse('album-download', kwargs={'pk': album.pk, 'version': VERSION})
         response = self.client.get(url, format='json')
