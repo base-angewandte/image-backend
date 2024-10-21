@@ -641,10 +641,12 @@ class Artwork(AbstractBaseModel):
         return [term.term for term in self.discriminatory_terms.all()]
 
     def get_place_of_production_list(self):
+        from api.views import get_localized_label
+
         return [
             {
                 'id': location.id,
-                'value': location.name,
+                'value': get_localized_label(location),
             }
             for location in self.place_of_production.all()
         ]
