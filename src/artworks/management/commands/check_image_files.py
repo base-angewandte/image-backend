@@ -9,7 +9,7 @@ from artworks.models import Artwork
 
 
 class Command(BaseCommand):
-    help = 'Loops through all Artwork objects, extracts the paths of the images and changes them if necessary'
+    help = 'Check all Artwork image files and repair incorrect file extensions.'
 
     def handle(self, *args, **kwargs):
         image_not_found = []
