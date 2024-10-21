@@ -202,10 +202,22 @@ def autocomplete(request, *args, **kwargs):
                         'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                     },
                 )
-        else:
+
+        elif t == 'artists':
             q_filters = Q(name__icontains=q_param)
-            if t in ['keywords', 'locations']:
-                q_filters |= Q(name_en__icontains=q_param)
+            query = MODEL_MAP[t].objects.filter(q_filters)[:limit]
+            for item in query:
+                d['data'].append(
+                    {
+                        'id': item.id,
+                        'label': item.name,
+                    },
+                )
+
+        else:
+            # In the else clause only locations and keywords are queried.
+            # All other types are in the else-if statements.
+            q_filters = Q(name__icontains=q_param) | Q(name_en__icontains=q_param)
             query = MODEL_MAP[t].objects.filter(q_filters)[:limit]
             for item in query:
                 d['data'].append(

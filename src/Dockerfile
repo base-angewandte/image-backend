@@ -24,7 +24,7 @@ RUN pip install -r requirements.txt
 EXPOSE 8300
 
 
-FROM base as dev
+FROM base AS dev
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gettext \
@@ -37,7 +37,7 @@ RUN uv pip sync requirements.txt
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8300"]
 
 
-FROM base as prod
+FROM base AS prod
 
 COPY . .
 

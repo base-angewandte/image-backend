@@ -1,9 +1,13 @@
+import io
 import json
+import zipfile
 
+import shortuuid
 from rest_framework import status
 
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from artworks.models import (
@@ -124,16 +128,42 @@ class ArtworkTests(APITestCase):
 
     def test_artworks_download(self):
         """Test the download of an artwork + metadata."""
+
+        # create artwork
         artwork = Artwork.objects.create(
             title='Test Artwork',
             image_original=temporary_image(),
             published=True,
         )
+
+        # create person and add as artist
         artist = Person.objects.create(name='TestArtist')
         artwork.artists.add(artist)
+
         url = reverse('artwork-download', kwargs={'pk': artwork.pk, 'version': VERSION})
         response = self.client.get(url, format='json')
+
+        file_name = slugify(artwork.title)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.get('Content-Disposition'),
+            f'attachment; filename="{file_name}.zip"',
+        )
+
+        with (
+            io.BytesIO(b''.join(response.streaming_content)) as buf_bytes,
+            zipfile.ZipFile(buf_bytes, 'r') as zip_file,
+        ):
+            self.assertIsNone(zip_file.testzip())
+
+            metadata_file = f'{file_name}_metadata.txt'
+            self.assertIn(metadata_file, zip_file.namelist())
+
+            with zip_file.open(metadata_file) as f:
+                metadata_content = f.read().decode('utf-8')
+                self.assertIn(artwork.title, metadata_content)
+                self.assertIn(artist.name, metadata_content)
 
 
 class AlbumsTests(APITestCase):
@@ -213,25 +243,54 @@ class AlbumsTests(APITestCase):
             title='Test Artwork',
             image_original=temporary_image(),
         )
-        url = reverse(
+        url_post = reverse(
             'album-append-artwork',
             kwargs={'pk': album.pk, 'version': VERSION},
         )
         data = {'id': artwork.pk}
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url_post, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        # Also check if the slide was appended properly
+        url_get = reverse('album-detail', kwargs={'pk': album.pk, 'version': VERSION})
+        response = self.client.get(url_get, format='json')
+        content = json.loads(response.content)
+        slide = content['slides'][0]
+        self.assertEqual(type(slide['id']), str)
+        self.assertEqual(len(slide['id']), 22)  # default length of a shortuuid
+        self.assertEqual(type(slide['items'][0]), dict)
+        self.assertEqual(slide['items'][0]['id'], artwork.pk)
+        response = self.client.get(f'{url_get}?details=true', format='json')
+        content = json.loads(response.content)
+        slide = content['slides'][0]
+        self.assertEqual(slide['items'][0]['title'], artwork.title)
+        # also try to append a non-existing artworks
+        data = {'id': 98765}
+        response = self.client.post(url_post, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_albums_slides(self):
         """Test the retrieval of album slides."""
         album = Album.objects.create(title='Test Album', user=self.user)
-        album.slides = [[{'id': 1}, {'id': 2}], [{'id': 3}]]
+        id1 = shortuuid.uuid()
+        id2 = shortuuid.uuid()
+        album.slides = [
+            {'id': id1, 'items': [{'id': 1}, {'id': 2}]},
+            {'id': id2, 'items': [{'id': 3}]},
+        ]
         album.save()
         url = reverse('album-slides', kwargs={'pk': album.pk, 'version': VERSION})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        content = json.loads(response.content)
-        self.assertEqual(len(content), 2)
-        self.assertEqual(content[0][0].get('id'), 1)
+        slides = json.loads(response.content)
+        self.assertEqual(type(slides), list)
+        self.assertEqual(len(slides), 2)
+        self.assertEqual(slides[0]['id'], id1)
+        self.assertEqual(slides[1]['id'], id2)
+        self.assertEqual(len(slides[0]['items']), 2)
+        self.assertEqual(len(slides[1]['items']), 1)
+        self.assertEqual(slides[0]['items'][0]['id'], 1)
+        self.assertEqual(slides[0]['items'][1]['id'], 2)
+        self.assertEqual(slides[1]['items'][0]['id'], 3)
 
     def test_albums_create_slides(self):
         """Test the creation of album slides."""
@@ -249,11 +308,23 @@ class AlbumsTests(APITestCase):
             image_original=temporary_image(),
         )
         url = reverse('album-slides', kwargs={'pk': album.pk, 'version': VERSION})
-        data = [[{'id': artwork1.pk}, {'id': artwork2.pk}], [{'id': artwork3.pk}]]
+        data = [
+            {'items': [{'id': artwork1.pk}, {'id': artwork2.pk}]},
+            {'items': [{'id': artwork3.pk}]},
+        ]
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
-        self.assertEqual(content, data)
+        self.assertEqual(type(content), list)
+        self.assertEqual(len(content), 2)
+        self.assertEqual(type(content[0]), dict)
+        self.assertEqual(type(content[1]), dict)
+        self.assertEqual(content[0].get('items'), data[0]['items'])
+        self.assertEqual(content[1].get('items'), data[1]['items'])
+        # also test creating slides with non-existing artworks
+        data.append({'items': [{'id': 98765}]})
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_albums_permissions(self):
         """Test the retrieval of album permissions."""

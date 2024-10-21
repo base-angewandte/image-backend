@@ -1,4 +1,5 @@
 import requests
+import shortuuid
 from base_common_drf.openapi.responses import ERROR_RESPONSES
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -314,6 +315,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         request=AppendArtworkRequestSerializer,
         responses={
             204: OpenApiResponse(),
+            400: ERROR_RESPONSES[400],
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
@@ -340,7 +342,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         try:
             Artwork.objects.get(pk=serializer.validated_data['id'])
         except Artwork.DoesNotExist as dne:
-            raise NotFound(_('Artwork does not exist')) from dne
+            raise ParseError(_('Artwork does not exist')) from dne
 
         if (
             album.user == request.user
@@ -350,7 +352,10 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                 permissions='EDIT',
             ).exists()
         ):
-            slide = [serializer.validated_data]
+            slide = {
+                'id': shortuuid.uuid(),
+                'items': [serializer.validated_data],
+            }
             album.slides.append(slide)
             album.last_changed_by = request.user
             album.save()
@@ -413,6 +418,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         responses={
             # TODO better response definition
             200: OpenApiResponse(description='OK'),
+            400: ERROR_RESPONSES[400],
             403: ERROR_RESPONSES[403],
             404: ERROR_RESPONSES[404],
         },
@@ -448,14 +454,17 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         ):
             slides_list = []
             for slide in serializer.validated_data:
-                current_slide = []
-                for artwork in slide:
+                current_slide = {
+                    'id': slide['id'] if 'id' in slide else shortuuid.uuid(),
+                    'items': [],
+                }
+                for artwork in slide['items']:
                     # check if artwork exists
                     try:
                         Artwork.objects.get(id=artwork.get('id'))
                     except Artwork.DoesNotExist as dne:
-                        raise NotFound(_('Artwork does not exist')) from dne
-                    current_slide.append({'id': artwork['id']})
+                        raise ParseError(_('Artwork does not exist')) from dne
+                    current_slide['items'].append({'id': artwork['id']})
                 slides_list.append(current_slide)
             album.slides = slides_list
             album.last_changed_by = request.user

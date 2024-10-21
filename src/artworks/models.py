@@ -543,7 +543,7 @@ class Artwork(AbstractBaseModel):
         verbose_name=_('Date'),
         max_length=319,
         blank=True,
-        help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende/Anfang 14. Jh., 5.3.1799, ca./um/vor/nach 1700',
+        help_text='1921-1923, 1917/1964, -20000, 2.Jh. - 4.Jh., Ende/Anfang 14. Jh., 5.3.1799, ca./um/vor/nach 1700, 4000 BC/v.Chr.',
     )
     date_year_from = models.IntegerField(
         verbose_name=_('Date From'),
@@ -620,6 +620,10 @@ class Artwork(AbstractBaseModel):
 
     def __str__(self):
         return self.title
+
+    @staticmethod
+    def get_license_label():
+        return _('Rights of use')
 
     def get_short_description(self, language):
         artists = ', '.join(artist.name for artist in self.artists.all())
@@ -791,7 +795,7 @@ class Album(AbstractBaseModel):
         return f'{self.title} by {self.user.get_full_name()}'
 
     def size(self):
-        return sum([len(slide) for slide in self.slides])
+        return sum([len(slide['items']) for slide in self.slides])
 
     class Meta:
         permissions = (('can_download_pptx', 'Can download as PowerPoint file'),)
