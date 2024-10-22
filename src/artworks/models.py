@@ -673,9 +673,6 @@ class Artwork(AbstractBaseModel):
             persons.append(person.name)
             persons.extend(person.synonyms)
 
-        # TODO decide if we also want to store ancestors for locations and keywords
-        # we could use functions get_queryset_ancestors() and get_ancestors()
-
         # locations
         locations_ids = []
         locations = []
