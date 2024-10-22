@@ -1,4 +1,4 @@
-from rest_framework.exceptions import NotFound, ParseError
+from rest_framework.exceptions import ParseError
 from rest_framework.request import Request
 
 from django.conf import settings
@@ -40,7 +40,7 @@ def check_sorting(sorting, ordering_fields):
     return sorting
 
 
-def slides_with_details(album, request, raise_not_found=False):
+def slides_with_details(album, request):
     ret = []
 
     slide_ids = [
@@ -81,8 +81,6 @@ def slides_with_details(album, request, raise_not_found=False):
         for item in slide['items']:
             if artwork_info := artworks.get(item.get('id')):
                 slide_info['items'].append(artwork_info)
-            elif raise_not_found:
-                raise NotFound(_('Artwork %(id)s does not exist') % {'id': item['id']})
             else:
                 # TODO: for now we just drop artworks which do not exist any more from the slides
                 #   in a future feature we need to discuss whether there should be some information left, that there was
@@ -96,7 +94,7 @@ def slides_with_details(album, request, raise_not_found=False):
     return ret
 
 
-def featured_artworks(album, request, num_artworks=4, raise_not_found=False):
+def featured_artworks(album, request, num_artworks=4):
     artworks = []
     found_ids = []
     for slide in album.slides:
@@ -107,17 +105,12 @@ def featured_artworks(album, request, num_artworks=4, raise_not_found=False):
                 continue
             try:
                 artwork = Artwork.objects.get(pk=artwork_id)
-            except Artwork.DoesNotExist as err:
-                if raise_not_found:
-                    raise NotFound(
-                        _('Artwork %(id)s does not exist') % {'id': item['id']},
-                    ) from err
-                else:
-                    # TODO: for now we just drop artworks which do not exist any more from the slides
-                    #   in a future feature we need to discuss whether there should be some information left, that there was
-                    #   an artwork but got deleted, and whether we should retain some artwork title in that case, or just
-                    #   display a blank). technically, we could add an Album.repair_slides() method which handles this
-                    continue
+            except Artwork.DoesNotExist:
+                # TODO: for now we just drop artworks which do not exist any more from the slides
+                #   in a future feature we need to discuss whether there should be some information left, that there was
+                #   an artwork but got deleted, and whether we should retain some artwork title in that case, or just
+                #   display a blank). technically, we could add an Album.repair_slides() method which handles this
+                continue
             found_ids.append(artwork_id)
             artworks.append(
                 {

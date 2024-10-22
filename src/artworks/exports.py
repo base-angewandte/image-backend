@@ -206,15 +206,15 @@ def album_download_as_pptx(album_id, language='en', return_raw=False):
     if slides:
         for slide in slides:
             try:
-                if len(slide) == 2:
+                if len(slide['items']) == 2:
                     add_slide_with_two_pictures(
-                        Artwork.objects.get(id=slide[0].get('id')),
-                        Artwork.objects.get(id=slide[1].get('id')),
+                        Artwork.objects.get(id=slide['items'][0].get('id')),
+                        Artwork.objects.get(id=slide['items'][1].get('id')),
                         prs_padding,
                     )
 
-                elif len(slide) == 1:
-                    for artwork_in_slide in slide:
+                elif len(slide['items']) == 1:
+                    for artwork_in_slide in slide['items']:
                         artwork = Artwork.objects.get(id=artwork_in_slide.get('id'))
                         add_slide_with_one_picture(artwork, prs_padding)
 
