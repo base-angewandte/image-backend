@@ -116,7 +116,12 @@ class ArtworkAdmin(admin.ModelAdmin):
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
     exclude = ['external_metadata']
-    readonly_fields = ('date_created', 'date_changed', 'external_metadata_json')
+    readonly_fields = (
+        'synonyms_old',
+        'date_created',
+        'date_changed',
+        'external_metadata_json',
+    )
     list_display = ('name', 'gnd_id', 'gnd_overwrite', 'date_created', 'date_changed')
     ordering = ('-date_created',)
     search_fields = [
@@ -144,7 +149,7 @@ class KeywordAdmin(MPTTModelAdmin):
 @admin.register(Location)
 class LocationAdmin(MPTTModelAdmin):
     exclude = ['external_metadata']
-    readonly_fields = ['external_metadata_json']
+    readonly_fields = ['synonyms_old', 'external_metadata_json']
     list_display = ('name', 'gnd_id', 'gnd_overwrite')
     search_fields = [
         'parent__' * i + 'name' for i in range(settings.LOCATION_SEARCH_LEVELS)

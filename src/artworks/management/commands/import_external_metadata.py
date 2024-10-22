@@ -153,22 +153,20 @@ class Command(BaseCommand):
                 if instance.name != entry[0]:
                     instance.name = entry[0]
                     instance.gnd_overwrite = False
-                    list_of_synonyms = instance.synonyms.split(',')
+
                     if data_type == 'artist':
                         if 'preferredNameEntityForThePerson' in data:
                             preferred_name = instance.construct_individual_name(
                                 data['preferredNameEntityForThePerson'],
                             )
-                            if list_of_synonyms[0] != preferred_name:
-                                instance.synonyms = (
-                                    f'{preferred_name}, {instance.synonyms}'
-                                )
+                            if preferred_name not in instance.synonyms:
+                                instance.synonyms.insert(0, preferred_name)
                         elif 'preferredName' in data:
                             add_preferred_name_to_synonyms(instance, data)
                     elif (
                         data_type == 'location'
                         and 'preferredName' in data
-                        and list_of_synonyms[0] != data['preferredName']
+                        and data['preferredName'] not in instance.synonyms
                     ):
                         add_preferred_name_to_synonyms(instance, data)
                     updated_without_name.append(entry)

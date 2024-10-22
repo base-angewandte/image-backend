@@ -12,6 +12,7 @@ django-cleanup==8.1.0
 django-cors-headers==4.4.0
 django-environ==0.11.2
 django-filter==24.2
+django-jsonform==2.23.1
 django-mass-edit==3.5.0
 django-mptt==0.16.0
 # django-ordered-model is only needed for older migrations
