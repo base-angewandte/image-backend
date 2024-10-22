@@ -27,7 +27,7 @@ def migrate_synonyms_reverse(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('artworks', '0086_alter_album_slides'),
+        ('artworks', '0088_alter_artwork_place_of_production'),
     ]
 
     operations = [
@@ -55,13 +55,11 @@ class Migration(migrations.Migration):
             model_name='location',
             name='synonyms',
             field=django_jsonform.models.fields.ArrayField(base_field=models.CharField(), default=list, size=None, verbose_name='Synonyms'),
-            preserve_default=False,
         ),
         migrations.AddField(
             model_name='person',
             name='synonyms',
             field=django_jsonform.models.fields.ArrayField(base_field=models.CharField(), default=list, size=None, verbose_name='Synonyms'),
-            preserve_default=False,
         ),
         migrations.RunPython(migrate_synonyms, reverse_code=migrate_synonyms_reverse),
     ]

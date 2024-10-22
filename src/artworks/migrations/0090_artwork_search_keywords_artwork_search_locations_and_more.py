@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('artworks', '0087_rename_synonyms_location_synonyms_old_and_more'),
+        ('artworks', '0089_rename_synonyms_location_synonyms_old_and_more'),
     ]
 
     operations = [
