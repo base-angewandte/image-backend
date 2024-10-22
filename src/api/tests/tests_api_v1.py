@@ -375,9 +375,19 @@ class AlbumsTests(APITestCase):
             title='Test Album',
             user=self.user,
             slides=[
-                {'items': [{'id': artwork1.id}]},
-                {'items': [{'id': artwork2.id}]},
-                {'items': [{'id': artwork3.id}]},
+                {
+                    'id': shortuuid.uuid(),
+                    'items': [
+                        {'id': artwork1.id},
+                        {'id': artwork2.id},
+                    ],
+                },
+                {
+                    'id': shortuuid.uuid(),
+                    'items': [
+                        {'id': artwork3.id},
+                    ],
+                },
             ],
         )
         url = reverse('album-download', kwargs={'pk': album.pk, 'version': VERSION})
