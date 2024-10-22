@@ -400,13 +400,9 @@ class Location(MPTTModel, MetaDataMixin):
         order_insertion_by = ['name']
 
     def __str__(self):
-        try:
-            ancestors = self.get_ancestors(include_self=True)
-            ancestors = [i.name for i in ancestors]
-        except Exception:  # TODO: this should be more specific
-            ancestors = [self.name]
-
-        return ' > '.join(ancestors[: len(ancestors) + 1])
+        return ' > '.join(
+            self.get_ancestors(include_self=True).values_list('name', flat=True),
+        )
 
     def clean(self):
         super().clean()
@@ -594,6 +590,7 @@ class Artwork(AbstractBaseModel):
     place_of_production = models.ManyToManyField(
         Location,
         verbose_name=_('Place of Production'),
+        blank=True,
         related_name='artworks_created_here',
     )
     location = TreeForeignKey(
