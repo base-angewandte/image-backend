@@ -1,5 +1,6 @@
 import logging
 import re
+from functools import partial
 from pathlib import Path
 
 from base_common.fields import ShortUUIDField
@@ -232,17 +233,27 @@ class Person(AbstractBaseModel, MetaDataMixin):
             self.set_birth_death_from_gnd_data(gnd_data)
 
 
-def get_path_to_original_file(instance, filename):
+def get_path_to_original_file(instance, filename, field=None):
     """The uploaded images of artworks are stored in a specifc directory
     structure based on the pk/id of the artwork.
 
     Example: artwork.pk==16320, filename=='example.jpg'
+    image_original:
     filename = 'artworks/imageOriginal/16000/16320/example.jpg'
+    image_fullsize:
+    filename = 'artworks/imageFullsize/16000/16320/example.jpg'
     """
-
     if instance.pk:
+        base_filename = Path(filename).name
+        type_of_image = 'imageOriginal'
         directory = (instance.pk // 1000) * 1000
-        return f'artworks/imageOriginal/{directory}/{instance.pk}/{filename}'
+        if field == 'image_fullsize':
+            type_of_image = 'imageFullsize'
+            name = Path(base_filename).stem
+            ext = Path(base_filename).suffix
+            base_filename = f'{name}_fullsize{ext}'
+            return f'artworks/{type_of_image}/{directory}/{instance.pk}/{base_filename}'
+        return f'artworks/{type_of_image}/{directory}/{instance.pk}/{filename}'
     return filename
 
 
@@ -515,6 +526,15 @@ class Artwork(AbstractBaseModel):
         blank=True,
         upload_to=get_path_to_original_file,
     )
+
+    image_fullsize = VersatileImageField(
+        verbose_name=_('Fullsize Image'),
+        max_length=255,
+        null=True,
+        blank=True,
+        upload_to=partial(get_path_to_original_file, field='image_fullsize'),
+    )
+
     title = models.CharField(verbose_name=_('Title'), max_length=255, blank=True)
     title_english = models.CharField(
         verbose_name=_('Title, English'),
