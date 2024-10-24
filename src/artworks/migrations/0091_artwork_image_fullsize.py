@@ -6,9 +6,8 @@ from django.db import migrations
 import functools
 import os
 import versatileimagefield.fields
-from PIL import Image
 
-from artworks.models import get_path_to_original_file
+from artworks.models import convert_to_fullsize_image
 
 
 def convert_images_to_jpeg(apps, schema_editor):
@@ -16,21 +15,8 @@ def convert_images_to_jpeg(apps, schema_editor):
     Artwork = apps.get_model('artworks', 'Artwork')
     for artwork in Artwork.objects.all():
         image_original_path = artwork.image_original.path
-        # check if the path to image_original exists (in case of file mismatch)
         if image_original_path and os.path.exists(image_original_path):
-            image = Image.open(image_original_path)
-            # extract path of image_fullsize
-            fullsize_image_path = get_path_to_original_file(artwork, artwork.image_original.name, field='image_fullsize')
-
-            image_fullsize_field = artwork.image_fullsize
-            # create directory for images to be converted in
-            fullsize_dir = os.path.dirname(artwork.image_fullsize.storage.path(fullsize_image_path))
-            if not os.path.exists(fullsize_dir):
-                os.makedirs(fullsize_dir)
-            # # convert images to RGB (in case they were saved in a digital copy), then save them in JPEG
-            with image_fullsize_field.storage.open(fullsize_image_path, 'wb') as fullsize_image_file:
-                image.convert('RGB').save(fullsize_image_file, 'JPEG')
-            artwork.image_fullsize.name = fullsize_image_path
+            convert_to_fullsize_image(instance=artwork, path=image_original_path)
             artwork.save()
 
 class Migration(migrations.Migration):
@@ -43,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='artwork',
             name='image_fullsize',
-            field=versatileimagefield.fields.VersatileImageField(blank=True, max_length=255, null=True, upload_to=functools.partial(artworks.models.get_path_to_original_file, *(), **{'field': 'image_fullsize'}), verbose_name='Fullsize Image'),
+            field=versatileimagefield.fields.VersatileImageField(blank=True, max_length=255, null=False, upload_to=functools.partial(artworks.models.get_path_to_original_file, *(), **{'field': 'image_fullsize'}), verbose_name='Fullsize Image'),
         ),
         migrations.RunPython(
             convert_images_to_jpeg,

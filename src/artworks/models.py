@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 from functools import partial
 from pathlib import Path
@@ -7,6 +8,7 @@ from base_common.fields import ShortUUIDField
 from base_common.models import AbstractBaseModel
 from django_jsonform.models.fields import ArrayField
 from mptt.models import MPTTModel, TreeForeignKey
+from PIL import Image
 from versatileimagefield.fields import VersatileImageField
 
 from django.conf import settings
@@ -252,7 +254,7 @@ def get_path_to_original_file(instance, filename, field=None):
             name = Path(base_filename).stem
             ext = Path(base_filename).suffix
             base_filename = f'{name}_fullsize{ext}'
-            return f'artworks/{type_of_image}/{directory}/{instance.pk}/{base_filename}'
+            filename = base_filename
         return f'artworks/{type_of_image}/{directory}/{instance.pk}/{filename}'
     return filename
 
@@ -530,7 +532,7 @@ class Artwork(AbstractBaseModel):
     image_fullsize = VersatileImageField(
         verbose_name=_('Fullsize Image'),
         max_length=255,
-        null=True,
+        null=False,
         blank=True,
         upload_to=partial(get_path_to_original_file, field='image_fullsize'),
     )
@@ -747,29 +749,26 @@ class Artwork(AbstractBaseModel):
         )
 
 
-@receiver(models.signals.post_save, sender=Artwork)
-def move_uploaded_image(sender, instance, created, **kwargs):
-    """Move the uploaded image after an Artwork instance has been created."""
-    if created:
-        imagefile = instance.image_original
-        old_name = imagefile.name
-        relative_path = instance.image_original.storage.get_available_name(
-            get_path_to_original_file(instance, old_name),
-            max_length=sender._meta.get_field('image_original').max_length,
+def convert_to_fullsize_image(instance, path, apps=None, schema_editor=None):
+    with Image.open(path) as image_original:
+        fullsize_image_path = get_path_to_original_file(
+            instance,
+            instance.image_original.name,
+            field='image_fullsize',
         )
-        absolute_path = settings.MEDIA_ROOT_PATH / relative_path
-
-        if not old_name:
-            return
-
-        if not absolute_path.exists():
-            absolute_path.parent.mkdir(parents=True, exist_ok=True)
-
-        # move the uploaded image
-        Path(imagefile.path).rename(absolute_path)
-
-        imagefile.name = relative_path
-        instance.save()
+        fullsize_image_path = f"{Path(fullsize_image_path).with_suffix('.jpg')}"
+        image_fullsize_field = instance.image_fullsize
+        fullsize_dir = os.path.dirname(  # noqa PTH120
+            instance.image_fullsize.storage.path(fullsize_image_path),
+        )
+        if not os.path.exists(fullsize_dir):  # noqa PTH110
+            os.makedirs(fullsize_dir)  # noqa PTH103
+        with image_fullsize_field.storage.open(
+            fullsize_image_path,
+            'wb',
+        ) as fullsize_image_file:
+            image_original.convert('RGB').save(fullsize_image_file, 'JPEG')
+        instance.image_fullsize.name = fullsize_image_path
 
 
 @receiver(models.signals.post_delete, sender=Artwork)
