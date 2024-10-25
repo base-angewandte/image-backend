@@ -1,5 +1,4 @@
 import logging
-import os
 import re
 from functools import partial
 from pathlib import Path
@@ -242,8 +241,6 @@ def get_path_to_original_file(instance, filename):
     Example: artwork.pk==16320, filename=='example.jpg'
     image_original:
     filename = 'artworks/imageOriginal/16000/16320/example.jpg'
-    image_fullsize:
-    filename = 'artworks/imageFullsize/16000/16320/example.jpg'
     """
     if instance.pk:
         directory = (instance.pk // 1000) * 1000
@@ -252,6 +249,13 @@ def get_path_to_original_file(instance, filename):
 
 
 def get_path_to_image_fullsize(instance, filename):
+    """The uploaded images of artworks are stored in a specifc directory
+    structure based on the pk/id of the artwork.
+
+    Example: artwork.pk==16320, filename=='example_fullsize.jpg'
+    image_fullsize:
+    filename = 'artworks/imageFullsize/16000/16320/example.jpg'
+    """
     if instance.pk:
         base_filename = Path(filename).name
         directory = (instance.pk // 1000) * 1000
@@ -781,11 +785,11 @@ def convert_to_fullsize_image(instance, path, apps=None, schema_editor=None):
         )
         fullsize_image_path = f"{Path(fullsize_image_path).with_suffix('.jpg')}"
         image_fullsize_field = instance.image_fullsize
-        fullsize_dir = os.path.dirname(  # noqa PTH120
+        fullsize_dir = Path(
             instance.image_fullsize.storage.path(fullsize_image_path),
-        )
-        if not os.path.exists(fullsize_dir):  # noqa PTH110
-            os.makedirs(fullsize_dir)  # noqa PTH103
+        ).parent
+        if not fullsize_dir.exists():
+            fullsize_dir.mkdir(parents=True)
         with image_fullsize_field.storage.open(
             fullsize_image_path,
             'wb',

@@ -11,7 +11,11 @@ def update_search_vector(sender, instance, created, *args, **kwargs):
 
 @receiver(pre_save, sender=Artwork)
 def update_fullsize_image(sender, instance, *args, **kwargs):
+    """This signal is used to update an image_fullsize, in the case of a change
+    in image_original."""
     if instance.pk:
+        # I'm leaving this here as an alternative of checking if image_original was updated.
+        # It could be done through the path or through the name.
         #     old_artwork = Artwork.objects.get(pk=instance.pk)
         #     if old_artwork.image_original.path != instance.image_original.path:
         #         convert_to_fullsize_image(instance, instance.image_original.path)
@@ -22,6 +26,8 @@ def update_fullsize_image(sender, instance, *args, **kwargs):
 
 @receiver(post_save, sender=Artwork)
 def create_image_original(sender, instance, created, *args, **kwargs):
+    """This signal is used to create an image_fullsize, when the image_original
+    is created."""
     if created and instance.image_original:
         image_original_path = instance.image_original.path
         convert_to_fullsize_image(instance, image_original_path)
