@@ -121,6 +121,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_spectacular',
     'drf_spectacular_sidecar',
+    'django_jsonform',
     # Project apps
     'accounts',
     'core',
@@ -355,11 +356,9 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'concurrent_log_handler.ConcurrentTimedRotatingFileHandler',
             'filename': LOG_DIR / 'application.log',
-            'maxBytes': 0,
             'when': 'midnight',
             'backupCount': 1000,
             'use_gzip': True,
-            'delay': True,
             'formatter': 'verbose',
         },
         'mail_admins': {
