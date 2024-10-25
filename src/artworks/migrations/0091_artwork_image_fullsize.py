@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='artwork',
             name='image_fullsize',
-            field=versatileimagefield.fields.VersatileImageField(blank=True, max_length=255, null=False, upload_to=functools.partial(artworks.models.get_path_to_original_file, *(), **{'field': 'image_fullsize'}), verbose_name='Fullsize Image'),
+            field=versatileimagefield.fields.VersatileImageField(blank=True, max_length=255, null=False, upload_to=functools.partial(artworks.models.get_path_to_image_fullsize, *(),), verbose_name='Fullsize Image'),
         ),
         migrations.RunPython(
             convert_images_to_jpeg,

@@ -235,7 +235,7 @@ class Person(AbstractBaseModel, MetaDataMixin):
             self.set_birth_death_from_gnd_data(gnd_data)
 
 
-def get_path_to_original_file(instance, filename, field=None):
+def get_path_to_original_file(instance, filename):
     """The uploaded images of artworks are stored in a specifc directory
     structure based on the pk/id of the artwork.
 
@@ -246,16 +246,19 @@ def get_path_to_original_file(instance, filename, field=None):
     filename = 'artworks/imageFullsize/16000/16320/example.jpg'
     """
     if instance.pk:
-        base_filename = Path(filename).name
-        type_of_image = 'imageOriginal'
         directory = (instance.pk // 1000) * 1000
-        if field == 'image_fullsize':
-            type_of_image = 'imageFullsize'
-            name = Path(base_filename).stem
-            ext = Path(base_filename).suffix
-            base_filename = f'{name}_fullsize{ext}'
-            filename = base_filename
-        return f'artworks/{type_of_image}/{directory}/{instance.pk}/{filename}'
+        return f'artworks/imageOriginal/{directory}/{instance.pk}/{filename}'
+    return filename
+
+
+def get_path_to_image_fullsize(instance, filename):
+    if instance.pk:
+        base_filename = Path(filename).name
+        directory = (instance.pk // 1000) * 1000
+        name = Path(base_filename).stem
+        ext = Path(base_filename).suffix
+        fullsize_filename = f'{name}_fullsize{ext}'
+        return f'artworks/imageFullsize/{directory}/{instance.pk}/{fullsize_filename}'
     return filename
 
 
@@ -534,7 +537,7 @@ class Artwork(AbstractBaseModel):
         max_length=255,
         null=False,
         blank=True,
-        upload_to=partial(get_path_to_original_file, field='image_fullsize'),
+        upload_to=partial(get_path_to_image_fullsize),
     )
 
     title = models.CharField(verbose_name=_('Title'), max_length=255, blank=True)
@@ -749,12 +752,32 @@ class Artwork(AbstractBaseModel):
         )
 
 
+@receiver(models.signals.post_save, sender=Artwork)
+def move_uploaded_image(sender, instance, created, **kwargs):
+    """Move the uploaded image after an Artwork instance has been created."""
+    if created:
+        imagefile = instance.image_original
+        old_name = imagefile.name
+        relative_path = instance.image_original.storage.get_available_name(
+            get_path_to_original_file(instance, old_name),
+            max_length=sender._meta.get_field('image_original').max_length,
+        )
+        absolute_path = settings.MEDIA_ROOT_PATH / relative_path
+        if not old_name:
+            return
+        if not absolute_path.exists():
+            absolute_path.parent.mkdir(parents=True, exist_ok=True)
+        # move the uploaded image
+        Path(imagefile.path).rename(absolute_path)
+        imagefile.name = relative_path
+        instance.save()
+
+
 def convert_to_fullsize_image(instance, path, apps=None, schema_editor=None):
     with Image.open(path) as image_original:
-        fullsize_image_path = get_path_to_original_file(
+        fullsize_image_path = get_path_to_image_fullsize(
             instance,
             instance.image_original.name,
-            field='image_fullsize',
         )
         fullsize_image_path = f"{Path(fullsize_image_path).with_suffix('.jpg')}"
         image_fullsize_field = instance.image_fullsize
