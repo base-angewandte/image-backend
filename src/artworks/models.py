@@ -355,7 +355,8 @@ class Keyword(MPTTModel, MetaDataMixin):
         if self.getty_overwrite:
             self.set_name_en_from_getty_data(getty_data)
 
-    def get_name_localized(self):
+    @property
+    def name_localized(self):
         current_language = get_language() or settings.LANGUAGE_CODE
         return self.name_en if current_language == 'en' and self.name_en else self.name
 
@@ -489,7 +490,8 @@ class Location(MPTTModel, MetaDataMixin):
         elif 'en' in labels:
             self.name_en = labels['en']['value']
 
-    def get_name_localized(self):
+    @property
+    def name_localized(self):
         current_language = get_language() or settings.LANGUAGE_CODE
         return self.name_en if current_language == 'en' and self.name_en else self.name
 
