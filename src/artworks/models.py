@@ -659,6 +659,21 @@ class Artwork(AbstractBaseModel):
     def __str__(self):
         return self.title
 
+    def clean_image_original(self):
+        ext = Path(self.image_original.name).suffix.lstrip('.')
+        image_type = Image.open(self.image_original).format.lower()
+        if ext != image_type:
+            raise ValidationError(
+                _(
+                    f'The provided image file does not match the file extension of type {ext}. '
+                    f'Please, provide the file with the correct file extension, which is {image_type}.',
+                ),
+            )
+
+    def clean(self, *args, **kwargs):
+        self.clean_image_original()
+        super().clean()
+
     @staticmethod
     def get_license_label():
         return _('Rights of use')
