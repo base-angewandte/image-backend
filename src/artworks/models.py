@@ -355,6 +355,10 @@ class Keyword(MPTTModel, MetaDataMixin):
         if self.getty_overwrite:
             self.set_name_en_from_getty_data(getty_data)
 
+    def get_name_localized(self):
+        current_language = get_language() or settings.LANGUAGE_CODE
+        return self.name_en if current_language == 'en' and self.name_en else self.name
+
 
 class Location(MPTTModel, MetaDataMixin):
     """Locations are nodes in a fixed hierarchical taxonomy."""
@@ -484,6 +488,10 @@ class Location(MPTTModel, MetaDataMixin):
             self.name_en = labels['en-gb']['value']
         elif 'en' in labels:
             self.name_en = labels['en']['value']
+
+    def get_name_localized(self):
+        current_language = get_language() or settings.LANGUAGE_CODE
+        return self.name_en if current_language == 'en' and self.name_en else self.name
 
 
 class Material(AbstractBaseModel):
