@@ -1,6 +1,5 @@
 import logging
 import re
-from functools import partial
 from pathlib import Path
 
 from base_common.fields import ShortUUIDField
@@ -541,7 +540,7 @@ class Artwork(AbstractBaseModel):
         max_length=255,
         null=False,
         blank=True,
-        upload_to=partial(get_path_to_image_fullsize),
+        upload_to=get_path_to_image_fullsize,
     )
 
     title = models.CharField(verbose_name=_('Title'), max_length=255, blank=True)
@@ -769,27 +768,6 @@ class Artwork(AbstractBaseModel):
             search_materials=' '.join(materials),
             search_vector=search_vector,
         )
-
-
-@receiver(models.signals.post_save, sender=Artwork)
-def move_uploaded_image(sender, instance, created, **kwargs):
-    """Move the uploaded image after an Artwork instance has been created."""
-    if created:
-        imagefile = instance.image_original
-        old_name = imagefile.name
-        relative_path = instance.image_original.storage.get_available_name(
-            get_path_to_original_file(instance, old_name),
-            max_length=sender._meta.get_field('image_original').max_length,
-        )
-        absolute_path = settings.MEDIA_ROOT_PATH / relative_path
-        if not old_name:
-            return
-        if not absolute_path.exists():
-            absolute_path.parent.mkdir(parents=True, exist_ok=True)
-        # move the uploaded image
-        Path(imagefile.path).rename(absolute_path)
-        imagefile.name = relative_path
-        instance.save()
 
 
 def convert_to_fullsize_image(instance, path, apps=None, schema_editor=None):

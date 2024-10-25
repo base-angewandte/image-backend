@@ -10,7 +10,7 @@ import versatileimagefield.fields
 from artworks.models import convert_to_fullsize_image
 
 
-def convert_images_to_jpeg(apps, schema_editor):
+def create_image_fullsize(apps, schema_editor):
     """Populate image_fullsize by converting current images, saved under image_original, to the default JPEG format"""
     Artwork = apps.get_model('artworks', 'Artwork')
     for artwork in Artwork.objects.all():
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
             field=versatileimagefield.fields.VersatileImageField(blank=True, max_length=255, null=False, upload_to=functools.partial(artworks.models.get_path_to_image_fullsize, *(),), verbose_name='Fullsize Image'),
         ),
         migrations.RunPython(
-            convert_images_to_jpeg,
+            create_image_fullsize,
             reverse_code=migrations.RunPython.noop,
         ),
     ]
