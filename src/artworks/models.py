@@ -1,5 +1,6 @@
 import logging
 import re
+from io import BytesIO
 from pathlib import Path
 
 from base_common.fields import ShortUUIDField
@@ -255,14 +256,10 @@ def get_path_to_image_fullsize(instance, filename):
     image_fullsize:
     filename = 'artworks/imageFullsize/16000/16320/example.jpg'
     """
+    prefix = 'artworks/imageFullsize'
     if instance.pk:
-        base_filename = Path(filename).name
-        directory = (instance.pk // 1000) * 1000
-        name = Path(base_filename).stem
-        ext = Path(base_filename).suffix
-        fullsize_filename = f'{name}_fullsize{ext}'
-        return f'artworks/imageFullsize/{directory}/{instance.pk}/{fullsize_filename}'
-    return filename
+        return f'{prefix}/{instance.pk}/{filename}'
+    return f'{prefix}/{filename}'
 
 
 class Keyword(MPTTModel, MetaDataMixin):
@@ -756,25 +753,16 @@ class Artwork(AbstractBaseModel):
         )
 
     def create_image_fullsize(self):
-        with Image.open(self.image_original.path) as image_original:
-            fullsize_image_path = get_path_to_image_fullsize(
-                self,
-                self.image_original.name,
-            )
-            fullsize_image_path = f"{Path(fullsize_image_path).with_suffix('.jpg')}"
+        with Image.open(self.image_original) as img:
+            img_converted = img.convert('RGB')
+            img_io = BytesIO()
+            img_converted.save(img_io, format='JPEG')
+            img_io.seek(0)
 
-            image_fullsize_field = self.image_fullsize
-            fullsize_dir = Path(
-                self.image_fullsize.storage.path(fullsize_image_path),
-            ).parent
-            if not fullsize_dir.exists():
-                fullsize_dir.mkdir(parents=True)
-            with image_fullsize_field.storage.open(
-                fullsize_image_path,
-                'wb',
-            ) as fullsize_image_file:
-                image_original.convert('RGB').save(fullsize_image_file, 'JPEG')
-            self.image_fullsize.name = fullsize_image_path
+        original_name = Path(self.image_original.name).stem
+        fullsize_filename = f'{original_name}_fullsize.jpg'
+        # Save the image to the image_fullsize field
+        self.image_fullsize.save(fullsize_filename, img_io, save=False)
 
 
 @receiver(models.signals.post_delete, sender=Artwork)
