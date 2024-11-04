@@ -23,7 +23,7 @@ from .fetch import fetch_getty_data, fetch_gnd_data, fetch_wikidata
 from .fetch.exceptions import DataNotFoundError, HTTPError, RequestError
 from .managers import ArtworkManager
 from .mixins import MetaDataMixin
-from .validators import validate_getty_id, validate_gnd_id
+from .validators import validate_getty_id, validate_gnd_id, validate_image_original
 
 logger = logging.getLogger(__name__)
 
@@ -533,6 +533,7 @@ class Artwork(AbstractBaseModel):
         null=False,
         blank=True,
         upload_to=get_path_to_original_file,
+        validators=[validate_image_original],
     )
 
     image_fullsize = VersatileImageField(
@@ -657,21 +658,6 @@ class Artwork(AbstractBaseModel):
 
     def __str__(self):
         return self.title
-
-    def clean_image_original(self):
-        ext = Path(self.image_original.name).suffix.lstrip('.')
-        image_type = Image.open(self.image_original).format.lower()
-        if ext != image_type:
-            raise ValidationError(
-                _(
-                    f'The provided image file does not match the file extension of type {ext}. '
-                    f'Please, provide the file with the correct file extension, which is {image_type}.',
-                ),
-            )
-
-    def clean(self, *args, **kwargs):
-        self.clean_image_original()
-        super().clean()
 
     @staticmethod
     def get_license_label():
