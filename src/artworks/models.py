@@ -538,6 +538,9 @@ class Artwork(AbstractBaseModel):
     """Each Artwork has an metadata and image and various versions (renditions)
     of that image."""
 
+    id = ShortUUIDField(primary_key=True)
+    archive_id = models.BigIntegerField(null=True)
+
     # VersatileImageField allows to create resized versions of the
     # image (renditions) on demand
     image_original = VersatileImageField(
