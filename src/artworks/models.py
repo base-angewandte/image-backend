@@ -770,6 +770,8 @@ def delete_artwork_images(sender, instance, **kwargs):
     """Delete Artwork's originalImage and all renditions on post_delete."""
     instance.image_original.delete_all_created_images()
     instance.image_original.delete(save=False)
+    if instance.image_fullsize:
+        instance.image_fullsize.delete(save=False)
 
 
 @receiver(models.signals.pre_save, sender=Artwork)
