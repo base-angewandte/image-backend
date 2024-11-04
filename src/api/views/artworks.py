@@ -230,11 +230,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         size = f'{serializer.validated_data["width"]}x{serializer.validated_data["height"]}'
         match method:
             case 'resize':
-                url = artwork.image_original.thumbnail[size].url
+                url = artwork.image_fullsize.thumbnail[size].url
             case 'crop':
-                url = artwork.image_original.crop[size].url
+                url = artwork.image_fullsize.crop[size].url
             case _:
-                url = artwork.image_original.url
+                url = artwork.image_fullsize.url
         return redirect(request.build_absolute_uri(url))
 
     @extend_schema(
