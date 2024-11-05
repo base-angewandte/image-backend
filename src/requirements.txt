@@ -35,6 +35,7 @@ django==4.2.16
     #   django-jsonform
     #   django-mass-edit
     #   django-redis
+    #   django-tinymce
     #   django-versatileimagefield
     #   djangorestframework
     #   drf-spectacular
@@ -63,6 +64,8 @@ django-mptt==0.16.0
 django-ordered-model==3.7.4
     # via -r src/requirements.in
 django-redis==5.4.0
+    # via -r src/requirements.in
+django-tinymce==4.1.0
     # via -r src/requirements.in
 django-versatileimagefield==3.1
     # via -r src/requirements.in
