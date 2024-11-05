@@ -21,6 +21,7 @@ from urllib.parse import urlparse
 import environ
 import requests
 from drf_spectacular.utils import OpenApiParameter
+from PIL import Image
 
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
@@ -562,3 +563,9 @@ GOTENBERG_API_URL = env.str(
     'GOTENBERG_API_URL',
     default=f'http://{GOTENBERG_SERVER_NAME}:3000/forms/libreoffice/convert',
 )
+
+PIL_VALID_EXTENSIONS = {}
+for extension, img_format in Image.registered_extensions().items():
+    if img_format not in PIL_VALID_EXTENSIONS:
+        PIL_VALID_EXTENSIONS[img_format] = []
+    PIL_VALID_EXTENSIONS[img_format].append(extension.lower())

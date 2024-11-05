@@ -23,11 +23,7 @@ def validate_getty_id(getty_id):
 
 def validate_image_original(value):
     file_extension = Path(value.name).suffix.lower()
-    valid_extensions = {}
-    for extension, img_format in Image.registered_extensions().items():
-        if img_format not in valid_extensions:
-            valid_extensions[img_format] = []
-        valid_extensions[img_format].append(extension.lower())
+    valid_extensions = settings.PIL_VALID_EXTENSIONS
     try:
         img = Image.open(value)
         img.verify()
