@@ -13,6 +13,7 @@ from versatileimagefield.fields import VersatileImageField
 from django.conf import settings
 from django.contrib.postgres.search import SearchVector, SearchVectorField
 from django.core.exceptions import ValidationError
+from django.core.files import File
 from django.db import models
 from django.db.models import JSONField
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
@@ -753,16 +754,15 @@ class Artwork(AbstractBaseModel):
         )
 
     def create_image_fullsize(self, save=True):
+        img_io = BytesIO()
         with Image.open(self.image_original) as img:
             img_converted = img.convert('RGB')
-            img_io = BytesIO()
             img_converted.save(img_io, format='JPEG')
             img_io.seek(0)
-
         original_name = Path(self.image_original.name).stem
         fullsize_filename = f'{original_name}_fullsize.jpg'
         # Save the image to the image_fullsize field
-        self.image_fullsize.save(fullsize_filename, img_io, save=save)
+        self.image_fullsize.save(fullsize_filename, File(img_io), save=save)
 
 
 @receiver(models.signals.post_delete, sender=Artwork)
