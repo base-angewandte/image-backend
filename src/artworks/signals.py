@@ -49,8 +49,8 @@ def update_fullsize_image(sender, instance, *args, **kwargs):
         # For updating old instances:
         old_instance = Artwork.objects.get(pk=instance.pk)
         if old_instance.image_original.name != instance.image_original.name:
-            instance.create_image_fullsize()
+            instance.create_image_fullsize(save=False)
     else:
         # For new instances:
         if instance.image_original:
-            instance.create_image_fullsize()
+            instance.create_image_fullsize(save=False)

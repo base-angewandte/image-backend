@@ -752,7 +752,7 @@ class Artwork(AbstractBaseModel):
             search_vector=search_vector,
         )
 
-    def create_image_fullsize(self):
+    def create_image_fullsize(self, save=True):
         with Image.open(self.image_original) as img:
             img_converted = img.convert('RGB')
             img_io = BytesIO()
@@ -762,7 +762,7 @@ class Artwork(AbstractBaseModel):
         original_name = Path(self.image_original.name).stem
         fullsize_filename = f'{original_name}_fullsize.jpg'
         # Save the image to the image_fullsize field
-        self.image_fullsize.save(fullsize_filename, img_io, save=False)
+        self.image_fullsize.save(fullsize_filename, img_io, save=save)
 
 
 @receiver(models.signals.post_delete, sender=Artwork)

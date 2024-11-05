@@ -99,7 +99,7 @@ def album_download_as_pptx(album_id, language='en', return_raw=False):
             index = found_position + len(found_term)
 
     def add_slide_with_one_picture(artwork, padding):
-        img_relative_path = artwork.image_original.thumbnail[
+        img_relative_path = artwork.image_fullsize.thumbnail[
             '1880x933'  # 1920-20-20 = 1880
         ].name
         img_path = settings.MEDIA_ROOT_PATH / img_relative_path
@@ -114,11 +114,11 @@ def album_download_as_pptx(album_id, language='en', return_raw=False):
         )
 
     def add_slide_with_two_pictures(artwork_left, artwork_right, padding):
-        img_relative_path_left = artwork_left.image_original.thumbnail[
+        img_relative_path_left = artwork_left.image_fullsize.thumbnail[
             '920x933'  # (1920/2)-20-20 = 920
         ].name
         img_path_left = settings.MEDIA_ROOT_PATH / img_relative_path_left
-        img_relative_path_right = artwork_right.image_original.thumbnail['920x933'].name
+        img_relative_path_right = artwork_right.image_fullsize.thumbnail['920x933'].name
         img_path_right = settings.MEDIA_ROOT_PATH / img_relative_path_right
         slide = get_new_slide()
         add_picture_to_slide(slide, img_path_left, padding, 'left')
