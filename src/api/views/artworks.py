@@ -103,6 +103,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'results': [
                     {
                         'id': artwork.id,
+                        'image_original': request.build_absolute_uri(
+                            artwork.image_original.url,
+                        )
+                        if artwork.image_original
+                        else None,
                         'image_fullsize': request.build_absolute_uri(
                             artwork.image_fullsize.url,
                         )
@@ -143,6 +148,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         return Response(
             {
                 'id': artwork.id,
+                'image_original': request.build_absolute_uri(artwork.image_original.url)
+                if artwork.image_original
+                else None,
                 'image_fullsize': request.build_absolute_uri(artwork.image_fullsize.url)
                 if artwork.image_fullsize
                 else None,
@@ -404,7 +412,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         output_zip = BytesIO()
         file_name = slugify(artwork.title)
-        image_suffix = artwork.image_fullsize.name.split('.')[-1]
+        image_suffix = artwork.image_original.name.split('.')[-1]
 
         #  image to zipfile & metadata
         with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as zip_file:
