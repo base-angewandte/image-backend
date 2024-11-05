@@ -8,8 +8,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from django.conf import settings
-from django.template.loader import render_to_string
 from django.utils.translation import get_language
+
+from texts.models import Text
 
 
 class TosViewSet(viewsets.GenericViewSet):
@@ -42,12 +43,10 @@ class TosViewSet(viewsets.GenericViewSet):
         """Retrieve the terms of service and status of acceptance for the
         current user."""
         current_language = get_language() or settings.LANGUAGE_CODE
-        template_name = f'accounts/terms_of_service_{current_language}.html'
-        tos_text = render_to_string(template_name)
         return Response(
             {
                 'tos_accepted': request.user.tos_accepted,
-                'tos_text': tos_text,
+                'tos_text': getattr(Text.objects.get(pk=1), current_language, ''),
             },
             status=status.HTTP_200_OK,
         )
