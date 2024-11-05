@@ -18,7 +18,6 @@ from django.db import models
 from django.db.models import JSONField
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.db.models.functions import Upper
-from django.dispatch import receiver
 from django.utils.translation import get_language, gettext_lazy as _
 
 from .fetch import fetch_getty_data, fetch_gnd_data, fetch_wikidata
@@ -763,24 +762,6 @@ class Artwork(AbstractBaseModel):
         fullsize_filename = f'{original_name}_fullsize.jpg'
         # Save the image to the image_fullsize field
         self.image_fullsize.save(fullsize_filename, File(img_io), save=save)
-
-
-@receiver(models.signals.post_delete, sender=Artwork)
-def delete_artwork_images(sender, instance, **kwargs):
-    """Delete Artwork's originalImage and all renditions on post_delete."""
-    instance.image_original.delete_all_created_images()
-    instance.image_original.delete(save=False)
-    if instance.image_fullsize:
-        instance.image_fullsize.delete(save=False)
-
-
-@receiver(models.signals.pre_save, sender=Artwork)
-def delete_renditions_on_change(sender, update_fields, instance, **kwargs):
-    """When the image of an Artwork gets exchanged, the old renditions get
-    deleted."""
-    if instance._state.adding is False:
-        old_artwork = Artwork.objects.get(pk=instance.id)
-        old_artwork.image_original.delete_all_created_images()
 
 
 class Album(AbstractBaseModel):
