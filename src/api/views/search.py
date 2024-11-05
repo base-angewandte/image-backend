@@ -276,8 +276,8 @@ def search(request, *args, **kwargs):
         results.append(
             {
                 'id': artwork.id,
-                'image_original': request.build_absolute_uri(artwork.image_original.url)
-                if artwork.image_original
+                'image_fullsize': request.build_absolute_uri(artwork.image_fullsize.url)
+                if artwork.image_fullsize
                 else None,
                 'credits': artwork.credits,
                 'title': get_localised_label(artwork),

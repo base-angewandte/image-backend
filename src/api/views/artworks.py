@@ -103,10 +103,10 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'results': [
                     {
                         'id': artwork.id,
-                        'image_original': request.build_absolute_uri(
-                            artwork.image_original.url,
+                        'image_fullsize': request.build_absolute_uri(
+                            artwork.image_fullsize.url,
                         )
-                        if artwork.image_original
+                        if artwork.image_fullsize
                         else None,
                         'credits': artwork.credits,
                         'title': artwork.title,
@@ -143,8 +143,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         return Response(
             {
                 'id': artwork.id,
-                'image_original': request.build_absolute_uri(artwork.image_original.url)
-                if artwork.image_original
+                'image_fullsize': request.build_absolute_uri(artwork.image_fullsize.url)
+                if artwork.image_fullsize
                 else None,
                 'title': artwork.title,
                 'title_english': artwork.title_english,
@@ -404,13 +404,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         output_zip = BytesIO()
         file_name = slugify(artwork.title)
-        image_suffix = artwork.image_original.name.split('.')[-1]
+        image_suffix = artwork.image_fullsize.name.split('.')[-1]
 
         #  image to zipfile & metadata
         with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as zip_file:
             try:
                 zip_file.write(
-                    artwork.image_original.path,
+                    artwork.image_fullsize.path,
                     arcname=f'{file_name}.{image_suffix}',
                 )
             except FileNotFoundError:
