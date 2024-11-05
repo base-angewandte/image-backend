@@ -10,4 +10,3 @@ class Command(BaseCommand):
         for artwork in Artwork.objects.all():
             if artwork.image_original and not artwork.image_fullsize:
                 artwork.create_image_fullsize()
-                artwork.save()

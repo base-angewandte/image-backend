@@ -69,7 +69,6 @@ class ArtworkTests(APITestCase):
             image_original=temporary_image(),
             published=True,
         )
-        artwork.create_image_fullsize()
         url = reverse('artwork-detail', kwargs={'pk': artwork.pk, 'version': VERSION})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
