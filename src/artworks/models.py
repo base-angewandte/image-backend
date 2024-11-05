@@ -254,7 +254,7 @@ def get_path_to_image_fullsize(instance, filename):
 
     Example: artwork.pk==16320, filename=='example_fullsize.jpg'
     image_fullsize:
-    filename = 'artworks/imageFullsize/16000/16320/example.jpg'
+    filename = 'artworks/imageFullsize/16320/example_fullsize.jpg'
     """
     prefix = 'artworks/imageFullsize'
     if instance.pk:
