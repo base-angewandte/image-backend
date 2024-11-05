@@ -122,11 +122,13 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'django_jsonform',
+    'tinymce',
     # Project apps
     'accounts',
     'core',
     'artworks',
     'api',
+    'texts',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -562,3 +564,18 @@ GOTENBERG_API_URL = env.str(
     'GOTENBERG_API_URL',
     default=f'http://{GOTENBERG_SERVER_NAME}:3000/forms/libreoffice/convert',
 )
+
+TINYMCE_DEFAULT_CONFIG = {
+    'theme': 'silver',
+    'height': 500,
+    'menubar': False,
+    'plugins': 'autolink,lists,link,paste,wordcount',
+    'toolbar': 'undo redo | styles | bold italic link | alignleft aligncenter alignright alignjustify | bullist numlist',
+    'style_formats': [
+        {'title': 'Heading', 'block': 'h2'},
+        {'title': 'Paragraph', 'block': 'p'},
+    ],
+    'paste_block_drop': True,
+    'paste_as_text': True,
+    'entity_encoding': 'raw',
+}
