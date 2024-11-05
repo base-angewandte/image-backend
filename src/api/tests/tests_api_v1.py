@@ -69,14 +69,15 @@ class ArtworkTests(APITestCase):
             image_original=temporary_image(),
             published=True,
         )
+        artwork.create_image_fullsize()
         url = reverse('artwork-detail', kwargs={'pk': artwork.pk, 'version': VERSION})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
         self.assertEqual(content['title'], artwork.title)
         self.assertEqual(
-            content['image_original'],
-            f'http://testserver{artwork.image_original.url}',
+            content['image_fullsize'],
+            f'http://testserver{artwork.image_fullsize.url}',
         )
         self.assertEqual(content['artists'], [])
 
