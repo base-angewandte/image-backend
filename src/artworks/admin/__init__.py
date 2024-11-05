@@ -106,7 +106,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         if obj.image_original:
             return format_html(
                 '<img src="{url}" />'.format(
-                    url=obj.image_original.thumbnail['180x180'],
+                    url=obj.image_fullsize.thumbnail['180x180'],
                 ),
             )
         else:
