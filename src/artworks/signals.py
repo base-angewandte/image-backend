@@ -105,6 +105,8 @@ def post_migrate_updates(sender, **kwargs):
                     last_migration = migration_int
 
         for migration, _reverse in plan:
+            # we only apply changes after the last migration has run to ensure that the
+            # model is up to date
             if int(migration.name[:4]) == last_migration:
                 for artwork in Artwork.objects.all():
                     # update search vector if there have been changes to the model
