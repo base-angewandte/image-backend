@@ -1,28 +1,30 @@
 import logging
 import re
+from io import BytesIO
 from pathlib import Path
 
 from base_common.fields import ShortUUIDField
 from base_common.models import AbstractBaseModel
 from django_jsonform.models.fields import ArrayField
 from mptt.models import MPTTModel, TreeForeignKey
+from PIL import Image
 from versatileimagefield.fields import VersatileImageField
 
 from django.conf import settings
 from django.contrib.postgres.search import SearchVector, SearchVectorField
 from django.core.exceptions import ValidationError
+from django.core.files import File
 from django.db import models
 from django.db.models import JSONField
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.db.models.functions import Upper
-from django.dispatch import receiver
 from django.utils.translation import get_language, gettext_lazy as _
 
 from .fetch import fetch_getty_data, fetch_gnd_data, fetch_wikidata
 from .fetch.exceptions import DataNotFoundError, HTTPError, RequestError
 from .managers import ArtworkManager
 from .mixins import MetaDataMixin
-from .validators import validate_getty_id, validate_gnd_id
+from .validators import validate_getty_id, validate_gnd_id, validate_image_original
 
 logger = logging.getLogger(__name__)
 
@@ -237,13 +239,27 @@ def get_path_to_original_file(instance, filename):
     structure based on the pk/id of the artwork.
 
     Example: artwork.pk==16320, filename=='example.jpg'
+    image_original:
     filename = 'artworks/imageOriginal/16000/16320/example.jpg'
     """
-
     if instance.pk:
         directory = (instance.pk // 1000) * 1000
         return f'artworks/imageOriginal/{directory}/{instance.pk}/{filename}'
     return filename
+
+
+def get_path_to_image_fullsize(instance, filename):
+    """The uploaded images of artworks are stored in a specifc directory
+    structure based on the pk/id of the artwork.
+
+    Example: artwork.pk==16320, filename=='example_fullsize.jpg'
+    image_fullsize:
+    filename = 'artworks/imageFullsize/16320/example_fullsize.jpg'
+    """
+    prefix = 'artworks/imageFullsize'
+    if instance.pk:
+        return f'{prefix}/{instance.pk}/{filename}'
+    return f'{prefix}/{filename}'
 
 
 class Keyword(MPTTModel, MetaDataMixin):
@@ -530,7 +546,17 @@ class Artwork(AbstractBaseModel):
         null=False,
         blank=True,
         upload_to=get_path_to_original_file,
+        validators=[validate_image_original],
     )
+
+    image_fullsize = VersatileImageField(
+        verbose_name=_('Fullsize Image'),
+        max_length=255,
+        null=False,
+        blank=True,
+        upload_to=get_path_to_image_fullsize,
+    )
+
     title = models.CharField(verbose_name=_('Title'), max_length=255, blank=True)
     title_english = models.CharField(
         verbose_name=_('Title, English'),
@@ -574,9 +600,9 @@ class Artwork(AbstractBaseModel):
         Material,
         verbose_name=_('Material/Technique'),
     )
-    material_old = models.TextField(
-        verbose_name=_('Material/Technique (old)'),
-        help_text=_('Deprecated. Used only if material is not chosen.'),
+    material_description = models.TextField(
+        verbose_name=_('Material/Technique description'),
+        help_text=_('Description of artwork materials and composition.'),
         blank=True,
     )
     width = models.FloatField(
@@ -742,46 +768,15 @@ class Artwork(AbstractBaseModel):
             search_vector=search_vector,
         )
 
-
-@receiver(models.signals.post_save, sender=Artwork)
-def move_uploaded_image(sender, instance, created, **kwargs):
-    """Move the uploaded image after an Artwork instance has been created."""
-    if created:
-        imagefile = instance.image_original
-        old_name = imagefile.name
-        relative_path = instance.image_original.storage.get_available_name(
-            get_path_to_original_file(instance, old_name),
-            max_length=sender._meta.get_field('image_original').max_length,
-        )
-        absolute_path = settings.MEDIA_ROOT_PATH / relative_path
-
-        if not old_name:
-            return
-
-        if not absolute_path.exists():
-            absolute_path.parent.mkdir(parents=True, exist_ok=True)
-
-        # move the uploaded image
-        Path(imagefile.path).rename(absolute_path)
-
-        imagefile.name = relative_path
-        instance.save()
-
-
-@receiver(models.signals.post_delete, sender=Artwork)
-def delete_artwork_images(sender, instance, **kwargs):
-    """Delete Artwork's originalImage and all renditions on post_delete."""
-    instance.image_original.delete_all_created_images()
-    instance.image_original.delete(save=False)
-
-
-@receiver(models.signals.pre_save, sender=Artwork)
-def delete_renditions_on_change(sender, update_fields, instance, **kwargs):
-    """When the image of an Artwork gets exchanged, the old renditions get
-    deleted."""
-    if instance._state.adding is False:
-        old_artwork = Artwork.objects.get(pk=instance.id)
-        old_artwork.image_original.delete_all_created_images()
+    def create_image_fullsize(self, save=True):
+        img_io = BytesIO()
+        with Image.open(self.image_original) as img:
+            img_converted = img.convert('RGB')
+            img_converted.save(img_io, format='JPEG')
+        original_name = Path(self.image_original.name).stem
+        fullsize_filename = f'{original_name}_fullsize.jpg'
+        # Save the image to the image_fullsize field
+        self.image_fullsize.save(fullsize_filename, File(img_io), save=save)
 
 
 class Album(AbstractBaseModel):

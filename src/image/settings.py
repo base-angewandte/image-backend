@@ -21,6 +21,7 @@ from urllib.parse import urlparse
 import environ
 import requests
 from drf_spectacular.utils import OpenApiParameter
+from PIL import Image
 
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
@@ -122,11 +123,13 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'django_jsonform',
+    'tinymce',
     # Project apps
     'accounts',
     'core',
     'artworks',
     'api',
+    'texts',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -540,21 +543,6 @@ GETTY_LABEL = 'Getty AAT'
 
 WIKIDATA_LABEL = 'Wikidata'
 
-COPYRIGHT_TEXT_DE = env.str(
-    'COPYRIGHT_TEXT_DE',
-    default='Bildnutzung für wissenschaftliches Arbeiten mit Bildzitat möglich. Weitere Informationen zum Bildrecht:',
-)
-COPYRIGHT_TEXT_EN = env.str(
-    'COPYRIGHT_TEXT_EN',
-    default='Image use for scientific work with image citation possible. Further information on image rights:',
-)
-COPYRIGHT_LINK = env.str('COPYRIGHT_LINK', default='https://base.uni-ak.ac.at')
-COPYRIGHT_TEXT = {
-    'de': f'{COPYRIGHT_TEXT_DE} {COPYRIGHT_LINK}'.strip(),
-    'en': f'{COPYRIGHT_TEXT_EN} {COPYRIGHT_LINK}'.strip(),
-}
-
-
 REQUESTS_TIMEOUT = env.int('REQUESTS_TIMEOUT', default=5)
 
 GOTENBERG_SERVER_NAME = f'{PROJECT_NAME}-gotenberg' if DOCKER else 'localhost'
@@ -562,3 +550,24 @@ GOTENBERG_API_URL = env.str(
     'GOTENBERG_API_URL',
     default=f'http://{GOTENBERG_SERVER_NAME}:3000/forms/libreoffice/convert',
 )
+
+TINYMCE_DEFAULT_CONFIG = {
+    'theme': 'silver',
+    'height': 500,
+    'menubar': False,
+    'plugins': 'autolink,lists,link,paste,wordcount',
+    'toolbar': 'undo redo | styles | bold italic link | alignleft aligncenter alignright alignjustify | bullist numlist',
+    'style_formats': [
+        {'title': 'Heading', 'block': 'h2'},
+        {'title': 'Paragraph', 'block': 'p'},
+    ],
+    'paste_block_drop': True,
+    'paste_as_text': True,
+    'entity_encoding': 'raw',
+}
+
+PIL_VALID_EXTENSIONS = {}
+for extension, img_format in Image.registered_extensions().items():
+    if img_format not in PIL_VALID_EXTENSIONS:
+        PIL_VALID_EXTENSIONS[img_format] = []
+    PIL_VALID_EXTENSIONS[img_format].append(extension.lower())
