@@ -21,6 +21,7 @@ from urllib.parse import urlparse
 import environ
 import requests
 from drf_spectacular.utils import OpenApiParameter
+from PIL import Image
 
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
@@ -564,3 +565,9 @@ TINYMCE_DEFAULT_CONFIG = {
     'paste_as_text': True,
     'entity_encoding': 'raw',
 }
+
+PIL_VALID_EXTENSIONS = {}
+for extension, img_format in Image.registered_extensions().items():
+    if img_format not in PIL_VALID_EXTENSIONS:
+        PIL_VALID_EXTENSIONS[img_format] = []
+    PIL_VALID_EXTENSIONS[img_format].append(extension.lower())

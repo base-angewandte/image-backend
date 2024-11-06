@@ -2,6 +2,7 @@ from pathlib import Path
 
 from PIL import Image, UnidentifiedImageError
 
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 
@@ -17,12 +18,6 @@ class Command(BaseCommand):
         pil_not_verified_images = []
         error_loading_images = []
         renamed_images = []
-
-        valid_extensions = {}
-        for extension, img_format in Image.registered_extensions().items():
-            if img_format not in valid_extensions:
-                valid_extensions[img_format] = []
-            valid_extensions[img_format].append(extension)
 
         # Loop through all Artwork objects
         for artwork in Artwork.objects.all():
@@ -46,8 +41,10 @@ class Command(BaseCommand):
                 error_loading_images.append((artwork.id, image_path))
                 continue
 
-            if file_extension not in valid_extensions[img_format]:
-                new_image_path = image_path.with_suffix(valid_extensions[img_format][0])
+            if file_extension not in settings.PIL_VALID_EXTENSIONS[img_format]:
+                new_image_path = image_path.with_suffix(
+                    settings.PIL_VALID_EXTENSIONS[img_format][0],
+                )
                 image_path.rename(new_image_path)
                 renamed_images.append((artwork.id, image_path, new_image_path))
                 artwork.image_original.name = str(

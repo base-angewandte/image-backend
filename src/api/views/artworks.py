@@ -109,6 +109,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         )
                         if artwork.image_original
                         else None,
+                        'image_fullsize': request.build_absolute_uri(
+                            artwork.image_fullsize.url,
+                        )
+                        if artwork.image_fullsize
+                        else None,
                         'credits': artwork.credits,
                         'title': artwork.title,
                         'date': artwork.date,
@@ -146,6 +151,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'id': artwork.id,
                 'image_original': request.build_absolute_uri(artwork.image_original.url)
                 if artwork.image_original
+                else None,
+                'image_fullsize': request.build_absolute_uri(artwork.image_fullsize.url)
+                if artwork.image_fullsize
                 else None,
                 'title': artwork.title,
                 'title_english': artwork.title_english,
@@ -231,11 +239,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         size = f'{serializer.validated_data["width"]}x{serializer.validated_data["height"]}'
         match method:
             case 'resize':
-                url = artwork.image_original.thumbnail[size].url
+                url = artwork.image_fullsize.thumbnail[size].url
             case 'crop':
-                url = artwork.image_original.crop[size].url
+                url = artwork.image_fullsize.crop[size].url
             case _:
-                url = artwork.image_original.url
+                url = artwork.image_fullsize.url
         return redirect(request.build_absolute_uri(url))
 
     @extend_schema(
@@ -411,7 +419,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as zip_file:
             try:
                 zip_file.write(
-                    artwork.image_original.path,
+                    artwork.image_fullsize.path,
                     arcname=f'{file_name}.{image_suffix}',
                 )
             except FileNotFoundError:

@@ -63,6 +63,11 @@ def slides_with_details(album, request):
             )
             if artwork.image_original
             else None,
+            'image_fullsize': request.build_absolute_uri(
+                artwork.image_fullsize.url,
+            )
+            if artwork.image_fullsize
+            else None,
             'title': artwork.title,
             'discriminatory_terms': artwork.get_discriminatory_terms_list(),
             'credits': artwork.credits,
@@ -119,6 +124,11 @@ def featured_artworks(album, request, num_artworks=4):
                         artwork.image_original.url,
                     )
                     if artwork.image_original
+                    else None,
+                    'image_fullsize': request.build_absolute_uri(
+                        artwork.image_fullsize.url,
+                    )
+                    if artwork.image_fullsize
                     else None,
                     'title': artwork.title,
                     'discriminatory_terms': artwork.get_discriminatory_terms_list(),

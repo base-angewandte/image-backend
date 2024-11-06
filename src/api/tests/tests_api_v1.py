@@ -78,6 +78,10 @@ class ArtworkTests(APITestCase):
             content['image_original'],
             f'http://testserver{artwork.image_original.url}',
         )
+        self.assertEqual(
+            content['image_fullsize'],
+            f'http://testserver{artwork.image_fullsize.url}',
+        )
         self.assertEqual(content['artists'], [])
 
     def test_artworks_image(self):
