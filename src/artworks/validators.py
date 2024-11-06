@@ -31,9 +31,10 @@ def validate_image_original(value):
         raise ValidationError('Uploaded file is not a valid image.') from e
     except Exception as e:
         raise ValidationError(f'Error processing image: {e}') from e
-    valid_exts = settings.PIL_VALID_EXTENSIONS.get(img_format, [])
-    if file_extension not in valid_exts:
-        valid_exts_display = ', '.join(valid_exts)
+    if file_extension not in settings.PIL_VALID_EXTENSIONS.get(img_format, []):
+        valid_exts_display = ', '.join(
+            settings.PIL_VALID_EXTENSIONS.get(img_format, []),
+        )
         raise ValidationError(
             f"The file extension '{file_extension}' does not match the image format '{img_format}'. "
             f'Valid extensions for this format are: {valid_exts_display}.',
