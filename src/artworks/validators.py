@@ -23,7 +23,6 @@ def validate_getty_id(getty_id):
 
 def validate_image_original(value):
     file_extension = Path(value.name).suffix.lower()
-    valid_extensions = settings.PIL_VALID_EXTENSIONS
     try:
         img = Image.open(value)
         img.verify()
@@ -32,7 +31,7 @@ def validate_image_original(value):
         raise ValidationError('Uploaded file is not a valid image.') from e
     except Exception as e:
         raise ValidationError(f'Error processing image: {e}') from e
-    valid_exts = valid_extensions.get(img_format, [])
+    valid_exts = settings.PIL_VALID_EXTENSIONS.get(img_format, [])
     if file_extension not in valid_exts:
         valid_exts_display = ', '.join(valid_exts)
         raise ValidationError(

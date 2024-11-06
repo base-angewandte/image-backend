@@ -75,6 +75,10 @@ class ArtworkTests(APITestCase):
         content = json.loads(response.content)
         self.assertEqual(content['title'], artwork.title)
         self.assertEqual(
+            content['image_original'],
+            f'http://testserver{artwork.image_original.url}',
+        )
+        self.assertEqual(
             content['image_fullsize'],
             f'http://testserver{artwork.image_fullsize.url}',
         )
