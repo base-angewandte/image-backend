@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 def create_fullsize_images(apps, schema_editor):
     from artworks.models import Artwork
     for artwork in Artwork.objects.all():
-        if hasattr(artwork, 'create_image_fullsize') and callable(artwork.create_image_fullsize):
+        if hasattr(artwork, 'create_image_fullsize') and callable(artwork.create_image_fullsize) and artwork.image_original:
             artwork.create_image_fullsize()
         else:
             logger.warning('Artwork model does\'n have a create_image_fullsize method [artworks migration 0091]')
