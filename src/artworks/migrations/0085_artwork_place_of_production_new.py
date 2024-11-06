@@ -21,7 +21,7 @@ def change_place_of_production_to_one(apps, schema_editor):
             # as there is no defined requirement, which location to take when
             # migrating back, we just take the first one the manager gives us
             artwork.place_of_production = artwork.place_of_production_new.all()[0]
-            artwork.save()
+            artwork.save(update_fields=['place_of_production'])
 
 class Migration(migrations.Migration):
     dependencies = [
