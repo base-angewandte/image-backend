@@ -109,3 +109,7 @@ def post_migrate_updates(sender, **kwargs):
                 for artwork in Artwork.objects.all():
                     # update search vector if there have been changes to the model
                     artwork.update_search_vector()
+
+                    # create full size images, if they don't exist
+                    if artwork.image_original and not artwork.image_fullsize:
+                        artwork.create_image_fullsize()
