@@ -39,31 +39,41 @@ def move_uploaded_image(sender, instance, created, **kwargs):
 
 @receiver(pre_save, sender=Artwork)
 def update_images(sender, instance, *args, **kwargs):
-    """Manage `image_fullsize` updates based on changes to `image_original`.
+    """Creates, updates or deletes images of an Artwork if necessary.
 
-    - If `image_original` is deleted, delete `image_fullsize` to maintain consistency.
-    - If `image_original` is changed, delete renditions for both `image_original` and `image_fullsize`,
-     then generate a new `image_fullsize` based on the updated `image_original`.
-    - For new `Artwork` instances with `image_original` present, create `image_fullsize`.
+    - Creates and updates `image_fullsize` if necessary.
+    - Deletes `images_fullsize` if `image_original` has been deleted.
+    - Deletes images created with VersatileImageField, if the image changes.
     """
-    if instance.pk:
-        old_instance = Artwork.objects.get(pk=instance.pk)
-        # Check if image_original was deleted
-        if not instance.image_original and old_instance.image_original:
-            instance.image_fullsize.delete(save=False)
-        # I'm leaving this here as an alternative of checking if image_original was updated.
-        # It could be done through the path or through the name.
-        #     old_artwork = Artwork.objects.get(pk=instance.pk)
-        #     if old_artwork.image_original.path != instance.image_original.path:
-        #         convert_to_fullsize_image(instance, instance.image_original.path)
-        # Check if image_original was changed and delete both old images and generate image_fullsize
-        elif old_instance.image_original.name != instance.image_original.name:
-            old_instance.image_original.delete_all_created_images()
-            old_instance.image_fullsize.delete_all_created_images()
+    if instance._state.adding:
+        # artwork has not been created yet
+
+        if instance.image_original:
             instance.create_image_fullsize(save=False)
     else:
-        # For new instances:
-        if instance.image_original:
+        old_instance = Artwork.objects.get(pk=instance.pk)
+
+        image_original_created = (
+            instance.image_original and not old_instance.image_original
+        )
+        image_original_changed = (
+            instance.image_original
+            and old_instance.image_original
+            and old_instance.image_original.name != instance.image_original.name
+        )
+        image_original_deleted = (
+            not instance.image_original and old_instance.image_original
+        )
+
+        # cleanup
+        if image_original_deleted or image_original_changed:
+            old_instance.image_original.delete_all_created_images()
+            if old_instance.image_fullsize:
+                old_instance.image_fullsize.delete_all_created_images()
+                instance.image_fullsize.delete(save=False)
+
+        # create or update image_fullsize
+        if image_original_created or image_original_changed:
             instance.create_image_fullsize(save=False)
 
 
