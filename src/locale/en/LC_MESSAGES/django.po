@@ -338,11 +338,11 @@ msgid "Date To"
 msgstr ""
 
 #: artworks/models.py:559
-msgid "Material/Technique (old)"
+msgid "Material/Technique description"
 msgstr ""
 
 #: artworks/models.py:560
-msgid "Deprecated. Used only if material is not chosen."
+msgid "Description of artwork materials and composition."
 msgstr ""
 
 #: artworks/models.py:564
