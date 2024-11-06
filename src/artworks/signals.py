@@ -1,6 +1,8 @@
 from pathlib import Path
 
 from django.conf import settings
+from django.db import connections
+from django.db.migrations.loader import MigrationLoader
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
@@ -85,3 +87,25 @@ def delete_artwork_images(sender, instance, **kwargs):
     if instance.image_fullsize:
         instance.image_fullsize.delete_all_created_images()
         instance.image_fullsize.delete(save=False)
+
+
+def post_migrate_updates(sender, **kwargs):
+    plan = kwargs.get('plan')
+
+    # check if a migration has been run and if it was forward
+    if plan and not plan[0][1]:
+        # get last migration
+        last_migration = 0
+        loader = MigrationLoader(connections['default'])
+
+        for migration_app_label, migration_name in loader.disk_migrations:
+            if migration_app_label == sender.name:
+                migration_int = int(migration_name[:4])
+                if migration_int > last_migration:
+                    last_migration = migration_int
+
+        for migration, _reverse in plan:
+            if int(migration.name[:4]) == last_migration:
+                for artwork in Artwork.objects.all():
+                    # update search vector if there have been changes to the model
+                    artwork.update_search_vector()

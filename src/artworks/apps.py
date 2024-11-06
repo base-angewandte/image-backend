@@ -2,6 +2,7 @@ from versatileimagefield.datastructures import sizedimage
 
 from django.apps import AppConfig
 from django.conf import settings
+from django.db.models.signals import post_migrate
 from django.utils.translation import gettext_lazy as _
 
 
@@ -34,7 +35,9 @@ class ArtworksConfig(AppConfig):
 
     def ready(self):
         # import signal handlers
-        from . import signals  # noqa: F401
+        from . import signals
+
+        post_migrate.connect(signals.post_migrate_updates, sender=self)
 
         if settings.DEBUG:
             monkeypatch_versatile_image_field()
