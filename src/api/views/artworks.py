@@ -32,6 +32,7 @@ from api.views import (
     get_person_list,
 )
 from artworks.models import Album, Artwork, PermissionsRelation
+from texts.models import Text
 
 from . import get_localised_label
 
@@ -159,13 +160,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'title_comment': artwork.title_comment,
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 'date': artwork.date,
-                'material': ', '.join([m.name for m in artwork.material.all()]),
+                'material': artwork.material_description,
                 'dimensions': artwork.dimensions_display,
                 'comments': artwork.comments,
                 'credits': artwork.credits,
                 'credits_link': artwork.credits_link,
                 'link': artwork.link,
-                'license': settings.COPYRIGHT_TEXT.get(get_language(), ''),
+                'license': getattr(Text.objects.get(pk=2), get_language(), ''),
                 'place_of_production': artwork.get_place_of_production_list()
                 if artwork.place_of_production.exists()
                 else [],
@@ -399,7 +400,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {apply_strikethrough(artwork.title_comment, discriminatory_terms)}\n'
             f'{metadata_persons}'
             f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date}\n'
-            f'{artwork._meta.get_field("material").verbose_name.title()}: {", ".join([m.name for m in artwork.material.all()])}\n'
+            f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material_description}\n'
             f'{artwork._meta.get_field("dimensions_display").verbose_name.title()}: {artwork.dimensions_display}\n'
             f'{artwork._meta.get_field("comments").verbose_name.title()}: {apply_strikethrough(artwork.comments, discriminatory_terms)}\n'
             f'{artwork._meta.get_field("credits").verbose_name.title()}: {apply_strikethrough(artwork.credits, discriminatory_terms)}\n'

@@ -345,12 +345,12 @@ msgid "Date To"
 msgstr "Datierung, bis"
 
 #: artworks/models.py:559
-msgid "Material/Technique (old)"
-msgstr "Material/Technik (alt)"
+msgid "Material/Technique description"
+msgstr "Material/Technik Beschreibung"
 
 #: artworks/models.py:560
-msgid "Deprecated. Used only if material is not chosen."
-msgstr "Veraltet. Wird nur noch verwendet, wenn kein Material ausgewählt."
+msgid "Description of artwork materials and composition."
+msgstr "Beschreibung der Materialien/Komposition des Kunstwerks."
 
 #: artworks/models.py:564
 msgid "Width"

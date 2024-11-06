@@ -584,9 +584,9 @@ class Artwork(AbstractBaseModel):
         Material,
         verbose_name=_('Material/Technique'),
     )
-    material_old = models.TextField(
-        verbose_name=_('Material/Technique (old)'),
-        help_text=_('Deprecated. Used only if material is not chosen.'),
+    material_description = models.TextField(
+        verbose_name=_('Material/Technique description'),
+        help_text=_('Description of artwork materials and composition.'),
         blank=True,
     )
     width = models.FloatField(
