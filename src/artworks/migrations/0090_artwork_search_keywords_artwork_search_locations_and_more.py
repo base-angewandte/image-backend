@@ -44,5 +44,5 @@ class Migration(migrations.Migration):
             name='search_persons',
             field=models.CharField(blank=True, default=''),
         ),
-        migrations.RunPython(update_search_vector, reverse_code=update_search_vector),
+        migrations.RunPython(update_search_vector, reverse_code=migrations.RunPython.noop),
     ]
