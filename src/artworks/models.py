@@ -305,7 +305,7 @@ class Keyword(MPTTModel, MetaDataMixin):
         order_insertion_by = ['name']
 
     def __str__(self):
-        return self.name
+        return self.name_localized
 
     def clean(self):
         super().clean()
@@ -371,6 +371,11 @@ class Keyword(MPTTModel, MetaDataMixin):
         if self.getty_overwrite:
             self.set_name_en_from_getty_data(getty_data)
 
+    @property
+    def name_localized(self):
+        current_language = get_language() or settings.LANGUAGE_CODE
+        return self.name_en if current_language == 'en' and self.name_en else self.name
+
 
 class Location(MPTTModel, MetaDataMixin):
     """Locations are nodes in a fixed hierarchical taxonomy."""
@@ -427,7 +432,8 @@ class Location(MPTTModel, MetaDataMixin):
 
     def __str__(self):
         return ' > '.join(
-            self.get_ancestors(include_self=True).values_list('name', flat=True),
+            ancestor.name_localized
+            for ancestor in self.get_ancestors(include_self=True)
         )
 
     def clean(self):
@@ -501,6 +507,11 @@ class Location(MPTTModel, MetaDataMixin):
         elif 'en' in labels:
             self.name_en = labels['en']['value']
 
+    @property
+    def name_localized(self):
+        current_language = get_language() or settings.LANGUAGE_CODE
+        return self.name_en if current_language == 'en' and self.name_en else self.name
+
 
 class Material(AbstractBaseModel):
     """Material types for artworks."""
@@ -515,7 +526,12 @@ class Material(AbstractBaseModel):
     )
 
     def __str__(self):
-        return self.name_en if get_language() == 'en' and self.name_en else self.name
+        return self.name_localized
+
+    @property
+    def name_localized(self):
+        current_language = get_language() or settings.LANGUAGE_CODE
+        return self.name_en if current_language == 'en' and self.name_en else self.name
 
 
 class Artwork(AbstractBaseModel):
@@ -679,7 +695,7 @@ class Artwork(AbstractBaseModel):
         return [
             {
                 'id': location.id,
-                'value': location.name,
+                'value': location.name_localized,
             }
             for location in self.place_of_production.all()
         ]
