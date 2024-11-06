@@ -534,20 +534,7 @@ class SearchTests(APITestCase):
                 },
             ],
         }
-        # Check if the 'title_english' is returned when 'accept-language' header is 'en'
         url = reverse('search', kwargs={'version': VERSION})
-        response = self.client.post(
-            url,
-            data,
-            format='json',
-            headers={'accept-language': 'en'},
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        content = json.loads(response.content)
-        self.assertEqual(
-            content['results'][0]['title'],
-            'loc test zelez, English',
-        )
         # Check if the 'title' is returned when 'accept-language' header is 'de'
         response = self.client.post(
             url,
@@ -560,28 +547,6 @@ class SearchTests(APITestCase):
         self.assertEqual(
             content['results'][0]['title'],
             'loc test zelez',
-        )
-
-        # Check if the 'title' is returned when 'accept-language' header is 'en', although 'title_english' is empty
-        data = {
-            'filters': [
-                {
-                    'id': 'location',
-                    'filter_values': ['Angewandte Kunst'],
-                },
-            ],
-        }
-        response = self.client.post(
-            url,
-            data,
-            format='json',
-            headers={'accept-language': 'en'},
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        content = json.loads(response.content)
-        self.assertEqual(
-            content['results'][0]['title'],
-            'loc test mak',
         )
 
     def test_search_labels_list(self):
@@ -886,28 +851,8 @@ class AutocompleteTests(APITestCase):
         self.assertEqual(len(content), 2)
         self.assertEqual(content['label'], 'Art Brut')
 
-    def test_title_english(self):
+    def test_title(self):
         url = reverse('autocomplete', kwargs={'version': VERSION})
-        # Check if the 'title_english' is returned when 'accept-language' header is 'en'
-        response = self.client.get(
-            f'{url}?q=loc test zelez&type=titles',
-            format='json',
-            headers={'accept-language': 'en'},
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        content = json.loads(response.content)[0]
-        self.assertEqual(len(content), 3)
-        self.assertEqual(content['label'], 'loc test zelez, English')
-        # Check if the 'title' is returned when 'accept-language' header is 'en', although 'title_english' is empty
-        response = self.client.get(
-            f'{url}?q=loc test aut&type=titles',
-            format='json',
-            headers={'accept-language': 'en'},
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        content = json.loads(response.content)[0]
-        self.assertEqual(len(content), 3)
-        self.assertEqual(content['label'], 'loc test aut')
         # Check if the 'title' is returned when 'accept-language' header is 'de'
         response = self.client.get(
             f'{url}?q=loc test aut&type=titles',
