@@ -535,12 +535,10 @@ class SearchTests(APITestCase):
             ],
         }
         url = reverse('search', kwargs={'version': VERSION})
-        # Check if the 'title' is returned when 'accept-language' header is 'de'
         response = self.client.post(
             url,
             data,
             format='json',
-            headers={'accept-language': 'de'},
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)
@@ -858,6 +856,16 @@ class AutocompleteTests(APITestCase):
             f'{url}?q=loc test aut&type=titles',
             format='json',
             headers={'accept-language': 'de'},
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)[0]
+        self.assertEqual(len(content), 3)
+        self.assertEqual(content['label'], 'loc test aut')
+        # Check if the 'title' is returned when 'accept-language' header is 'en'
+        response = self.client.get(
+            f'{url}?q=loc test aut&type=titles',
+            format='json',
+            headers={'accept-language': 'en'},
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = json.loads(response.content)[0]
