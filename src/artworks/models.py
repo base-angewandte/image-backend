@@ -289,7 +289,7 @@ class Keyword(MPTTModel, MetaDataMixin):
         order_insertion_by = ['name']
 
     def __str__(self):
-        return self.name
+        return self.name_localized
 
     def clean(self):
         super().clean()
@@ -416,7 +416,8 @@ class Location(MPTTModel, MetaDataMixin):
 
     def __str__(self):
         return ' > '.join(
-            self.get_ancestors(include_self=True).values_list('name', flat=True),
+            ancestor.name_localized
+            for ancestor in self.get_ancestors(include_self=True)
         )
 
     def clean(self):
@@ -509,7 +510,12 @@ class Material(AbstractBaseModel):
     )
 
     def __str__(self):
-        return self.name_en if get_language() == 'en' and self.name_en else self.name
+        return self.name_localized
+
+    @property
+    def name_localized(self):
+        current_language = get_language() or settings.LANGUAGE_CODE
+        return self.name_en if current_language == 'en' and self.name_en else self.name
 
 
 class Artwork(AbstractBaseModel):

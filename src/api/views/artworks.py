@@ -150,7 +150,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 'date': artwork.date,
                 'material': ', '.join(
-                    [m.name for m in artwork.material.all()],
+                    [m.name_localized for m in artwork.material.all()],
                 ),
                 'dimensions': artwork.dimensions_display,
                 'comments': artwork.comments,
@@ -391,7 +391,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {apply_strikethrough(artwork.title_comment, discriminatory_terms)}\n'
             f'{metadata_persons}'
             f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date}\n'
-            f'{artwork._meta.get_field("material").verbose_name.title()}: {", ".join([m.name for m in artwork.material.all()])}\n'
+            f'{artwork._meta.get_field("material").verbose_name.title()}: {", ".join([m.name_localized for m in artwork.material.all()])}\n'
             f'{artwork._meta.get_field("dimensions_display").verbose_name.title()}: {artwork.dimensions_display}\n'
             f'{artwork._meta.get_field("comments").verbose_name.title()}: {apply_strikethrough(artwork.comments, discriminatory_terms)}\n'
             f'{artwork._meta.get_field("credits").verbose_name.title()}: {apply_strikethrough(artwork.credits, discriminatory_terms)}\n'
