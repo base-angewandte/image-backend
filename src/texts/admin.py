@@ -13,7 +13,7 @@ class TextAdmin(admin.ModelAdmin):
     search_fields = ('title', 'de', 'en')
     readonly_fields = ('date_created', 'date_changed')
 
-    def has_add_permission(self, request, obj=None):
+    def has_add_permission(self, request):
         return False
 
     def has_delete_permission(self, request, obj=None):
