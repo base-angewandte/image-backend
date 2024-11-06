@@ -12,7 +12,7 @@ def create_fullsize_images(apps, schema_editor):
         if hasattr(artwork, 'create_image_fullsize') and callable(artwork.create_image_fullsize) and artwork.image_original:
             artwork.create_image_fullsize()
         else:
-            logger.warning('Artwork model does\'n have a create_image_fullsize method [artworks migration 0091]')
+            logger.warning('Artwork model does not have a create_image_fullsize method')
             break
 
 class Migration(migrations.Migration):
