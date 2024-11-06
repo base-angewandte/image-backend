@@ -757,7 +757,6 @@ class Artwork(AbstractBaseModel):
         with Image.open(self.image_original) as img:
             img_converted = img.convert('RGB')
             img_converted.save(img_io, format='JPEG')
-            img_io.seek(0)
         original_name = Path(self.image_original.name).stem
         fullsize_filename = f'{original_name}_fullsize.jpg'
         # Save the image to the image_fullsize field
