@@ -32,6 +32,7 @@ from api.views import (
     get_person_list,
 )
 from artworks.models import Album, Artwork, PermissionsRelation
+from texts.models import Text
 
 from . import get_localised_label
 
@@ -157,7 +158,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'credits': artwork.credits,
                 'credits_link': artwork.credits_link,
                 'link': artwork.link,
-                'license': settings.COPYRIGHT_TEXT.get(get_language(), ''),
+                'license': getattr(Text.objects.get(pk=2), get_language(), ''),
                 'place_of_production': artwork.get_place_of_production_list()
                 if artwork.place_of_production.exists()
                 else [],
