@@ -103,7 +103,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         return format_html('<br>'.join([escape(a.name) for a in obj.artists.all()]))
 
     def thumbnail_image(self, obj):
-        if obj.image_original:
+        if obj.image_fullsize:
             return format_html(
                 '<img src="{url}" />'.format(
                     url=obj.image_fullsize.thumbnail['180x180'],
