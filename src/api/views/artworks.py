@@ -33,8 +33,6 @@ from api.views import (
 )
 from artworks.models import Album, Artwork, PermissionsRelation
 
-from . import get_localized_label
-
 logger = logging.getLogger(__name__)
 
 
@@ -109,7 +107,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                         if artwork.image_original
                         else None,
                         'credits': artwork.credits,
-                        'title': get_localized_label(artwork),
+                        'title': artwork.title,
                         'date': artwork.date,
                         'artists': get_person_list(artwork.artists.all()),
                         'photographers': get_person_list(artwork.photographers.all()),
@@ -152,7 +150,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 'date': artwork.date,
                 'material': ', '.join(
-                    [get_localized_label(m) for m in artwork.material.all()],
+                    [m.name for m in artwork.material.all()],
                 ),
                 'dimensions': artwork.dimensions_display,
                 'comments': artwork.comments,
@@ -165,7 +163,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 else [],
                 'location': {
                     'id': artwork.location.id,
-                    'value': get_localized_label(artwork.location),
+                    'value': artwork.location.name_localized,
                 }
                 if artwork.location
                 else {},
@@ -176,7 +174,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'keywords': [
                     {
                         'id': keyword.id,
-                        'value': get_localized_label(keyword),
+                        'value': keyword.name_localized,
                     }
                     for keyword in artwork.keywords.all()
                 ],
@@ -393,15 +391,15 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {apply_strikethrough(artwork.title_comment, discriminatory_terms)}\n'
             f'{metadata_persons}'
             f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date}\n'
-            f'{artwork._meta.get_field("material").verbose_name.title()}: {", ".join([get_localized_label(m) for m in artwork.material.all()])}\n'
+            f'{artwork._meta.get_field("material").verbose_name.title()}: {", ".join([m.name for m in artwork.material.all()])}\n'
             f'{artwork._meta.get_field("dimensions_display").verbose_name.title()}: {artwork.dimensions_display}\n'
             f'{artwork._meta.get_field("comments").verbose_name.title()}: {apply_strikethrough(artwork.comments, discriminatory_terms)}\n'
             f'{artwork._meta.get_field("credits").verbose_name.title()}: {apply_strikethrough(artwork.credits, discriminatory_terms)}\n'
             f'{artwork._meta.get_field("credits_link").verbose_name.title()}: {artwork.credits_link}\n'
             f'{artwork._meta.get_field("link").verbose_name.title()}: {artwork.link}\n'
-            f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([get_localized_label(i) for i in artwork.keywords.all()])}\n'
-            f'{artwork._meta.get_field("location").verbose_name.title()}: {get_localized_label(artwork.location) if artwork.location else ""}\n'
-            f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {", ".join([get_localized_label(p) for p in artwork.place_of_production.all()])}\n'
+            f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([i.name_localized for i in artwork.keywords.all()])}\n'
+            f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location.name_localized if artwork.location else ""}\n'
+            f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {", ".join([p.name_localized for p in artwork.place_of_production.all()])}\n'
         )
 
         output_zip = BytesIO()

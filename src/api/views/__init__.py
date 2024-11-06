@@ -1,8 +1,7 @@
 from rest_framework.exceptions import ParseError
 from rest_framework.request import Request
 
-from django.conf import settings
-from django.utils.translation import get_language, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from artworks.models import Album, Artwork, PermissionsRelation
 
@@ -63,7 +62,7 @@ def slides_with_details(album, request):
             )
             if artwork.image_original
             else None,
-            'title': get_localized_label(artwork),
+            'title': artwork.title,
             'discriminatory_terms': artwork.get_discriminatory_terms_list(),
             'credits': artwork.credits,
             'date': artwork.date,
@@ -120,7 +119,7 @@ def featured_artworks(album, request, num_artworks=4):
                     )
                     if artwork.image_original
                     else None,
-                    'title': get_localized_label(artwork),
+                    'title': artwork.title,
                     'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 },
             )
@@ -216,18 +215,3 @@ def get_person_list(queryset):
 
 def get_person_list_for_download(queryset, label):
     return f'{label}: {", ".join([i.name for i in queryset])} \n'
-
-
-def get_localized_label(instance):
-    current_language = get_language() or settings.LANGUAGE_CODE
-    if isinstance(instance, Artwork):
-        return (
-            instance.title_english
-            if current_language == 'en' and instance.title_english
-            else instance.title
-        )
-    return (
-        instance.name_en
-        if current_language == 'en' and instance.name_en
-        else instance.name
-    )

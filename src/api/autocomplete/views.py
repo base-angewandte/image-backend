@@ -15,7 +15,6 @@ from django.db.models import Q, Value
 from django.db.models.functions import Concat
 from django.utils.translation import gettext_lazy as _
 
-from api.views import get_localized_label
 from artworks.models import (
     Album,
     Artwork,
@@ -198,7 +197,7 @@ def autocomplete(request, *args, **kwargs):
                 d['data'].append(
                     {
                         'id': artwork.id,
-                        'label': get_localized_label(artwork),
+                        'label': artwork.title,
                         'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                     },
                 )
@@ -223,7 +222,7 @@ def autocomplete(request, *args, **kwargs):
                 d['data'].append(
                     {
                         'id': item.id,
-                        'label': get_localized_label(item),
+                        'label': item.name_localized,
                     },
                 )
         ret.append(d)
