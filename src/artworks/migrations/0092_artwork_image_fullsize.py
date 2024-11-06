@@ -18,7 +18,7 @@ def create_fullsize_images(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('artworks', '0090_artwork_search_keywords_artwork_search_locations_and_more'),
+        ('artworks', '0091_remove_artwork_material_old_and_more'),
     ]
 
     operations = [
