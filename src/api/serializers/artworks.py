@@ -36,7 +36,7 @@ class ArtworksImageRequestSerializer(serializers.Serializer):
 
 
 class SlideItemSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
+    id = serializers.CharField()
 
 
 class SlideSerializer(serializers.Serializer):
