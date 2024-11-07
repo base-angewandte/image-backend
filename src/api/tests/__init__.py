@@ -1,6 +1,8 @@
+import json
 from io import BytesIO
 
 from PIL import Image
+from rest_framework import status
 from rest_framework.test import APITestCase as RestFrameworkAPITestCase
 
 from django.contrib.auth import get_user_model
@@ -249,3 +251,94 @@ class APITestCase(RestFrameworkAPITestCase):
 
         # No test folders, as currently only a root folder is implemented,
         # which should be created on demand.
+
+    def limit_test(self, url, limit, max_items):
+        # Check basic limit setting
+        response = self.client.get(f'{url}?limit={limit}', format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        if isinstance(content, dict):
+            self.assertEqual(len(content['results']), min(limit, max_items))
+        else:
+            self.assertEqual(len(content), min(limit, max_items))
+
+        # Check setting a negative limit
+        response = self.client.get(f'{url}?limit=-1', format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['detail'], 'limit must be a positive integer')
+
+        # Check setting 0 as limit
+        response = self.client.get(f'{url}?limit=0', format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['detail'], 'limit must be a positive integer')
+
+    def offset_test(self, url, combinations, max_items):
+        # Test different limit and offset combinations
+        for val in combinations:
+            response = self.client.get(
+                f'{url}?limit={val["limit"]}&offset={val["offset"]}',
+                format='json',
+            )
+            content = json.loads(response.content)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+            num = max(min(max_items - val['offset'], val['limit']), 0)
+            if isinstance(content, dict):
+                self.assertEqual(len(content['results']), num)
+            else:
+                self.assertEqual(len(content), num)
+
+        # Check setting a negative offset
+        response = self.client.get(f'{url}?offset=-1', format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['detail'], 'negative offset is not allowed')
+
+        # Check setting a 0 offset
+        response = self.client.get(f'{url}?offset=0', format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        if isinstance(content, dict):
+            self.assertEqual(content['total'], max_items)
+            self.assertEqual(len(content['results']), max_items)
+        else:
+            self.assertEqual(len(content), max_items)
+
+        # Check setting no limit but setting offset
+        offset = 5
+        response = self.client.get(f'{url}?offset={offset}', format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        if isinstance(content, dict):
+            self.assertEqual(content['total'], max_items)
+            self.assertEqual(len(content['results']), max(0, max_items - offset))
+        else:
+            self.assertEqual(len(content), max(0, max_items - offset))
+
+        # Check setting offset more than the maximum available items
+        response = self.client.get(f'{url}?offset={max_items + 1}', format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        if isinstance(content, dict):
+            self.assertEqual(len(content['results']), 0)
+        else:
+            self.assertEqual(len(content), 0)
+
+        # Check setting offset but with a small limit
+        response = self.client.get(f'{url}?limit=1&offset=2', format='json')
+        content = json.loads(response.content)
+
+        if isinstance(content, dict):
+            self.assertEqual(len(content['results']), 1)
+        else:
+            self.assertEqual(len(content), 1)
