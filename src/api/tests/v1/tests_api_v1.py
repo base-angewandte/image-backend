@@ -19,11 +19,10 @@ from artworks.models import (
     Person,
 )
 
-from . import APITestCase, temporary_image
+from .. import APITestCase, temporary_image
+from . import VERSION
 
 User = get_user_model()
-
-VERSION = 'v1'
 
 
 class ArtworkTests(APITestCase):
