@@ -52,7 +52,7 @@ class Command(BaseCommand):
                         Path(artwork.image_original.storage.location),
                     ),
                 )
-                artwork.save()
+                artwork.save(update_fields=['image_original'])
 
         if image_not_found:
             self.stdout.write(

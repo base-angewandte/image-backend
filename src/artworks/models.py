@@ -776,7 +776,9 @@ class Artwork(AbstractBaseModel):
         original_name = Path(self.image_original.name).stem
         fullsize_filename = f'{original_name}_fullsize.jpg'
         # Save the image to the image_fullsize field
-        self.image_fullsize.save(fullsize_filename, File(img_io), save=save)
+        self.image_fullsize.save(fullsize_filename, File(img_io), save=False)
+        if save:
+            self.save(update_fields=['image_fullsize'])
 
 
 class Album(AbstractBaseModel):

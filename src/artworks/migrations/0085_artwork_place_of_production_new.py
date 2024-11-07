@@ -11,7 +11,6 @@ def change_place_of_production_to_many(apps, schema_editor):
         if artwork.place_of_production:
             # Migrate data from FK to M2M
             artwork.place_of_production_new.add(artwork.place_of_production)
-            artwork.save()  # Ensure the changes are saved
 
 def change_place_of_production_to_one(apps, schema_editor):
     """Migrate data from ManyToManyField place_of_production_new to ForeignKey place_of_production."""
@@ -21,7 +20,7 @@ def change_place_of_production_to_one(apps, schema_editor):
             # as there is no defined requirement, which location to take when
             # migrating back, we just take the first one the manager gives us
             artwork.place_of_production = artwork.place_of_production_new.all()[0]
-            artwork.save()
+            artwork.save(update_fields=['place_of_production'])
 
 class Migration(migrations.Migration):
     dependencies = [
