@@ -1,6 +1,8 @@
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
 
+from accounts.models import User
+
 
 class UserSerializer(serializers.Serializer):
     id = serializers.CharField(help_text='The user id in the auth backend')
@@ -12,8 +14,8 @@ class UserSerializer(serializers.Serializer):
         OpenApiExample(
             name='example user preferences',
             value={
-                'display_images': 'crop',
-                'display_folders': 'list',
+                'display_images': User.DISPLAY_IMAGES_MODES[0],
+                'display_folders': User.DISPLAY_FOLDERS_MODES[0],
             },
         ),
     ],
@@ -23,16 +25,20 @@ class UserPreferencesSerializer(serializers.Serializer):
     display_folders = serializers.CharField()
 
     def validate_display_images(self, value):
-        valid = ['crop', 'resize']
-        if value in valid:
+        if value in User.DISPLAY_IMAGES_MODES:
             return value
-        raise serializers.ValidationError(f'display_images must be one of {valid}')
+        display_modes = ', '.join([f"'{m}'" for m in User.DISPLAY_IMAGES_MODES])
+        raise serializers.ValidationError(
+            f'display_images must be one of {display_modes}',
+        )
 
     def validate_display_folders(self, value):
-        valid = ['list', 'grid']
-        if value in valid:
+        if value in User.DISPLAY_FOLDERS_MODES:
             return value
-        raise serializers.ValidationError(f'display_folders must be one of {valid}')
+        display_modes = ', '.join([f"'{m}'" for m in User.DISPLAY_FOLDERS_MODES])
+        raise serializers.ValidationError(
+            f'display_folders must be one of {display_modes}',
+        )
 
 
 class UserPreferencesPatchSerializer(UserPreferencesSerializer):
@@ -53,8 +59,8 @@ class UserPreferencesPatchSerializer(UserPreferencesSerializer):
                 'permissions': ['view_foo', 'view_bar', 'edit_bar'],
                 'tos_accepted': False,
                 'preferences': {
-                    'display_images': 'crop',
-                    'display_folders': 'list',
+                    'display_images': User.DISPLAY_IMAGES_MODES[0],
+                    'display_folders': User.DISPLAY_FOLDERS_MODES[0],
                 },
             },
         ),
