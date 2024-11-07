@@ -1,6 +1,7 @@
 from rest_framework.exceptions import ParseError
 from rest_framework.request import Request
 
+from django.db.models import F
 from django.utils.translation import gettext_lazy as _
 
 from artworks.models import Album, Artwork, PermissionsRelation
@@ -220,4 +221,4 @@ def album_object(
 
 
 def get_person_list(queryset):
-    return [{'id': person.id, 'value': person.name} for person in queryset]
+    return queryset.annotate(value=F('name')).values('id', 'value')
