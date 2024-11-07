@@ -221,7 +221,3 @@ def album_object(
 
 def get_person_list(queryset):
     return [{'id': person.id, 'value': person.name} for person in queryset]
-
-
-def get_person_list_for_download(queryset, label):
-    return f'{label}: {", ".join([i.name for i in queryset])} \n'
