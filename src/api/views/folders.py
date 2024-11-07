@@ -1,6 +1,5 @@
 from base_common_drf.openapi.responses import ERROR_RESPONSES
 from drf_spectacular.utils import (
-    OpenApiExample,
     OpenApiParameter,
     OpenApiResponse,
     OpenApiTypes,
@@ -193,57 +192,9 @@ class FoldersViewSet(viewsets.GenericViewSet):
                 'content': {
                     # Content shows all the albums belonging to the (root) folder per user.
                     # As at the moment we only have root folders, folders within folders
-                    # will later be implemented to be shown in content (todo)
+                    # will later be implemented to be shown in content
                     'total': folder.albums.all().count(),  # currently: number of albums belonging to root folder
                     'data': albums_data,
                 },
             },
         )
-
-    @extend_schema(
-        methods=['POST'],
-        parameters=[
-            OpenApiParameter(
-                name='create_folder',
-                type=OpenApiTypes.OBJECT,
-                required=False,
-                description='',
-                examples=[
-                    OpenApiExample(
-                        name='create_folder',
-                        value=[
-                            {
-                                'title': 'Some title',
-                                'ID': 1111,
-                                'shared_info': 'Some shared info',
-                                '# of works': 89,
-                                'thumbnail': 'https://www.thumbnail.com',
-                            },
-                        ],
-                    ),
-                ],
-            ),
-        ],
-        responses={
-            200: OpenApiResponse(description='OK'),
-            403: ERROR_RESPONSES[403],
-            404: ERROR_RESPONSES[404],
-        },
-    )
-    def create_folder(self, request, *args, **kwargs):
-        """Create Folder /albums/{id}"""
-        # Note: this is a placeholder
-        # todo
-        # Create folder with given data
-        # validate object
-        # check for user.username compatibility
-
-        dummy_data = {
-            'title': request.data.get('title'),
-            'ID': 1111,
-            'shared_info': 'Some shared info',
-            '# of works': 89,
-            'thumbnail': 'https://www.thumbnail.com',
-        }
-        # Todo: update response
-        return Response(dummy_data)
