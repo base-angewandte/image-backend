@@ -8,7 +8,7 @@ prefix_new = 'artworks/image_original'
 
 
 def move_images(apps, schema_editor):
-    from artworks.models import Artwork
+    Artwork = apps.get_model('artworks', 'artwork')
     for artwork in Artwork.objects.all():
         image = artwork.image_original
         if image and Path(image.path).exists():
@@ -25,7 +25,7 @@ def move_images(apps, schema_editor):
 
 
 def move_images_reverse(apps, schema_editor):
-    from artworks.models import Artwork
+    Artwork = apps.get_model('artworks', 'artwork')
     for artwork in Artwork.objects.all():
         image = artwork.image_original
         if image and Path(image.path).exists():
