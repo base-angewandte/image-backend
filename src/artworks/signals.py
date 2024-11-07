@@ -70,9 +70,10 @@ def update_images(sender, instance, *args, **kwargs):
         # cleanup
         if image_original_deleted or image_original_changed:
             old_instance.image_original.delete_all_created_images()
-            if old_instance.image_fullsize:
-                old_instance.image_fullsize.delete_all_created_images()
-                instance.image_fullsize.delete(save=False)
+
+        if image_original_deleted and old_instance.image_fullsize:
+            old_instance.image_fullsize.delete_all_created_images()
+            instance.image_fullsize.delete(save=False)
 
         # create or update image_fullsize
         if image_original_created or image_original_changed:

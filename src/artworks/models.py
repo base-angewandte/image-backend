@@ -772,6 +772,11 @@ class Artwork(AbstractBaseModel):
         )
 
     def create_image_fullsize(self, save=True):
+        # cleanup before creation
+        if self.image_fullsize:
+            self.image_fullsize.delete_all_created_images()
+            self.image_fullsize.delete(save=False)
+
         img_io = BytesIO()
         with Image.open(self.image_original) as img:
             # check if image contains transparency:
