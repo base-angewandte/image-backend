@@ -65,7 +65,6 @@ LABELS_MAP = {
         ),
     ],
     request=AutocompleteRequestSerializer,
-    # responses=AutocompleteResponseSerializer,
     responses={
         status.HTTP_200_OK: OpenApiResponse(
             description='A JSON array containing the autocomplete results',
