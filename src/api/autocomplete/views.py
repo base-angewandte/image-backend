@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.search import TrigramWordSimilarity
-from django.db.models import Q, Value
+from django.db.models import F, Q, Value
 from django.db.models.functions import Concat
 from django.utils.translation import gettext_lazy as _
 
@@ -171,16 +171,11 @@ def autocomplete(request, *args, **kwargs):
             query = (
                 MODEL_MAP[t]
                 .objects.filter(q_filters)
-                .filter(title__icontains=q_param)[:limit]
+                .filter(title__icontains=q_param)
+                .annotate(label=F('title'))[:limit]
             )
 
-            for album in query:
-                d['data'].append(
-                    {
-                        'id': album.id,
-                        'label': album.title,
-                    },
-                )
+            d['data'] = query.values('id', 'label')
 
         elif t == 'titles':
             q_filters = Q(title__icontains=q_param) | Q(
