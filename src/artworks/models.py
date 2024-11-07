@@ -745,6 +745,9 @@ class Artwork(AbstractBaseModel):
             if material.name_en:
                 materials.append(material.name_en)
 
+        if self.material_description:
+            materials.append(self.material_description)
+
         search_vector = (
             SearchVector('title', weight='A')
             + SearchVector('title_english', weight='A')
