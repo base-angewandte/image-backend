@@ -198,14 +198,10 @@ def autocomplete(request, *args, **kwargs):
 
         elif t == 'artists':
             q_filters = Q(name__icontains=q_param)
-            query = MODEL_MAP[t].objects.filter(q_filters)[:limit]
-            for item in query:
-                d['data'].append(
-                    {
-                        'id': item.id,
-                        'label': item.name,
-                    },
-                )
+            query = (
+                MODEL_MAP[t].objects.filter(q_filters).annotate(label=F('name'))[:limit]
+            )
+            d['data'] = query.values('id', 'label')
 
         else:
             # In the else clause only locations and keywords are queried.
