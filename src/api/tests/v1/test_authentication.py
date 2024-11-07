@@ -1,15 +1,14 @@
 from rest_framework import status
-from rest_framework.test import APITestCase as RestFrameworkAPITestCase
+from rest_framework.test import APITestCase
 
 from django.urls import reverse
 
-VERSION = 'v1'
+from . import VERSION
 
 
-class AuthenticationTestCase(RestFrameworkAPITestCase):
+class AuthenticationTestCase(APITestCase):
     def test_unauthorized_requests(self):
-        """Helper to check that all methods return 401 when user is logged
-        out."""
+        # check that all urls return 401 for unauthenticated users
         urls = [
             reverse('artwork-list', kwargs={'version': VERSION}),
             reverse('artwork-detail', kwargs={'pk': 1, 'version': VERSION}),
@@ -47,9 +46,5 @@ class AuthenticationTestCase(RestFrameworkAPITestCase):
         ]
         for url in urls:
             for method in ['get', 'post', 'put', 'patch', 'delete']:
-                client_method = getattr(self.client, method.lower(), None)
-                if method in ['get', 'delete']:
-                    response = client_method(url, format='json')
-                elif method in ['post', 'patch', 'put']:
-                    response = client_method(url, {}, format='json')
+                response = getattr(self.client, method)(url, format='json')
                 self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
