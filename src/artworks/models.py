@@ -17,7 +17,7 @@ from django.core.files import File
 from django.db import models
 from django.db.models import JSONField
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
-from django.db.models.functions import Upper
+from django.db.models.functions import Length, Upper
 from django.utils.translation import get_language, gettext_lazy as _
 
 from .fetch import fetch_getty_data, fetch_gnd_data, fetch_wikidata
@@ -688,8 +688,13 @@ class Artwork(AbstractBaseModel):
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
 
-    def get_discriminatory_terms_list(self):
-        return [term.term for term in self.discriminatory_terms.all()]
+    def get_discriminatory_terms_list(self, order_by_length=False):
+        qs = self.discriminatory_terms.all()
+
+        if order_by_length:
+            qs = qs.order_by(Length('term').desc())
+
+        return qs.values_list('term', flat=True)
 
     def get_place_of_production_list(self):
         return [
