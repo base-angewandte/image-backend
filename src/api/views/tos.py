@@ -27,9 +27,11 @@ class TosViewSet(viewsets.GenericViewSet):
 
         This endpoint sets the user's 'tos_accepted' field to 'true'.
         """
+
         user = request.user
         user.tos_accepted = True
         user.save()
+
         return Response({'tos_accepted': user.tos_accepted}, status=status.HTTP_200_OK)
 
     @extend_schema(
@@ -42,7 +44,9 @@ class TosViewSet(viewsets.GenericViewSet):
     def list(self, request, *args, **kwargs):
         """Retrieve the terms of service and status of acceptance for the
         current user."""
+
         current_language = get_language() or settings.LANGUAGE_CODE
+
         return Response(
             {
                 'tos_accepted': request.user.tos_accepted,
