@@ -248,6 +248,11 @@ class AlbumsTests(APITestCase):
             image_original=temporary_image(),
             published=True,
         )
+        artwork2 = Artwork.objects.create(
+            title='Test Artwork',
+            image_original=temporary_image(),
+            published=False,
+        )
         url_post = reverse(
             'album-append-artwork',
             kwargs={'pk': album.pk, 'version': VERSION},
@@ -272,6 +277,12 @@ class AlbumsTests(APITestCase):
         data = {'id': 98765}
         response = self.client.post(url_post, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # try appending unpublished artwork
+        data = {'id': artwork2.pk}
+        response = self.client.post(url_post, data, format='json')
+        content = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['detail'], 'Artwork does not exist')
 
     def test_albums_slides(self):
         """Test the retrieval of album slides."""
@@ -315,6 +326,11 @@ class AlbumsTests(APITestCase):
             image_original=temporary_image(),
             published=True,
         )
+        artwork4 = Artwork.objects.create(
+            title='Test Artwork 4',
+            image_original=temporary_image(),
+            published=False,
+        )
         url = reverse('album-slides', kwargs={'pk': album.pk, 'version': VERSION})
         data = [
             {'items': [{'id': artwork1.pk}, {'id': artwork2.pk}]},
@@ -333,6 +349,14 @@ class AlbumsTests(APITestCase):
         data.append({'items': [{'id': 98765}]})
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # test creating slide with unpublished artwork:
+        data = [
+            {'items': [{'id': artwork4.pk}]},
+        ]
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['detail'], 'Artwork does not exist')
 
     def test_albums_permissions(self):
         """Test the retrieval of album permissions."""
@@ -858,6 +882,11 @@ class AutocompleteTests(APITestCase):
         self.assertEqual(content['label'], 'Art Brut')
 
     def test_title(self):
+        Artwork.objects.create(
+            title='Test Artwork 1',
+            image_original=temporary_image(),
+            published=False,
+        )
         url = reverse('autocomplete', kwargs={'version': VERSION})
         # Check if the 'title' is returned when 'accept-language' header is 'de'
         response = self.client.get(
@@ -879,3 +908,11 @@ class AutocompleteTests(APITestCase):
         content = json.loads(response.content)[0]
         self.assertEqual(len(content), 3)
         self.assertEqual(content['label'], 'loc test aut')
+        # test if unpublished artworks are returned
+        response = self.client.get(
+            f'{url}?q=Test Artwork 1&type=titles',
+            format='json',
+        )
+        content = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(content), 0)
