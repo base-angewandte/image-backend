@@ -154,6 +154,7 @@ def filter_date(filter_values):
         ]
 
 
+# maps filter_id to corresponding filter_* function defined above
 FILTERS_MAP = {}
 for filter_id in FILTERS_KEYS:
     FILTERS_MAP[filter_id] = globals()[f'filter_{filter_id}']
@@ -205,6 +206,8 @@ for filter_id in FILTERS_KEYS:
 )
 @api_view(['post'])
 def search(request, *args, **kwargs):
+    """Search for Artworks."""
+
     serializer = SearchRequestSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
@@ -308,4 +311,6 @@ def search(request, *args, **kwargs):
 )
 @api_view(['get'])
 def search_filters(request, *args, **kwargs):
+    """Get available search filters."""
+
     return Response(FILTERS)
