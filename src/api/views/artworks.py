@@ -373,10 +373,11 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         def apply_strikethrough(text):
             for term in discriminatory_terms:
-                strikethrough_term = term[0] + ''.join(
-                    [char + '\u0336' for char in term[1:]],
-                )
-                text = text.replace(term, strikethrough_term)
+                if term in text:
+                    strikethrough_term = term[0] + ''.join(
+                        [char + '\u0336' for char in term[1:]],
+                    )
+                    text = text.replace(term, strikethrough_term)
             return text
 
         # create metadata file content
