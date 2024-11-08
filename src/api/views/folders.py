@@ -126,14 +126,12 @@ class FoldersViewSet(viewsets.GenericViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, request, *args, pk=None, **kwargs):
         """Retrieve information for a specific Folder.
 
         If id == 'root' it returns the content of the root folder for
         the current user.
         """
-
-        folder_id = kwargs['pk']
 
         serializer = FoldersRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -146,13 +144,13 @@ class FoldersViewSet(viewsets.GenericViewSet):
         )
 
         # Retrieve folder by id
-        if folder_id == 'root':
+        if pk == 'root':
             folder = Folder.root_folder_for_user(request.user)
         else:
             # As we now only have root folder, this is not immediately useful
             # But I am leaving it here in case someone was searching something other than root
             try:
-                folder = Folder.objects.get(owner=request.user, id=folder_id)
+                folder = Folder.objects.get(owner=request.user, id=pk)
             except Folder.DoesNotExist as dne:
                 raise NotFound(_('Folder does not exist')) from dne
 
