@@ -835,7 +835,6 @@ class Album(AbstractBaseModel):
         return sum([len(slide['items']) for slide in self.slides])
 
     class Meta:
-        permissions = (('can_download_pptx', 'Can download as PowerPoint file'),)
         verbose_name = _('Album')
         verbose_name_plural = _('Albums')
 
