@@ -39,7 +39,6 @@ urlpatterns = [
     path('api/', include('api.urls')),
     # django admin
     path(f'{settings.DJANGO_ADMIN_PATH}/', include('massadmin.urls')),
-    path(f'{settings.DJANGO_ADMIN_PATH}/', include('artworks.admin.urls')),
     path(f'{settings.DJANGO_ADMIN_PATH}/', admin.site.urls),
     # django cas ng
     path(

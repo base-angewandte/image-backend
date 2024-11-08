@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.contrib.admin.widgets import get_select2_language
 from django.db import models
 from django.forms import Media, Textarea, TextInput
+from django.urls import path
 from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
 
@@ -12,6 +13,7 @@ from ..models import Artwork, DiscriminatoryTerm, Keyword, Location, Material, P
 from .filters import ArtistFilter
 from .forms import ArtworkAdminForm
 from .utils import external_metadata_html
+from .views import MultiArtworkCreationFormView
 
 
 @admin.register(Artwork)
@@ -73,6 +75,16 @@ class ArtworkAdmin(admin.ModelAdmin):
         'date_changed',
     )
     change_list_template = 'admin/artworks/change_list.html'
+
+    def get_urls(self):
+        return [
+            path(
+                'multi-artwork-creation/',
+                self.admin_site.admin_view(MultiArtworkCreationFormView.as_view()),
+                name='multi-artwork-creation',
+            ),
+            *super().get_urls(),
+        ]
 
     @property
     def media(self):

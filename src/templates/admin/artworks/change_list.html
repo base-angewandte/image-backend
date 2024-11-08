@@ -3,7 +3,7 @@
 {% block object-tools-items %}
 {% if perms.artworks.add_artwork %}
 <li>
-  <a href="{% url 'multi-artwork-creation' %}">{% trans 'Upload multiple images' %}</a>
+  <a href="{% url 'admin:multi-artwork-creation' %}">{% trans 'Upload multiple images' %}</a>
 </li>
 {% endif %}
 {{ block.super }}
