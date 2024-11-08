@@ -122,7 +122,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve(self, request, pk=None, *args, **kwargs):
+    def retrieve(self, request, *args, pk=None, **kwargs):
         """Retrieve information for a specific Artwork."""
 
         try:
@@ -216,7 +216,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         methods=['get'],
         url_path='image/(?P<method>[a-z]+)/(?P<width>[0-9]+)x(?P<height>[0-9]+)',
     )
-    def image(self, request, pk=None, *args, **kwargs):
+    def image(self, request, *args, pk=None, **kwargs):
         """Get a cropped or resized thumbnail for an Artwork image."""
 
         serializer = ArtworksImageRequestSerializer(data=kwargs)
@@ -248,7 +248,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=False, methods=['get'])
-    def labels(self, request, pk=None, *args, **kwargs):
+    def labels(self, request, *args, **kwargs):
         """Get all labels for displaying Artwork metadata."""
 
         ret = {}
@@ -306,7 +306,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=True, methods=['get'], url_path='albums')
-    def retrieve_albums(self, request, pk=None, *args, **kwargs):
+    def retrieve_albums(self, request, *args, pk=None, **kwargs):
         """Get all Albums the current user has added this Artwork to."""
 
         serializer = ArtworksAlbumsRequestSerializer(data=request.query_params)
@@ -359,7 +359,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=True, methods=['get'])
-    def download(self, request, pk=None, *args, **kwargs):
+    def download(self, request, *args, pk=None, **kwargs):
         """Download Artwork image and metadata as a zip file."""
 
         try:

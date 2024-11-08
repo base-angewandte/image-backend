@@ -182,7 +182,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve(self, request, pk=None, *args, **kwargs):
+    def retrieve(self, request, *args, pk=None, **kwargs):
         """Retrieve information for a specific Album."""
 
         serializer = AlbumsRequestSerializer(data=request.query_params)
@@ -210,7 +210,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    def update(self, request, pk=None, *args, **kwargs):
+    def update(self, request, *args, pk=None, **kwargs):
         """Update Album."""
 
         serializer = UpdateAlbumRequestSerializer(data=request.data)
@@ -248,7 +248,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    def destroy(self, request, pk=None, *args, **kwargs):
+    def destroy(self, request, *args, pk=None, **kwargs):
         """Delete Album."""
 
         try:
@@ -279,7 +279,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=True, methods=['post'], url_path='append-artwork')
-    def append_artwork(self, request, pk=None, *args, **kwargs):
+    def append_artwork(self, request, *args, pk=None, **kwargs):
         """Append Artwork to Album slides as a singular slide."""
 
         serializer = AppendArtworkRequestSerializer(data=request.data)
@@ -339,7 +339,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=True, methods=['get'])
-    def slides(self, request, pk=None, *args, **kwargs):
+    def slides(self, request, *args, pk=None, **kwargs):
         """Returns slides of a specific Album."""
 
         serializer = SlidesRequestSerializer(data=request.query_params)
@@ -381,7 +381,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     @slides.mapping.post
-    def create_slides(self, request, pk=None, *args, **kwargs):
+    def create_slides(self, request, *args, pk=None, **kwargs):
         """Update slides for an Album."""
 
         serializer = CreateSlidesRequestSerializer(data=request.data)
@@ -450,7 +450,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=True, methods=['get'])
-    def permissions(self, request, pk=None, *args, **kwargs):
+    def permissions(self, request, *args, pk=None, **kwargs):
         """Get list of users and their permissions."""
 
         sorting = check_sorting(
@@ -501,7 +501,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     @permissions.mapping.post
-    def create_permissions(self, request, pk=None, *args, **kwargs):
+    def create_permissions(self, request, *args, pk=None, **kwargs):
         """Update permissions."""
         serializer = PermissionsRequestSerializer(data=request.data, many=True)
         serializer.is_valid(raise_exception=True)
@@ -582,7 +582,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     @permissions.mapping.delete
-    def destroy_permissions(self, request, pk=None, *args, **kwargs):
+    def destroy_permissions(self, request, *args, pk=None, **kwargs):
         """Delete Permissions / "Unshare" Album.
 
         If the user is the owner of the album, all sharing permissions
@@ -649,7 +649,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=True, methods=['get'])
-    def download(self, request, pk=None, *args, **kwargs):
+    def download(self, request, *args, pk=None, **kwargs):
         """Download Album as pptx or pdf."""
 
         serializer = AlbumsDownloadRequestSerializer(data=request.query_params)
