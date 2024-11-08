@@ -12,7 +12,6 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from django.conf import settings
-from django.db.models.functions import Length
 from django.http import HttpResponse
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
@@ -51,8 +50,8 @@ def album_download_as_pptx(album_id, language='en', return_raw=False):
         text_frame = shape.text_frame
         text_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
         text_frame.word_wrap = True
-        discriminatory_terms = artwork.discriminatory_terms.order_by(
-            Length('term').desc(),
+        discriminatory_terms = artwork.get_discriminatory_terms_list(
+            order_by_length=True,
         )
         p = text_frame.paragraphs[0]
         # Process the text by finding all occurrences of the terms
@@ -66,9 +65,9 @@ def album_download_as_pptx(album_id, language='en', return_raw=False):
             found_position = len(description)
             # find the lowest position of any matched term
             for term in discriminatory_terms:
-                pos = description.lower().find(term.term.lower(), index)
+                pos = description.lower().find(term.lower(), index)
                 if pos != -1 and pos < found_position:
-                    found_term = term.term
+                    found_term = term
                     found_position = pos
             if not found_term:
                 run = p.add_run()

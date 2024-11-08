@@ -16,7 +16,6 @@ from rest_framework.response import Response
 
 from django.conf import settings
 from django.db.models import Q
-from django.db.models.functions import Length
 from django.http import FileResponse
 from django.shortcuts import redirect
 from django.utils.text import slugify
@@ -368,16 +367,16 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
 
-        discriminatory_terms = artwork.discriminatory_terms.order_by(
-            Length('term').desc(),
+        discriminatory_terms = artwork.get_discriminatory_terms_list(
+            order_by_length=True,
         )
 
-        def apply_strikethrough(text, terms):
-            for term in terms:
-                strikethrough_term = term.term[0] + ''.join(
-                    [char + '\u0336' for char in term.term[1:]],
+        def apply_strikethrough(text):
+            for term in discriminatory_terms:
+                strikethrough_term = term[0] + ''.join(
+                    [char + '\u0336' for char in term[1:]],
                 )
-                text = text.replace(term.term, strikethrough_term)
+                text = text.replace(term, strikethrough_term)
             return text
 
         # create metadata file content
@@ -397,15 +396,15 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         )
 
         metadata_content = (
-            f'{artwork._meta.get_field("title").verbose_name.title()}: {apply_strikethrough(artwork.title, discriminatory_terms)}\n'
-            f'{artwork._meta.get_field("title_english").verbose_name.title()}: {apply_strikethrough(artwork.title_english, discriminatory_terms)}\n'
-            f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {apply_strikethrough(artwork.title_comment, discriminatory_terms)}\n'
+            f'{artwork._meta.get_field("title").verbose_name.title()}: {apply_strikethrough(artwork.title)}\n'
+            f'{artwork._meta.get_field("title_english").verbose_name.title()}: {apply_strikethrough(artwork.title_english)}\n'
+            f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {apply_strikethrough(artwork.title_comment)}\n'
             f'{metadata_persons}'
             f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date}\n'
             f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material_description}\n'
             f'{artwork._meta.get_field("dimensions_display").verbose_name.title()}: {artwork.dimensions_display}\n'
-            f'{artwork._meta.get_field("comments").verbose_name.title()}: {apply_strikethrough(artwork.comments, discriminatory_terms)}\n'
-            f'{artwork._meta.get_field("credits").verbose_name.title()}: {apply_strikethrough(artwork.credits, discriminatory_terms)}\n'
+            f'{artwork._meta.get_field("comments").verbose_name.title()}: {apply_strikethrough(artwork.comments)}\n'
+            f'{artwork._meta.get_field("credits").verbose_name.title()}: {apply_strikethrough(artwork.credits)}\n'
             f'{artwork._meta.get_field("credits_link").verbose_name.title()}: {artwork.credits_link}\n'
             f'{artwork._meta.get_field("link").verbose_name.title()}: {artwork.link}\n'
             f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([i.name_localized for i in artwork.keywords.all()])}\n'
