@@ -21,6 +21,7 @@ class UserViewSet(viewsets.GenericViewSet):
     )
     def list(self, request, *args, **kwargs):
         """Retrieve a user's data and preferences."""
+
         attributes = request.session.get('attributes', {})
         ret = {
             'id': request.user.username,
@@ -32,6 +33,7 @@ class UserViewSet(viewsets.GenericViewSet):
             'tos_accepted': request.user.tos_accepted,
             'preferences': request.user.preferences,
         }
+
         return Response(ret, status=200)
 
     @extend_schema(
