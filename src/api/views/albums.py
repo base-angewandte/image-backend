@@ -1,3 +1,5 @@
+import logging
+
 import requests
 import shortuuid
 from base_common_drf.openapi.responses import ERROR_RESPONSES
@@ -43,7 +45,7 @@ from api.views import (
     slides_with_details,
 )
 from api.views.search import filter_albums_for_user
-from artworks.exports import album_download_as_pptx
+from artworks.exports import ExportError, album_download_as_pptx
 from artworks.models import (
     Album,
     Artwork,
@@ -51,6 +53,8 @@ from artworks.models import (
     FolderAlbumRelation,
     PermissionsRelation,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @extend_schema(tags=['albums'])
@@ -668,17 +672,23 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         download_format = serializer.validated_data['download_format']
         language = serializer.validated_data['language']
 
+        try:
+            pptx = album_download_as_pptx(
+                album.pk,
+                language=language,
+                return_raw=download_format == 'pdf',
+            )
+        except ExportError as ee:
+            error_info = (
+                _('Error during download of Album %(id)s: %(message)s')
+                % {'id': album.pk, 'message': str(ee)},
+            )
+            logger.exception(error_info)
+            return Response(error_info, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         if download_format == 'pptx':
-            return album_download_as_pptx(
-                album.id,
-                language=language,
-            )
+            return pptx
         elif download_format == 'pdf':
-            pptx_file = album_download_as_pptx(
-                album.id,
-                language=language,
-                return_raw=True,
-            )
             filename = f'{slugify(album.title)}.pdf'
             mime_type = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
 
@@ -687,7 +697,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                 settings.GOTENBERG_API_URL,
                 timeout=settings.REQUESTS_TIMEOUT,
                 files={
-                    ('files', (filename, pptx_file, mime_type)),
+                    ('files', (filename, pptx, mime_type)),
                 },
             )
 

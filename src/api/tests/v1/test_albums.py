@@ -258,14 +258,17 @@ class AlbumsTests(APITestCase):
         artwork1 = Artwork.objects.create(
             title='Test Artwork 1',
             image_original=temporary_image(),
+            published=True,
         )
         artwork2 = Artwork.objects.create(
             title='Test Artwork 2',
             image_original=temporary_image(),
+            published=True,
         )
         artwork3 = Artwork.objects.create(
             title='Test Artwork 3',
             image_original=temporary_image(),
+            published=True,
         )
         album = Album.objects.create(
             title='Test Album',
