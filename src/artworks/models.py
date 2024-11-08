@@ -777,10 +777,22 @@ class Artwork(AbstractBaseModel):
         )
 
     def create_image_fullsize(self, save=True):
+        # cleanup before creation
+        if self.image_fullsize:
+            self.image_fullsize.delete_all_created_images()
+            self.image_fullsize.delete(save=False)
+
         img_io = BytesIO()
         with Image.open(self.image_original) as img:
-            img_converted = img.convert('RGB')
-            img_converted.save(img_io, format='JPEG')
+            # check if image contains transparency:
+            if img.mode in ['LA', 'RGBA', 'RGBa']:
+                bg_color = (255, 255, 255)
+                img_new = Image.new('RGB', img.size, bg_color)
+                img_new.paste(img, (0, 0), img)
+            else:
+                img_new = img.convert('RGB')
+            img_new.save(img_io, format='JPEG', subsampling=0, quality=95)
+
         original_name = Path(self.image_original.name).stem
         fullsize_filename = f'{original_name}_fullsize.jpg'
         # Save the image to the image_fullsize field

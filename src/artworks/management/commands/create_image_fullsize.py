@@ -8,5 +8,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for artwork in Artwork.objects.all():
-            if artwork.image_original and not artwork.image_fullsize:
+            if artwork.image_original:
                 artwork.create_image_fullsize()
