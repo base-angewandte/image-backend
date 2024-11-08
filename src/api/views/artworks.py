@@ -39,21 +39,6 @@ logger = logging.getLogger(__name__)
 
 @extend_schema(tags=['artworks'])
 class ArtworksViewSet(viewsets.GenericViewSet):
-    """
-    list:
-    GET all artworks.
-
-    retrieve:
-    GET specific artwork.
-
-    retrieve_albums:
-    GET albums the current user has added this artwork to.
-
-    download:
-    GET Download artwork + metadata
-
-    """
-
     queryset = Artwork.objects.filter(published=True)
 
     @extend_schema(
@@ -79,6 +64,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def list(self, request, *args, **kwargs):
+        """List of Artworks."""
+
         limit = check_limit(request.query_params.get('limit', 100))
         offset = check_offset(request.query_params.get('offset', 0))
 
@@ -137,6 +124,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def retrieve(self, request, pk=None, *args, **kwargs):
+        """Retrieve information for a specific Artwork."""
+
         try:
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
@@ -229,14 +218,19 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         url_path='image/(?P<method>[a-z]+)/(?P<width>[0-9]+)x(?P<height>[0-9]+)',
     )
     def image(self, request, pk=None, *args, **kwargs):
+        """Get a cropped or resized thumbnail for an Artwork image."""
+
         serializer = ArtworksImageRequestSerializer(data=kwargs)
         serializer.is_valid(raise_exception=True)
+
         try:
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
+
         method = serializer.validated_data['method']
         size = f'{serializer.validated_data["width"]}x{serializer.validated_data["height"]}'
+
         match method:
             case 'resize':
                 url = artwork.image_fullsize.thumbnail[size].url
@@ -244,16 +238,20 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 url = artwork.image_fullsize.crop[size].url
             case _:
                 url = artwork.image_fullsize.url
+
         return redirect(request.build_absolute_uri(url))
 
     @extend_schema(
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
         },
     )
     @action(detail=False, methods=['get'])
     def labels(self, request, pk=None, *args, **kwargs):
+        """Get all labels for displaying Artwork metadata."""
+
         ret = {}
 
         exclude = (
@@ -310,6 +308,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     )
     @action(detail=True, methods=['get'], url_path='albums')
     def retrieve_albums(self, request, pk=None, *args, **kwargs):
+        """Get all Albums the current user has added this Artwork to."""
+
         serializer = ArtworksAlbumsRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
@@ -361,6 +361,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
     )
     @action(detail=True, methods=['get'])
     def download(self, request, pk=None, *args, **kwargs):
+        """Download Artwork image and metadata as a zip file."""
+
         try:
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
