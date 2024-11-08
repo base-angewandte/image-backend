@@ -681,6 +681,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             )
             filename = f'{slugify(album.title)}.pdf'
             mime_type = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+
+            # convert pptx to pdf via Gotenberg
             r = requests.post(
                 settings.GOTENBERG_API_URL,
                 timeout=settings.REQUESTS_TIMEOUT,
@@ -688,6 +690,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                     ('files', (filename, pptx_file, mime_type)),
                 },
             )
+
             return HttpResponse(
                 r.content,
                 content_type='application/pdf',
