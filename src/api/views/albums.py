@@ -630,7 +630,6 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                 type=OpenApiTypes.STR,
                 enum=['pptx', 'pdf'],
                 default='pptx',
-                description='At the moment, only "pptx" is available. Later on, "pdf" will also be available',
             ),
             # for this specific endpoint we don't need this parameter from the GLOBAL_PARAMS
             # because the language parameter defines the language of the exported album
@@ -652,7 +651,6 @@ class AlbumsViewSet(viewsets.GenericViewSet):
     @action(detail=True, methods=['get'])
     def download(self, request, pk=None, *args, **kwargs):
         """Download Album as pptx or pdf."""
-        # TODO only 'pptx' is implemented at the moment, need to implement 'pdf' as well
 
         serializer = AlbumsDownloadRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
