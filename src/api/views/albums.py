@@ -55,49 +55,6 @@ from artworks.models import (
 
 @extend_schema(tags=['albums'])
 class AlbumsViewSet(viewsets.GenericViewSet):
-    """
-    list:
-    GET all the users albums.
-
-    create:
-    POST new album with given title.
-
-    retrieve:
-    GET specific album.
-
-    update:
-    PATCH specific album and album's fields
-
-    destroy:
-    DELETE specific album
-
-    append_artwork
-    POST /albums/{id}/append_artwork
-    Append artwork to slides as singular slide [{'id': x}]
-
-    slides:
-    GET /albums/{id}/slides LIST (GET) endpoint
-
-    create_slides:
-    POST /albums/{id}/slides
-    Reorder Slides
-    Separate_slides
-    Reorder artworks within slides
-
-    permissions:
-    GET /albums/{id}/permissions
-
-    create_permissions
-    POST /albums/{id}/permissions
-
-    destroy_permissions
-    DELETE /albums/{id}/permissions
-
-    download:
-    GET Download album as pptx or PDF
-
-    """
-
     queryset = Album.objects.all()
     ordering_fields = ['title', 'date_created', 'date_changed']
 
@@ -137,7 +94,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     def list(self, request, *args, **kwargs):
-        """List of all Albums (used for getting latest Albums) /albums."""
+        """List of Albums for a user."""
 
         serializer = AlbumsListRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -186,7 +143,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     def create(self, request, *args, **kwargs):
-        """Create Album /albums/{id}"""
+        """Create new Album."""
+
         serializer = CreateAlbumRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -225,7 +183,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     def retrieve(self, request, pk=None, *args, **kwargs):
-        """List of Works (Slides) in a specific Album /albums/{id}"""
+        """Retrieve information for a specific Album."""
 
         serializer = AlbumsRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -253,7 +211,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     def update(self, request, pk=None, *args, **kwargs):
-        """Update Album /albums/{id}"""
+        """Update Album."""
 
         serializer = UpdateAlbumRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -291,7 +249,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     def destroy(self, request, pk=None, *args, **kwargs):
-        """Delete Album /albums/{id}"""
+        """Delete Album."""
 
         try:
             album = (
@@ -322,8 +280,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
     )
     @action(detail=True, methods=['post'], url_path='append-artwork')
     def append_artwork(self, request, pk=None, *args, **kwargs):
-        """/albums/{id}/append_artwork Append artwork to slides as singular
-        slide [{'id': x}]"""
+        """Append Artwork to Album slides as a singular slide."""
 
         serializer = AppendArtworkRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -383,7 +340,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
     )
     @action(detail=True, methods=['get'])
     def slides(self, request, pk=None, *args, **kwargs):
-        """/albums/{id}/slides LIST (GET) endpoint returns:"""
+        """Returns slides of a specific Album."""
 
         serializer = SlidesRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -425,8 +382,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
     )
     @slides.mapping.post
     def create_slides(self, request, pk=None, *args, **kwargs):
-        """/albums/{id}/slides Reorder Slides, Separate_slides, Reorder
-        artworks within slides."""
+        """Update slides for an Album."""
 
         serializer = CreateSlidesRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -495,7 +451,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
     )
     @action(detail=True, methods=['get'])
     def permissions(self, request, pk=None, *args, **kwargs):
-        """Get Permissions /albums/{id}/permissions."""
+        """Get list of users and their permissions."""
 
         sorting = check_sorting(
             request.query_params.get('sort_by', 'last_name'),
@@ -546,7 +502,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
     )
     @permissions.mapping.post
     def create_permissions(self, request, pk=None, *args, **kwargs):
-        """Post Permissions /albums/{id}/permissions."""
+        """Update permissions."""
         serializer = PermissionsRequestSerializer(data=request.data, many=True)
         serializer.is_valid(raise_exception=True)
 
@@ -627,7 +583,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
     )
     @permissions.mapping.delete
     def destroy_permissions(self, request, pk=None, *args, **kwargs):
-        """Delete Permissions /albums/{id}/permissions/ "Unshare" album.
+        """Delete Permissions / "Unshare" Album.
 
         If the user is the owner of the album, all sharing permissions
         will be deleted. If the user is just a user who this album is
@@ -695,6 +651,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
     )
     @action(detail=True, methods=['get'])
     def download(self, request, pk=None, *args, **kwargs):
+        """Download Album as pptx or pdf."""
         # TODO only 'pptx' is implemented at the moment, need to implement 'pdf' as well
 
         serializer = AlbumsDownloadRequestSerializer(data=request.query_params)
