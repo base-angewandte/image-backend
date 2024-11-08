@@ -120,6 +120,7 @@ LABELS_MAP = {
             ],
         ),
     },
+    tags=['autocomplete'],
 )
 @api_view(['GET'])
 def autocomplete(request, *args, **kwargs):
