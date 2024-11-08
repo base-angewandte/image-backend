@@ -147,7 +147,8 @@ def update_slides_to_uuid(apps, schema_editor):
     for album in Album.objects.all():
         for slide in album.slides:
             for item in slide['items']:
-                item['id'] = artwork_id_map[item['id']]
+                if item.get('id') and artwork_id_map.get(item.get('id')):
+                    item['id'] = artwork_id_map[item['id']]
         album.save()
 
 
@@ -161,7 +162,8 @@ def update_slides_to_uuid_reverse(apps, schema_editor):
     for album in Album.objects.all():
         for slide in album.slides:
             for item in slide['items']:
-                item['id'] = artwork_uuid_map[item['id']]
+                if item.get('id') and artwork_uuid_map.get(item.get('id')):
+                    item['id'] = artwork_uuid_map[item['id']]
         album.save()
 
 
