@@ -19,21 +19,6 @@ from artworks.models import Folder
 
 
 class FoldersViewSet(viewsets.GenericViewSet):
-    """
-    list:
-    GET /folders/
-    List of all the user's folders (in anticipation that there will be folders later)
-
-    create: # Note: to be implemented
-    POST /folders/
-    Create a new folder
-
-    retrieve:
-    GET /folders/<id>/
-    Get folder with given id if it belongs to the user;
-    if folder_id == 'root', return the content of the root folder for the current user
-    """
-
     queryset = Folder.objects.all()
     ordering_fields = ['title', 'date_created', 'date_changed']
 
@@ -68,8 +53,10 @@ class FoldersViewSet(viewsets.GenericViewSet):
         },
     )
     def list(self, request, *args, **kwargs):
-        """List of all the users albums /folders (in anticipation that there
-        will be folders later)"""
+        """List of all Folders for a user.
+
+        At the moment users only have one root Folder.
+        """
 
         limit = check_limit(request.query_params.get('limit', 100))
         offset = check_offset(request.query_params.get('offset', 0))
@@ -140,8 +127,12 @@ class FoldersViewSet(viewsets.GenericViewSet):
         },
     )
     def retrieve(self, request, *args, **kwargs):
-        """Get folder with given id if it belongs to the user; if folder_id ==
-        'root', return the content of the root folder for the current user."""
+        """Retrieve information for a specific Folder.
+
+        If id == 'root' it returns the content of the root folder for
+        the current user.
+        """
+
         folder_id = kwargs['pk']
 
         serializer = FoldersRequestSerializer(data=request.query_params)
