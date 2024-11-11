@@ -16,7 +16,6 @@ from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.db import models
 from django.db.models import JSONField
-from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.db.models.functions import Length, Upper
 from django.utils.translation import get_language, gettext_lazy as _
 
@@ -790,10 +789,6 @@ class PermissionsRelation(models.Model):
 
     def __str__(self):
         return f'{self.user.get_full_name()} <-- {self.get_permissions_display()} --> {self.album.title}'
-
-
-# Monkey patch ManyToManyDescriptor
-ManyToManyDescriptor.get_queryset = lambda self: self.rel.model.objects.get_queryset()
 
 
 class Folder(AbstractBaseModel):
