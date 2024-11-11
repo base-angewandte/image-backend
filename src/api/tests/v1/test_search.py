@@ -35,7 +35,7 @@ class SearchTests(APITestCase):
         artwork1.save()
         artwork2.save()
 
-        url = reverse('search', kwargs={'version': VERSION})
+        url = reverse('search-list', kwargs={'version': VERSION})
         data = {
             'limit': 30,
             'offset': 0,
@@ -57,7 +57,7 @@ class SearchTests(APITestCase):
         self.assertEqual(content['results'][1]['artists'][0]['value'], artist.name)
 
     def test_search_location(self):
-        url = reverse('search', kwargs={'version': VERSION})
+        url = reverse('search-list', kwargs={'version': VERSION})
         data = {
             'filters': [
                 {
