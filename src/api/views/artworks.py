@@ -18,6 +18,7 @@ from django.conf import settings
 from django.db.models import Q
 from django.http import FileResponse
 from django.shortcuts import redirect
+from django.utils.html import strip_tags
 from django.utils.text import slugify
 from django.utils.translation import get_language, gettext_lazy as _
 
@@ -411,6 +412,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([i.name_localized for i in artwork.keywords.all()])}\n'
             f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location.name_localized if artwork.location else ""}\n'
             f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {", ".join([p.name_localized for p in artwork.place_of_production.all()])}\n'
+            f'License: {strip_tags(Artwork.get_license_label())}'
         )
 
         output_zip = BytesIO()
