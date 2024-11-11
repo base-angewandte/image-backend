@@ -202,6 +202,7 @@ class Keyword(MPTTModel, MetaDataMixin):
         if self.getty_id:
             # Validate getty url
             validate_getty_id(self.getty_id)
+
             # Fetch the external metadata
             try:
                 getty_data = fetch_getty_data(self.getty_id)
