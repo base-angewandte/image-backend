@@ -154,84 +154,96 @@ class Person(AbstractBaseModel, MetaDataMixin):
         super().clean()
         process_external_metadata(self)
 
-    def set_birth_death_from_gnd_data(self, gnd_data):
-        """Sets a Person's birth and death dates, based on a GND result.
+    def set_birth_death_from_gnd_data(self):
+        """Sets a Person's birth and death dates, based on a GND result."""
 
-        :param dict gnd_data: GND response data for the Person
+        if gnd_data := self.get_external_metadata_response_data('gnd'):
+            # while theoretically there could be more than one date, it was
+            # decided to just use the first listed date if there is one
+            date_display = ''
+            if 'dateOfBirth' in gnd_data:
+                if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfBirth')[0]):
+                    self.date_birth = gnd_data.get('dateOfBirth')[0]
+
+                date_display += gnd_data.get('dateOfBirth')[0] + ' - '
+
+            if 'dateOfDeath' in gnd_data:
+                if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfDeath')[0]):
+                    self.date_death = gnd_data.get('dateOfDeath')[0]
+
+                if not date_display:
+                    date_display += ' - '
+
+                date_display += gnd_data.get('dateOfDeath')[0]
+
+            if date_display:
+                self.date_display = date_display
+
+    @staticmethod
+    def _construct_individual_name(gnd_name_information):
+        """Helper function to construct name from GND name information.
+
+        :param gnd_name_information: GND name information
+        :return: Constructed name
         """
-        # while theoretically there could be more than one date, it was
-        # decided to just use the first listed date if there is one
-        date_display = ''
-        if 'dateOfBirth' in gnd_data:
-            if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfBirth')[0]):
-                self.date_birth = gnd_data.get('dateOfBirth')[0]
-            date_display += gnd_data.get('dateOfBirth')[0] + ' - '
-        if 'dateOfDeath' in gnd_data:
-            if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfDeath')[0]):
-                self.date_death = gnd_data.get('dateOfDeath')[0]
-            if not date_display:
-                date_display += ' - '
-            date_display += gnd_data.get('dateOfDeath')[0]
-        if date_display:
-            self.date_display = date_display
+        name_parts = []
 
-    def construct_individual_name(self, gnd_name_information):
-        name = ''
         if 'nameAddition' in gnd_name_information:
-            name += gnd_name_information['nameAddition'][0] + ' '
+            name_parts.append(gnd_name_information['nameAddition'][0])
+
         if 'personalName' in gnd_name_information:
             if 'prefix' in gnd_name_information:
-                name += gnd_name_information['prefix'][0] + ' '
-            name += gnd_name_information['personalName'][0]
+                name_parts.append(gnd_name_information['prefix'][0])
+            name_parts.append(gnd_name_information['personalName'][0])
         else:
             if 'forename' in gnd_name_information:
-                name += gnd_name_information['forename'][0] + ' '
+                name_parts.append(gnd_name_information['forename'][0])
             if 'prefix' in gnd_name_information:
-                name += gnd_name_information['prefix'][0] + ' '
+                name_parts.append(gnd_name_information['prefix'][0])
             if 'surname' in gnd_name_information:
-                name += gnd_name_information['surname'][0]
-        return name.strip()
+                name_parts.append(gnd_name_information['surname'][0])
 
-    def set_name_from_gnd_data(self, gnd_data):
+        return ' '.join(name_parts).strip()
+
+    def set_name_from_gnd_data(self):
         """Sets a Person's name, based on a GND result.
 
         To generate the name, the `preferredNameEntityForThePerson` property
         of the response is used. As a fallback the `preferredName` will be
         used.
-
-        :param dict gnd_data: response data of the GND API for the Person
         """
-        if 'preferredNameEntityForThePerson' in gnd_data:
-            self.name = self.construct_individual_name(
-                gnd_data['preferredNameEntityForThePerson'],
-            )
-        elif 'preferredName' in gnd_data:
-            self.name = gnd_data['preferredName'].strip()
 
-    def set_synonyms_from_gnd_data(self, gnd_data):
+        if gnd_data := self.get_external_metadata_response_data('gnd'):
+            if 'preferredNameEntityForThePerson' in gnd_data:
+                self.name = self._construct_individual_name(
+                    gnd_data['preferredNameEntityForThePerson'],
+                )
+            elif 'preferredName' in gnd_data:
+                self.name = gnd_data['preferredName'].strip()
+
+    def set_synonyms_from_gnd_data(self):
         """Sets a Person's synonyms, based on a GND result.
 
         To generate the name, the `variantNameEntityForThePerson` property
         of the response is used. As a fallback the `variantName` will be
         used.
-
-        :param dict gnd_data: response data of the GND API for the Person
         """
-        if 'variantNameEntityForThePerson' in gnd_data:
-            synonyms = []
-            for n in gnd_data['variantNameEntityForThePerson']:
-                synonym = self.construct_individual_name(n)
-                synonyms.append(synonym)
-            self.synonyms = synonyms
-        elif 'variantName' in gnd_data:
-            self.synonyms = gnd_data['variantName']
+        if gnd_data := self.get_external_metadata_response_data('gnd'):
+            if 'variantNameEntityForThePerson' in gnd_data:
+                synonyms = []
+                for n in gnd_data['variantNameEntityForThePerson']:
+                    synonym = self._construct_individual_name(n)
+                    synonyms.append(synonym)
+                self.synonyms = synonyms
+            elif 'variantName' in gnd_data:
+                self.synonyms = gnd_data['variantName']
 
     def update_with_gnd_data(self, gnd_data):
         self.set_external_metadata('gnd', gnd_data)
         if self.gnd_overwrite:
-            self.set_name_from_gnd_data(gnd_data)
-            self.set_synonyms_from_gnd_data(gnd_data)
-            self.set_birth_death_from_gnd_data(gnd_data)
+            self.set_name_from_gnd_data()
+            self.set_synonyms_from_gnd_data()
+            self.set_birth_death_from_gnd_data()
 
 
 def get_path_to_original_file(instance, filename):
