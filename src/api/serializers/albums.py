@@ -19,7 +19,7 @@ class UpdateAlbumRequestSerializer(CreateAlbumRequestSerializer):
 
 
 class AppendArtworkRequestSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
+    id = serializers.CharField()
 
 
 class AlbumsListRequestSerializer(ArtworksAlbumsRequestSerializer):

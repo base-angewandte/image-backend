@@ -240,11 +240,11 @@ def get_path_to_original_file(instance, filename):
 
     Example: artwork.pk==16320, filename=='example.jpg'
     image_original:
-    filename = 'artworks/imageOriginal/16000/16320/example.jpg'
+    filename = 'artworks/image_original/16320/example.jpg'
     """
+    prefix = 'artworks/image_original'
     if instance.pk:
-        directory = (instance.pk // 1000) * 1000
-        return f'artworks/imageOriginal/{directory}/{instance.pk}/{filename}'
+        return f'{prefix}/{instance.pk}/{filename}'
     return filename
 
 
@@ -254,9 +254,9 @@ def get_path_to_image_fullsize(instance, filename):
 
     Example: artwork.pk==16320, filename=='example_fullsize.jpg'
     image_fullsize:
-    filename = 'artworks/imageFullsize/16320/example_fullsize.jpg'
+    filename = 'artworks/image_fullsize/16320/example_fullsize.jpg'
     """
-    prefix = 'artworks/imageFullsize'
+    prefix = 'artworks/image_fullsize'
     if instance.pk:
         return f'{prefix}/{instance.pk}/{filename}'
     return f'{prefix}/{filename}'
@@ -537,6 +537,9 @@ class Material(AbstractBaseModel):
 class Artwork(AbstractBaseModel):
     """Each Artwork has an metadata and image and various versions (renditions)
     of that image."""
+
+    id = ShortUUIDField(primary_key=True)
+    archive_id = models.BigIntegerField(null=True)
 
     # VersatileImageField allows to create resized versions of the
     # image (renditions) on demand
