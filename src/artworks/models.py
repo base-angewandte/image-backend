@@ -17,7 +17,7 @@ from django.core.files import File
 from django.db import models
 from django.db.models import JSONField
 from django.db.models.functions import Length, Upper
-from django.utils.translation import get_language, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .fetch import fetch_getty_data, fetch_wikidata
 from .fetch.exceptions import DataNotFoundError, HTTPError, RequestError
@@ -27,7 +27,7 @@ from .gnd import (
     process_external_metadata,
 )
 from .managers import ArtworkManager
-from .mixins import MetaDataMixin
+from .mixins import LocalizationMixin, MetaDataMixin
 from .validators import validate_getty_id, validate_image_original
 
 logger = logging.getLogger(__name__)
@@ -151,7 +151,7 @@ class Person(AbstractBaseModel, MetaDataMixin):
             self.set_birth_death_from_gnd_data()
 
 
-class Keyword(MPTTModel, MetaDataMixin):
+class Keyword(MPTTModel, MetaDataMixin, LocalizationMixin):
     """Keywords are nodes in a fixed hierarchical taxonomy."""
 
     name = models.CharField(verbose_name=_('Name (DE)'), max_length=255, unique=True)
@@ -195,6 +195,10 @@ class Keyword(MPTTModel, MetaDataMixin):
 
     def __str__(self):
         return self.name_localized
+
+    @property
+    def name_localized(self):
+        return self.get_localized_property('name')
 
     def clean(self):
         super().clean()
@@ -264,13 +268,8 @@ class Keyword(MPTTModel, MetaDataMixin):
         if save:
             self.save()
 
-    @property
-    def name_localized(self):
-        current_language = get_language() or settings.LANGUAGE_CODE
-        return self.name_en if current_language == 'en' and self.name_en else self.name
 
-
-class Location(MPTTModel, MetaDataMixin):
+class Location(MPTTModel, MetaDataMixin, LocalizationMixin):
     """Locations are nodes in a fixed hierarchical taxonomy."""
 
     name = models.CharField(
@@ -328,6 +327,10 @@ class Location(MPTTModel, MetaDataMixin):
             ancestor.name_localized
             for ancestor in self.get_ancestors(include_self=True)
         )
+
+    @property
+    def name_localized(self):
+        return self.get_localized_property('name')
 
     def clean(self):
         super().clean()
@@ -407,13 +410,8 @@ class Location(MPTTModel, MetaDataMixin):
             elif 'en' in labels:
                 self.name_en = labels['en']['value']
 
-    @property
-    def name_localized(self):
-        current_language = get_language() or settings.LANGUAGE_CODE
-        return self.name_en if current_language == 'en' and self.name_en else self.name
 
-
-class Material(AbstractBaseModel):
+class Material(AbstractBaseModel, LocalizationMixin):
     """Material types for artworks."""
 
     name = models.TextField(
@@ -430,8 +428,7 @@ class Material(AbstractBaseModel):
 
     @property
     def name_localized(self):
-        current_language = get_language() or settings.LANGUAGE_CODE
-        return self.name_en if current_language == 'en' and self.name_en else self.name
+        return self.get_localized_property('name')
 
 
 def get_path_to_file(instance, filename, folder):
@@ -458,7 +455,7 @@ def get_path_to_image_fullsize(instance, filename):
     return get_path_to_file(instance, filename, 'image_fullsize')
 
 
-class Artwork(AbstractBaseModel):
+class Artwork(AbstractBaseModel, LocalizationMixin):
     """Each Artwork has an metadata and image and various versions (renditions)
     of that image."""
 
@@ -614,30 +611,15 @@ class Artwork(AbstractBaseModel):
 
     @property
     def comments_localized(self):
-        current_language = get_language() or settings.LANGUAGE_CODE
-        return (
-            self.comments_en
-            if current_language == 'en' and self.comments_en
-            else self.comments_de
-        )
+        return self.get_localized_property('comments')
 
     @property
     def material_description_localized(self):
-        current_language = get_language() or settings.LANGUAGE_CODE
-        return (
-            self.material_description_en
-            if current_language == 'en' and self.material_description_en
-            else self.material_description_de
-        )
+        return self.get_localized_property('material_description')
 
     @property
     def title_comment_localized(self):
-        current_language = get_language() or settings.LANGUAGE_CODE
-        return (
-            self.title_comment_en
-            if current_language == 'en' and self.title_comment_en
-            else self.title_comment_de
-        )
+        return self.get_localized_property('title_comment')
 
     @staticmethod
     def get_license_label():
