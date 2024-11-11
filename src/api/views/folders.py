@@ -18,12 +18,12 @@ from api.views.search import filter_albums_for_user
 from artworks.models import Folder
 
 
+@extend_schema(tags=['folders'])
 class FoldersViewSet(viewsets.GenericViewSet):
     queryset = Folder.objects.all()
     ordering_fields = ['title', 'date_created', 'date_changed']
 
     @extend_schema(
-        tags=['folders'],
         parameters=[
             OpenApiParameter(
                 name='sort_by',
@@ -80,7 +80,6 @@ class FoldersViewSet(viewsets.GenericViewSet):
         )
 
     @extend_schema(
-        tags=['folders'],
         parameters=[
             FoldersRequestSerializer,
             OpenApiParameter(

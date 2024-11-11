@@ -36,7 +36,7 @@ class AuthenticationTestCase(APITestCase):
             reverse('folder-list', kwargs={'version': VERSION}),
             reverse('folder-detail', kwargs={'pk': 1, 'version': VERSION}),
             reverse('permission-list', kwargs={'version': VERSION}),
-            reverse('search', kwargs={'version': VERSION}),
+            reverse('search-list', kwargs={'version': VERSION}),
             reverse('search-filters', kwargs={'version': VERSION}),
             reverse('tos-list', kwargs={'version': VERSION}),
             reverse('tos-accept', kwargs={'version': VERSION}),

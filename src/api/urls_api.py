@@ -11,7 +11,7 @@ from .views.albums import AlbumsViewSet
 from .views.artworks import ArtworksViewSet
 from .views.folders import FoldersViewSet
 from .views.permissions import PermissionsViewSet
-from .views.search import search, search_filters
+from .views.search import SearchViewSet
 from .views.tos import TosViewSet
 from .views.user import UserViewSet
 
@@ -21,14 +21,12 @@ router.register('artworks', ArtworksViewSet, basename='artwork')
 router.register('albums', AlbumsViewSet, basename='album')
 router.register('permissions', PermissionsViewSet, basename='permission')
 router.register('folders', FoldersViewSet, basename='folder')
+router.register('search', SearchViewSet, basename='search')
 router.register('tos', TosViewSet, basename='tos')
 router.register('user', UserViewSet, basename='user')
 
 urlpatterns = [
     path('', include(router.urls)),
-    # Search
-    path('search/', search, name='search'),
-    path('search/filters/', search_filters, name='search-filters'),
     # Autocomplete
     path('autocomplete/', include('api.autocomplete.urls')),
     # Schema

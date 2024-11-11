@@ -11,9 +11,9 @@ from api.serializers.user import (
 )
 
 
+@extend_schema(tags=['user'])
 class UserViewSet(viewsets.GenericViewSet):
     @extend_schema(
-        tags=['user'],
         responses={
             200: UserDataSerializer,
             401: ERROR_RESPONSES[401],
@@ -37,7 +37,6 @@ class UserViewSet(viewsets.GenericViewSet):
         return Response(ret, status=200)
 
     @extend_schema(
-        tags=['user'],
         request=UserPreferencesSerializer,
         responses={
             200: UserPreferencesSerializer,
