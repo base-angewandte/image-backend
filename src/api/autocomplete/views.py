@@ -184,7 +184,7 @@ def autocomplete(request, *args, **kwargs):
             )
             query = (
                 MODEL_MAP[t]
-                .objects.filter(q_filters)
+                .objects.filter(q_filters, published=True)
                 .prefetch_related('discriminatory_terms')[:limit]
             )
 
