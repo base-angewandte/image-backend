@@ -258,10 +258,12 @@ class Keyword(MPTTModel, MetaDataMixin):
             if '_label' in getty_data:
                 self.name_en = getty_data['_label']
 
-    def update_with_getty_data(self, getty_data):
+    def update_with_getty_data(self, getty_data, save=False):
         self.set_external_metadata('getty', getty_data)
         if self.getty_overwrite:
             self.set_name_en_from_getty_data()
+        if save:
+            self.save()
 
     @property
     def name_localized(self):
