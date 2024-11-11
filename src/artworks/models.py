@@ -350,7 +350,7 @@ class Location(MPTTModel, MetaDataMixin):
         if gnd_data := self.get_external_metadata_response_data('gnd'):
             self.synonyms = gnd_data.get('variantName', [])
 
-    def update_with_gnd_data(self, gnd_data):
+    def update_with_gnd_data(self, gnd_data, save=False):
         self.set_external_metadata('gnd', gnd_data)
 
         if wikidata_link := self.get_wikidata_link():
@@ -389,6 +389,9 @@ class Location(MPTTModel, MetaDataMixin):
             self.set_name_en_from_wikidata()
         else:
             add_preferred_name_to_synonyms(self, gnd_data)
+
+        if save:
+            self.save()
 
     def get_wikidata_link(self):
         if gnd_data := self.get_external_metadata_response_data('gnd'):  # noqa: SIM102
