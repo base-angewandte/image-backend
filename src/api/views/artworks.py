@@ -146,9 +146,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'title_comment': artwork.title_comment_localized,
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 'date': artwork.date,
-                'material': ', '.join(
-                    [m.name_localized for m in artwork.material.all()],
-                ),
+                'material': artwork.material_description_localized,
                 'dimensions': artwork.dimensions_display,
                 'comments': artwork.comments_localized,
                 'credits': artwork.credits,
