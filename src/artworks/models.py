@@ -152,34 +152,6 @@ class Person(AbstractBaseModel, MetaDataMixin):
             self.set_birth_death_from_gnd_data()
 
 
-def get_path_to_original_file(instance, filename):
-    """The uploaded images of artworks are stored in a specifc directory
-    structure based on the pk/id of the artwork.
-
-    Example: artwork.pk==16320, filename=='example.jpg'
-    image_original:
-    filename = 'artworks/image_original/16320/example.jpg'
-    """
-    prefix = 'artworks/image_original'
-    if instance.pk:
-        return f'{prefix}/{instance.pk}/{filename}'
-    return filename
-
-
-def get_path_to_image_fullsize(instance, filename):
-    """The uploaded images of artworks are stored in a specifc directory
-    structure based on the pk/id of the artwork.
-
-    Example: artwork.pk==16320, filename=='example_fullsize.jpg'
-    image_fullsize:
-    filename = 'artworks/image_fullsize/16320/example_fullsize.jpg'
-    """
-    prefix = 'artworks/image_fullsize'
-    if instance.pk:
-        return f'{prefix}/{instance.pk}/{filename}'
-    return f'{prefix}/{filename}'
-
-
 class Keyword(MPTTModel, MetaDataMixin):
     """Keywords are nodes in a fixed hierarchical taxonomy."""
 
@@ -450,6 +422,30 @@ class Material(AbstractBaseModel):
     def name_localized(self):
         current_language = get_language() or settings.LANGUAGE_CODE
         return self.name_en if current_language == 'en' and self.name_en else self.name
+
+
+def get_path_to_file(instance, filename, folder):
+    """The uploaded images of artworks are stored in a specific directory
+    structure based on the pk/id of the artwork.
+
+    Example:
+        artwork.pk==16320, filename=='example.jpg', folder=='image_original'
+
+        path = 'artworks/image_original/16320/example.jpg'
+    """
+
+    prefix = f'artworks/{folder}'
+    if instance.pk:
+        return f'{prefix}/{instance.pk}/{filename}'
+    return filename
+
+
+def get_path_to_original_file(instance, filename):
+    return get_path_to_file(instance, filename, 'image_original')
+
+
+def get_path_to_image_fullsize(instance, filename):
+    return get_path_to_file(instance, filename, 'image_fullsize')
 
 
 class Artwork(AbstractBaseModel):
