@@ -3,6 +3,17 @@
 
 {% block title %}{{ title }}{% endblock %}
 
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+  ›
+  <a href="{% url 'admin:app_list' 'artworks' %}">{% trans 'Image Content' %}</a>
+  ›
+  <a href="{% url 'admin:artworks_artwork_changelist' %}">{% trans 'Artworks' %}</a>
+   › {% trans 'Upload multiple images' %}
+</div>
+{% endblock %}
+
 {% block content %}
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}

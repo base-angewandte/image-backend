@@ -1,6 +1,7 @@
 from base_common_drf.openapi.responses import ERROR_RESPONSES
 from drf_spectacular.utils import OpenApiExample, extend_schema, inline_serializer
-from rest_framework.decorators import api_view
+from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 from rest_framework.serializers import JSONField
@@ -154,158 +155,165 @@ def filter_date(filter_values):
         ]
 
 
+# maps filter_id to corresponding filter_* function defined above
 FILTERS_MAP = {}
 for filter_id in FILTERS_KEYS:
     FILTERS_MAP[filter_id] = globals()[f'filter_{filter_id}']
 
 
-@extend_schema(
-    tags=['search'],
-    request=SearchRequestSerializer,
-    examples=[
-        OpenApiExample(
-            name='search with filter type title, artist, place_of_production, current_location, keywords',
-            value={
-                'limit': settings.SEARCH_LIMIT,
-                'offset': 0,
-                'exclude': [123, 345],  # with artwork ids
-                'q': 'query string',  # the string from general search
-                'filters': [
-                    {
-                        'id': 'artists',
-                        'filter_values': ['lassnig', {'id': 1192}],
-                    },
-                ],
-            },
-        ),
-        OpenApiExample(
-            name='search with filter type date',
-            value={
-                'limit': settings.SEARCH_LIMIT,
-                'offset': 0,
-                'exclude': [123, 345],  # with artwork ids
-                'q': 'query string',  # the string from general search
-                'filters': [
-                    {
-                        'id': 'date',
-                        'filter_values': {
-                            'date_from': '2000',
-                            'date_to': '2001',
+@extend_schema(tags=['search'])
+class SearchViewSet(viewsets.GenericViewSet):
+    @extend_schema(
+        request=SearchRequestSerializer,
+        examples=[
+            OpenApiExample(
+                name='search with filter type title, artist, place_of_production, current_location, keywords',
+                value={
+                    'limit': settings.SEARCH_LIMIT,
+                    'offset': 0,
+                    'exclude': [123, 345],  # with artwork ids
+                    'q': 'query string',  # the string from general search
+                    'filters': [
+                        {
+                            'id': 'artists',
+                            'filter_values': ['lassnig', {'id': 1192}],
                         },
-                    },
-                ],
-            },
-        ),
-    ],
-    responses={
-        200: SearchResultSerializer,
-        403: ERROR_RESPONSES[403],
-        404: ERROR_RESPONSES[404],
-    },
-)
-@api_view(['post'])
-def search(request, *args, **kwargs):
-    serializer = SearchRequestSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-
-    limit = check_limit(serializer.validated_data.get('limit'))
-    offset = check_offset(serializer.validated_data.get('offset'))
-    filters = serializer.validated_data.get('filters', [])
-    q_param = serializer.validated_data.get('q')
-    exclude = serializer.validated_data.get('exclude', [])
-
-    if q_param:
-        subq = Artwork.objects.search(q_param)
-        order_by = '"rank" DESC, "similarity_title" DESC, "similarity_persons" DESC, "date_changed" DESC'
-    else:
-        subq = Artwork.objects.annotate(rank=Value(1.0, FloatField()))
-        # if user is using search, sort by title, else show the newest changes first
-        order_by = (
-            '"title", "date_changed" DESC'
-            if filters
-            else '"date_changed" DESC, "title"'
-        )
-
-    # only search for published artworks
-    subq = subq.filter(published=True)
-
-    if exclude:
-        subq = subq.exclude(id__in=exclude)
-
-    if filters:
-        for f in filters:
-            if f['id'] not in FILTERS_KEYS:
-                raise ParseError(f'Invalid filter id {repr(f["id"])}')
-            filters_list = FILTERS_MAP[f['id']](f['filter_values'])
-            for filter_item in filters_list:
-                subq = subq.filter(filter_item)
-
-    # we need to remove the previously set ordering to be able to use
-    # distinct only on id field
-    subq = subq.order_by().distinct('id')
-
-    subq_sql, subq_params = subq.query.sql_with_params()
-
-    qs = Artwork.objects.raw(
-        # we need a raw query here, but don't use any unvalidated parameters
-        'SELECT *, COUNT(*) OVER() AS "total_count" '  # noqa: S608, see comment above
-        f'FROM ({subq_sql}) AS subq '
-        f'ORDER BY {order_by} '
-        'LIMIT %s OFFSET %s',
-        params=(*subq_params, limit, offset),
-    ).prefetch_related(
-        'artists',
-        'photographers',
-        'authors',
-        'graphic_designers',
-        'discriminatory_terms',
+                    ],
+                },
+            ),
+            OpenApiExample(
+                name='search with filter type date',
+                value={
+                    'limit': settings.SEARCH_LIMIT,
+                    'offset': 0,
+                    'exclude': [123, 345],  # with artwork ids
+                    'q': 'query string',  # the string from general search
+                    'filters': [
+                        {
+                            'id': 'date',
+                            'filter_values': {
+                                'date_from': '2000',
+                                'date_to': '2001',
+                            },
+                        },
+                    ],
+                },
+            ),
+        ],
+        responses={
+            200: SearchResultSerializer,
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
     )
+    def create(self, request, *args, **kwargs):
+        """Search for Artworks."""
 
-    total = 0
-    results = []
+        serializer = SearchRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-    for artwork in qs:
-        # for performance reasons we get the total results count via
-        # window function (see raw sql above)
-        # and for convenience reasons we just set it in every for loop
-        # iteration even though the value is the same for all results
-        total = artwork.total_count
+        limit = check_limit(serializer.validated_data.get('limit'))
+        offset = check_offset(serializer.validated_data.get('offset'))
+        filters = serializer.validated_data.get('filters', [])
+        q_param = serializer.validated_data.get('q')
+        exclude = serializer.validated_data.get('exclude', [])
 
-        results.append(
-            {
-                'id': artwork.id,
-                'image_original': request.build_absolute_uri(artwork.image_original.url)
-                if artwork.image_original
-                else None,
-                'image_fullsize': request.build_absolute_uri(artwork.image_fullsize.url)
-                if artwork.image_fullsize
-                else None,
-                'credits': artwork.credits,
-                'title': artwork.title,
-                'discriminatory_terms': artwork.get_discriminatory_terms_list(),
-                'date': artwork.date,
-                'artists': [
-                    {'value': artist.name, 'id': artist.id}
-                    for artist in artwork.artists.all()
-                ],
-                'score': artwork.rank,
-            },
+        if q_param:
+            subq = Artwork.objects.search(q_param)
+            order_by = '"rank" DESC, "similarity_title" DESC, "similarity_persons" DESC, "date_changed" DESC'
+        else:
+            subq = Artwork.objects.annotate(rank=Value(1.0, FloatField()))
+            # if user is using search, sort by title, else show the newest changes first
+            order_by = (
+                '"title", "date_changed" DESC'
+                if filters
+                else '"date_changed" DESC, "title"'
+            )
+
+        # only search for published artworks
+        subq = subq.filter(published=True)
+
+        if exclude:
+            subq = subq.exclude(id__in=exclude)
+
+        if filters:
+            for f in filters:
+                if f['id'] not in FILTERS_KEYS:
+                    raise ParseError(f'Invalid filter id {repr(f["id"])}')
+                filters_list = FILTERS_MAP[f['id']](f['filter_values'])
+                for filter_item in filters_list:
+                    subq = subq.filter(filter_item)
+
+        # we need to remove the previously set ordering to be able to use
+        # distinct only on id field
+        subq = subq.order_by().distinct('id')
+
+        subq_sql, subq_params = subq.query.sql_with_params()
+
+        qs = Artwork.objects.raw(
+            # we need a raw query here, but don't use any unvalidated parameters
+            'SELECT *, COUNT(*) OVER() AS "total_count" '  # noqa: S608, see comment above
+            f'FROM ({subq_sql}) AS subq '
+            f'ORDER BY {order_by} '
+            'LIMIT %s OFFSET %s',
+            params=(*subq_params, limit, offset),
+        ).prefetch_related(
+            'artists',
+            'photographers',
+            'authors',
+            'graphic_designers',
+            'discriminatory_terms',
         )
 
-    return Response({'total': total, 'results': results})
+        total = 0
+        results = []
 
+        for artwork in qs:
+            # for performance reasons we get the total results count via
+            # window function (see raw sql above)
+            # and for convenience reasons we just set it in every for loop
+            # iteration even though the value is the same for all results
+            total = artwork.total_count
 
-@extend_schema(
-    tags=['search'],
-    responses={
-        200: inline_serializer(
-            name='SearchFiltersResponse',
-            fields={k: JSONField() for k in FILTERS_KEYS},
-        ),
-        403: ERROR_RESPONSES[403],
-        404: ERROR_RESPONSES[404],
-    },
-)
-@api_view(['get'])
-def search_filters(request, *args, **kwargs):
-    return Response(FILTERS)
+            results.append(
+                {
+                    'id': artwork.id,
+                    'image_original': request.build_absolute_uri(
+                        artwork.image_original.url,
+                    )
+                    if artwork.image_original
+                    else None,
+                    'image_fullsize': request.build_absolute_uri(
+                        artwork.image_fullsize.url,
+                    )
+                    if artwork.image_fullsize
+                    else None,
+                    'credits': artwork.credits,
+                    'title': artwork.title,
+                    'discriminatory_terms': artwork.get_discriminatory_terms_list(),
+                    'date': artwork.date,
+                    'artists': [
+                        {'value': artist.name, 'id': artist.id}
+                        for artist in artwork.artists.all()
+                    ],
+                    'score': artwork.rank,
+                },
+            )
+
+        return Response({'total': total, 'results': results})
+
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                name='SearchFiltersResponse',
+                fields={k: JSONField() for k in FILTERS_KEYS},
+            ),
+            403: ERROR_RESPONSES[403],
+            404: ERROR_RESPONSES[404],
+        },
+    )
+    @action(detail=False, methods=['GET'])
+    def filters(self, request, *args, **kwargs):
+        """Get available search filters."""
+
+        return Response(FILTERS)

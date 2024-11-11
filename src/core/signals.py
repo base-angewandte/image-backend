@@ -1,6 +1,6 @@
 from django_cas_ng.signals import cas_user_authenticated
 
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group
 from django.dispatch import receiver
 
 
@@ -14,10 +14,6 @@ def process_user_attributes(sender, user, created, attributes, *args, **kwargs):
 
     user.is_staff = False
     user.is_superuser = False
-
-    # everyone gets the user permission to download pptx files
-    permission_to_download = Permission.objects.get(codename='can_download_pptx')
-    user.user_permissions.add(permission_to_download)
 
     if 'administer_image' in permissions:
         user.is_staff = True

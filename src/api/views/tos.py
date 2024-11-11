@@ -13,9 +13,9 @@ from django.utils.translation import get_language
 from texts.models import Text
 
 
+@extend_schema(tags=['tos'])
 class TosViewSet(viewsets.GenericViewSet):
     @extend_schema(
-        tags=['tos'],
         responses={
             200: OpenApiResponse(description='OK'),
             404: ERROR_RESPONSES[403],
@@ -27,13 +27,14 @@ class TosViewSet(viewsets.GenericViewSet):
 
         This endpoint sets the user's 'tos_accepted' field to 'true'.
         """
+
         user = request.user
         user.tos_accepted = True
         user.save()
+
         return Response({'tos_accepted': user.tos_accepted}, status=status.HTTP_200_OK)
 
     @extend_schema(
-        tags=['tos'],
         responses={
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
@@ -42,7 +43,9 @@ class TosViewSet(viewsets.GenericViewSet):
     def list(self, request, *args, **kwargs):
         """Retrieve the terms of service and status of acceptance for the
         current user."""
+
         current_language = get_language() or settings.LANGUAGE_CODE
+
         return Response(
             {
                 'tos_accepted': request.user.tos_accepted,

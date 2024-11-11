@@ -11,9 +11,9 @@ from api.serializers.user import (
 )
 
 
+@extend_schema(tags=['user'])
 class UserViewSet(viewsets.GenericViewSet):
     @extend_schema(
-        tags=['user'],
         responses={
             200: UserDataSerializer,
             401: ERROR_RESPONSES[401],
@@ -21,6 +21,7 @@ class UserViewSet(viewsets.GenericViewSet):
     )
     def list(self, request, *args, **kwargs):
         """Retrieve a user's data and preferences."""
+
         attributes = request.session.get('attributes', {})
         ret = {
             'id': request.user.username,
@@ -32,10 +33,10 @@ class UserViewSet(viewsets.GenericViewSet):
             'tos_accepted': request.user.tos_accepted,
             'preferences': request.user.preferences,
         }
+
         return Response(ret, status=200)
 
     @extend_schema(
-        tags=['user'],
         request=UserPreferencesSerializer,
         responses={
             200: UserPreferencesSerializer,
@@ -44,23 +45,34 @@ class UserViewSet(viewsets.GenericViewSet):
     )
     @action(detail=False, methods=['get', 'post', 'patch'])
     def preferences(self, request, *args, **kwargs):
-        if request.method == 'GET':
-            return Response(request.user.preferences)
+        match request.method.lower():
+            case 'get':
+                return Response(request.user.preferences)
 
-        elif request.method == 'POST':
-            serializer = UserPreferencesSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            request.user.display_images = serializer.validated_data['display_images']
-            request.user.display_folders = serializer.validated_data['display_folders']
-            request.user.save()
-            return Response(request.user.preferences)
+            case 'post':
+                serializer = UserPreferencesSerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
 
-        elif request.method == 'PATCH':
-            serializer = UserPreferencesPatchSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            if display_images := serializer.validated_data.get('display_images'):
-                request.user.display_images = display_images
-            if display_folders := serializer.validated_data.get('display_folders'):
-                request.user.display_folders = display_folders
-            request.user.save()
-            return Response(request.user.preferences)
+                request.user.display_images = serializer.validated_data[
+                    'display_images'
+                ]
+                request.user.display_folders = serializer.validated_data[
+                    'display_folders'
+                ]
+                request.user.save()
+
+                return Response(request.user.preferences)
+
+            case 'patch':
+                serializer = UserPreferencesPatchSerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+
+                if display_images := serializer.validated_data.get('display_images'):
+                    request.user.display_images = display_images
+
+                if display_folders := serializer.validated_data.get('display_folders'):
+                    request.user.display_folders = display_folders
+
+                request.user.save()
+
+                return Response(request.user.preferences)
