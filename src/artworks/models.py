@@ -566,7 +566,14 @@ class Artwork(AbstractBaseModel):
         max_length=255,
         blank=True,
     )
-    title_comment = models.TextField(verbose_name=_('Comment on title'), blank=True)
+    title_comment_de = models.TextField(
+        verbose_name=_('Comment on title (DE)'),
+        blank=True,
+    )
+    title_comment_en = models.TextField(
+        verbose_name=_('Comment on title (EN)'),
+        blank=True,
+    )
     discriminatory_terms = models.ManyToManyField(
         'DiscriminatoryTerm',
         verbose_name=_('Discriminatory terms'),
@@ -603,8 +610,13 @@ class Artwork(AbstractBaseModel):
         Material,
         verbose_name=_('Material/Technique'),
     )
-    material_description = models.TextField(
-        verbose_name=_('Material/Technique description'),
+    material_description_de = models.TextField(
+        verbose_name=_('Material/Technique description (DE)'),
+        help_text=_('Description of artwork materials and composition.'),
+        blank=True,
+    )
+    material_description_en = models.TextField(
+        verbose_name=_('Material/Technique description (EN)'),
         help_text=_('Description of artwork materials and composition.'),
         blank=True,
     )
@@ -634,7 +646,8 @@ class Artwork(AbstractBaseModel):
             'Generated from width, height, and depth, but can also be set manually.',
         ),
     )
-    comments = models.TextField(verbose_name=_('Comments'), blank=True)
+    comments_de = models.TextField(verbose_name=_('Comments (DE)'), blank=True)
+    comments_en = models.TextField(verbose_name=_('Comments (EN)'), blank=True)
     credits = models.TextField(verbose_name=_('Credits'), blank=True)
     credits_link = models.URLField(verbose_name=_('Credits URL'), blank=True)
     keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'))
@@ -674,6 +687,33 @@ class Artwork(AbstractBaseModel):
 
     def __str__(self):
         return self.title
+
+    @property
+    def comments_localized(self):
+        current_language = get_language() or settings.LANGUAGE_CODE
+        return (
+            self.comments_en
+            if current_language == 'en' and self.comments_en
+            else self.comments_de
+        )
+
+    @property
+    def material_description_localized(self):
+        current_language = get_language() or settings.LANGUAGE_CODE
+        return (
+            self.material_description_en
+            if current_language == 'en' and self.material_description_en
+            else self.material_description_de
+        )
+
+    @property
+    def title_comment_localized(self):
+        current_language = get_language() or settings.LANGUAGE_CODE
+        return (
+            self.title_comment_en
+            if current_language == 'en' and self.title_comment_en
+            else self.title_comment_de
+        )
 
     @staticmethod
     def get_license_label():
@@ -753,14 +793,17 @@ class Artwork(AbstractBaseModel):
             if material.name_en:
                 materials.append(material.name_en)
 
-        if self.material_description:
-            materials.append(self.material_description)
+        if self.material_description_de:
+            materials.append(self.material_description_de)
+        if self.material_description_en:
+            materials.append(self.material_description_en)
 
         search_vector = (
             SearchVector('title', weight='A')
             + SearchVector('title_english', weight='A')
             + SearchVector('search_persons', weight='A')
-            + SearchVector('comments', weight='B')
+            + SearchVector('comments_de', weight='B', config='german')
+            + SearchVector('comments_en', weight='B', config='english')
             + SearchVector('search_keywords', weight='B')
             + SearchVector('search_locations', weight='B')
             + SearchVector('credits', weight='C')

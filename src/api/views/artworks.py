@@ -143,14 +143,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 else None,
                 'title': artwork.title,
                 'title_english': artwork.title_english,
-                'title_comment': artwork.title_comment,
+                'title_comment': artwork.title_comment_localized,
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
                 'date': artwork.date,
-                'material': ', '.join(
-                    [m.name_localized for m in artwork.material.all()],
-                ),
+                'material': artwork.material_description_localized,
                 'dimensions': artwork.dimensions_display,
-                'comments': artwork.comments,
+                'comments': artwork.comments_localized,
                 'credits': artwork.credits,
                 'credits_link': artwork.credits_link,
                 'link': artwork.link,
@@ -396,15 +394,16 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             else ''
         )
 
+        lang_label = get_language() or settings.LANGUAGE_CODE
         metadata_content = (
             f'{artwork._meta.get_field("title").verbose_name.title()}: {apply_strikethrough(artwork.title)}\n'
             f'{artwork._meta.get_field("title_english").verbose_name.title()}: {apply_strikethrough(artwork.title_english)}\n'
-            f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {apply_strikethrough(artwork.title_comment)}\n'
+            f'{artwork._meta.get_field("title_comment_"+lang_label).verbose_name.title()}: {apply_strikethrough(artwork.title_comment_localized)}\n'
             f'{metadata_persons}'
             f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date}\n'
-            f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material_description}\n'
+            f'{artwork._meta.get_field("material_description_"+lang_label).verbose_name.title()}: {artwork.material_description_localized}\n'
             f'{artwork._meta.get_field("dimensions_display").verbose_name.title()}: {artwork.dimensions_display}\n'
-            f'{artwork._meta.get_field("comments").verbose_name.title()}: {apply_strikethrough(artwork.comments)}\n'
+            f'{artwork._meta.get_field("comments_"+lang_label).verbose_name.title()}: {apply_strikethrough(artwork.comments_localized)}\n'
             f'{artwork._meta.get_field("credits").verbose_name.title()}: {apply_strikethrough(artwork.credits)}\n'
             f'{artwork._meta.get_field("credits_link").verbose_name.title()}: {artwork.credits_link}\n'
             f'{artwork._meta.get_field("link").verbose_name.title()}: {artwork.link}\n'

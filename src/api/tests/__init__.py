@@ -123,7 +123,7 @@ class APITestCase(RestFrameworkAPITestCase):
             date_year_to=1643,
             published=True,
             checked=True,
-            comments='Neapel, Palazzo Reale\n(Zuschreibung durch Mary D. Garrard, bisland Massimo Stanzione zugeschrieben)',
+            comments_de='Neapel, Palazzo Reale\n(Zuschreibung durch Mary D. Garrard, bisland Massimo Stanzione zugeschrieben)',
             credits='Stolzenwald, Susanna: Artemisia Gentileschi. Bindung und Befreiung in Leben und Werk einer Malerin, Belser Verlag, Stuttgart/Zürich, 1991, S. 96.',
             image_original=temporary_image(),
         )
@@ -137,7 +137,7 @@ class APITestCase(RestFrameworkAPITestCase):
             date_year_to=1935,
             published=True,
             checked=True,
-            comments='Propagandazeitschrift der Sowjetunion, 1930-1991',
+            comments_de='Propagandazeitschrift der Sowjetunion, 1930-1991',
             credits='Margarita Tupitsyn/ Museum Fokwang Essen (Hg.), Glaube, Hoffnung - Anpassung, Sowjetische Bilder 1928 - 1945, 1996 Okart, S.131',
             image_original=temporary_image(),
         )
@@ -152,7 +152,7 @@ class APITestCase(RestFrameworkAPITestCase):
             dimensions_display='je 40,5 x 28,5 cm',
             published=True,
             checked=True,
-            comments='Essen, Brot',
+            comments_de='Essen, Brot',
             credits='Mahlzeit - Essen in der Kunst, Ausstellungskatalog, Galerie im Traklhaus, Salzburg 2009. S.51',
             image_original=temporary_image(),
         )
