@@ -13,9 +13,9 @@ from django.utils.translation import get_language
 from texts.models import Text
 
 
+@extend_schema(tags=['tos'])
 class TosViewSet(viewsets.GenericViewSet):
     @extend_schema(
-        tags=['tos'],
         responses={
             200: OpenApiResponse(description='OK'),
             404: ERROR_RESPONSES[403],
@@ -35,7 +35,6 @@ class TosViewSet(viewsets.GenericViewSet):
         return Response({'tos_accepted': user.tos_accepted}, status=status.HTTP_200_OK)
 
     @extend_schema(
-        tags=['tos'],
         responses={
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
