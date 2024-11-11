@@ -70,14 +70,6 @@ DOCKER = env.bool('DOCKER', default=True)
 
 SITE_URL = env.str('SITE_URL')
 
-# Https settings
-if SITE_URL.startswith('https'):
-    CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = True
-    SECURE_HSTS_SECONDS = 31536000
-
-
 FORCE_SCRIPT_NAME = env.str('FORCE_SCRIPT_NAME', default='/image')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[urlparse(SITE_URL).hostname])
@@ -155,7 +147,8 @@ CAS_RENAME_ATTRIBUTES = {
     'lastName': 'last_name',
     'email0': 'email',
 }
-"""Email settings."""
+
+# Email settings
 SERVER_EMAIL = f'error@{urlparse(SITE_URL).hostname}'
 
 EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', default='')
@@ -175,7 +168,7 @@ if DEBUG:
     if not EMAIL_FILE_PATH.exists():
         EMAIL_FILE_PATH.mkdir(parents=True)
 
-""" Https settings """
+# Https settings
 if SITE_URL.startswith('https'):
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
@@ -313,8 +306,9 @@ MEDIA_ROOT = '{}{}'.format(
 )
 MEDIA_ROOT_PATH = Path(MEDIA_ROOT)
 
-# config of versatileimagefield
-# used to edit artworks
+MEDIA_ROOT_TESTS = MEDIA_ROOT_PATH / '__tests__'
+
+# config of VersatileImageField used in Artwork model
 VERSATILEIMAGEFIELD_SETTINGS = {
     # The amount of time, in seconds, that references to created images
     # should be stored in the cache. Defaults to `2592000` (30 days)
@@ -330,7 +324,8 @@ VERSATILEIMAGEFIELD_SETTINGS = {
     # here: https://optimus.io/support/progressive-jpeg/
     'progressive_jpeg': False,
 }
-"""Logging."""
+
+# Logging
 LOG_DIR = BASE_DIR / '..' / 'logs'
 
 if not LOG_DIR.exists():
@@ -398,7 +393,7 @@ if LOG_DB_BACKEND:
         'propagate': False,
     }
 
-"""Cache settings."""
+# Cache settings
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
@@ -417,7 +412,8 @@ CACHES = {
         'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
     },
 }
-"""Session settings."""
+
+# Session settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'sessions'
 SESSION_COOKIE_NAME = 'sessionid_{}'.format('image')

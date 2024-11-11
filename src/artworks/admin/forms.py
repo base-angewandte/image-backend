@@ -64,7 +64,6 @@ class ArtworkAdminForm(forms.ModelForm):
     class Meta:
         model = Artwork
         fields = '__all__'  # noqa: DJ007
-        labels = {'Keywords': _('Keywords'), 'Artists': _('Artists')}
 
 
 # Multi File Upload

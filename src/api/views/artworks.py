@@ -16,7 +16,6 @@ from rest_framework.response import Response
 
 from django.conf import settings
 from django.db.models import Q
-from django.db.models.functions import Length
 from django.http import FileResponse
 from django.shortcuts import redirect
 from django.utils.text import slugify
@@ -39,21 +38,6 @@ logger = logging.getLogger(__name__)
 
 @extend_schema(tags=['artworks'])
 class ArtworksViewSet(viewsets.GenericViewSet):
-    """
-    list:
-    GET all artworks.
-
-    retrieve:
-    GET specific artwork.
-
-    retrieve_albums:
-    GET albums the current user has added this artwork to.
-
-    download:
-    GET Download artwork + metadata
-
-    """
-
     queryset = Artwork.objects.filter(published=True)
 
     @extend_schema(
@@ -79,6 +63,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     def list(self, request, *args, **kwargs):
+        """List of Artworks."""
+
         limit = check_limit(request.query_params.get('limit', 100))
         offset = check_offset(request.query_params.get('offset', 0))
 
@@ -136,7 +122,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve(self, request, pk=None, *args, **kwargs):
+    def retrieve(self, request, *args, pk=None, **kwargs):
+        """Retrieve information for a specific Artwork."""
+
         try:
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
@@ -228,15 +216,20 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         methods=['get'],
         url_path='image/(?P<method>[a-z]+)/(?P<width>[0-9]+)x(?P<height>[0-9]+)',
     )
-    def image(self, request, pk=None, *args, **kwargs):
+    def image(self, request, *args, pk=None, **kwargs):
+        """Get a cropped or resized thumbnail for an Artwork image."""
+
         serializer = ArtworksImageRequestSerializer(data=kwargs)
         serializer.is_valid(raise_exception=True)
+
         try:
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
+
         method = serializer.validated_data['method']
         size = f'{serializer.validated_data["width"]}x{serializer.validated_data["height"]}'
+
         match method:
             case 'resize':
                 url = artwork.image_fullsize.thumbnail[size].url
@@ -244,16 +237,20 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 url = artwork.image_fullsize.crop[size].url
             case _:
                 url = artwork.image_fullsize.url
+
         return redirect(request.build_absolute_uri(url))
 
     @extend_schema(
         responses={
+            # TODO better response definition
             200: OpenApiResponse(description='OK'),
             403: ERROR_RESPONSES[403],
         },
     )
     @action(detail=False, methods=['get'])
-    def labels(self, request, pk=None, *args, **kwargs):
+    def labels(self, request, *args, **kwargs):
+        """Get all labels for displaying Artwork metadata."""
+
         ret = {}
 
         exclude = (
@@ -309,7 +306,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=True, methods=['get'], url_path='albums')
-    def retrieve_albums(self, request, pk=None, *args, **kwargs):
+    def retrieve_albums(self, request, *args, pk=None, **kwargs):
+        """Get all Albums the current user has added this Artwork to."""
+
         serializer = ArtworksAlbumsRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
@@ -360,22 +359,25 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=True, methods=['get'])
-    def download(self, request, pk=None, *args, **kwargs):
+    def download(self, request, *args, pk=None, **kwargs):
+        """Download Artwork image and metadata as a zip file."""
+
         try:
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
 
-        discriminatory_terms = artwork.discriminatory_terms.order_by(
-            Length('term').desc(),
+        discriminatory_terms = artwork.get_discriminatory_terms_list(
+            order_by_length=True,
         )
 
-        def apply_strikethrough(text, terms):
-            for term in terms:
-                strikethrough_term = term.term[0] + ''.join(
-                    [char + '\u0336' for char in term.term[1:]],
-                )
-                text = text.replace(term.term, strikethrough_term)
+        def apply_strikethrough(text):
+            for term in discriminatory_terms:
+                if term in text:
+                    strikethrough_term = term[0] + ''.join(
+                        [char + '\u0336' for char in term[1:]],
+                    )
+                    text = text.replace(term, strikethrough_term)
             return text
 
         # create metadata file content
@@ -395,15 +397,15 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         )
 
         metadata_content = (
-            f'{artwork._meta.get_field("title").verbose_name.title()}: {apply_strikethrough(artwork.title, discriminatory_terms)}\n'
-            f'{artwork._meta.get_field("title_english").verbose_name.title()}: {apply_strikethrough(artwork.title_english, discriminatory_terms)}\n'
-            f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {apply_strikethrough(artwork.title_comment, discriminatory_terms)}\n'
+            f'{artwork._meta.get_field("title").verbose_name.title()}: {apply_strikethrough(artwork.title)}\n'
+            f'{artwork._meta.get_field("title_english").verbose_name.title()}: {apply_strikethrough(artwork.title_english)}\n'
+            f'{artwork._meta.get_field("title_comment").verbose_name.title()}: {apply_strikethrough(artwork.title_comment)}\n'
             f'{metadata_persons}'
             f'{artwork._meta.get_field("date").verbose_name.title()}: {artwork.date}\n'
             f'{artwork._meta.get_field("material").verbose_name.title()}: {artwork.material_description}\n'
             f'{artwork._meta.get_field("dimensions_display").verbose_name.title()}: {artwork.dimensions_display}\n'
-            f'{artwork._meta.get_field("comments").verbose_name.title()}: {apply_strikethrough(artwork.comments, discriminatory_terms)}\n'
-            f'{artwork._meta.get_field("credits").verbose_name.title()}: {apply_strikethrough(artwork.credits, discriminatory_terms)}\n'
+            f'{artwork._meta.get_field("comments").verbose_name.title()}: {apply_strikethrough(artwork.comments)}\n'
+            f'{artwork._meta.get_field("credits").verbose_name.title()}: {apply_strikethrough(artwork.credits)}\n'
             f'{artwork._meta.get_field("credits_link").verbose_name.title()}: {artwork.credits_link}\n'
             f'{artwork._meta.get_field("link").verbose_name.title()}: {artwork.link}\n'
             f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([i.name_localized for i in artwork.keywords.all()])}\n'

@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.contrib.admin.widgets import get_select2_language
 from django.db import models
 from django.forms import Media, Textarea, TextInput
+from django.urls import path
 from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
 
@@ -12,6 +13,7 @@ from ..models import Artwork, DiscriminatoryTerm, Keyword, Location, Material, P
 from .filters import ArtistFilter
 from .forms import ArtworkAdminForm
 from .utils import external_metadata_html
+from .views import MultiArtworkCreationFormView
 
 
 @admin.register(Artwork)
@@ -26,7 +28,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'date_changed',
     )
     ordering = ('-date_created',)
-    search_fields = ['title']
+    search_fields = ('title',)
     fields = (
         'published',
         'checked',
@@ -74,6 +76,16 @@ class ArtworkAdmin(admin.ModelAdmin):
     )
     change_list_template = 'admin/artworks/change_list.html'
 
+    def get_urls(self):
+        return [
+            path(
+                'multi-artwork-creation/',
+                self.admin_site.admin_view(MultiArtworkCreationFormView.as_view()),
+                name='multi-artwork-creation',
+            ),
+            *super().get_urls(),
+        ]
+
     @property
     def media(self):
         extra = '' if settings.DEBUG else '.min'
@@ -115,7 +127,7 @@ class ArtworkAdmin(admin.ModelAdmin):
 
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
-    exclude = ['external_metadata']
+    exclude = ('external_metadata',)
     readonly_fields = (
         'synonyms_old',
         'date_created',
@@ -124,9 +136,11 @@ class PersonAdmin(admin.ModelAdmin):
     )
     list_display = ('name', 'gnd_id', 'gnd_overwrite', 'date_created', 'date_changed')
     ordering = ('-date_created',)
-    search_fields = [
+    search_fields = (
         'name',
-    ]
+        'synonyms',
+        'gnd_id',
+    )
     list_filter = ('date_created', 'date_changed')
 
     @admin.display
@@ -136,10 +150,14 @@ class PersonAdmin(admin.ModelAdmin):
 
 @admin.register(Keyword)
 class KeywordAdmin(MPTTModelAdmin):
-    exclude = ['external_metadata']
-    readonly_fields = ['external_metadata_json']
-    list_display = ['name', 'getty_id', 'getty_overwrite']
-    search_fields = ['name']
+    exclude = ('external_metadata',)
+    readonly_fields = ('external_metadata_json',)
+    list_display = ('name', 'getty_id', 'getty_overwrite')
+    search_fields = (
+        'name',
+        'name_en',
+        'getty_id',
+    )
 
     @admin.display
     def external_metadata_json(self, obj):
@@ -148,12 +166,16 @@ class KeywordAdmin(MPTTModelAdmin):
 
 @admin.register(Location)
 class LocationAdmin(MPTTModelAdmin):
-    exclude = ['external_metadata']
-    readonly_fields = ['synonyms_old', 'external_metadata_json']
+    exclude = ('external_metadata',)
+    readonly_fields = ('synonyms_old', 'external_metadata_json')
+    autocomplete_fields = ('parent',)
     list_display = ('name', 'gnd_id', 'gnd_overwrite')
-    search_fields = [
-        'parent__' * i + 'name' for i in range(settings.LOCATION_SEARCH_LEVELS)
-    ]
+    search_fields = (
+        ['gnd_id']
+        + ['parent__' * i + 'name' for i in range(settings.LOCATION_SEARCH_LEVELS)]
+        + ['parent__' * i + 'name_en' for i in range(settings.LOCATION_SEARCH_LEVELS)]
+        + ['parent__' * i + 'synonyms' for i in range(settings.LOCATION_SEARCH_LEVELS)]
+    )
 
     @admin.display
     def external_metadata_json(self, obj):
@@ -163,10 +185,10 @@ class LocationAdmin(MPTTModelAdmin):
 @admin.register(Material)
 class MaterialAdmin(admin.ModelAdmin):
     list_display = ('name', 'name_en')
-    search_fields = ['name', 'name_en']
+    search_fields = ('name', 'name_en')
 
 
 @admin.register(DiscriminatoryTerm)
 class DiscriminatoryTermAdmin(admin.ModelAdmin):
     list_display = ('term',)
-    search_fields = ['term']
+    search_fields = ('term',)

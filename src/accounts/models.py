@@ -3,8 +3,11 @@ from django.db import models
 
 
 class User(AbstractUser):
-    DISPLAY_IMAGES_CHOICES = [('crop', 'crop'), ('resize', 'resize')]
-    DISPLAY_FOLDERS_CHOICES = [('list', 'list'), ('grid', 'grid')]
+    DISPLAY_IMAGES_MODES = ('crop', 'resize')
+    DISPLAY_FOLDERS_MODES = ('list', 'grid')
+
+    DISPLAY_IMAGES_CHOICES = [(m, m) for m in DISPLAY_IMAGES_MODES]
+    DISPLAY_FOLDERS_CHOICES = [(m, m) for m in DISPLAY_FOLDERS_MODES]
 
     tos_accepted = models.BooleanField(default=False)
     display_images = models.CharField(

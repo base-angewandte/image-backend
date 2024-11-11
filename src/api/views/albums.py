@@ -1,3 +1,5 @@
+import logging
+
 import requests
 import shortuuid
 from base_common_drf.openapi.responses import ERROR_RESPONSES
@@ -43,7 +45,7 @@ from api.views import (
     slides_with_details,
 )
 from api.views.search import filter_albums_for_user
-from artworks.exports import album_download_as_pptx
+from artworks.exports import ExportError, album_download_as_pptx
 from artworks.models import (
     Album,
     Artwork,
@@ -52,52 +54,11 @@ from artworks.models import (
     PermissionsRelation,
 )
 
+logger = logging.getLogger(__name__)
+
 
 @extend_schema(tags=['albums'])
 class AlbumsViewSet(viewsets.GenericViewSet):
-    """
-    list:
-    GET all the users albums.
-
-    create:
-    POST new album with given title.
-
-    retrieve:
-    GET specific album.
-
-    update:
-    PATCH specific album and album's fields
-
-    destroy:
-    DELETE specific album
-
-    append_artwork
-    POST /albums/{id}/append_artwork
-    Append artwork to slides as singular slide [{'id': x}]
-
-    slides:
-    GET /albums/{id}/slides LIST (GET) endpoint
-
-    create_slides:
-    POST /albums/{id}/slides
-    Reorder Slides
-    Separate_slides
-    Reorder artworks within slides
-
-    permissions:
-    GET /albums/{id}/permissions
-
-    create_permissions
-    POST /albums/{id}/permissions
-
-    destroy_permissions
-    DELETE /albums/{id}/permissions
-
-    download:
-    GET Download album as pptx or PDF
-
-    """
-
     queryset = Album.objects.all()
     ordering_fields = ['title', 'date_created', 'date_changed']
 
@@ -137,7 +98,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     def list(self, request, *args, **kwargs):
-        """List of all Albums (used for getting latest Albums) /albums."""
+        """List of Albums for a user."""
 
         serializer = AlbumsListRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -186,7 +147,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     def create(self, request, *args, **kwargs):
-        """Create Album /albums/{id}"""
+        """Create new Album."""
+
         serializer = CreateAlbumRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -224,8 +186,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    def retrieve(self, request, pk=None, *args, **kwargs):
-        """List of Works (Slides) in a specific Album /albums/{id}"""
+    def retrieve(self, request, *args, pk=None, **kwargs):
+        """Retrieve information for a specific Album."""
 
         serializer = AlbumsRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -252,8 +214,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    def update(self, request, pk=None, *args, **kwargs):
-        """Update Album /albums/{id}"""
+    def update(self, request, *args, pk=None, **kwargs):
+        """Update Album."""
 
         serializer = UpdateAlbumRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -290,8 +252,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             404: ERROR_RESPONSES[404],
         },
     )
-    def destroy(self, request, pk=None, *args, **kwargs):
-        """Delete Album /albums/{id}"""
+    def destroy(self, request, *args, pk=None, **kwargs):
+        """Delete Album."""
 
         try:
             album = (
@@ -321,9 +283,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=True, methods=['post'], url_path='append-artwork')
-    def append_artwork(self, request, pk=None, *args, **kwargs):
-        """/albums/{id}/append_artwork Append artwork to slides as singular
-        slide [{'id': x}]"""
+    def append_artwork(self, request, *args, pk=None, **kwargs):
+        """Append Artwork to Album slides as a singular slide."""
 
         serializer = AppendArtworkRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -382,8 +343,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=True, methods=['get'])
-    def slides(self, request, pk=None, *args, **kwargs):
-        """/albums/{id}/slides LIST (GET) endpoint returns:"""
+    def slides(self, request, *args, pk=None, **kwargs):
+        """Returns slides of a specific Album."""
 
         serializer = SlidesRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -424,9 +385,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     @slides.mapping.post
-    def create_slides(self, request, pk=None, *args, **kwargs):
-        """/albums/{id}/slides Reorder Slides, Separate_slides, Reorder
-        artworks within slides."""
+    def create_slides(self, request, *args, pk=None, **kwargs):
+        """Update slides for an Album."""
 
         serializer = CreateSlidesRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -494,8 +454,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=True, methods=['get'])
-    def permissions(self, request, pk=None, *args, **kwargs):
-        """Get Permissions /albums/{id}/permissions."""
+    def permissions(self, request, *args, pk=None, **kwargs):
+        """Get list of users and their permissions."""
 
         sorting = check_sorting(
             request.query_params.get('sort_by', 'last_name'),
@@ -545,8 +505,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     @permissions.mapping.post
-    def create_permissions(self, request, pk=None, *args, **kwargs):
-        """Post Permissions /albums/{id}/permissions."""
+    def create_permissions(self, request, *args, pk=None, **kwargs):
+        """Update permissions."""
         serializer = PermissionsRequestSerializer(data=request.data, many=True)
         serializer.is_valid(raise_exception=True)
 
@@ -626,8 +586,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     @permissions.mapping.delete
-    def destroy_permissions(self, request, pk=None, *args, **kwargs):
-        """Delete Permissions /albums/{id}/permissions/ "Unshare" album.
+    def destroy_permissions(self, request, *args, pk=None, **kwargs):
+        """Delete Permissions / "Unshare" Album.
 
         If the user is the owner of the album, all sharing permissions
         will be deleted. If the user is just a user who this album is
@@ -674,7 +634,6 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                 type=OpenApiTypes.STR,
                 enum=['pptx', 'pdf'],
                 default='pptx',
-                description='At the moment, only "pptx" is available. Later on, "pdf" will also be available',
             ),
             # for this specific endpoint we don't need this parameter from the GLOBAL_PARAMS
             # because the language parameter defines the language of the exported album
@@ -694,8 +653,8 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         },
     )
     @action(detail=True, methods=['get'])
-    def download(self, request, pk=None, *args, **kwargs):
-        # TODO only 'pptx' is implemented at the moment, need to implement 'pdf' as well
+    def download(self, request, *args, pk=None, **kwargs):
+        """Download Album as pptx or pdf."""
 
         serializer = AlbumsDownloadRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -713,26 +672,35 @@ class AlbumsViewSet(viewsets.GenericViewSet):
         download_format = serializer.validated_data['download_format']
         language = serializer.validated_data['language']
 
+        try:
+            pptx = album_download_as_pptx(
+                album.pk,
+                language=language,
+                return_raw=download_format == 'pdf',
+            )
+        except ExportError as ee:
+            error_info = (
+                _('Error during download of Album %(id)s: %(message)s')
+                % {'id': album.pk, 'message': str(ee)},
+            )
+            logger.exception(error_info)
+            return Response(error_info, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         if download_format == 'pptx':
-            return album_download_as_pptx(
-                album.id,
-                language=language,
-            )
+            return pptx
         elif download_format == 'pdf':
-            pptx_file = album_download_as_pptx(
-                album.id,
-                language=language,
-                return_raw=True,
-            )
             filename = f'{slugify(album.title)}.pdf'
             mime_type = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+
+            # convert pptx to pdf via Gotenberg
             r = requests.post(
                 settings.GOTENBERG_API_URL,
                 timeout=settings.REQUESTS_TIMEOUT,
                 files={
-                    ('files', (filename, pptx_file, mime_type)),
+                    ('files', (filename, pptx, mime_type)),
                 },
             )
+
             return HttpResponse(
                 r.content,
                 content_type='application/pdf',

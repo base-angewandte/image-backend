@@ -17,7 +17,7 @@ from django.core.files import File
 from django.db import models
 from django.db.models import JSONField
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
-from django.db.models.functions import Upper
+from django.db.models.functions import Length, Upper
 from django.utils.translation import get_language, gettext_lazy as _
 
 from .fetch import fetch_getty_data, fetch_gnd_data, fetch_wikidata
@@ -240,11 +240,11 @@ def get_path_to_original_file(instance, filename):
 
     Example: artwork.pk==16320, filename=='example.jpg'
     image_original:
-    filename = 'artworks/imageOriginal/16000/16320/example.jpg'
+    filename = 'artworks/image_original/16320/example.jpg'
     """
+    prefix = 'artworks/image_original'
     if instance.pk:
-        directory = (instance.pk // 1000) * 1000
-        return f'artworks/imageOriginal/{directory}/{instance.pk}/{filename}'
+        return f'{prefix}/{instance.pk}/{filename}'
     return filename
 
 
@@ -254,9 +254,9 @@ def get_path_to_image_fullsize(instance, filename):
 
     Example: artwork.pk==16320, filename=='example_fullsize.jpg'
     image_fullsize:
-    filename = 'artworks/imageFullsize/16320/example_fullsize.jpg'
+    filename = 'artworks/image_fullsize/16320/example_fullsize.jpg'
     """
-    prefix = 'artworks/imageFullsize'
+    prefix = 'artworks/image_fullsize'
     if instance.pk:
         return f'{prefix}/{instance.pk}/{filename}'
     return f'{prefix}/{filename}'
@@ -538,6 +538,9 @@ class Artwork(AbstractBaseModel):
     """Each Artwork has an metadata and image and various versions (renditions)
     of that image."""
 
+    id = ShortUUIDField(primary_key=True)
+    archive_id = models.BigIntegerField(null=True)
+
     # VersatileImageField allows to create resized versions of the
     # image (renditions) on demand
     image_original = VersatileImageField(
@@ -688,8 +691,13 @@ class Artwork(AbstractBaseModel):
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
 
-    def get_discriminatory_terms_list(self):
-        return [term.term for term in self.discriminatory_terms.all()]
+    def get_discriminatory_terms_list(self, order_by_length=False):
+        qs = self.discriminatory_terms.all()
+
+        if order_by_length:
+            qs = qs.order_by(Length('term').desc())
+
+        return qs.values_list('term', flat=True)
 
     def get_place_of_production_list(self):
         return [
@@ -830,7 +838,6 @@ class Album(AbstractBaseModel):
         return sum([len(slide['items']) for slide in self.slides])
 
     class Meta:
-        permissions = (('can_download_pptx', 'Can download as PowerPoint file'),)
         verbose_name = _('Album')
         verbose_name_plural = _('Albums')
 
