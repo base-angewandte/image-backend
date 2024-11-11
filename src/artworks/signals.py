@@ -17,7 +17,11 @@ def update_search_vector(sender, instance, created, *args, **kwargs):
 @receiver(post_save, sender=Artwork)
 def move_uploaded_image(sender, instance, created, **kwargs):
     """Move the uploaded image after an Artwork instance has been created."""
-    if created:
+    if (
+        created
+        and instance.image_original
+        and instance.pk not in instance.image_original.name
+    ):
         imagefile = instance.image_original
         old_name = imagefile.name
         relative_path = instance.image_original.storage.get_available_name(
