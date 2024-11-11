@@ -10,7 +10,13 @@ from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
 
 from ..models import Artwork, DiscriminatoryTerm, Keyword, Location, Material, Person
-from .filters import ArtistFilter
+from .filters import (
+    ArtistFilter,
+    AuthorFilter,
+    DiscriminatoryTermsFilter,
+    GraphicDesignerFilter,
+    PhotographerFilter,
+)
 from .forms import ArtworkAdminForm
 from .utils import external_metadata_html
 from .views import MultiArtworkCreationFormView
@@ -72,6 +78,10 @@ class ArtworkAdmin(admin.ModelAdmin):
     }
     list_filter = (
         ArtistFilter,
+        PhotographerFilter,
+        AuthorFilter,
+        GraphicDesignerFilter,
+        DiscriminatoryTermsFilter,
         'published',
         'checked',
         'date_created',
