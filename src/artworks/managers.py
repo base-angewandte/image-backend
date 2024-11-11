@@ -4,7 +4,7 @@ from django.contrib.postgres.search import (
     TrigramWordSimilarity,
 )
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Q
 
 
 class ArtworkManager(models.Manager):
@@ -24,17 +24,22 @@ class ArtworkManager(models.Manager):
             'search_persons',
         )
 
-        rank = (
-            search_rank
-            + trigram_word_similarity_title
-            + trigram_word_similarity_title_english
-            + trigram_word_similarity_persons
-        )
         return (
             self.get_queryset()
-            .annotate(rank=rank)
+            .annotate(rank=search_rank)
             .annotate(similarity_title=trigram_word_similarity_title)
+            .annotate(similarity_title_english=trigram_word_similarity_title_english)
             .annotate(similarity_persons=trigram_word_similarity_persons)
-            .filter(rank__gte=0.1)
-            .order_by('-rank')
+            .filter(
+                Q(rank__gte=0.1)
+                | Q(similarity_title__gte=0.6)
+                | Q(similarity_title_english__gte=0.6)
+                | Q(similarity_persons__gte=0.6),
+            )
+            .order_by(
+                '-rank',
+                '-similarity_title',
+                '-similarity_title_english',
+                '-similarity_persons',
+            )
         )
