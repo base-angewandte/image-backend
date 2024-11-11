@@ -4,7 +4,9 @@ from rest_framework import status
 
 from django.urls import reverse
 
-from .. import APITestCase
+from artworks.models import Artwork
+
+from .. import APITestCase, temporary_image
 from . import VERSION
 
 
@@ -205,6 +207,11 @@ class AutocompleteTests(APITestCase):
         self.assertEqual(first_result['label'], 'Art Brut')
 
     def test_title(self):
+        Artwork.objects.create(
+            title='Test Artwork 1',
+            image_original=temporary_image(),
+            published=False,
+        )
         url = reverse('autocomplete', kwargs={'version': VERSION})
 
         # Check if the 'title' is returned when 'accept-language' header is 'de'
@@ -231,3 +238,11 @@ class AutocompleteTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(fist_result), 3)
         self.assertEqual(fist_result['label'], 'loc test aut')
+        # test if unpublished artworks are returned
+        response = self.client.get(
+            f'{url}?q=Test Artwork 1&type=titles',
+            format='json',
+        )
+        content = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(content), 0)
