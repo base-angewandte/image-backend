@@ -1,12 +1,15 @@
 import json
+import shutil
 from io import BytesIO
 
 from PIL import Image
 from rest_framework import status
 from rest_framework.test import APITestCase as RestFrameworkAPITestCase
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import override_settings
 
 from artworks.models import Album, Artwork, Keyword, Location, Material, Person
 
@@ -18,6 +21,10 @@ def temporary_image():  # from https://stackoverflow.com/a/67611074
     return SimpleUploadedFile('test.jpg', bts.getvalue())
 
 
+@override_settings(
+    MEDIA_ROOT=settings.MEDIA_ROOT_TESTS,
+    MEDIA_ROOT_PATH=settings.MEDIA_ROOT_TESTS,
+)
 class APITestCase(RestFrameworkAPITestCase):
     def setUp(self):
         # create and log in user
@@ -340,3 +347,7 @@ class APITestCase(RestFrameworkAPITestCase):
             self.assertEqual(len(content['results']), 1)
         else:
             self.assertEqual(len(content), 1)
+
+    def tearDown(self):
+        # delete temporary files again
+        shutil.rmtree(settings.MEDIA_ROOT_TESTS, ignore_errors=True)

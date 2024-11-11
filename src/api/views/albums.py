@@ -301,7 +301,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
 
         # check if artwork exists
         try:
-            Artwork.objects.get(pk=serializer.validated_data['id'])
+            Artwork.objects.get(pk=serializer.validated_data['id'], published=True)
         except Artwork.DoesNotExist as dne:
             raise ParseError(_('Artwork does not exist')) from dne
 
@@ -421,7 +421,7 @@ class AlbumsViewSet(viewsets.GenericViewSet):
                 for artwork in slide['items']:
                     # check if artwork exists
                     try:
-                        Artwork.objects.get(id=artwork.get('id'))
+                        Artwork.objects.get(id=artwork.get('id'), published=True)
                     except Artwork.DoesNotExist as dne:
                         raise ParseError(_('Artwork does not exist')) from dne
                     current_slide['items'].append({'id': artwork['id']})
