@@ -155,7 +155,7 @@ class Person(AbstractBaseModel, MetaDataMixin):
         process_external_metadata(self)
 
     def set_birth_death_from_gnd_data(self, gnd_data):
-        """Sets an Arist name, based on a GND result.
+        """Sets a Person's birth and death dates, based on a GND result.
 
         :param dict gnd_data: GND response data for the Person
         """
@@ -193,7 +193,7 @@ class Person(AbstractBaseModel, MetaDataMixin):
         return name.strip()
 
     def set_name_from_gnd_data(self, gnd_data):
-        """Sets an Arist's name, based on a GND result.
+        """Sets a Person's name, based on a GND result.
 
         To generate the name, the `preferredNameEntityForThePerson` property
         of the response is used. As a fallback the `preferredName` will be
@@ -209,7 +209,7 @@ class Person(AbstractBaseModel, MetaDataMixin):
             self.name = gnd_data['preferredName'].strip()
 
     def set_synonyms_from_gnd_data(self, gnd_data):
-        """Sets an Arist's synonyms, based on a GND result.
+        """Sets a Person's synonyms, based on a GND result.
 
         To generate the name, the `variantNameEntityForThePerson` property
         of the response is used. As a fallback the `variantName` will be
