@@ -154,31 +154,6 @@ class Person(AbstractBaseModel, MetaDataMixin):
         super().clean()
         process_external_metadata(self)
 
-    def set_birth_death_from_gnd_data(self):
-        """Sets a Person's birth and death dates, based on a GND result."""
-
-        if gnd_data := self.get_external_metadata_response_data('gnd'):
-            # while theoretically there could be more than one date, it was
-            # decided to just use the first listed date if there is one
-            date_display = ''
-            if 'dateOfBirth' in gnd_data:
-                if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfBirth')[0]):
-                    self.date_birth = gnd_data.get('dateOfBirth')[0]
-
-                date_display += gnd_data.get('dateOfBirth')[0] + ' - '
-
-            if 'dateOfDeath' in gnd_data:
-                if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfDeath')[0]):
-                    self.date_death = gnd_data.get('dateOfDeath')[0]
-
-                if not date_display:
-                    date_display += ' - '
-
-                date_display += gnd_data.get('dateOfDeath')[0]
-
-            if date_display:
-                self.date_display = date_display
-
     @staticmethod
     def _construct_individual_name(gnd_name_information):
         """Helper function to construct name from GND name information.
@@ -204,6 +179,31 @@ class Person(AbstractBaseModel, MetaDataMixin):
                 name_parts.append(gnd_name_information['surname'][0])
 
         return ' '.join(name_parts).strip()
+
+    def set_birth_death_from_gnd_data(self):
+        """Sets a Person's birth and death dates, based on a GND result."""
+
+        if gnd_data := self.get_external_metadata_response_data('gnd'):
+            # while theoretically there could be more than one date, it was
+            # decided to just use the first listed date if there is one
+            date_display = ''
+            if 'dateOfBirth' in gnd_data:
+                if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfBirth')[0]):
+                    self.date_birth = gnd_data.get('dateOfBirth')[0]
+
+                date_display += gnd_data.get('dateOfBirth')[0] + ' - '
+
+            if 'dateOfDeath' in gnd_data:
+                if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfDeath')[0]):
+                    self.date_death = gnd_data.get('dateOfDeath')[0]
+
+                if not date_display:
+                    date_display += ' - '
+
+                date_display += gnd_data.get('dateOfDeath')[0]
+
+            if date_display:
+                self.date_display = date_display
 
     def set_name_from_gnd_data(self):
         """Sets a Person's name, based on a GND result.
