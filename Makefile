@@ -25,6 +25,7 @@ test-data:  ## load test/placeholder data (fixtures and image files)
 	docker compose exec ${PROJECT_NAME}-django python manage.py loaddata artworks/fixtures/artworks.json
 	cp test-data/*.png ${MEDIA_DIR}
 	docker compose exec -T ${PROJECT_NAME}-postgres psql -U django_${PROJECT_NAME} django_${PROJECT_NAME} < test-data/set-placeholder-images.sql
+	docker compose exec ${PROJECT_NAME}-django python manage.py create_image_fullsize
 
 .PHONY: run-api-tests
 run-api-tests:  ## run all available api tests
