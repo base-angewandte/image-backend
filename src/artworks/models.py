@@ -334,24 +334,26 @@ class Location(MPTTModel, MetaDataMixin):
         super().clean()
         process_external_metadata(self)
 
-    def set_name_from_gnd_data(self, gnd_data):
-        if 'preferredName' in gnd_data:
-            self.name = gnd_data['preferredName']
-        else:
-            raise ValidationError(
-                _(
-                    'The %(label)s database does not provide a preferred name for this %(label)s ID.',
+    def set_name_from_gnd_data(self):
+        if gnd_data := self.get_external_metadata_response_data('gnd'):
+            if 'preferredName' in gnd_data:
+                self.name = gnd_data['preferredName']
+            else:
+                raise ValidationError(
+                    _(
+                        'The %(label)s database does not provide a preferred name for this %(label)s ID.',
+                    )
+                    % {'label': settings.GND_LABEL},
                 )
-                % {'label': settings.GND_LABEL},
-            )
 
-    def set_synonyms_from_gnd_data(self, gnd_data):
-        self.synonyms = gnd_data.get('variantName', [])
+    def set_synonyms_from_gnd_data(self):
+        if gnd_data := self.get_external_metadata_response_data('gnd'):
+            self.synonyms = gnd_data.get('variantName', [])
 
     def update_with_gnd_data(self, gnd_data):
         self.set_external_metadata('gnd', gnd_data)
-        simplified_wikidata_data = None
-        if wikidata_link := self.get_wikidata_link(gnd_data):
+
+        if wikidata_link := self.get_wikidata_link():
             try:
                 wikidata_data = fetch_wikidata(wikidata_link)
                 entity_id = next(iter(wikidata_data['entities'].keys()))
@@ -379,27 +381,29 @@ class Location(MPTTModel, MetaDataMixin):
                 )
         else:
             self.delete_external_metadata('wikidata')
+
         if self.gnd_overwrite:
-            self.set_name_from_gnd_data(gnd_data)
-            self.set_synonyms_from_gnd_data(gnd_data)
+            self.set_name_from_gnd_data()
+            self.set_synonyms_from_gnd_data()
             self.name_en = ''
-            if simplified_wikidata_data:
-                self.set_name_en_from_wikidata(simplified_wikidata_data)
+            self.set_name_en_from_wikidata()
         else:
             add_preferred_name_to_synonyms(self, gnd_data)
 
-    def get_wikidata_link(self, gnd_data):
-        if 'sameAs' in gnd_data:
-            for concept in gnd_data['sameAs']:
-                if 'wikidata' in concept['id']:
-                    return concept['id']
+    def get_wikidata_link(self):
+        if gnd_data := self.get_external_metadata_response_data('gnd'):  # noqa: SIM102
+            if 'sameAs' in gnd_data:
+                for concept in gnd_data['sameAs']:
+                    if 'wikidata' in concept['id']:
+                        return concept['id']
 
-    def set_name_en_from_wikidata(self, wikidata):
-        labels = wikidata.get('labels', {})
-        if 'en-gb' in labels:
-            self.name_en = labels['en-gb']['value']
-        elif 'en' in labels:
-            self.name_en = labels['en']['value']
+    def set_name_en_from_wikidata(self):
+        if wikidata := self.get_external_metadata_response_data('wikidata'):
+            labels = wikidata.get('labels', {})
+            if 'en-gb' in labels:
+                self.name_en = labels['en-gb']['value']
+            elif 'en' in labels:
+                self.name_en = labels['en']['value']
 
     @property
     def name_localized(self):
