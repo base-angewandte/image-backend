@@ -45,7 +45,7 @@ def slides_with_details(album, request):
     slide_ids = [
         artwork.get('id') for slide in album.slides for artwork in slide['items']
     ]
-    qs = Artwork.objects.filter(id__in=slide_ids).prefetch_related(
+    qs = Artwork.objects.filter(id__in=slide_ids, published=True).prefetch_related(
         'artists',
         'photographers',
         'authors',
@@ -108,7 +108,7 @@ def featured_artworks(album, request, num_artworks=4):
             if artwork_id in found_ids:
                 continue
             try:
-                artwork = Artwork.objects.get(pk=artwork_id)
+                artwork = Artwork.objects.get(pk=artwork_id, published=True)
             except Artwork.DoesNotExist:
                 # TODO: for now we just drop artworks which do not exist any more from the slides
                 #   in a future feature we need to discuss whether there should be some information left, that there was
