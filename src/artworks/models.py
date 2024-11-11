@@ -154,9 +154,9 @@ class Person(AbstractBaseModel, MetaDataMixin):
 class Keyword(MPTTModel, MetaDataMixin):
     """Keywords are nodes in a fixed hierarchical taxonomy."""
 
-    name = models.CharField(verbose_name=_('Name'), max_length=255, unique=True)
+    name = models.CharField(verbose_name=_('Name (DE)'), max_length=255, unique=True)
     name_en = models.CharField(
-        verbose_name=_('Name, English'),
+        verbose_name=_('Name (EN)'),
         max_length=255,
         blank=True,
         default='',
@@ -274,13 +274,13 @@ class Location(MPTTModel, MetaDataMixin):
     """Locations are nodes in a fixed hierarchical taxonomy."""
 
     name = models.CharField(
-        verbose_name=_('Name'),
+        verbose_name=_('Name (DE)'),
         max_length=255,
         blank=True,
         null=False,
     )
     name_en = models.CharField(
-        verbose_name=_('Name, English'),
+        verbose_name=_('Name (EN)'),
         max_length=255,
         blank=True,
         default='',
@@ -417,10 +417,10 @@ class Material(AbstractBaseModel):
     """Material types for artworks."""
 
     name = models.TextField(
-        verbose_name=_('Material/Technique'),
+        verbose_name=_('Material/Technique (DE)'),
     )
     name_en = models.TextField(
-        verbose_name=_('Material/Technique, English'),
+        verbose_name=_('Material/Technique (EN)'),
         blank=True,
         default='',
     )
