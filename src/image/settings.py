@@ -560,6 +560,8 @@ TINYMCE_DEFAULT_CONFIG = {
     'paste_block_drop': True,
     'paste_as_text': True,
     'entity_encoding': 'raw',
+    'relative_urls': False,
+    'document_base_url': f'{SITE_URL.rstrip("/")}{FORCE_SCRIPT_NAME}/',
 }
 
 PIL_VALID_EXTENSIONS = {}
