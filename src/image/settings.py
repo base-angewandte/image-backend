@@ -542,9 +542,9 @@ WIKIDATA_LABEL = 'Wikidata'
 REQUESTS_TIMEOUT = env.int('REQUESTS_TIMEOUT', default=5)
 
 GOTENBERG_SERVER_NAME = f'{PROJECT_NAME}-gotenberg' if DOCKER else 'localhost'
-GOTENBERG_API_URL = env.str(
-    'GOTENBERG_API_URL',
-    default=f'http://{GOTENBERG_SERVER_NAME}:3000/forms/libreoffice/convert',
+GOTENBERG_PORT = env.int('GOTENBERG_PORT', default=3000)
+GOTENBERG_API_URL = (
+    f'http://{GOTENBERG_SERVER_NAME}:{GOTENBERG_PORT}/forms/libreoffice/convert'
 )
 
 TINYMCE_DEFAULT_CONFIG = {
