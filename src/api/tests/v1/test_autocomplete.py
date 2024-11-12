@@ -207,12 +207,21 @@ class AutocompleteTests(APITestCase):
         self.assertEqual(first_result['label'], 'Art Brut')
 
     def test_title(self):
+        # test if unpublished artworks are returned
         Artwork.objects.create(
             title='Test Artwork 1',
             image_original=temporary_image(),
             published=False,
         )
         url = reverse('autocomplete', kwargs={'version': VERSION})
+        response = self.client.get(
+            f'{url}?q=Test Artwork 1&type=titles',
+            format='json',
+        )
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(content), 0)
 
         # Check if the 'title' is returned when 'accept-language' header is 'de'
         response = self.client.get(
@@ -238,11 +247,3 @@ class AutocompleteTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(fist_result), 3)
         self.assertEqual(fist_result['label'], 'loc test aut')
-        # test if unpublished artworks are returned
-        response = self.client.get(
-            f'{url}?q=Test Artwork 1&type=titles',
-            format='json',
-        )
-        content = json.loads(response.content)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(content), 0)

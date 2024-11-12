@@ -148,10 +148,12 @@ class AlbumsTests(APITestCase):
         data = {'id': 98765}
         response = self.client.post(url_post, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
         # try appending unpublished artwork
         data = {'id': artwork2.pk}
         response = self.client.post(url_post, data, format='json')
         content = json.loads(response.content)
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(content['detail'], 'Artwork does not exist')
 
