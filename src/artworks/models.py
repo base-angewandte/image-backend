@@ -470,7 +470,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         verbose_name=_('Original Image'),
         max_length=255,
         null=False,
-        blank=True,
+        blank=False,
         upload_to=get_path_to_original_file,
         validators=[validate_image_original],
     )
@@ -483,7 +483,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         upload_to=get_path_to_image_fullsize,
     )
 
-    title = models.CharField(verbose_name=_('Title'), max_length=255, blank=True)
+    title = models.CharField(verbose_name=_('Title'), max_length=255)
     title_english = models.CharField(
         verbose_name=_('Title, English'),
         max_length=255,
