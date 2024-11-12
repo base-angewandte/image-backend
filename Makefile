@@ -16,6 +16,10 @@ start-dev:  ## start containers for local development
 		${PROJECT_NAME}-postgres \
 		${PROJECT_NAME}-gotenberg
 
+.PHONY: update
+update: git-update init-rq init restart-gunicorn build-docs  ## update project (runs git-update init-rq init restart-gunicorn build-docs)
+
+
 .PHONY: test-data
 test-data:  ## load test/placeholder data (fixtures and image files)
 	docker compose exec ${PROJECT_NAME}-django python manage.py loaddata artworks/fixtures/artists.json
@@ -38,3 +42,7 @@ migrate-postgres:  ## migrate data from old PostgreSQL database to new one
 .PHONY: migrate-user-model
 migrate-user-model:  ## migrate user model from django.contrib.auth to accounts
 	@bash scripts/migrate-user-model.sh
+
+.PHONY: init-rq
+init-rq:
+	docker compose exec ${PROJECT_NAME}-rq-worker bash -c "uv pip sync requirements.txt"

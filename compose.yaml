@@ -34,6 +34,7 @@ services:
 
   image-django:
     build: ./src
+    image: image-django
     container_name: image-django
     env_file:
       - .env
@@ -47,6 +48,26 @@ services:
     networks:
       - imagenet
     restart: always
+    depends_on:
+      - image-postgres
+      - image-redis
+      - image-gotenberg
+
+  image-rq-worker:
+    build: ./src
+    image: image-django
+    container_name: image-rq-worker
+    env_file:
+      - .env
+    volumes_from:
+      - image-django
+    networks:
+      - imagenet
+    restart: always
+    depends_on:
+      - image-postgres
+      - image-redis
+    command: python manage.py rqworker default
 
   image-cron:
     image: paradoxon/alpine-cron
