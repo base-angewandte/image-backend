@@ -23,6 +23,15 @@ services:
       - imagenet
     restart: always
 
+  image-gotenberg:
+    image: gotenberg/gotenberg
+    container_name: image-gotenberg
+    expose:
+      - 3000
+    networks:
+      - imagenet
+    restart: always
+
   image-django:
     build: ./src
     container_name: image-django
@@ -35,15 +44,6 @@ services:
       - ./src/assets/static:/django/assets/static
       - $MEDIA_DIR:/django/assets/media
       - ./logs:/logs
-    networks:
-      - imagenet
-    restart: always
-
-  image-gotenberg:
-    image: gotenberg/gotenberg
-    container_name: image-gotenberg
-    expose:
-      - 3000
     networks:
       - imagenet
     restart: always

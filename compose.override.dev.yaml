@@ -1,8 +1,8 @@
 services:
-  # Uncomment the image-redis and image-postgres sections below if you need direct access to
-  # these databases (e.g. for local development). If you are running several base applications
-  # in parallel you might also have to adapt your local port, if the default ports are already
-  # in use by another app
+  # Uncomment the image-redis, image-postgres and image-gotenberg sections below if you need
+  # direct access to these services (e.g. for local development). If you are running several
+  # base applications in parallel you might also have to adapt your local port, if the default
+  # ports are already in use by another app
 
   # Mounting the Redis port of the container to your localhost
   #image-redis:
@@ -14,6 +14,11 @@ services:
   #  ports:
   #    - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
 
+  # Mounting the Gotenberg port of the container to your localhost
+  #image-gotenberg:
+  #  ports:
+  #    - "127.0.0.1:${GOTENBERG_PORT:-3000}:3000"
+
   # Using the dev target of for the image-django container and mounting
   # the port of the Django dev server to your localhost
   image-django:
@@ -24,9 +29,3 @@ services:
     container_name: image-django
     ports:
       - "127.0.0.1:8300:8300"
-
-  # Django need to be able to access gotenberg for album PDF downloads
-  # So for local development, the port has to be available on localhost
-  image-gotenberg:
-    ports:
-      - "127.0.0.1:3000:3000"

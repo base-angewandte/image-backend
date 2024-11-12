@@ -16,90 +16,21 @@ from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.db import models
 from django.db.models import JSONField
-from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.db.models.functions import Length, Upper
-from django.utils.translation import get_language, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
-from .fetch import fetch_getty_data, fetch_gnd_data, fetch_wikidata
+from .fetch import fetch_getty_data, fetch_wikidata
 from .fetch.exceptions import DataNotFoundError, HTTPError, RequestError
+from .gnd import (
+    add_preferred_name_to_synonyms,
+    construct_individual_name,
+    process_external_metadata,
+)
 from .managers import ArtworkManager
-from .mixins import MetaDataMixin
-from .validators import validate_getty_id, validate_gnd_id, validate_image_original
+from .mixins import LocalizationMixin, MetaDataMixin
+from .validators import validate_getty_id, validate_image_original
 
 logger = logging.getLogger(__name__)
-
-
-def add_preferred_name_to_synonyms(instance, gnd_data):
-    if (
-        'preferredName' in gnd_data
-        and gnd_data['preferredName'] not in instance.synonyms
-    ):
-        instance.synonyms.insert(0, gnd_data['preferredName'])
-
-
-def process_external_metadata(instance):
-    """Process external metadata for the given instance, to avoid code
-    duplication.
-
-    It is used by both clean functions of Person and Location.
-    """
-    if not instance.name and not instance.gnd_id:
-        raise ValidationError(
-            _('Either a name or a valid %(label)s ID need to be set')
-            % {'label': settings.GND_LABEL},
-        )
-
-    if instance.gnd_id:
-        # Validate the gnd_id and fetch the external metadata
-        validate_gnd_id(instance.gnd_id)
-
-        # Fetch the external metadata
-        try:
-            gnd_data = fetch_gnd_data(instance.gnd_id)
-            instance.update_with_gnd_data(gnd_data)
-        except DataNotFoundError as err:
-            raise ValidationError(
-                {
-                    'gnd_id': _('No %(label)s entry was found for %(label)s ID %(id)s.')
-                    % {
-                        'label': settings.GND_LABEL,
-                        'id': instance.gnd_id,
-                    },
-                },
-            ) from err
-        except HTTPError as err:
-            logger.warning(
-                f'HTTP error {err.status_code} when retrieving {settings.GND_LABEL} data: {err.details}',
-            )
-            raise ValidationError(
-                {
-                    'gnd_id': _(
-                        'HTTP error %(status_code)s when retrieving %(label)s data: %(details)s',
-                    )
-                    % {
-                        'status_code': err.status_code,
-                        'label': settings.GND_LABEL,
-                        'details': err.details,
-                    },
-                },
-            ) from err
-        except RequestError as err:
-            logger.warning(
-                f'Request error when retrieving {settings.GND_LABEL} data. Details: {repr(err)}',
-            )
-            raise ValidationError(
-                {
-                    'gnd_id': _(
-                        'Request error when retrieving %(label)s data. Details: %(error)s',
-                    )
-                    % {
-                        'label': settings.GND_LABEL,
-                        'error': repr(err),
-                    },
-                },
-            ) from err
-    elif instance.external_metadata:
-        instance.delete_external_metadata('gnd')
 
 
 class Person(AbstractBaseModel, MetaDataMixin):
@@ -154,120 +85,78 @@ class Person(AbstractBaseModel, MetaDataMixin):
         super().clean()
         process_external_metadata(self)
 
-    def set_birth_death_from_gnd_data(self, gnd_data):
-        """Sets an Arist name, based on a GND result.
+    def set_birth_death_from_gnd_data(self):
+        """Sets a Person's birth and death dates, based on a GND result."""
 
-        :param dict gnd_data: GND response data for the Person
-        """
-        # while theoretically there could be more than one date, it was
-        # decided to just use the first listed date if there is one
-        date_display = ''
-        if 'dateOfBirth' in gnd_data:
-            if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfBirth')[0]):
-                self.date_birth = gnd_data.get('dateOfBirth')[0]
-            date_display += gnd_data.get('dateOfBirth')[0] + ' - '
-        if 'dateOfDeath' in gnd_data:
-            if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfDeath')[0]):
-                self.date_death = gnd_data.get('dateOfDeath')[0]
-            if not date_display:
-                date_display += ' - '
-            date_display += gnd_data.get('dateOfDeath')[0]
-        if date_display:
-            self.date_display = date_display
+        if gnd_data := self.get_external_metadata_response_data('gnd'):
+            # while theoretically there could be more than one date, it was
+            # decided to just use the first listed date if there is one
+            date_display = ''
+            if 'dateOfBirth' in gnd_data:
+                if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfBirth')[0]):
+                    self.date_birth = gnd_data.get('dateOfBirth')[0]
 
-    def construct_individual_name(self, gnd_name_information):
-        name = ''
-        if 'nameAddition' in gnd_name_information:
-            name += gnd_name_information['nameAddition'][0] + ' '
-        if 'personalName' in gnd_name_information:
-            if 'prefix' in gnd_name_information:
-                name += gnd_name_information['prefix'][0] + ' '
-            name += gnd_name_information['personalName'][0]
-        else:
-            if 'forename' in gnd_name_information:
-                name += gnd_name_information['forename'][0] + ' '
-            if 'prefix' in gnd_name_information:
-                name += gnd_name_information['prefix'][0] + ' '
-            if 'surname' in gnd_name_information:
-                name += gnd_name_information['surname'][0]
-        return name.strip()
+                date_display += gnd_data.get('dateOfBirth')[0] + ' - '
 
-    def set_name_from_gnd_data(self, gnd_data):
-        """Sets an Arist's name, based on a GND result.
+            if 'dateOfDeath' in gnd_data:
+                if re.match(settings.GND_DATE_REGEX, gnd_data.get('dateOfDeath')[0]):
+                    self.date_death = gnd_data.get('dateOfDeath')[0]
+
+                if not date_display:
+                    date_display += ' - '
+
+                date_display += gnd_data.get('dateOfDeath')[0]
+
+            if date_display:
+                self.date_display = date_display
+
+    def set_name_from_gnd_data(self):
+        """Sets a Person's name, based on a GND result.
 
         To generate the name, the `preferredNameEntityForThePerson` property
         of the response is used. As a fallback the `preferredName` will be
         used.
-
-        :param dict gnd_data: response data of the GND API for the Person
         """
-        if 'preferredNameEntityForThePerson' in gnd_data:
-            self.name = self.construct_individual_name(
-                gnd_data['preferredNameEntityForThePerson'],
-            )
-        elif 'preferredName' in gnd_data:
-            self.name = gnd_data['preferredName'].strip()
 
-    def set_synonyms_from_gnd_data(self, gnd_data):
-        """Sets an Arist's synonyms, based on a GND result.
+        if gnd_data := self.get_external_metadata_response_data('gnd'):
+            if 'preferredNameEntityForThePerson' in gnd_data:
+                self.name = construct_individual_name(
+                    gnd_data['preferredNameEntityForThePerson'],
+                )
+            elif 'preferredName' in gnd_data:
+                self.name = gnd_data['preferredName'].strip()
+
+    def set_synonyms_from_gnd_data(self):
+        """Sets a Person's synonyms, based on a GND result.
 
         To generate the name, the `variantNameEntityForThePerson` property
         of the response is used. As a fallback the `variantName` will be
         used.
-
-        :param dict gnd_data: response data of the GND API for the Person
         """
-        if 'variantNameEntityForThePerson' in gnd_data:
-            synonyms = []
-            for n in gnd_data['variantNameEntityForThePerson']:
-                synonym = self.construct_individual_name(n)
-                synonyms.append(synonym)
-            self.synonyms = synonyms
-        elif 'variantName' in gnd_data:
-            self.synonyms = gnd_data['variantName']
+        if gnd_data := self.get_external_metadata_response_data('gnd'):
+            if 'variantNameEntityForThePerson' in gnd_data:
+                synonyms = []
+                for n in gnd_data['variantNameEntityForThePerson']:
+                    synonym = construct_individual_name(n)
+                    synonyms.append(synonym)
+                self.synonyms = synonyms
+            elif 'variantName' in gnd_data:
+                self.synonyms = gnd_data['variantName']
 
     def update_with_gnd_data(self, gnd_data):
         self.set_external_metadata('gnd', gnd_data)
         if self.gnd_overwrite:
-            self.set_name_from_gnd_data(gnd_data)
-            self.set_synonyms_from_gnd_data(gnd_data)
-            self.set_birth_death_from_gnd_data(gnd_data)
+            self.set_name_from_gnd_data()
+            self.set_synonyms_from_gnd_data()
+            self.set_birth_death_from_gnd_data()
 
 
-def get_path_to_original_file(instance, filename):
-    """The uploaded images of artworks are stored in a specifc directory
-    structure based on the pk/id of the artwork.
-
-    Example: artwork.pk==16320, filename=='example.jpg'
-    image_original:
-    filename = 'artworks/image_original/16320/example.jpg'
-    """
-    prefix = 'artworks/image_original'
-    if instance.pk:
-        return f'{prefix}/{instance.pk}/{filename}'
-    return filename
-
-
-def get_path_to_image_fullsize(instance, filename):
-    """The uploaded images of artworks are stored in a specifc directory
-    structure based on the pk/id of the artwork.
-
-    Example: artwork.pk==16320, filename=='example_fullsize.jpg'
-    image_fullsize:
-    filename = 'artworks/image_fullsize/16320/example_fullsize.jpg'
-    """
-    prefix = 'artworks/image_fullsize'
-    if instance.pk:
-        return f'{prefix}/{instance.pk}/{filename}'
-    return f'{prefix}/{filename}'
-
-
-class Keyword(MPTTModel, MetaDataMixin):
+class Keyword(MPTTModel, MetaDataMixin, LocalizationMixin):
     """Keywords are nodes in a fixed hierarchical taxonomy."""
 
-    name = models.CharField(verbose_name=_('Name'), max_length=255, unique=True)
+    name = models.CharField(verbose_name=_('Name (DE)'), max_length=255, unique=True)
     name_en = models.CharField(
-        verbose_name=_('Name, English'),
+        verbose_name=_('Name (EN)'),
         max_length=255,
         blank=True,
         default='',
@@ -307,11 +196,16 @@ class Keyword(MPTTModel, MetaDataMixin):
     def __str__(self):
         return self.name_localized
 
+    @property
+    def name_localized(self):
+        return self.get_localized_property('name')
+
     def clean(self):
         super().clean()
         if self.getty_id:
             # Validate getty url
             validate_getty_id(self.getty_id)
+
             # Fetch the external metadata
             try:
                 getty_data = fetch_getty_data(self.getty_id)
@@ -362,32 +256,30 @@ class Keyword(MPTTModel, MetaDataMixin):
         elif self.external_metadata:
             self.external_metadata = {}
 
-    def set_name_en_from_getty_data(self, getty_data):
-        if '_label' in getty_data:
-            self.name_en = getty_data['_label']
+    def set_name_en_from_getty_data(self):
+        if getty_data := self.get_external_metadata_response_data('getty'):  # noqa: SIM102
+            if '_label' in getty_data:
+                self.name_en = getty_data['_label']
 
-    def update_with_getty_data(self, getty_data):
+    def update_with_getty_data(self, getty_data, save=False):
         self.set_external_metadata('getty', getty_data)
         if self.getty_overwrite:
-            self.set_name_en_from_getty_data(getty_data)
-
-    @property
-    def name_localized(self):
-        current_language = get_language() or settings.LANGUAGE_CODE
-        return self.name_en if current_language == 'en' and self.name_en else self.name
+            self.set_name_en_from_getty_data()
+        if save:
+            self.save()
 
 
-class Location(MPTTModel, MetaDataMixin):
+class Location(MPTTModel, MetaDataMixin, LocalizationMixin):
     """Locations are nodes in a fixed hierarchical taxonomy."""
 
     name = models.CharField(
-        verbose_name=_('Name'),
+        verbose_name=_('Name (DE)'),
         max_length=255,
         blank=True,
         null=False,
     )
     name_en = models.CharField(
-        verbose_name=_('Name, English'),
+        verbose_name=_('Name (EN)'),
         max_length=255,
         blank=True,
         default='',
@@ -436,28 +328,34 @@ class Location(MPTTModel, MetaDataMixin):
             for ancestor in self.get_ancestors(include_self=True)
         )
 
+    @property
+    def name_localized(self):
+        return self.get_localized_property('name')
+
     def clean(self):
         super().clean()
         process_external_metadata(self)
 
-    def set_name_from_gnd_data(self, gnd_data):
-        if 'preferredName' in gnd_data:
-            self.name = gnd_data['preferredName']
-        else:
-            raise ValidationError(
-                _(
-                    'The %(label)s database does not provide a preferred name for this %(label)s ID.',
+    def set_name_from_gnd_data(self):
+        if gnd_data := self.get_external_metadata_response_data('gnd'):
+            if 'preferredName' in gnd_data:
+                self.name = gnd_data['preferredName']
+            else:
+                raise ValidationError(
+                    _(
+                        'The %(label)s database does not provide a preferred name for this %(label)s ID.',
+                    )
+                    % {'label': settings.GND_LABEL},
                 )
-                % {'label': settings.GND_LABEL},
-            )
 
-    def set_synonyms_from_gnd_data(self, gnd_data):
-        self.synonyms = gnd_data.get('variantName', [])
+    def set_synonyms_from_gnd_data(self):
+        if gnd_data := self.get_external_metadata_response_data('gnd'):
+            self.synonyms = gnd_data.get('variantName', [])
 
-    def update_with_gnd_data(self, gnd_data):
+    def update_with_gnd_data(self, gnd_data, save=False):
         self.set_external_metadata('gnd', gnd_data)
-        simplified_wikidata_data = None
-        if wikidata_link := self.get_wikidata_link(gnd_data):
+
+        if wikidata_link := self.get_wikidata_link():
             try:
                 wikidata_data = fetch_wikidata(wikidata_link)
                 entity_id = next(iter(wikidata_data['entities'].keys()))
@@ -485,42 +383,42 @@ class Location(MPTTModel, MetaDataMixin):
                 )
         else:
             self.delete_external_metadata('wikidata')
+
         if self.gnd_overwrite:
-            self.set_name_from_gnd_data(gnd_data)
-            self.set_synonyms_from_gnd_data(gnd_data)
+            self.set_name_from_gnd_data()
+            self.set_synonyms_from_gnd_data()
             self.name_en = ''
-            if simplified_wikidata_data:
-                self.set_name_en_from_wikidata(simplified_wikidata_data)
+            self.set_name_en_from_wikidata()
         else:
             add_preferred_name_to_synonyms(self, gnd_data)
 
-    def get_wikidata_link(self, gnd_data):
-        if 'sameAs' in gnd_data:
-            for concept in gnd_data['sameAs']:
-                if 'wikidata' in concept['id']:
-                    return concept['id']
+        if save:
+            self.save()
 
-    def set_name_en_from_wikidata(self, wikidata):
-        labels = wikidata.get('labels', {})
-        if 'en-gb' in labels:
-            self.name_en = labels['en-gb']['value']
-        elif 'en' in labels:
-            self.name_en = labels['en']['value']
+    def get_wikidata_link(self):
+        if gnd_data := self.get_external_metadata_response_data('gnd'):  # noqa: SIM102
+            if 'sameAs' in gnd_data:
+                for concept in gnd_data['sameAs']:
+                    if 'wikidata' in concept['id']:
+                        return concept['id']
 
-    @property
-    def name_localized(self):
-        current_language = get_language() or settings.LANGUAGE_CODE
-        return self.name_en if current_language == 'en' and self.name_en else self.name
+    def set_name_en_from_wikidata(self):
+        if wikidata := self.get_external_metadata_response_data('wikidata'):
+            labels = wikidata.get('labels', {})
+            if 'en-gb' in labels:
+                self.name_en = labels['en-gb']['value']
+            elif 'en' in labels:
+                self.name_en = labels['en']['value']
 
 
-class Material(AbstractBaseModel):
+class Material(AbstractBaseModel, LocalizationMixin):
     """Material types for artworks."""
 
     name = models.TextField(
-        verbose_name=_('Material/Technique'),
+        verbose_name=_('Material/Technique (DE)'),
     )
     name_en = models.TextField(
-        verbose_name=_('Material/Technique, English'),
+        verbose_name=_('Material/Technique (EN)'),
         blank=True,
         default='',
     )
@@ -530,11 +428,34 @@ class Material(AbstractBaseModel):
 
     @property
     def name_localized(self):
-        current_language = get_language() or settings.LANGUAGE_CODE
-        return self.name_en if current_language == 'en' and self.name_en else self.name
+        return self.get_localized_property('name')
 
 
-class Artwork(AbstractBaseModel):
+def get_path_to_file(instance, filename, folder):
+    """The uploaded images of artworks are stored in a specific directory
+    structure based on the pk/id of the artwork.
+
+    Example:
+        artwork.pk==16320, filename=='example.jpg', folder=='image_original'
+
+        path = 'artworks/image_original/16320/example.jpg'
+    """
+
+    prefix = f'artworks/{folder}'
+    if instance.pk:
+        return f'{prefix}/{instance.pk}/{filename}'
+    return filename
+
+
+def get_path_to_original_file(instance, filename):
+    return get_path_to_file(instance, filename, 'image_original')
+
+
+def get_path_to_image_fullsize(instance, filename):
+    return get_path_to_file(instance, filename, 'image_fullsize')
+
+
+class Artwork(AbstractBaseModel, LocalizationMixin):
     """Each Artwork has an metadata and image and various versions (renditions)
     of that image."""
 
@@ -566,7 +487,14 @@ class Artwork(AbstractBaseModel):
         max_length=255,
         blank=True,
     )
-    title_comment = models.TextField(verbose_name=_('Comment on title'), blank=True)
+    title_comment_de = models.TextField(
+        verbose_name=_('Comment on title (DE)'),
+        blank=True,
+    )
+    title_comment_en = models.TextField(
+        verbose_name=_('Comment on title (EN)'),
+        blank=True,
+    )
     discriminatory_terms = models.ManyToManyField(
         'DiscriminatoryTerm',
         verbose_name=_('Discriminatory terms'),
@@ -603,8 +531,13 @@ class Artwork(AbstractBaseModel):
         Material,
         verbose_name=_('Material/Technique'),
     )
-    material_description = models.TextField(
-        verbose_name=_('Material/Technique description'),
+    material_description_de = models.TextField(
+        verbose_name=_('Material/Technique description (DE)'),
+        help_text=_('Description of artwork materials and composition.'),
+        blank=True,
+    )
+    material_description_en = models.TextField(
+        verbose_name=_('Material/Technique description (EN)'),
         help_text=_('Description of artwork materials and composition.'),
         blank=True,
     )
@@ -634,7 +567,8 @@ class Artwork(AbstractBaseModel):
             'Generated from width, height, and depth, but can also be set manually.',
         ),
     )
-    comments = models.TextField(verbose_name=_('Comments'), blank=True)
+    comments_de = models.TextField(verbose_name=_('Comments (DE)'), blank=True)
+    comments_en = models.TextField(verbose_name=_('Comments (EN)'), blank=True)
     credits = models.TextField(verbose_name=_('Credits'), blank=True)
     credits_link = models.URLField(verbose_name=_('Credits URL'), blank=True)
     keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'))
@@ -675,18 +609,29 @@ class Artwork(AbstractBaseModel):
     def __str__(self):
         return self.title
 
+    @property
+    def comments_localized(self):
+        return self.get_localized_property('comments')
+
+    @property
+    def material_description_localized(self):
+        return self.get_localized_property('material_description')
+
+    @property
+    def title_comment_localized(self):
+        return self.get_localized_property('title_comment')
+
     @staticmethod
     def get_license_label():
         return _('Rights of use')
 
     def get_short_description(self, language):
         artists = ', '.join(artist.name for artist in self.artists.all())
-        title_in_language = ''
-        if language == 'en':
-            if self.title_english:
-                title_in_language = self.title_english
-        else:
-            title_in_language = self.title
+        title_in_language = (
+            self.title_english
+            if language == 'en' and self.title_english
+            else self.title
+        )
         parts = [artists, title_in_language, self.date]
         description = ', '.join(x.strip() for x in parts if x.strip())
         return description
@@ -753,14 +698,17 @@ class Artwork(AbstractBaseModel):
             if material.name_en:
                 materials.append(material.name_en)
 
-        if self.material_description:
-            materials.append(self.material_description)
+        if self.material_description_de:
+            materials.append(self.material_description_de)
+        if self.material_description_en:
+            materials.append(self.material_description_en)
 
         search_vector = (
             SearchVector('title', weight='A')
             + SearchVector('title_english', weight='A')
             + SearchVector('search_persons', weight='A')
-            + SearchVector('comments', weight='B')
+            + SearchVector('comments_de', weight='B', config='german')
+            + SearchVector('comments_en', weight='B', config='english')
             + SearchVector('search_keywords', weight='B')
             + SearchVector('search_locations', weight='B')
             + SearchVector('credits', weight='C')
@@ -866,10 +814,6 @@ class PermissionsRelation(models.Model):
 
     def __str__(self):
         return f'{self.user.get_full_name()} <-- {self.get_permissions_display()} --> {self.album.title}'
-
-
-# Monkey patch ManyToManyDescriptor
-ManyToManyDescriptor.get_queryset = lambda self: self.rel.model.objects.get_queryset()
 
 
 class Folder(AbstractBaseModel):
