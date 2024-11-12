@@ -110,6 +110,11 @@ class AlbumsTests(APITestCase):
             image_original=temporary_image(),
             published=True,
         )
+        artwork2 = Artwork.objects.create(
+            title='Test Artwork',
+            image_original=temporary_image(),
+            published=False,
+        )
 
         url_post = reverse(
             'album-append-artwork',
@@ -142,8 +147,15 @@ class AlbumsTests(APITestCase):
         # also try to append a non-existing artworks
         data = {'id': 98765}
         response = self.client.post(url_post, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # try appending unpublished artwork
+        data = {'id': artwork2.pk}
+        response = self.client.post(url_post, data, format='json')
+        content = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['detail'], 'Artwork does not exist')
 
     def test_albums_slides(self):
         """Test the retrieval of album slides."""
@@ -177,7 +189,9 @@ class AlbumsTests(APITestCase):
 
     def test_albums_create_slides(self):
         """Test the creation of album slides."""
+
         album = Album.objects.create(title='Test Album', user=self.user)
+
         artwork1 = Artwork.objects.create(
             title='Test Artwork 1',
             image_original=temporary_image(),
@@ -192,6 +206,11 @@ class AlbumsTests(APITestCase):
             title='Test Artwork 3',
             image_original=temporary_image(),
             published=True,
+        )
+        artwork4 = Artwork.objects.create(
+            title='Test Artwork 4',
+            image_original=temporary_image(),
+            published=False,
         )
 
         url = reverse('album-slides', kwargs={'pk': album.pk, 'version': VERSION})
@@ -215,6 +234,16 @@ class AlbumsTests(APITestCase):
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # test creating slide with unpublished artwork:
+        data = [
+            {'items': [{'id': artwork4.pk}]},
+        ]
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['detail'], 'Artwork does not exist')
 
     def test_albums_permissions(self):
         """Test the retrieval of album permissions."""
