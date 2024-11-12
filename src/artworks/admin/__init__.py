@@ -10,7 +10,13 @@ from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as _
 
 from ..models import Artwork, DiscriminatoryTerm, Keyword, Location, Material, Person
-from .filters import ArtistFilter
+from .filters import (
+    ArtistFilter,
+    AuthorFilter,
+    DiscriminatoryTermsFilter,
+    GraphicDesignerFilter,
+    PhotographerFilter,
+)
 from .forms import ArtworkAdminForm
 from .utils import external_metadata_html
 from .views import MultiArtworkCreationFormView
@@ -28,7 +34,40 @@ class ArtworkAdmin(admin.ModelAdmin):
         'date_changed',
     )
     ordering = ('-date_created',)
-    search_fields = ('title',)
+    search_fields = (
+        'title',
+        'title_english',
+        'title_comment_de',
+        'title_comment_en',
+        'discriminatory_terms__term',
+        'artists__name',
+        'artists__synonyms',
+        'photographers__name',
+        'photographers__synonyms',
+        'authors__name',
+        'authors__synonyms',
+        'graphic_designers__name',
+        'graphic_designers__synonyms',
+        'date',
+        'material__name',
+        'material__name_en',
+        'material_description_de',
+        'material_description_en',
+        'dimensions_display',
+        'keywords__name',
+        'keywords__name_en',
+        'place_of_production__name',
+        'place_of_production__name_en',
+        'place_of_production__synonyms',
+        'location__name',
+        'location__name_en',
+        'location__synonyms',
+        'comments_de',
+        'comments_en',
+        'credits',
+        'credits_link',
+        'link',
+    )
     fields = (
         'published',
         'checked',
@@ -72,6 +111,10 @@ class ArtworkAdmin(admin.ModelAdmin):
     }
     list_filter = (
         ArtistFilter,
+        PhotographerFilter,
+        AuthorFilter,
+        GraphicDesignerFilter,
+        DiscriminatoryTermsFilter,
         'published',
         'checked',
         'date_created',
