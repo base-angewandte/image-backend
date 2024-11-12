@@ -412,7 +412,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([i.name_localized for i in artwork.keywords.all()])}\n'
             f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location.name_localized if artwork.location else ""}\n'
             f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {", ".join([p.name_localized for p in artwork.place_of_production.all()])}\n'
-            f'License: {strip_tags(getattr(Text.objects.get(pk=2), get_language(), ""))}'
+            '\n\n\n'
+            f'{strip_tags(getattr(Text.objects.get(pk=2), get_language(), ""))}'
         )
 
         output_zip = BytesIO()
