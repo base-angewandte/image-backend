@@ -153,9 +153,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'credits_link': artwork.credits_link,
                 'link': artwork.link,
                 'license': getattr(Text.objects.get(pk=2), get_language(), ''),
-                'place_of_production': artwork.get_place_of_production_list()
-                if artwork.place_of_production.exists()
-                else [],
+                'place_of_production': artwork.get_place_of_production_list(),
                 'location': {
                     'id': artwork.location.id,
                     'value': artwork.location.name_localized,
@@ -409,7 +407,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             f'{artwork._meta.get_field("link").verbose_name.title()}: {artwork.link}\n'
             f'{artwork._meta.get_field("keywords").verbose_name.title()}: {", ".join([i.name_localized for i in artwork.keywords.all()])}\n'
             f'{artwork._meta.get_field("location").verbose_name.title()}: {artwork.location.name_localized if artwork.location else ""}\n'
-            f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {", ".join([p.name_localized for p in artwork.place_of_production.all()])}\n'
+            f'{artwork._meta.get_field("place_of_production").verbose_name.title()}: {", ".join(artwork.get_place_of_production_list())}\n'
         )
 
         output_zip = BytesIO()
