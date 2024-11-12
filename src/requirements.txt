@@ -20,6 +20,8 @@ certifi==2024.8.30
     #   sentry-sdk
 charset-normalizer==3.4.0
     # via requests
+click==8.1.7
+    # via rq
 concurrent-log-handler==0.9.25
     # via -r src/requirements.in
 django==4.2.16
@@ -35,6 +37,7 @@ django==4.2.16
     #   django-jsonform
     #   django-mass-edit
     #   django-redis
+    #   django-rq
     #   django-tinymce
     #   django-versatileimagefield
     #   djangorestframework
@@ -64,6 +67,8 @@ django-mptt==0.16.0
 django-ordered-model==3.7.4
     # via -r src/requirements.in
 django-redis==5.4.0
+    # via -r src/requirements.in
+django-rq==3.0.0
     # via -r src/requirements.in
 django-tinymce==4.1.0
     # via -r src/requirements.in
@@ -121,7 +126,10 @@ pyyaml==6.0.2
 rainbow-saddle==0.4.0
     # via -r src/requirements.in
 redis==5.1.1
-    # via django-redis
+    # via
+    #   django-redis
+    #   django-rq
+    #   rq
 referencing==0.35.1
     # via
     #   jsonschema
@@ -134,6 +142,8 @@ rpds-py==0.20.0
     # via
     #   jsonschema
     #   referencing
+rq==2.0.0
+    # via django-rq
 sentry-sdk==2.8.0
     # via -r src/requirements.in
 shortuuid==1.0.13
