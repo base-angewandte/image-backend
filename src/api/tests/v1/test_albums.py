@@ -189,7 +189,9 @@ class AlbumsTests(APITestCase):
 
     def test_albums_create_slides(self):
         """Test the creation of album slides."""
+
         album = Album.objects.create(title='Test Album', user=self.user)
+
         artwork1 = Artwork.objects.create(
             title='Test Artwork 1',
             image_original=temporary_image(),
@@ -210,6 +212,7 @@ class AlbumsTests(APITestCase):
             image_original=temporary_image(),
             published=False,
         )
+
         url = reverse('album-slides', kwargs={'pk': album.pk, 'version': VERSION})
         data = [
             {'items': [{'id': artwork1.pk}, {'id': artwork2.pk}]},
@@ -230,12 +233,14 @@ class AlbumsTests(APITestCase):
         data.append({'items': [{'id': 98765}]})
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
         # test creating slide with unpublished artwork:
         data = [
             {'items': [{'id': artwork4.pk}]},
         ]
         response = self.client.post(url, data, format='json')
         content = json.loads(response.content)
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(content['detail'], 'Artwork does not exist')
 
