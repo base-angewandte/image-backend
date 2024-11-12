@@ -9,7 +9,8 @@ from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError
 
-from artworks.models import Keyword, Location, Person, add_preferred_name_to_synonyms
+from artworks.gnd import add_preferred_name_to_synonyms
+from artworks.models import Keyword, Location, Person
 
 
 class Command(BaseCommand):

@@ -227,42 +227,33 @@ def album_download_as_pptx(album_id, language='en', return_raw=False):
 
     slides = album.slides
 
+    # TODO: for now we just drop artworks which do not exist any more from the slides
+    #   in a future feature we need to discuss whether there should be some information left, that there was
+    #   an artwork but got deleted, and whether we should retain some artwork title in that case, or just
+    #   display a blank). technically, we could add an Album.repair_slides() method which handles this
+
     if slides:
         for slide in slides:
             try:
-                if len(slide['items']) == 2:
-                    add_slide(
-                        [
-                            Artwork.objects.get(
-                                id=slide['items'][0].get('id'),
+                if len(slide['items']) <= 2:
+                    artworks = []
+                    for item in slide['items']:
+                        try:
+                            artwork = Artwork.objects.get(
+                                id=item.get('id'),
                                 published=True,
-                            ),
-                            Artwork.objects.get(
-                                id=slide['items'][1].get('id'),
-                                published=True,
-                            ),
-                        ],
-                        prs_padding,
-                    )
+                            )
+                            artworks.append(artwork)
+                        except Artwork.DoesNotExist:
+                            pass
 
-                elif len(slide['items']) == 1:
-                    add_slide(
-                        [
-                            Artwork.objects.get(
-                                id=slide['items'][0].get('id'),
-                                published=True,
-                            ),
-                        ],
-                        prs_padding,
-                    )
+                    if artworks:
+                        add_slide(artworks, prs_padding)
+
                 else:
                     raise ExportError(
                         _('Album contains slides with more than 2 artworks'),
                     )
-            except Artwork.DoesNotExist as dne:
-                raise ExportError(
-                    _('At least one Artwork in Album does not exist'),
-                ) from dne
             except FileNotFoundError as fnfe:
                 raise ExportError(
                     _('At least one image file can not be found'),

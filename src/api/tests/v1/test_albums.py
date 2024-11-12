@@ -232,6 +232,7 @@ class AlbumsTests(APITestCase):
         # also test creating slides with non-existing artworks
         data.append({'items': [{'id': 98765}]})
         response = self.client.post(url, data, format='json')
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         # test creating slide with unpublished artwork:
