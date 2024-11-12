@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import django_rq
+
 from django.conf import settings
 from django.db import connections
 from django.db.migrations.loader import MigrationLoader
@@ -116,8 +118,14 @@ def post_migrate_updates(sender, **kwargs):
             if int(migration.name[:4]) == last_migration:
                 for artwork in Artwork.objects.all():
                     # update search vector if there have been changes to the model
-                    artwork.update_search_vector()
+                    django_rq.enqueue(
+                        artwork.update_search_vector,
+                        result_ttl=settings.RQ_RESULT_TTL,
+                    )
 
                     # create full size images, if they don't exist
                     if artwork.image_original and not artwork.image_fullsize:
-                        artwork.create_image_fullsize()
+                        django_rq.enqueue(
+                            artwork.create_image_fullsize,
+                            result_ttl=settings.RQ_RESULT_TTL,
+                        )
