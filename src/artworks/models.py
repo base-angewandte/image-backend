@@ -1,3 +1,4 @@
+import hashlib
 import logging
 import re
 from io import BytesIO
@@ -745,9 +746,13 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
             img_new.save(img_io, format='JPEG', subsampling=0, quality=95)
 
         original_name = Path(self.image_original.name).stem
-        fullsize_filename = f'{original_name}_fullsize.jpg'
+        fullsize_name = hashlib.blake2s(
+            original_name.encode(),
+            digest_size=4,
+        ).hexdigest()
+
         # Save the image to the image_fullsize field
-        self.image_fullsize.save(fullsize_filename, File(img_io), save=False)
+        self.image_fullsize.save(f'{fullsize_name}.jpg', File(img_io), save=False)
         if save:
             self.save(update_fields=['image_fullsize'])
 
