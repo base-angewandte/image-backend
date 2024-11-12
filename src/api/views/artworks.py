@@ -415,14 +415,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         output_zip = BytesIO()
         file_name = slugify(artwork.title)
-        image_suffix = artwork.image_original.name.split('.')[-1]
 
         #  image to zipfile & metadata
         with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as zip_file:
             try:
                 zip_file.write(
                     artwork.image_fullsize.path,
-                    arcname=f'{file_name}.{image_suffix}',
+                    arcname=f'{file_name}.jpg',
                 )
             except FileNotFoundError:
                 error_info = (
