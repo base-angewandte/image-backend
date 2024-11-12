@@ -116,6 +116,7 @@ INSTALLED_APPS = [
     'drf_spectacular_sidecar',
     'django_jsonform',
     'tinymce',
+    'django_rq',
     # Project apps
     'accounts',
     'core',
@@ -364,6 +365,15 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
         },
         'stream_to_console': {'level': 'DEBUG', 'class': 'logging.StreamHandler'},
+        'rq_file': {
+            'level': 'DEBUG',
+            'class': 'concurrent_log_handler.ConcurrentTimedRotatingFileHandler',
+            'filename': LOG_DIR / 'rq.log',
+            'when': 'midnight',
+            'backupCount': 1000,
+            'use_gzip': True,
+            'formatter': 'verbose',
+        },
     },
     'loggers': {
         '': {
@@ -425,6 +435,17 @@ CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
 CORS_ALLOW_CREDENTIALS = env.bool('CORS_ALLOW_CREDENTIALS', default=False)
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
 CORS_EXPOSE_HEADERS = env.list('CORS_EXPOSE_HEADERS', default=[])
+
+# rq settings
+RQ_QUEUES = {
+    'default': {'USE_REDIS_CACHE': 'default', 'DEFAULT_TIMEOUT': 300},
+}
+
+RQ_RESULT_TTL = 500
+RQ = {
+    # only applies to django_rq's @job decorators, not to enqueue calls
+    'DEFAULT_RESULT_TTL': RQ_RESULT_TTL,
+}
 
 # base Header
 BASE_HEADER_SITE_URL = env.str('BASE_HEADER_SITE_URL', SITE_URL)
@@ -516,6 +537,7 @@ if SENTRY_DSN:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
     from sentry_sdk.integrations.redis import RedisIntegration
+    from sentry_sdk.integrations.rq import RqIntegration
 
     sentry_sdk.init(
         dsn=SENTRY_DSN,
@@ -523,6 +545,7 @@ if SENTRY_DSN:
         integrations=[
             DjangoIntegration(),
             RedisIntegration(),
+            RqIntegration(),
         ],
         traces_sample_rate=SENTRY_TRACES_SAMPLE_RATE,
         profiles_sample_rate=SENTRY_PROFILES_SAMPLE_RATE,

@@ -60,6 +60,8 @@ urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     # tinymce
     path('tinymce/', include('tinymce.urls')),
+    # django-rq
+    path('django-rq/', include('django_rq.urls')),
 ]
 
 # adding this, so static and media files can be served during development
