@@ -18,6 +18,7 @@ from django.core.files import File
 from django.db import models
 from django.db.models import JSONField
 from django.db.models.functions import Length, Upper
+from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 
 from .fetch import fetch_getty_data, fetch_wikidata
@@ -746,10 +747,12 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
             img_new.save(img_io, format='JPEG', subsampling=0, quality=95)
 
         original_name = Path(self.image_original.name).stem
-        fullsize_name = hashlib.blake2s(
-            original_name.encode(),
-            digest_size=4,
-        ).hexdigest()
+        fullsize_name = urlsafe_base64_encode(
+            hashlib.blake2s(
+                original_name.encode(),
+                digest_size=8,
+            ).digest(),
+        )
 
         # Save the image to the image_fullsize field
         self.image_fullsize.save(f'{fullsize_name}.jpg', File(img_io), save=False)
