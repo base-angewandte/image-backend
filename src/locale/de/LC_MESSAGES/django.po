@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-13 10:42+0100\n"
+"POT-Creation-Date: 2024-11-13 14:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -122,8 +122,8 @@ msgid "Album does not exist"
 msgstr "Album existiert nicht"
 
 #: api/views/albums.py:306 api/views/albums.py:426 api/views/artworks.py:132
-#: api/views/artworks.py:225 api/views/artworks.py:315
-#: api/views/artworks.py:365
+#: api/views/artworks.py:223 api/views/artworks.py:316
+#: api/views/artworks.py:366
 msgid "Artwork does not exist"
 msgstr "Kunstwerk existiert nicht"
 
@@ -136,11 +136,7 @@ msgstr "Fehler beim Herunterladen des Albums %(id)s: %(message)s"
 msgid "Invalid format"
 msgstr "Ungültiges Format"
 
-#: api/views/artworks.py:134
-msgid "Artwork id must be of type integer"
-msgstr "Kunstwerk ID muss ein Integer sein"
-
-#: api/views/artworks.py:428
+#: api/views/artworks.py:429
 #, python-format
 msgid "File for artwork %(id)s not found"
 msgstr "Datei für Kunstwerk %(id)s nicht gefunden"
@@ -510,6 +506,9 @@ msgstr "Bilder hochladen"
 #, python-format
 msgid " By %(filter_title)s "
 msgstr " Nach %(filter_title)s "
+
+#~ msgid "Artwork id must be of type integer"
+#~ msgstr "Kunstwerk ID muss ein Integer sein"
 
 #~ msgid "At least one Artwork in Album does not exist"
 #~ msgstr "Mindestens ein Kunstwerk im Album ist nicht vorhanden"

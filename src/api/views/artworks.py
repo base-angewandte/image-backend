@@ -11,7 +11,7 @@ from drf_spectacular.utils import (
 )
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import NotFound, ParseError
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
 from django.conf import settings
@@ -130,8 +130,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
-        except ValueError as ve:
-            raise ParseError(_('Artwork id must be of type integer')) from ve
 
         return Response(
             {
@@ -224,6 +222,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
 
+        if artwork.image_original and not artwork.image_fullsize:
+            artwork.create_image_fullsize()
+
         method = serializer.validated_data['method']
         size = f'{serializer.validated_data["width"]}x{serializer.validated_data["height"]}'
 
@@ -252,6 +253,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         exclude = (
             'id',
+            'archive_id',
             'checked',
             'published',
             'date_created',
@@ -271,11 +273,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         # the license property is not a field on the Artwork model but part of the serialisation
         ret['license'] = Artwork.get_license_label()
+
+        # localized fields
         ret['title_comment'] = Artwork.get_title_comment_label()
         ret['material_description'] = Artwork.get_material_description_label()
         ret['comments'] = Artwork.get_comments_label()
 
-        return Response(ret)
+        return Response(dict(sorted(ret.items())))
 
     @extend_schema(
         parameters=[
@@ -366,6 +370,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
+
+        if artwork.image_original and not artwork.image_fullsize:
+            artwork.create_image_fullsize()
 
         discriminatory_terms = artwork.get_discriminatory_terms_list(
             order_by_length=True,

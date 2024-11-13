@@ -48,6 +48,7 @@ class Person(AbstractBaseModel, MetaDataMixin):
         models.CharField(),
         verbose_name=_('Synonyms'),
         default=list,
+        blank=True,
     )
     synonyms_old = models.CharField(
         verbose_name=_('Synonyms (old)'),
@@ -156,7 +157,11 @@ class Person(AbstractBaseModel, MetaDataMixin):
 class Keyword(MPTTModel, MetaDataMixin, LocalizationMixin):
     """Keywords are nodes in a fixed hierarchical taxonomy."""
 
-    name = models.CharField(verbose_name=_('Name (DE)'), max_length=255, unique=True)
+    name = models.CharField(
+        verbose_name=_('Name (DE)'),
+        max_length=255,
+        unique=True,
+    )
     name_en = models.CharField(
         verbose_name=_('Name (EN)'),
         max_length=255,
@@ -204,6 +209,7 @@ class Keyword(MPTTModel, MetaDataMixin, LocalizationMixin):
 
     def clean(self):
         super().clean()
+
         if self.getty_id:
             # Validate getty url
             validate_getty_id(self.getty_id)
@@ -290,6 +296,7 @@ class Location(MPTTModel, MetaDataMixin, LocalizationMixin):
         models.CharField(),
         verbose_name=_('Synonyms'),
         default=list,
+        blank=True,
     )
     synonyms_old = models.CharField(
         verbose_name=_('Synonyms (old)'),
