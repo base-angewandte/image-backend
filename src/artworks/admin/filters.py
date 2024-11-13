@@ -1,4 +1,5 @@
 from django.contrib.admin import SimpleListFilter
+from django.core.cache import cache
 from django.utils.translation import gettext_lazy as _
 
 from ..models import DiscriminatoryTerm, Person
@@ -11,7 +12,11 @@ class PersonFilter(SimpleListFilter):
     template = 'admin/filters/filter-autocomplete.html'
 
     def lookups(self, request, model_admin):
-        persons = [(str(person.id), person.name) for person in Person.objects.all()]
+        cache_key = 'person_filter_lookups'
+        persons = cache.get(cache_key, None)
+        if persons is None:
+            persons = [(str(person.id), person.name) for person in Person.objects.all()]
+            cache.set(cache_key, persons, 10)
         return persons
 
     def queryset(self, request, queryset):
