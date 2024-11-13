@@ -122,6 +122,10 @@ class ArtworkAdmin(admin.ModelAdmin):
     )
     change_list_template = 'admin/artworks/change_list.html'
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.prefetch_related('artists')
+
     def get_urls(self):
         return [
             path(
