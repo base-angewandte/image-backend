@@ -11,7 +11,7 @@ from drf_spectacular.utils import (
 )
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import NotFound, ParseError
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
 from django.conf import settings
@@ -130,8 +130,6 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
-        except ValueError as ve:
-            raise ParseError(_('Artwork id must be of type integer')) from ve
 
         return Response(
             {
@@ -223,6 +221,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
+
+        if artwork.image_original and not artwork.image_fullsize:
+            artwork.create_image_fullsize()
 
         method = serializer.validated_data['method']
         size = f'{serializer.validated_data["width"]}x{serializer.validated_data["height"]}'
@@ -369,6 +370,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
+
+        if artwork.image_original and not artwork.image_fullsize:
+            artwork.create_image_fullsize()
 
         discriminatory_terms = artwork.get_discriminatory_terms_list(
             order_by_length=True,
