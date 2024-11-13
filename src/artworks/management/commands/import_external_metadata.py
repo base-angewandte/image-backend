@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError
 
-from artworks.gnd import add_preferred_name_to_synonyms
+from artworks.gnd import add_preferred_name_to_synonyms, construct_individual_name
 from artworks.models import Keyword, Location, Person
 
 
@@ -157,7 +157,7 @@ class Command(BaseCommand):
 
                     if data_type == 'artist':
                         if 'preferredNameEntityForThePerson' in data:
-                            preferred_name = instance.construct_individual_name(
+                            preferred_name = construct_individual_name(
                                 data['preferredNameEntityForThePerson'],
                             )
                             if preferred_name not in instance.synonyms:
