@@ -48,6 +48,7 @@ class Person(AbstractBaseModel, MetaDataMixin):
         models.CharField(),
         verbose_name=_('Synonyms'),
         default=list,
+        blank=True,
     )
     synonyms_old = models.CharField(
         verbose_name=_('Synonyms (old)'),
@@ -290,6 +291,7 @@ class Location(MPTTModel, MetaDataMixin, LocalizationMixin):
         models.CharField(),
         verbose_name=_('Synonyms'),
         default=list,
+        blank=True,
     )
     synonyms_old = models.CharField(
         verbose_name=_('Synonyms (old)'),
