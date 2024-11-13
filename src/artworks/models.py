@@ -627,6 +627,18 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
     def get_license_label():
         return _('Rights of use')
 
+    @staticmethod
+    def get_title_comment_label():
+        return _('Comment on title')
+
+    @staticmethod
+    def get_material_description_label():
+        return _('Material/Technique description')
+
+    @staticmethod
+    def get_comments_label():
+        return _('Comments')
+
     def get_short_description(self, language):
         artists = ', '.join(artist.name for artist in self.artists.all())
         title_in_language = (
