@@ -12,11 +12,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='keyword',
-            name='name',
-            field=models.CharField(blank=True, max_length=255, unique=True, verbose_name='Name (DE)'),
-        ),
-        migrations.AlterField(
             model_name='location',
             name='synonyms',
             field=django_jsonform.models.fields.ArrayField(base_field=models.CharField(), blank=True, default=list, size=None, verbose_name='Synonyms'),
