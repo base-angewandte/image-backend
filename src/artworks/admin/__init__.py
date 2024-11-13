@@ -35,6 +35,7 @@ class ArtworkAdmin(admin.ModelAdmin):
     )
     ordering = ('-date_created',)
     search_fields = (
+        'id',
         'title',
         'title_english',
         'title_comment_de',
