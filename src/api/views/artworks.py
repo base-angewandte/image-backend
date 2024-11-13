@@ -222,6 +222,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
 
+        if artwork.image_original and not artwork.image_fullsize:
+            artwork.create_image_fullsize()
+
         method = serializer.validated_data['method']
         size = f'{serializer.validated_data["width"]}x{serializer.validated_data["height"]}'
 
@@ -364,6 +367,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             artwork = self.get_queryset().get(pk=pk)
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
+
+        if artwork.image_original and not artwork.image_fullsize:
+            artwork.create_image_fullsize()
 
         discriminatory_terms = artwork.get_discriminatory_terms_list(
             order_by_length=True,
