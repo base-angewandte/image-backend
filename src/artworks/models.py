@@ -161,7 +161,6 @@ class Keyword(MPTTModel, MetaDataMixin, LocalizationMixin):
         verbose_name=_('Name (DE)'),
         max_length=255,
         unique=True,
-        blank=True,
     )
     name_en = models.CharField(
         verbose_name=_('Name (EN)'),
@@ -210,12 +209,6 @@ class Keyword(MPTTModel, MetaDataMixin, LocalizationMixin):
 
     def clean(self):
         super().clean()
-
-        if not self.name and not self.getty_id:
-            raise ValidationError(
-                _('Either a name or a valid %(label)s ID need to be set')
-                % {'label': settings.GETTY_LABEL},
-            )
 
         if self.getty_id:
             # Validate getty url
