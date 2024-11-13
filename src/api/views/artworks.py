@@ -252,6 +252,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         exclude = (
             'id',
+            'archive_id',
             'checked',
             'published',
             'date_created',
