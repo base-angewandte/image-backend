@@ -252,6 +252,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         exclude = (
             'id',
+            'archive_id',
             'checked',
             'published',
             'date_created',
@@ -271,11 +272,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         # the license property is not a field on the Artwork model but part of the serialisation
         ret['license'] = Artwork.get_license_label()
+
+        # localized fields
         ret['title_comment'] = Artwork.get_title_comment_label()
         ret['material_description'] = Artwork.get_material_description_label()
         ret['comments'] = Artwork.get_comments_label()
 
-        return Response(ret)
+        return Response(dict(sorted(ret.items())))
 
     @extend_schema(
         parameters=[
