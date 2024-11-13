@@ -271,6 +271,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         # the license property is not a field on the Artwork model but part of the serialisation
         ret['license'] = Artwork.get_license_label()
+        ret['title_comment'] = Artwork.get_title_comment_label()
+        ret['material_description'] = Artwork.get_material_description_label()
+        ret['comments'] = Artwork.get_comments_label()
 
         return Response(ret)
 
@@ -379,16 +382,16 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         # create metadata file content
         metadata_persons = (
-            f'{artwork._meta.get_field("artists").verbose_name.title()}: {", ".join([a.name for a in artwork.artists.all()])}\n'
+            f'{artwork._meta.get_field("artists").verbose_name}: {", ".join([a.name for a in artwork.artists.all()])}\n'
             if artwork.artists.exists()
             else ''
-            + f'{artwork._meta.get_field("photographers").verbose_name.title()}: {", ".join([a.name for a in artwork.photographers.all()])}\n'
+            + f'{artwork._meta.get_field("photographers").verbose_name}: {", ".join([a.name for a in artwork.photographers.all()])}\n'
             if artwork.photographers.exists()
             else ''
-            + f'{artwork._meta.get_field("authors").verbose_name.title()}: {", ".join([a.name for a in artwork.authors.all()])}\n'
+            + f'{artwork._meta.get_field("authors").verbose_name}: {", ".join([a.name for a in artwork.authors.all()])}\n'
             if artwork.authors.exists()
             else ''
-            + f'{artwork._meta.get_field("graphic_designers").verbose_name.title()}: {", ".join([a.name for a in artwork.graphic_designers.all()])}\n'
+            + f'{artwork._meta.get_field("graphic_designers").verbose_name}: {", ".join([a.name for a in artwork.graphic_designers.all()])}\n'
             if artwork.graphic_designers.exists()
             else ''
         )
