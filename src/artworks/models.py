@@ -204,6 +204,13 @@ class Keyword(MPTTModel, MetaDataMixin, LocalizationMixin):
 
     def clean(self):
         super().clean()
+
+        if not self.name and not self.getty_id:
+            raise ValidationError(
+                _('Either a name or a valid %(label)s ID need to be set')
+                % {'label': settings.GETTY_LABEL},
+            )
+
         if self.getty_id:
             # Validate getty url
             validate_getty_id(self.getty_id)
