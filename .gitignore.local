@@ -1,0 +1,8 @@
+!*.mo
+media
+fixtures
+src/assets/
+dockerdata/
+compose.override.yaml
+logs/
+tmp/

@@ -1,0 +1,247 @@
+[
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 1,
+        "fields": {
+            "term": "Aboriginal"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 2,
+        "fields": {
+            "term": "Barbarian"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 3,
+        "fields": {
+            "term": "Colored"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 4,
+        "fields": {
+            "term": "Disabled"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 5,
+        "fields": {
+            "term": "Indian"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 6,
+        "fields": {
+            "term": "Native"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 7,
+        "fields": {
+            "term": "Indigenious"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 8,
+        "fields": {
+            "term": "Farbige"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 9,
+        "fields": {
+            "term": "Farbiger"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 10,
+        "fields": {
+            "term": "Barbare"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 11,
+        "fields": {
+            "term": "Barbarin"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 12,
+        "fields": {
+            "term": "Page"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 13,
+        "fields": {
+            "term": "Diener"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 14,
+        "fields": {
+            "term": "Dienerin"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 15,
+        "fields": {
+            "term": "Harem"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 16,
+        "fields": {
+            "term": "Häuptling"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 17,
+        "fields": {
+            "term": "Indianer"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 18,
+        "fields": {
+            "term": "Indianerin"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 19,
+        "fields": {
+            "term": "Eingeborene"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 20,
+        "fields": {
+            "term": "Eingeborener"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 21,
+        "fields": {
+            "term": "Einheimische"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 22,
+        "fields": {
+            "term": "Einheimischer"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 23,
+        "fields": {
+            "term": "Mauren"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 24,
+        "fields": {
+            "term": "Mohr"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 25,
+        "fields": {
+            "term": "Negro"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 26,
+        "fields": {
+            "term": "Neger"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 27,
+        "fields": {
+            "term": "Negerin"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 28,
+        "fields": {
+            "term": "Oriental"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 29,
+        "fields": {
+            "term": "Slave"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 30,
+        "fields": {
+            "term": "Sklave"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 31,
+        "fields": {
+            "term": "Sklaven"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 32,
+        "fields": {
+            "term": "Sklavin"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 33,
+        "fields": {
+            "term": "Zigeuner"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 34,
+        "fields": {
+            "term": "Zigeunerin"
+        }
+    },
+    {
+        "model": "artworks.discriminatoryterm",
+        "pk": 35,
+        "fields": {
+            "term": "Zwerg"
+        }
+    }
+]

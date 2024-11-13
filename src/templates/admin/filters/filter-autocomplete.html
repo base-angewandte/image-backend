@@ -1,0 +1,31 @@
+{% load i18n %}
+<details data-filter-title="{{ title }}" open>
+  <summary>
+    <label for="{{ spec.parameter_name }}">
+      {% blocktranslate with filter_title=title %} By {{ filter_title }} {% endblocktranslate %}
+    </label>
+  </summary>
+  <ul>
+  <li>
+    <select id="{{ spec.parameter_name }}-select2-autocomplete" name="{{ spec.parameter_name }}" class="admin-autocomplete">
+      {% for choice in choices %}
+      <option value="{{ choice.query_string|iriencode }}" {% if choice.selected %}selected{% endif %}>{{ choice.display }}</option>
+      {% endfor %}
+    </select>
+  </li>
+  </ul>
+</details>
+
+<script>
+window.addEventListener('load', function() {
+  const $ = django.jQuery;
+
+  $('#{{ spec.parameter_name }}-select2-autocomplete').select2({
+    theme: 'admin-autocomplete'
+  });
+
+  $('#{{ spec.parameter_name }}-select2-autocomplete').on('change', function () {
+    window.location.href = window.location.pathname + $(this).val();
+  });
+});
+</script>

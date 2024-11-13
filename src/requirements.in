@@ -1,0 +1,36 @@
+# compile this file with 'uv pip compile requirements.in -o requirements.txt'
+# sync environment with 'uv pip sync requirements.txt'
+# to update all packages run 'uv pip compile requirements.in -o requirements.txt --upgrade'
+
+base-common==0.3
+base-common-drf==0.4
+concurrent-log-handler==0.9.25
+django~=4.2
+django-autocomplete-light==3.11.0
+django-cas-ng==5.0.1
+django-cleanup==8.1.0
+django-cors-headers==4.4.0
+django-environ==0.11.2
+django-filter==24.2
+django-jsonform==2.23.1
+django-mass-edit==3.5.0
+django-mptt==0.16.0
+# django-ordered-model is only needed for older migrations
+# and can be removed once migrations are squashed
+django-ordered-model==3.7.4
+django-redis==5.4.0
+django-rq==3.0.0
+django-tinymce==4.1.0
+django-versatileimagefield==3.1
+djangorestframework==3.14.0
+drf-spectacular[sidecar]==0.27.2
+psycopg[binary]==3.2.1
+python-pptx==1.0.2
+requests==2.32.3
+sentry-sdk[django]==2.8.0
+uv==0.2.24
+whitenoise[brotli]==6.7.0
+
+# Server
+gunicorn==22.0.0
+rainbow-saddle==0.4.0

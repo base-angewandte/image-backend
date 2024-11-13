@@ -12,6 +12,7 @@ Welcome to base Image's documentation!
 
    overview
    install
+   configuration
 
 
 .. Indices and tables

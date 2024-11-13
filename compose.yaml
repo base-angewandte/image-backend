@@ -1,0 +1,82 @@
+services:
+  image-redis:
+    image: redis:4.0.11-alpine
+    container_name: image-redis
+    volumes:
+      - ./dockerdata/redis/data:/data
+    networks:
+      - imagenet
+    restart: always
+    command: redis-server --appendonly yes
+
+  image-postgres:
+    image: postgres:16-alpine
+    container_name: image-postgres
+    environment:
+      - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./dockerdata/postgres/16/data:/var/lib/postgresql/data/pgdata
+    networks:
+      - imagenet
+    restart: always
+
+  image-gotenberg:
+    image: gotenberg/gotenberg
+    container_name: image-gotenberg
+    expose:
+      - 3000
+    networks:
+      - imagenet
+    restart: always
+
+  image-django:
+    build: ./src
+    image: image-django
+    container_name: image-django
+    env_file:
+      - .env
+    expose:
+      - 8300
+    volumes:
+      - ./src:/django
+      - ./src/assets/static:/django/assets/static
+      - $MEDIA_DIR:/django/assets/media
+      - ./logs:/logs
+    networks:
+      - imagenet
+    restart: always
+    depends_on:
+      - image-postgres
+      - image-redis
+      - image-gotenberg
+
+  image-rq-worker:
+    build: ./src
+    image: image-django
+    container_name: image-rq-worker
+    env_file:
+      - .env
+    volumes_from:
+      - image-django
+    networks:
+      - imagenet
+    restart: always
+    depends_on:
+      - image-postgres
+      - image-redis
+    command: python manage.py rqworker default
+
+  image-cron:
+    image: paradoxon/alpine-cron
+    container_name: image-cron
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker/cron/crontab:/tmp/crontab
+    network_mode: "none"
+    restart: always
+
+networks:
+  imagenet:
