@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-13 10:42+0100\n"
+"POT-Creation-Date: 2024-11-13 14:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -122,8 +122,8 @@ msgid "Album does not exist"
 msgstr ""
 
 #: api/views/albums.py:306 api/views/albums.py:426 api/views/artworks.py:132
-#: api/views/artworks.py:225 api/views/artworks.py:315
-#: api/views/artworks.py:365
+#: api/views/artworks.py:223 api/views/artworks.py:316
+#: api/views/artworks.py:366
 msgid "Artwork does not exist"
 msgstr ""
 
@@ -136,11 +136,7 @@ msgstr ""
 msgid "Invalid format"
 msgstr ""
 
-#: api/views/artworks.py:134
-msgid "Artwork id must be of type integer"
-msgstr ""
-
-#: api/views/artworks.py:428
+#: api/views/artworks.py:429
 #, python-format
 msgid "File for artwork %(id)s not found"
 msgstr ""
