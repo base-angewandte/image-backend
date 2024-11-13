@@ -156,7 +156,12 @@ class Person(AbstractBaseModel, MetaDataMixin):
 class Keyword(MPTTModel, MetaDataMixin, LocalizationMixin):
     """Keywords are nodes in a fixed hierarchical taxonomy."""
 
-    name = models.CharField(verbose_name=_('Name (DE)'), max_length=255, unique=True)
+    name = models.CharField(
+        verbose_name=_('Name (DE)'),
+        max_length=255,
+        unique=True,
+        blank=True,
+    )
     name_en = models.CharField(
         verbose_name=_('Name (EN)'),
         max_length=255,
