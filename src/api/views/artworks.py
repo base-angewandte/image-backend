@@ -276,7 +276,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         ret['material_description'] = Artwork.get_material_description_label()
         ret['comments'] = Artwork.get_comments_label()
 
-        return Response(ret)
+        return Response(dict(sorted(ret.items())))
 
     @extend_schema(
         parameters=[
