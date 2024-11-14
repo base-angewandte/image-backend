@@ -198,17 +198,7 @@ class Command(BaseCommand):
                 instance.getty_id = entry[1]
                 instance.getty_overwrite = True
                 instance.update_with_getty_data(data)
-
-                # if the name generated from the Getty AAT differs from the one
-                # originally stored in image, we restore the old name and
-                # deactivate the getty_overwrite flag
-                if instance.name != entry[0]:
-                    instance.name = entry[0]
-                    instance.getty_overwrite = False
-                    updated_without_name.append(entry)
-                else:
-                    updated.append(entry)
-
+                updated.append(entry)
                 try:
                     instance.save()
                 except IntegrityError as e:
