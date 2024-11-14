@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -29,6 +30,10 @@ class User(AbstractUser):
             'display_images': self.display_images,
             'display_folders': self.display_folders,
         }
+
+    @property
+    def is_editor(self):
+        return self.groups.filter(name=settings.EDITOR_GROUP).exists()
 
     def __str__(self):
         return self.get_full_name() or self.username

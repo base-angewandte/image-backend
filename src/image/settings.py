@@ -522,6 +522,8 @@ for permission in DEFAULT_PERMISSIONS:
             f'Permission {repr(permission)} not allowed in DEFAULT_PERMISSIONS',
         )
 
+EDITOR_GROUP = 'editor'
+
 SEARCH_LIMIT = 30
 
 LOCATION_SEARCH_LEVELS = env.int('LOCATION_SEARCH_LEVELS', default=1)
