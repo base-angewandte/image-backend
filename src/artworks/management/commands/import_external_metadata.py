@@ -205,9 +205,10 @@ class Command(BaseCommand):
                     integrity_errors.append((entry, repr(e)))
 
         self.stdout.write(f'Updated {len(updated)} entries.')
-        self.stdout.write(
-            f'Updated {len(updated_without_name)} entries, without overwriting the name.',
-        )
+        if updated_without_name:
+            self.stdout.write(
+                f'Updated {len(updated_without_name)} entries, without overwriting the name.',
+            )
         # all checks: if the there are entries in the initialized lists from above,
         # write out there elements/length/count.
         if entries_not_found:
