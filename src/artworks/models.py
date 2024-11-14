@@ -18,6 +18,7 @@ from django.core.files import File
 from django.db import models
 from django.db.models import JSONField
 from django.db.models.functions import Length, Upper
+from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 
@@ -629,6 +630,10 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
     @property
     def title_comment_localized(self):
         return self.get_localized_property('title_comment')
+
+    @property
+    def editing_link(self):
+        return reverse('admin:artworks_artwork_change', kwargs={'object_id': self.pk})
 
     @staticmethod
     def get_license_label():
