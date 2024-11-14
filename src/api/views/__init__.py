@@ -80,6 +80,8 @@ def slides_with_details(album, request):
                 for artist in artwork.artists.all()
             ],
         }
+        if request.user.is_editor:
+            artworks[artwork.pk]['editing'] = artwork.editing_link
 
     for slide in album.slides:
         slide_info = {'id': slide['id'], 'items': []}
