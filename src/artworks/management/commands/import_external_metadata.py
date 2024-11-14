@@ -198,26 +198,17 @@ class Command(BaseCommand):
                 instance.getty_id = entry[1]
                 instance.getty_overwrite = True
                 instance.update_with_getty_data(data)
-
-                # if the name generated from the Getty AAT differs from the one
-                # originally stored in image, we restore the old name and
-                # deactivate the getty_overwrite flag
-                if instance.name != entry[0]:
-                    instance.name = entry[0]
-                    instance.getty_overwrite = False
-                    updated_without_name.append(entry)
-                else:
-                    updated.append(entry)
-
+                updated.append(entry)
                 try:
                     instance.save()
                 except IntegrityError as e:
                     integrity_errors.append((entry, repr(e)))
 
         self.stdout.write(f'Updated {len(updated)} entries.')
-        self.stdout.write(
-            f'Updated {len(updated_without_name)} entries, without overwriting the name.',
-        )
+        if updated_without_name:
+            self.stdout.write(
+                f'Updated {len(updated_without_name)} entries, without overwriting the name.',
+            )
         # all checks: if the there are entries in the initialized lists from above,
         # write out there elements/length/count.
         if entries_not_found:
