@@ -110,7 +110,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'discriminatory_terms': artwork.get_discriminatory_terms_list(),
             }
             if request.user.is_editor:
-                artwork_serialized['editing'] = artwork.editing_link
+                artwork_serialized['editing_link'] = artwork.editing_link
             ret['results'].append(artwork_serialized)
 
         return Response(ret)
@@ -172,7 +172,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         }
 
         if request.user.is_editor:
-            artwork_serialized['editing'] = artwork.editing_link
+            artwork_serialized['editing_link'] = artwork.editing_link
 
         return Response(artwork_serialized)
 

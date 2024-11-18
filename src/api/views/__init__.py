@@ -81,7 +81,7 @@ def slides_with_details(album, request):
             ],
         }
         if request.user.is_editor:
-            artworks[artwork.pk]['editing'] = artwork.editing_link
+            artworks[artwork.pk]['editing_link'] = artwork.editing_link
 
     for slide in album.slides:
         slide_info = {'id': slide['id'], 'items': []}

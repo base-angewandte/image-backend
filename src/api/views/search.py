@@ -298,7 +298,7 @@ class SearchViewSet(viewsets.GenericViewSet):
                 'score': artwork.rank,
             }
             if request.user.is_editor:
-                artwork_serialized['editing'] = artwork.editing_link
+                artwork_serialized['editing_link'] = artwork.editing_link
             results.append(artwork_serialized)
 
         return Response({'total': total, 'results': results})
