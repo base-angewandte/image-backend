@@ -65,7 +65,11 @@ class FoldersViewSet(viewsets.GenericViewSet):
             self.ordering_fields,
         )
 
-        results = self.queryset.filter(owner=request.user).order_by(sorting)
+        results = (
+            self.queryset.filter(owner=request.user)
+            .order_by(sorting)
+            .select_related('owner')
+        )
         results = results[offset : offset + limit]
 
         return Response(
@@ -159,9 +163,15 @@ class FoldersViewSet(viewsets.GenericViewSet):
             permissions=serializer.validated_data['permissions'],
         )
 
-        albums = folder.albums.filter(q_filters).order_by(sorting)[
-            offset : offset + limit
-        ]
+        albums = (
+            folder.albums.filter(q_filters)
+            .order_by(sorting)
+            .select_related(
+                'user',
+                'last_changed_by',
+            )[offset : offset + limit]
+        )
+
         albums_data = [
             album_object(
                 album,
