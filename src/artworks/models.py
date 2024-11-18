@@ -633,7 +633,10 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
 
     @property
     def editing_link(self):
-        return reverse('admin:artworks_artwork_change', kwargs={'object_id': self.pk})
+        return settings.FORCE_SCRIPT_NAME + reverse(
+            'admin:artworks_artwork_change',
+            kwargs={'object_id': self.pk},
+        )
 
     @staticmethod
     def get_license_label():
