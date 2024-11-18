@@ -116,7 +116,14 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             permissions=serializer.validated_data['permissions'],
         )
 
-        albums = Album.objects.filter(q_filters).order_by(sorting)
+        albums = (
+            Album.objects.filter(q_filters)
+            .order_by(sorting)
+            .select_related(
+                'user',
+                'last_changed_by',
+            )
+        )
 
         total = albums.count()
 
