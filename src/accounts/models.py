@@ -33,7 +33,9 @@ class User(AbstractUser):
 
     @property
     def is_editor(self):
-        return self.groups.filter(name=settings.EDITOR_GROUP).exists()
+        return (
+            self.is_superuser or self.groups.filter(name=settings.EDITOR_GROUP).exists()
+        )
 
     def __str__(self):
         return self.get_full_name() or self.username
