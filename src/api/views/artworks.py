@@ -107,7 +107,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 'photographers': get_person_list(artwork.photographers.all()),
                 'authors': get_person_list(artwork.authors.all()),
                 'graphic_designers': get_person_list(artwork.graphic_designers.all()),
-                'discriminatory_terms': artwork.get_discriminatory_terms_list(),
+                'discriminatory_terms': [
+                    dt.term for dt in artwork.discriminatory_terms.all()
+                ],
             }
             if request.user.is_editor:
                 artwork_serialized['editing_link'] = artwork.editing_link
