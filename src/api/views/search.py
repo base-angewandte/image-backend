@@ -275,32 +275,31 @@ class SearchViewSet(viewsets.GenericViewSet):
             # iteration even though the value is the same for all results
             total = artwork.total_count
 
-            results.append(
-                {
-                    'id': artwork.id,
-                    'image_original': request.build_absolute_uri(
-                        artwork.image_original.url,
-                    )
-                    if artwork.image_original
-                    else None,
-                    'image_fullsize': request.build_absolute_uri(
-                        artwork.image_fullsize.url,
-                    )
-                    if artwork.image_fullsize
-                    else None,
-                    'credits': artwork.credits,
-                    'title': artwork.title,
-                    'discriminatory_terms': artwork.get_discriminatory_terms_list(),
-                    'date': artwork.date,
-                    'artists': [
-                        {'value': artist.name, 'id': artist.id}
-                        for artist in artwork.artists.all()
-                    ],
-                    'score': artwork.rank,
-                },
-            )
+            artwork_serialized = {
+                'id': artwork.id,
+                'image_original': request.build_absolute_uri(
+                    artwork.image_original.url,
+                )
+                if artwork.image_original
+                else None,
+                'image_fullsize': request.build_absolute_uri(
+                    artwork.image_fullsize.url,
+                )
+                if artwork.image_fullsize
+                else None,
+                'credits': artwork.credits,
+                'title': artwork.title,
+                'discriminatory_terms': artwork.get_discriminatory_terms_list(),
+                'date': artwork.date,
+                'artists': [
+                    {'value': artist.name, 'id': artist.id}
+                    for artist in artwork.artists.all()
+                ],
+                'score': artwork.rank,
+            }
             if request.user.is_editor:
-                results[-1]['editing'] = artwork.editing_link
+                artwork_serialized['editing'] = artwork.editing_link
+            results.append(artwork_serialized)
 
         return Response({'total': total, 'results': results})
 

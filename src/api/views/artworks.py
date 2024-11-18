@@ -131,7 +131,7 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
 
-        ret = {
+        artwork_serialized = {
             'id': artwork.id,
             'image_original': request.build_absolute_uri(artwork.image_original.url)
             if artwork.image_original
@@ -172,9 +172,9 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         }
 
         if request.user.is_editor:
-            ret['editing'] = artwork.editing_link
+            artwork_serialized['editing'] = artwork.editing_link
 
-        return Response(ret)
+        return Response(artwork_serialized)
 
     # additional actions
 
