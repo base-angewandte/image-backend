@@ -108,6 +108,7 @@ INSTALLED_APPS = [
     'versatileimagefield',
     'django_cleanup',
     'django_cas_ng',
+    'django_extensions',
     'mptt',
     'massadmin',
     'ordered_model',
