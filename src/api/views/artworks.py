@@ -83,37 +83,37 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             'discriminatory_terms',
         )
 
-        return Response(
-            {
-                'total': total,
-                'results': [
-                    {
-                        'id': artwork.id,
-                        'image_original': request.build_absolute_uri(
-                            artwork.image_original.url,
-                        )
-                        if artwork.image_original
-                        else None,
-                        'image_fullsize': request.build_absolute_uri(
-                            artwork.image_fullsize.url,
-                        )
-                        if artwork.image_fullsize
-                        else None,
-                        'credits': artwork.credits,
-                        'title': artwork.title,
-                        'date': artwork.date,
-                        'artists': get_person_list(artwork.artists.all()),
-                        'photographers': get_person_list(artwork.photographers.all()),
-                        'authors': get_person_list(artwork.authors.all()),
-                        'graphic_designers': get_person_list(
-                            artwork.graphic_designers.all(),
-                        ),
-                        'discriminatory_terms': artwork.get_discriminatory_terms_list(),
-                    }
-                    for artwork in qs
-                ],
-            },
-        )
+        ret = {
+            'total': total,
+            'results': [],
+        }
+        for artwork in qs:
+            artwork_serialized = {
+                'id': artwork.id,
+                'image_original': request.build_absolute_uri(
+                    artwork.image_original.url,
+                )
+                if artwork.image_original
+                else None,
+                'image_fullsize': request.build_absolute_uri(
+                    artwork.image_fullsize.url,
+                )
+                if artwork.image_fullsize
+                else None,
+                'credits': artwork.credits,
+                'title': artwork.title,
+                'date': artwork.date,
+                'artists': get_person_list(artwork.artists.all()),
+                'photographers': get_person_list(artwork.photographers.all()),
+                'authors': get_person_list(artwork.authors.all()),
+                'graphic_designers': get_person_list(artwork.graphic_designers.all()),
+                'discriminatory_terms': artwork.get_discriminatory_terms_list(),
+            }
+            if request.user.is_editor:
+                artwork_serialized['editing_link'] = artwork.editing_link
+            ret['results'].append(artwork_serialized)
+
+        return Response(ret)
 
     @extend_schema(
         responses={
@@ -131,47 +131,50 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         except Artwork.DoesNotExist as dne:
             raise NotFound(_('Artwork does not exist')) from dne
 
-        return Response(
-            {
-                'id': artwork.id,
-                'image_original': request.build_absolute_uri(artwork.image_original.url)
-                if artwork.image_original
-                else None,
-                'image_fullsize': request.build_absolute_uri(artwork.image_fullsize.url)
-                if artwork.image_fullsize
-                else None,
-                'title': artwork.title,
-                'title_english': artwork.title_english,
-                'title_comment': artwork.title_comment_localized,
-                'discriminatory_terms': artwork.get_discriminatory_terms_list(),
-                'date': artwork.date,
-                'material': artwork.material_description_localized,
-                'dimensions': artwork.dimensions_display,
-                'comments': artwork.comments_localized,
-                'credits': artwork.credits,
-                'credits_link': artwork.credits_link,
-                'link': artwork.link,
-                'license': getattr(Text.objects.get(pk=2), get_language(), ''),
-                'place_of_production': artwork.get_place_of_production_list(),
-                'location': {
-                    'id': artwork.location.id,
-                    'value': artwork.location.name_localized,
+        artwork_serialized = {
+            'id': artwork.id,
+            'image_original': request.build_absolute_uri(artwork.image_original.url)
+            if artwork.image_original
+            else None,
+            'image_fullsize': request.build_absolute_uri(artwork.image_fullsize.url)
+            if artwork.image_fullsize
+            else None,
+            'title': artwork.title,
+            'title_english': artwork.title_english,
+            'title_comment': artwork.title_comment_localized,
+            'discriminatory_terms': artwork.get_discriminatory_terms_list(),
+            'date': artwork.date,
+            'material': artwork.material_description_localized,
+            'dimensions': artwork.dimensions_display,
+            'comments': artwork.comments_localized,
+            'credits': artwork.credits,
+            'credits_link': artwork.credits_link,
+            'link': artwork.link,
+            'license': getattr(Text.objects.get(pk=2), get_language(), ''),
+            'place_of_production': artwork.get_place_of_production_list(),
+            'location': {
+                'id': artwork.location.id,
+                'value': artwork.location.name_localized,
+            }
+            if artwork.location
+            else {},
+            'artists': get_person_list(artwork.artists.all()),
+            'photographers': get_person_list(artwork.photographers.all()),
+            'authors': get_person_list(artwork.authors.all()),
+            'graphic_designers': get_person_list(artwork.graphic_designers.all()),
+            'keywords': [
+                {
+                    'id': keyword.id,
+                    'value': keyword.name_localized,
                 }
-                if artwork.location
-                else {},
-                'artists': get_person_list(artwork.artists.all()),
-                'photographers': get_person_list(artwork.photographers.all()),
-                'authors': get_person_list(artwork.authors.all()),
-                'graphic_designers': get_person_list(artwork.graphic_designers.all()),
-                'keywords': [
-                    {
-                        'id': keyword.id,
-                        'value': keyword.name_localized,
-                    }
-                    for keyword in artwork.keywords.all()
-                ],
-            },
-        )
+                for keyword in artwork.keywords.all()
+            ],
+        }
+
+        if request.user.is_editor:
+            artwork_serialized['editing_link'] = artwork.editing_link
+
+        return Response(artwork_serialized)
 
     # additional actions
 
