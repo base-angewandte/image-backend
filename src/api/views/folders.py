@@ -77,7 +77,7 @@ class FoldersViewSet(viewsets.GenericViewSet):
                 {
                     'id': folder.id,
                     'title': folder.title,
-                    'owner': f'{folder.owner.first_name} {folder.owner.last_name}',
+                    'owner': folder.owner.get_full_name(),
                 }
                 for folder in results
             ],
