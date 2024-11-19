@@ -1,3 +1,6 @@
+import operator
+from functools import reduce
+
 from drf_spectacular.utils import (
     OpenApiExample,
     OpenApiParameter,
@@ -149,7 +152,7 @@ def autocomplete(request, *args, **kwargs):
                 .annotate(
                     similarity=TrigramWordSimilarity(
                         q_param,
-                        'name',
+                        'name__unaccent',
                     ),
                 )
                 .filter(similarity__gte=0.6)
@@ -172,15 +175,15 @@ def autocomplete(request, *args, **kwargs):
             query = (
                 MODEL_MAP[t]
                 .objects.filter(q_filters)
-                .filter(title__icontains=q_param)
+                .filter(title__unaccent__icontains=q_param)
                 .annotate(label=F('title'))[:limit]
             )
 
             d['data'] = query.values('id', 'label')
 
         elif t == 'titles':
-            q_filters = Q(title__icontains=q_param) | Q(
-                title_english__icontains=q_param,
+            q_filters = Q(title__unaccent__icontains=q_param) | Q(
+                title_english__unaccent__icontains=q_param,
             )
             query = (
                 MODEL_MAP[t]
@@ -204,7 +207,7 @@ def autocomplete(request, *args, **kwargs):
                 )
 
         elif t == 'artists':
-            q_filters = Q(name__icontains=q_param)
+            q_filters = Q(name__unaccent__icontains=q_param)
             query = (
                 MODEL_MAP[t].objects.filter(q_filters).annotate(label=F('name'))[:limit]
             )
@@ -213,7 +216,13 @@ def autocomplete(request, *args, **kwargs):
         else:
             # In the else clause only locations and keywords are queried.
             # All other types are in the else-if statements.
-            q_filters = Q(name__icontains=q_param) | Q(name_en__icontains=q_param)
+            q_filters_list = [
+                {'name__unaccent__icontains': q_param},
+                {'name_en__unaccent__icontains': q_param},
+            ]
+
+            q_filters = reduce(operator.or_, (Q(**x) for x in q_filters_list))
+
             query = MODEL_MAP[t].objects.filter(q_filters)[:limit]
             for item in query:
                 d['data'].append(
