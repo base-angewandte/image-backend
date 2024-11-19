@@ -1,3 +1,6 @@
+import operator
+from functools import reduce
+
 from base_common_drf.openapi.responses import ERROR_RESPONSES
 from drf_spectacular.utils import OpenApiExample, extend_schema, inline_serializer
 from rest_framework import viewsets
@@ -42,7 +45,11 @@ def filter_artists(filter_values):
                 Q(artists__name__unaccent__icontains=val)
                 | Q(authors__name__unaccent__icontains=val)
                 | Q(photographers__name__unaccent__icontains=val)
-                | Q(graphic_designers__name__unaccent__icontains=val),
+                | Q(graphic_designers__name__unaccent__icontains=val)
+                | Q(artists__synonyms__icontains=val)
+                | Q(authors__synonyms__icontains=val)
+                | Q(photographers__synonyms__icontains=val)
+                | Q(graphic_designers__synonyms__icontains=val),
             )
         elif isinstance(val, dict) and 'id' in val:
             filters_list.append(
@@ -83,9 +90,18 @@ def filter_mptt_model(filter_values, model, search_field):
     filters_list = []
     for val in filter_values:
         if isinstance(val, str):
+            q_filters = [
+                {f'{search_field}__name__unaccent__icontains': val},
+                {f'{search_field}__name_en__unaccent__icontains': val},
+            ]
+
+            if search_field in ('place_of_production', 'location'):
+                q_filters.append(
+                    {f'{search_field}__synonyms__icontains': val},
+                )
+
             filters_list.append(
-                Q(**{f'{search_field}__name__unaccent__icontains': val})
-                | Q(**{f'{search_field}__name_en__unaccent__icontains': val}),
+                reduce(operator.or_, (Q(**x) for x in q_filters)),
             )
         elif isinstance(val, dict) and 'id' in val:
             entries = model.objects.filter(pk=val.get('id')).get_descendants(
