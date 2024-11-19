@@ -69,7 +69,11 @@ def slides_with_details(album, request):
             else None,
             'title': artwork.title,
             'discriminatory_terms': [
-                dt.term for dt in artwork.discriminatory_terms.all()
+                # we iterate over discriminatory_terms directly instead of using
+                # artwork.get_discriminatory_terms_list() to ensure that we are
+                # using the results already fetched with prefetch_related()
+                dt.term
+                for dt in artwork.discriminatory_terms.all()
             ],
             'credits': artwork.credits,
             'date': artwork.date,
