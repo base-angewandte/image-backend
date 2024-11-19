@@ -541,7 +541,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         blank=True,
     )
     date_year_to = models.IntegerField(verbose_name=_('Date To'), null=True, blank=True)
-    material = models.ManyToManyField(
+    materials = models.ManyToManyField(
         Material,
         verbose_name=_('Material/Technique'),
         related_name='artworks',
@@ -740,7 +740,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         # materials
         materials = []
 
-        for material in self.material.all():
+        for material in self.materials.all():
             materials.append(material.name)
             if material.name_en:
                 materials.append(material.name_en)

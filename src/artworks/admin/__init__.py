@@ -86,7 +86,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'date',
         'date_year_from',
         'date_year_to',
-        'material',
+        'materials',
         'material_description_de',
         'material_description_en',
         'width',
