@@ -1,7 +1,6 @@
 from rest_framework.exceptions import ParseError
 from rest_framework.request import Request
 
-from django.db.models import F
 from django.utils.translation import gettext_lazy as _
 
 from artworks.models import Album, Artwork, PermissionsRelation
@@ -69,7 +68,9 @@ def slides_with_details(album, request):
             if artwork.image_fullsize
             else None,
             'title': artwork.title,
-            'discriminatory_terms': artwork.get_discriminatory_terms_list(),
+            'discriminatory_terms': [
+                dt.term for dt in artwork.discriminatory_terms.all()
+            ],
             'credits': artwork.credits,
             'date': artwork.date,
             'artists': [
@@ -223,4 +224,4 @@ def album_object(
 
 
 def get_person_list(queryset):
-    return queryset.annotate(value=F('name')).values('id', 'value')
+    return [{'id': person.id, 'value': person.name} for person in queryset]
