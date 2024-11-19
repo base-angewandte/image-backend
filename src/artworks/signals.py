@@ -8,12 +8,32 @@ from django.db.migrations.loader import MigrationLoader
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
-from .models import Artwork, get_path_to_original_file
+from .models import (
+    Artwork,
+    Person,
+    get_path_to_original_file,
+)
 
 
 @receiver(post_save, sender=Artwork)
 def update_search_vector(sender, instance, created, *args, **kwargs):
     instance.update_search_vector()
+
+
+@receiver(post_save, sender=Person)
+def update_search_vector_person(sender, instance, created, *args, **kwargs):
+    artwork_ids = []
+
+    artwork_ids.extend(instance.artworks_artists.values_list('pk', flat=True))
+    artwork_ids.extend(instance.artworks_photographers.values_list('pk', flat=True))
+    artwork_ids.extend(instance.artworks_authors.values_list('pk', flat=True))
+    artwork_ids.extend(instance.artworks_graphic_designers.values_list('pk', flat=True))
+
+    for artwork in Artwork.objects.filter(id__in=artwork_ids):
+        django_rq.enqueue(
+            artwork.update_search_vector,
+            result_ttl=settings.RQ_RESULT_TTL,
+        )
 
 
 @receiver(post_save, sender=Artwork)

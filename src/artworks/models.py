@@ -509,21 +509,25 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         'DiscriminatoryTerm',
         verbose_name=_('Discriminatory terms'),
     )
-    artists = models.ManyToManyField(Person, verbose_name=_('Artists'))
+    artists = models.ManyToManyField(
+        Person,
+        verbose_name=_('Artists'),
+        related_name='artworks_artists',
+    )
     photographers = models.ManyToManyField(
         Person,
         verbose_name=_('Photographers'),
-        related_name='photographers',
+        related_name='artworks_photographers',
     )
     authors = models.ManyToManyField(
         Person,
         verbose_name=_('Authors'),
-        related_name='authors',
+        related_name='artworks_authors',
     )
     graphic_designers = models.ManyToManyField(
         Person,
         verbose_name=_('Graphic designers'),
-        related_name='graphic_designers',
+        related_name='artworks_graphic_designers',
     )
     date = models.CharField(
         verbose_name=_('Date'),
