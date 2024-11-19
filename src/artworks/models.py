@@ -707,9 +707,18 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         locations_ids = []
         locations = []
 
-        locations_ids.extend(self.place_of_production.values_list('pk', flat=True))
+        locations_ids.extend(
+            Location.objects.get_queryset_descendants(
+                self.place_of_production,
+                include_self=True,
+            ).values_list('pk', flat=True),
+        )
         if self.location:
-            locations_ids.append(self.location.pk)
+            locations_ids.extend(
+                Location.objects.filter(pk=self.location.pk)
+                .get_descendants(include_self=True)
+                .values_list('pk', flat=True),
+            )
 
         for location in Location.objects.filter(id__in=set(locations_ids)):
             locations.append(location.name)
@@ -720,7 +729,10 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         # keywords
         keywords = []
 
-        for keyword in self.keywords.all():
+        for keyword in Keyword.objects.get_queryset_descendants(
+            self.keywords,
+            include_self=True,
+        ):
             keywords.append(keyword.name)
             if keyword.name_en:
                 keywords.append(keyword.name_en)
