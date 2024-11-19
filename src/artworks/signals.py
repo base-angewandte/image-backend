@@ -11,6 +11,7 @@ from django.dispatch import receiver
 from .models import (
     Artwork,
     Keyword,
+    Location,
     Material,
     Person,
     get_path_to_original_file,
@@ -26,6 +27,22 @@ def update_search_vector(sender, instance, created, *args, **kwargs):
 @receiver(post_save, sender=Keyword)
 def update_search_vector_keyword_material(sender, instance, created, *args, **kwargs):
     artwork_ids = instance.artworks.values_list('pk', flat=True)
+
+    for artwork in Artwork.objects.filter(id__in=artwork_ids):
+        django_rq.enqueue(
+            artwork.update_search_vector,
+            result_ttl=settings.RQ_RESULT_TTL,
+        )
+
+
+@receiver(post_save, sender=Location)
+def update_search_vector_location(sender, instance, created, *args, **kwargs):
+    artwork_ids = []
+
+    artwork_ids.extend(instance.artworks_created_here.values_list('pk', flat=True))
+    artwork_ids.extend(
+        instance.artworks_currently_located_here.values_list('pk', flat=True),
+    )
 
     for artwork in Artwork.objects.filter(id__in=artwork_ids):
         django_rq.enqueue(
