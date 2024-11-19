@@ -465,6 +465,12 @@ def get_path_to_image_fullsize(instance, filename):
     return get_path_to_file(instance, filename, 'image_fullsize')
 
 
+def remove_non_printable_characters(value):
+    if value:
+        return ''.join(ch for ch in value if ch.isprintable())
+    return value
+
+
 class Artwork(AbstractBaseModel, LocalizationMixin):
     """Each Artwork has an metadata and image and various versions (renditions)
     of that image."""
@@ -660,6 +666,8 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         )
         parts = [artists, title_in_language, self.date]
         description = ', '.join(x.strip() for x in parts if x.strip())
+        if not description.isprintable():
+            description = ''.join(ch for ch in description if ch.isprintable())
         return description
 
     def get_discriminatory_terms_list(self, order_by_length=False):
