@@ -10,6 +10,8 @@ from django.dispatch import receiver
 
 from .models import (
     Artwork,
+    Keyword,
+    Material,
     Person,
     get_path_to_original_file,
 )
@@ -18,6 +20,18 @@ from .models import (
 @receiver(post_save, sender=Artwork)
 def update_search_vector(sender, instance, created, *args, **kwargs):
     instance.update_search_vector()
+
+
+@receiver(post_save, sender=Material)
+@receiver(post_save, sender=Keyword)
+def update_search_vector_keyword_material(sender, instance, created, *args, **kwargs):
+    artwork_ids = instance.artworks.values_list('pk', flat=True)
+
+    for artwork in Artwork.objects.filter(id__in=artwork_ids):
+        django_rq.enqueue(
+            artwork.update_search_vector,
+            result_ttl=settings.RQ_RESULT_TTL,
+        )
 
 
 @receiver(post_save, sender=Person)

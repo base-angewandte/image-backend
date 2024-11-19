@@ -544,6 +544,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
     material = models.ManyToManyField(
         Material,
         verbose_name=_('Material/Technique'),
+        related_name='artworks',
     )
     material_description_de = models.TextField(
         verbose_name=_('Material/Technique description (DE)'),
@@ -585,7 +586,11 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
     comments_en = models.TextField(verbose_name=_('Comments (EN)'), blank=True)
     credits = models.TextField(verbose_name=_('Credits'), blank=True)
     credits_link = models.URLField(verbose_name=_('Credits URL'), blank=True)
-    keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'))
+    keywords = models.ManyToManyField(
+        Keyword,
+        verbose_name=_('Keywords'),
+        related_name='artworks',
+    )
     link = models.URLField(verbose_name=_('Link'), blank=True)
     place_of_production = models.ManyToManyField(
         Location,
