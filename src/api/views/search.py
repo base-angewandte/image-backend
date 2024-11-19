@@ -289,7 +289,13 @@ class SearchViewSet(viewsets.GenericViewSet):
                 else None,
                 'credits': artwork.credits,
                 'title': artwork.title,
-                'discriminatory_terms': artwork.get_discriminatory_terms_list(),
+                'discriminatory_terms': [
+                    # we iterate over discriminatory_terms directly instead of using
+                    # artwork.get_discriminatory_terms_list() to ensure that we are
+                    # using the results already fetched with prefetch_related()
+                    dt.term
+                    for dt in artwork.discriminatory_terms.all()
+                ],
                 'date': artwork.date,
                 'artists': [
                     {'value': artist.name, 'id': artist.id}

@@ -193,7 +193,13 @@ def autocomplete(request, *args, **kwargs):
                     {
                         'id': artwork.id,
                         'label': artwork.title,
-                        'discriminatory_terms': artwork.get_discriminatory_terms_list(),
+                        'discriminatory_terms': [
+                            # we iterate over discriminatory_terms directly instead of using
+                            # artwork.get_discriminatory_terms_list() to ensure that we are
+                            # using the results already fetched with prefetch_related()
+                            dt.term
+                            for dt in artwork.discriminatory_terms.all()
+                        ],
                     },
                 )
 
