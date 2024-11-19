@@ -207,7 +207,9 @@ def autocomplete(request, *args, **kwargs):
                 )
 
         elif t == 'artists':
-            q_filters = Q(name__unaccent__icontains=q_param)
+            q_filters = Q(name__unaccent__icontains=q_param) | Q(
+                synonyms__icontains=q_param,
+            )
             query = (
                 MODEL_MAP[t].objects.filter(q_filters).annotate(label=F('name'))[:limit]
             )
@@ -220,6 +222,11 @@ def autocomplete(request, *args, **kwargs):
                 {'name__unaccent__icontains': q_param},
                 {'name_en__unaccent__icontains': q_param},
             ]
+
+            if t == 'locations':
+                q_filters_list.append(
+                    {'synonyms__icontains': q_param},
+                )
 
             q_filters = reduce(operator.or_, (Q(**x) for x in q_filters_list))
 
