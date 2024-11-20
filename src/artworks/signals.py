@@ -20,15 +20,86 @@ from .models import (
 from .utils import remove_non_printable_characters
 
 
-@receiver(post_save, sender=Artwork)
-def update_search_vector(sender, instance, created, *args, **kwargs):
-    instance.update_search_vector()
-
-
 @receiver(pre_save, sender=Artwork)
 def clean_artwork_titles(sender, instance, **kwargs):
     instance.title = remove_non_printable_characters(instance.title)
     instance.title_english = remove_non_printable_characters(instance.title_english)
+
+
+@receiver(pre_save, sender=Artwork)
+def update_images_pre_save(sender, instance, *args, **kwargs):
+    """Creates, updates or deletes images of an Artwork if necessary.
+
+    - Creates and updates `image_fullsize` if necessary.
+    - Deletes `images_fullsize` if `image_original` has been deleted.
+    - Deletes images created with VersatileImageField, if the image changes.
+    """
+    if not instance._state.adding:
+        old_instance = Artwork.objects.get(pk=instance.pk)
+
+        image_original_created = (
+            instance.image_original and not old_instance.image_original
+        )
+        image_original_changed = (
+            instance.image_original
+            and old_instance.image_original
+            and old_instance.image_original.name != instance.image_original.name
+        )
+        image_original_deleted = (
+            not instance.image_original and old_instance.image_original
+        )
+
+        # cleanup
+        if image_original_deleted or image_original_changed:
+            old_instance.image_original.delete_all_created_images()
+
+        if image_original_deleted and old_instance.image_fullsize:
+            old_instance.image_fullsize.delete_all_created_images()
+            instance.image_fullsize.delete(save=False)
+
+        # create or update image_fullsize
+        if image_original_created or image_original_changed:
+            instance.create_image_fullsize(save=False)
+
+
+@receiver(post_save, sender=Artwork)
+def update_images_post_save(sender, instance, created, **kwargs):
+    """Move image_original after an Artwork instance has been created and
+    create image_fullsize."""
+
+    if created and instance.image_original:
+        update_fields = ['image_fullsize']
+
+        # path is already correct if the Artwork has been created
+        # via .create(), so we check if the pk is already in
+        # image_original.name
+        if instance.pk not in instance.image_original.name:
+            old_name = instance.image_original.name
+
+            relative_path = instance.image_original.storage.get_available_name(
+                get_path_to_original_file(instance, old_name),
+                max_length=sender._meta.get_field('image_original').max_length,
+            )
+            absolute_path = settings.MEDIA_ROOT_PATH / relative_path
+
+            if not absolute_path.exists():
+                absolute_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # move the uploaded image
+            Path(instance.image_original.path).rename(absolute_path)
+
+            instance.image_original.name = relative_path
+
+            update_fields.append('image_original')
+
+        instance.create_image_fullsize(save=False)
+
+        instance.save(update_fields=update_fields)
+
+
+@receiver(post_save, sender=Artwork)
+def update_search_vector(sender, instance, created, *args, **kwargs):
+    instance.update_search_vector()
 
 
 @receiver(post_save, sender=Keyword)
@@ -92,77 +163,6 @@ def update_search_vector_person(sender, instance, created, *args, **kwargs):
             artwork.update_search_vector,
             result_ttl=settings.RQ_RESULT_TTL,
         )
-
-
-@receiver(post_save, sender=Artwork)
-def update_images_post_save(sender, instance, created, **kwargs):
-    """Move image_original after an Artwork instance has been created and
-    create image_fullsize."""
-
-    if created and instance.image_original:
-        update_fields = ['image_fullsize']
-
-        # path is already correct if the Artwork has been created
-        # via .create(), so we check if the pk is already in
-        # image_original.name
-        if instance.pk not in instance.image_original.name:
-            old_name = instance.image_original.name
-
-            relative_path = instance.image_original.storage.get_available_name(
-                get_path_to_original_file(instance, old_name),
-                max_length=sender._meta.get_field('image_original').max_length,
-            )
-            absolute_path = settings.MEDIA_ROOT_PATH / relative_path
-
-            if not absolute_path.exists():
-                absolute_path.parent.mkdir(parents=True, exist_ok=True)
-
-            # move the uploaded image
-            Path(instance.image_original.path).rename(absolute_path)
-
-            instance.image_original.name = relative_path
-
-            update_fields.append('image_original')
-
-        instance.create_image_fullsize(save=False)
-
-        instance.save(update_fields=update_fields)
-
-
-@receiver(pre_save, sender=Artwork)
-def update_images_pre_save(sender, instance, *args, **kwargs):
-    """Creates, updates or deletes images of an Artwork if necessary.
-
-    - Creates and updates `image_fullsize` if necessary.
-    - Deletes `images_fullsize` if `image_original` has been deleted.
-    - Deletes images created with VersatileImageField, if the image changes.
-    """
-    if not instance._state.adding:
-        old_instance = Artwork.objects.get(pk=instance.pk)
-
-        image_original_created = (
-            instance.image_original and not old_instance.image_original
-        )
-        image_original_changed = (
-            instance.image_original
-            and old_instance.image_original
-            and old_instance.image_original.name != instance.image_original.name
-        )
-        image_original_deleted = (
-            not instance.image_original and old_instance.image_original
-        )
-
-        # cleanup
-        if image_original_deleted or image_original_changed:
-            old_instance.image_original.delete_all_created_images()
-
-        if image_original_deleted and old_instance.image_fullsize:
-            old_instance.image_fullsize.delete_all_created_images()
-            instance.image_fullsize.delete(save=False)
-
-        # create or update image_fullsize
-        if image_original_created or image_original_changed:
-            instance.create_image_fullsize(save=False)
 
 
 @receiver(post_delete, sender=Artwork)
