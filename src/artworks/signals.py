@@ -8,7 +8,8 @@ from django.db.migrations.loader import MigrationLoader
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
-from .models import Artwork, get_path_to_original_file, remove_non_printable_characters
+from .models import Artwork, get_path_to_original_file
+from .utils import remove_non_printable_characters
 
 
 @receiver(post_save, sender=Artwork)

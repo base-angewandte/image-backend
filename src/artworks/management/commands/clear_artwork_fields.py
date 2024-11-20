@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 
-from artworks.models import Artwork, remove_non_printable_characters
+from artworks.models import Artwork
+from artworks.utils import remove_non_printable_characters
 
 
 class Command(BaseCommand):
