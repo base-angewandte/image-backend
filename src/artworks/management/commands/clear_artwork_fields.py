@@ -5,55 +5,37 @@ from artworks.utils import remove_non_printable_characters
 
 
 class Command(BaseCommand):
-    help = 'Clean Artwork titles by removing non-printable characters and replacing line breaks with spaces.'
+    help = 'Clean Artwork fields by removing non-printable characters and replacing line breaks with spaces.'
 
     def handle(self, *args, **options):
-        artworks = Artwork.objects.all()
+        fields = ('title', 'title_english')
 
-        cleaned_titles = []
-        cleaned_titles_english = []
+        cleaned = {f: [] for f in fields}
 
-        for artwork in artworks:
-            # always check the titles of artworks, because they are a mandatory field
-            original_title = artwork.title
-            cleaned_title = artwork.title.replace('\n', ' ').replace('\r', ' ')
-            cleaned_title = remove_non_printable_characters(cleaned_title)
+        for artwork in Artwork.objects.all():
+            changed = False
+            for f in fields:
+                value = getattr(artwork, f)
+                if value:
+                    cleaned_value = remove_non_printable_characters(
+                        value.replace('\r\n', ' ')
+                        .replace('\n', ' ')
+                        .replace('\r', ' '),
+                    )
 
-            if artwork.title != original_title:
-                artwork.title = cleaned_title
-                cleaned_titles.append(artwork.title)
+                    if cleaned_value != getattr(artwork, f):
+                        setattr(artwork, f, cleaned_value)
+                        changed = True
+                        cleaned[f].append(artwork.id)
+            if changed:
+                artwork.save(update_fields=fields)
 
-            # only apply filter to title_english, if it is available
-            if artwork.title_english:
-                original_title_english = artwork.title_english
-                cleaned_title_english = artwork.title_english.replace(
-                    '\n',
-                    ' ',
-                ).replace('\r', ' ')
-                cleaned_title_english = remove_non_printable_characters(
-                    cleaned_title_english,
+        for f in fields:
+            if cleaned[f]:
+                self.stdout.write(
+                    self.style.WARNING(
+                        f'The {f} attribute of {len(cleaned[f])} Artworks has been cleaned:',
+                    ),
                 )
-
-                if artwork.title_english != original_title_english:
-                    artwork.title_english = cleaned_title_english
-                    cleaned_titles_english.append(artwork.title_english)
-
-            artwork.save()
-
-        if cleaned_titles:
-            self.stdout.write(
-                self.style.WARNING(
-                    f'The filter was applied to the following {len(cleaned_titles)} title:',
-                ),
-            )
-            for entry in cleaned_titles:
-                self.stdout.write(entry[0])
-
-        if cleaned_titles_english:
-            self.stdout.write(
-                self.style.WARNING(
-                    f'The filter was applied to the following {len(cleaned_titles_english)} title_english:',
-                ),
-            )
-            for entry in cleaned_titles_english:
-                self.stdout.write(entry[0])
+                for artwork_id in cleaned[f]:
+                    self.stdout.write(artwork_id)
