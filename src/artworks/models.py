@@ -31,6 +31,7 @@ from .gnd import (
 )
 from .managers import ArtworkManager
 from .mixins import LocalizationMixin, MetaDataMixin
+from .utils import remove_non_printable_characters
 from .validators import validate_getty_id, validate_image_original
 
 logger = logging.getLogger(__name__)
@@ -660,6 +661,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         )
         parts = [artists, title_in_language, self.date]
         description = ', '.join(x.strip() for x in parts if x.strip())
+        description = remove_non_printable_characters(description)
         return description
 
     def get_discriminatory_terms_list(self, order_by_length=False):

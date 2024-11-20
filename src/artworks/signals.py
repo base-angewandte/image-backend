@@ -9,11 +9,18 @@ from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
 from .models import Artwork, get_path_to_original_file
+from .utils import remove_non_printable_characters
 
 
 @receiver(post_save, sender=Artwork)
 def update_search_vector(sender, instance, created, *args, **kwargs):
     instance.update_search_vector()
+
+
+@receiver(pre_save, sender=Artwork)
+def clean_artwork_titles(sender, instance, **kwargs):
+    instance.title = remove_non_printable_characters(instance.title)
+    instance.title_english = remove_non_printable_characters(instance.title_english)
 
 
 @receiver(post_save, sender=Artwork)
