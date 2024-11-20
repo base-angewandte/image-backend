@@ -446,6 +446,7 @@ if DEBUG or TESTING:
     for queue_config in iter(RQ_QUEUES.values()):
         queue_config['ASYNC'] = False
 
+# Time (in seconds) to keep the job result in Redis
 RQ_RESULT_TTL = 500
 RQ = {
     # only applies to django_rq's @job decorators, not to enqueue calls

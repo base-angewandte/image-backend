@@ -13,15 +13,15 @@ class ArtworkManager(models.Manager):
         search_rank = SearchRank(F('search_vector'), search_query, normalization=32)
         trigram_word_similarity_title = TrigramWordSimilarity(
             text,
-            'title',
+            'title__unaccent',
         )
         trigram_word_similarity_title_english = TrigramWordSimilarity(
             text,
-            'title_english',
+            'title_english__unaccent',
         )
         trigram_word_similarity_persons = TrigramWordSimilarity(
             text,
-            'search_persons',
+            'search_persons__unaccent',
         )
 
         return (

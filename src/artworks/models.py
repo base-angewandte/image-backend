@@ -510,21 +510,25 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         'DiscriminatoryTerm',
         verbose_name=_('Discriminatory terms'),
     )
-    artists = models.ManyToManyField(Person, verbose_name=_('Artists'))
+    artists = models.ManyToManyField(
+        Person,
+        verbose_name=_('Artists'),
+        related_name='artworks_artists',
+    )
     photographers = models.ManyToManyField(
         Person,
         verbose_name=_('Photographers'),
-        related_name='photographers',
+        related_name='artworks_photographers',
     )
     authors = models.ManyToManyField(
         Person,
         verbose_name=_('Authors'),
-        related_name='authors',
+        related_name='artworks_authors',
     )
     graphic_designers = models.ManyToManyField(
         Person,
         verbose_name=_('Graphic designers'),
-        related_name='graphic_designers',
+        related_name='artworks_graphic_designers',
     )
     date = models.CharField(
         verbose_name=_('Date'),
@@ -538,9 +542,10 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         blank=True,
     )
     date_year_to = models.IntegerField(verbose_name=_('Date To'), null=True, blank=True)
-    material = models.ManyToManyField(
+    materials = models.ManyToManyField(
         Material,
         verbose_name=_('Material/Technique'),
+        related_name='artworks',
     )
     material_description_de = models.TextField(
         verbose_name=_('Material/Technique description (DE)'),
@@ -582,7 +587,11 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
     comments_en = models.TextField(verbose_name=_('Comments (EN)'), blank=True)
     credits = models.TextField(verbose_name=_('Credits'), blank=True)
     credits_link = models.URLField(verbose_name=_('Credits URL'), blank=True)
-    keywords = models.ManyToManyField(Keyword, verbose_name=_('Keywords'))
+    keywords = models.ManyToManyField(
+        Keyword,
+        verbose_name=_('Keywords'),
+        related_name='artworks',
+    )
     link = models.URLField(verbose_name=_('Link'), blank=True)
     place_of_production = models.ManyToManyField(
         Location,
@@ -700,9 +709,18 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         locations_ids = []
         locations = []
 
-        locations_ids.extend(self.place_of_production.values_list('pk', flat=True))
+        locations_ids.extend(
+            Location.objects.get_queryset_descendants(
+                self.place_of_production,
+                include_self=True,
+            ).values_list('pk', flat=True),
+        )
         if self.location:
-            locations_ids.append(self.location.pk)
+            locations_ids.extend(
+                Location.objects.filter(pk=self.location.pk)
+                .get_descendants(include_self=True)
+                .values_list('pk', flat=True),
+            )
 
         for location in Location.objects.filter(id__in=set(locations_ids)):
             locations.append(location.name)
@@ -713,7 +731,10 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         # keywords
         keywords = []
 
-        for keyword in self.keywords.all():
+        for keyword in Keyword.objects.get_queryset_descendants(
+            self.keywords,
+            include_self=True,
+        ):
             keywords.append(keyword.name)
             if keyword.name_en:
                 keywords.append(keyword.name_en)
@@ -721,7 +742,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         # materials
         materials = []
 
-        for material in self.material.all():
+        for material in self.materials.all():
             materials.append(material.name)
             if material.name_en:
                 materials.append(material.name_en)
