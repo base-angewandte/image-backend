@@ -440,9 +440,10 @@ RQ_QUEUES = {
     'default': {'USE_REDIS_CACHE': 'default', 'DEFAULT_TIMEOUT': 300},
 }
 
-if DEBUG or TESTING:
-    for queue_config in iter(RQ_QUEUES.values()):
-        queue_config['ASYNC'] = False
+RQ_ASYNC = env.bool('RQ_ASYNC', default=not (DEBUG or TESTING))
+
+for queue_config in iter(RQ_QUEUES.values()):
+    queue_config['ASYNC'] = RQ_ASYNC
 
 # Time (in seconds) to keep the job result in Redis
 RQ_RESULT_TTL = 500
