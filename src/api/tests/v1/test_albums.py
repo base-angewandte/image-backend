@@ -74,6 +74,9 @@ class AlbumsTests(APITestCase):
         self.assertEqual(content['owner']['id'], self.user.username)
         self.assertEqual(content['permissions'], [])
 
+        # test retrieving non-existent album
+        self.album_does_not_exist(view_name='album-detail', http_method='get')
+
     def test_albums_update(self):
         """Test the updating of an album."""
 
@@ -84,6 +87,13 @@ class AlbumsTests(APITestCase):
         response = self.client.put(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # test updating non-existing album
+        self.album_does_not_exist(
+            view_name='album-detail',
+            http_method='put',
+            data=data,
+        )
 
         # TODO: these old tests rely on no other available test data at all and don't
         #   seem to be very useful in a more elaborated test scenario. Therefore
@@ -100,6 +110,9 @@ class AlbumsTests(APITestCase):
         response = self.client.delete(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # test destroying non-existing album
+        self.album_does_not_exist(view_name='album-detail', http_method='delete')
 
     def test_albums_append_artwork(self):
         """Test the appending of artworks to album slides."""
@@ -157,6 +170,13 @@ class AlbumsTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(content['detail'], 'Artwork does not exist')
 
+        # test appending non-existent album
+        self.album_does_not_exist(
+            view_name='album-append-artwork',
+            http_method='post',
+            data=data,
+        )
+
     def test_albums_slides(self):
         """Test the retrieval of album slides."""
 
@@ -186,6 +206,9 @@ class AlbumsTests(APITestCase):
         self.assertEqual(slides[0]['items'][0]['id'], 1)
         self.assertEqual(slides[0]['items'][1]['id'], 2)
         self.assertEqual(slides[1]['items'][0]['id'], 3)
+
+        # test retrieval of a slide of non-existing album
+        self.album_does_not_exist(view_name='album-slides', http_method='get')
 
     def test_albums_create_slides(self):
         """Test the creation of album slides."""
@@ -245,6 +268,13 @@ class AlbumsTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(content['detail'], 'Artwork does not exist')
 
+        # test creating slides with non-existent album
+        self.album_does_not_exist(
+            view_name='album-slides',
+            http_method='post',
+            data=data,
+        )
+
     def test_albums_permissions(self):
         """Test the retrieval of album permissions."""
 
@@ -259,6 +289,9 @@ class AlbumsTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(content[0]['user']['id'], user.username)
         self.assertEqual(content[0]['permissions'][0]['id'], 'VIEW')
+
+        # test retrieving album permissions of non-existent album
+        self.album_does_not_exist(view_name='album-permissions', http_method='get')
 
     def test_albums_create_permissions(self):
         """Test the creation of album permissions."""
@@ -284,6 +317,9 @@ class AlbumsTests(APITestCase):
         response = self.client.delete(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # test destroying album permissions of non-existing album
+        self.album_does_not_exist(view_name='album-permissions', http_method='delete')
 
     def test_albums_download(self):
         """Test the download of an album."""
@@ -328,3 +364,6 @@ class AlbumsTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(type(response.content), bytes)
+
+        # test downloading non-existing album
+        self.album_does_not_exist(view_name='album-download', http_method='get')

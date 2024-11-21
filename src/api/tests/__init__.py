@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
+from django.urls import reverse
 
 from artworks.models import Album, Artwork, Keyword, Location, Material, Person
 
@@ -347,6 +348,15 @@ class APITestCase(RestFrameworkAPITestCase):
             self.assertEqual(len(content['results']), 1)
         else:
             self.assertEqual(len(content), 1)
+
+    def album_does_not_exist(self, view_name, http_method, data=None):
+        # test the retrieval of an album, when album doesn't exist
+        url = reverse(view_name, kwargs={'pk': 11111, 'version': 'v1'})
+        response = getattr(self.client, http_method)(url, data=data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(content['detail'], 'Album does not exist')
 
     def tearDown(self):
         # delete temporary files again
