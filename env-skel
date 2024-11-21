@@ -93,7 +93,5 @@ REQUESTS_TIMEOUT=5
 ## You need to use an override file to change the port of the container
 # GOTENBERG_PORT=3000
 
-## If you want to activate additional logging set this to True
-# LOG_DB_BACKEND=False
 ## If you want to activate additional logging during development set this to DEBUG
 # DEBUG_LOG_LEVEL=INFO
