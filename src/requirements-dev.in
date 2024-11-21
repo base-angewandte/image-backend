@@ -4,4 +4,5 @@
 
 -r requirements.in
 
+coverage
 pre-commit

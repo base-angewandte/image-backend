@@ -35,6 +35,16 @@ test-data:  ## load test/placeholder data (fixtures and image files)
 run-api-tests:  ## run all available api tests
 	docker compose exec ${PROJECT_NAME}-django python manage.py test api.tests
 
+.PHONE: coverage-api-tests
+coverage-api-tests:  ## compute coverage of api tests
+	docker compose exec ${PROJECT_NAME}-django coverage run --source='.' manage.py test api.tests
+	docker compose exec ${PROJECT_NAME}-django coverage report -m --skip-empty
+
+.PHONE: coverage-api-tests-html
+coverage-api-tests-html:  ## compute coverage of api tests and create html output
+	docker compose exec ${PROJECT_NAME}-django coverage run --source='.' manage.py test api.tests
+	docker compose exec ${PROJECT_NAME}-django coverage html --skip-empty
+
 .PHONY: migrate-postgres
 migrate-postgres:  ## migrate data from old PostgreSQL database to new one
 	@bash scripts/migrate-postgres.sh
