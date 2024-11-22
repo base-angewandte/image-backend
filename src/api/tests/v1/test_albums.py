@@ -329,6 +329,15 @@ class AlbumsTests(APITestCase):
         self.assertEqual(content[0]['permissions'][0]['id'], 'VIEW')
         self.assertEqual(content[0]['user']['id'], new_user.username)
 
+        # test permission assignment when user is already the owner of the album
+        url = reverse('album-permissions', kwargs={'pk': album.pk, 'version': VERSION})
+        data = [{'user': f'{self.user.username}', 'permissions': [{'id': 'VIEW'}]}]
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['detail'], 'User is already the owner of album.')
+
     def test_albums_destroy_permissions(self):
         """Test the deletion of album permissions."""
 
