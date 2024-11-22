@@ -427,5 +427,16 @@ class AlbumsTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(type(response.content), bytes)
 
+        # test album pdf download
+        url = reverse('album-download', kwargs={'pk': album.pk, 'version': VERSION})
+        response = self.client.get(f'{url}?download_format=pdf', format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # assert the content type is a PDF
+        self.assertEqual(
+            response.headers['Content-Type'],
+            'application/pdf',
+        )
+
         # test downloading non-existing album
         self.album_does_not_exist(view_name='album-download', http_method='get')
