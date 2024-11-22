@@ -13,10 +13,11 @@ from django.conf import settings
 from django.db.models import FloatField, Q, Value
 from django.utils.translation import gettext_lazy as _
 
-from api.search.filters import FILTERS, FILTERS_KEYS
-from api.serializers.search import SearchRequestSerializer, SearchResultSerializer
-from api.views import check_limit, check_offset
 from artworks.models import Artwork, Keyword, Location
+
+from ..search.filters import FILTERS, FILTERS_KEYS
+from ..serializers.search import SearchRequestSerializer, SearchResultSerializer
+from . import check_limit, check_offset
 
 
 def filter_title(filter_values):
