@@ -342,6 +342,47 @@ class AlbumsTests(APITestCase):
         # test destroying album permissions of non-existing album
         self.album_does_not_exist(view_name='album-permissions', http_method='delete')
 
+        # test deleting all permissions on an album,
+        # when the user is not the owner and gets only their permissions removed
+        other_user = get_user_model().objects.get(username='p0001234')
+        other_user_album = Album.objects.create(title='Foreign Album', user=other_user)
+
+        # provide permissions to self.user on owner's album
+        PermissionsRelation.objects.create(
+            user=self.user,
+            album=other_user_album,
+            permissions='EDIT',
+        )
+        # assert existence of the permission
+        self.assertTrue(
+            PermissionsRelation.objects.filter(
+                user=self.user,
+                album=other_user_album,
+            ).exists(),
+        )
+
+        # perform the DELETE request
+        url = reverse(
+            'album-permissions',
+            kwargs={'pk': other_user_album.pk, 'version': VERSION},
+        )
+        response = self.client.delete(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # assert non-existence of the permission
+        self.assertFalse(
+            PermissionsRelation.objects.filter(
+                user=self.user,
+                album=other_user_album,
+            ).exists(),
+        )
+
+        # test that the album itself still exists after deletion of permissions for self.user
+        album = Album.objects.get(pk=other_user_album.pk)
+        self.assertTrue(
+            Album.objects.filter(pk=album.pk).exists(),
+        )
+
     def test_albums_download(self):
         """Test the download of an album."""
 
