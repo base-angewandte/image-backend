@@ -281,7 +281,6 @@ class AlbumsTests(APITestCase):
         album = Album.objects.create(title='Test Album', user=self.user)
         user = User.objects.create(username='abc1def2')
         PermissionsRelation.objects.create(album=album, user=user)
-
         url = reverse('album-permissions', kwargs={'pk': album.pk, 'version': VERSION})
         response = self.client.get(url, format='json')
         content = json.loads(response.content)
@@ -292,6 +291,28 @@ class AlbumsTests(APITestCase):
 
         # test retrieving album permissions of non-existent album
         self.album_does_not_exist(view_name='album-permissions', http_method='get')
+
+        # test if the user is not the owner of the album, only return the permissions of this user
+        lecturer = get_user_model().objects.get(username='p0001234')
+        foreign_album = Album.objects.create(title='Foreign Album', user=lecturer)
+
+        # provide permissions to self.user on lecturer's album
+        PermissionsRelation.objects.create(
+            user=self.user,
+            album=foreign_album,
+            permissions='VIEW',
+        )
+
+        url = reverse(
+            'album-permissions',
+            kwargs={'pk': foreign_album.pk, 'version': VERSION},
+        )
+        response = self.client.get(url, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(content[0]['user']['id'], self.user.username)
+        self.assertEqual(content[0]['permissions'][0]['id'], 'VIEW')
 
     def test_albums_create_permissions(self):
         """Test the creation of album permissions."""
