@@ -361,14 +361,14 @@ class APITestCase(RestFrameworkAPITestCase):
         else:
             self.assertEqual(len(content), 1)
 
-    def album_does_not_exist(self, view_name, http_method, data=None):
+    def album_does_not_exist(self, view_name, http_method, object_type, data=None):
         # test the retrieval/deletion/updating/etc of an album, when album doesn't exist
         url = reverse(view_name, kwargs={'pk': 11111, 'version': 'v1'})
         response = getattr(self.client, http_method)(url, data=data, format='json')
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(content['detail'], 'Album does not exist')
+        self.assertEqual(content['detail'], f'{object_type} does not exist')
 
     def tearDown(self):
         # delete temporary files again

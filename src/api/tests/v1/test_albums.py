@@ -75,7 +75,11 @@ class AlbumsTests(APITestCase):
         self.assertEqual(content['permissions'], [])
 
         # test retrieving non-existent album
-        self.album_does_not_exist(view_name='album-detail', http_method='get')
+        self.album_does_not_exist(
+            view_name='album-detail',
+            http_method='get',
+            object_type='Album',
+        )
 
     def test_albums_update(self):
         """Test the updating of an album."""
@@ -92,6 +96,7 @@ class AlbumsTests(APITestCase):
         self.album_does_not_exist(
             view_name='album-detail',
             http_method='put',
+            object_type='Album',
             data=data,
         )
 
@@ -112,7 +117,11 @@ class AlbumsTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # test destroying non-existing album
-        self.album_does_not_exist(view_name='album-detail', http_method='delete')
+        self.album_does_not_exist(
+            view_name='album-detail',
+            http_method='delete',
+            object_type='Album',
+        )
 
     def test_albums_append_artwork(self):
         """Test the appending of artworks to album slides."""
@@ -174,6 +183,7 @@ class AlbumsTests(APITestCase):
         self.album_does_not_exist(
             view_name='album-append-artwork',
             http_method='post',
+            object_type='Album',
             data=data,
         )
 
@@ -208,7 +218,11 @@ class AlbumsTests(APITestCase):
         self.assertEqual(slides[1]['items'][0]['id'], 3)
 
         # test retrieval of a slide of non-existing album
-        self.album_does_not_exist(view_name='album-slides', http_method='get')
+        self.album_does_not_exist(
+            view_name='album-slides',
+            http_method='get',
+            object_type='Album',
+        )
 
         # test slide with details retrieval
         url = reverse('album-slides', kwargs={'pk': self.album4.pk, 'version': VERSION})
@@ -286,6 +300,7 @@ class AlbumsTests(APITestCase):
         self.album_does_not_exist(
             view_name='album-slides',
             http_method='post',
+            object_type='Album',
             data=data,
         )
 
@@ -318,7 +333,11 @@ class AlbumsTests(APITestCase):
         self.assertEqual(content[0]['permissions'][0]['id'], 'VIEW')
 
         # test retrieving album permissions of non-existent album
-        self.album_does_not_exist(view_name='album-permissions', http_method='get')
+        self.album_does_not_exist(
+            view_name='album-permissions',
+            http_method='get',
+            object_type='Album',
+        )
 
         # test if the user is not the owner of the album, only return the permissions of this user
         lecturer = get_user_model().objects.get(username='p0001234')
@@ -386,7 +405,11 @@ class AlbumsTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # test destroying album permissions of non-existing album
-        self.album_does_not_exist(view_name='album-permissions', http_method='delete')
+        self.album_does_not_exist(
+            view_name='album-permissions',
+            http_method='delete',
+            object_type='Album',
+        )
 
         # test deleting all permissions on an album,
         # when the user is not the owner and gets only their permissions removed
@@ -485,4 +508,8 @@ class AlbumsTests(APITestCase):
         )
 
         # test downloading non-existing album
-        self.album_does_not_exist(view_name='album-download', http_method='get')
+        self.album_does_not_exist(
+            view_name='album-download',
+            http_method='get',
+            object_type='Album',
+        )
