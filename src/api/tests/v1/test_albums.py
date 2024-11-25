@@ -31,7 +31,7 @@ class AlbumsTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        num_results = 5
+        num_results = 6
         self.assertEqual(content['total'], num_results)
         self.assertEqual(len(content['results']), num_results)
         self.limit_test(url, 5, num_results)
@@ -209,6 +209,20 @@ class AlbumsTests(APITestCase):
 
         # test retrieval of a slide of non-existing album
         self.album_does_not_exist(view_name='album-slides', http_method='get')
+
+        # test slide with details retrieval
+        url = reverse('album-slides', kwargs={'pk': self.album4.pk, 'version': VERSION})
+        response = self.client.get(f'{url}?details=true', format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # test existence and correct content of slide
+        self.assertEqual(len(content[0]['items']), 1)
+        self.assertIn('id', content[0])
+        self.assertEqual(content[0]['items'][0]['title'], 'Homometer II')
+        self.assertEqual(content[0]['items'][0]['date'], '1976')
+        self.assertEqual(content[0]['items'][0]['artists'][0]['value'], 'VALIE EXPORT')
 
     def test_albums_create_slides(self):
         """Test the creation of album slides."""
