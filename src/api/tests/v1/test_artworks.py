@@ -65,6 +65,9 @@ class ArtworkTests(APITestCase):
         )
         self.assertEqual(content['artists'], [])
 
+        # test retrieving artwork, when artwork does not exist
+        self.artwork_does_not_exist('artwork-detail', 'get', 'Artwork')
+
     def test_artworks_image(self):
         artwork = Artwork.objects.create(
             title='Test Artwork',
@@ -85,6 +88,9 @@ class ArtworkTests(APITestCase):
         response = self.client.get(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+
+        # test retrieving artwork, when artwork does not exist
+        self.artwork_does_not_exist('artwork-detail', 'get', 'Artwork')
 
     def test_labels_list(self):
         """Test the retrieval of artwork labels."""
@@ -118,6 +124,9 @@ class ArtworkTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(content['total'], 4)
         self.assertEqual(content['results'][3]['id'], album.id)
+
+        # test retrieving artwork, when artwork does not exist
+        self.artwork_does_not_exist('artwork-detail', 'get', 'Artwork')
 
     def test_artworks_download(self):
         """Test the download of an artwork + metadata."""
@@ -157,3 +166,6 @@ class ArtworkTests(APITestCase):
                 metadata_content = f.read().decode('utf-8')
                 self.assertIn(artwork.title, metadata_content)
                 self.assertIn(artist.name, metadata_content)
+
+        # test retrieving artwork, when artwork does not exist
+        self.artwork_does_not_exist('artwork-detail', 'get', 'Artwork')
