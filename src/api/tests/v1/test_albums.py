@@ -366,6 +366,15 @@ class AlbumsTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(content['detail'], 'User is already the owner of album.')
 
+        # test permission assignment when user does not exist
+        url = reverse('album-permissions', kwargs={'pk': album.pk, 'version': VERSION})
+        data = [{'user': 'user-does-not-exist-test', 'permissions': [{'id': 'VIEW'}]}]
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['detail'], 'User does not exist')
+
     def test_albums_destroy_permissions(self):
         """Test the deletion of album permissions."""
 
