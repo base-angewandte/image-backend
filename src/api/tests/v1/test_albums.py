@@ -289,6 +289,20 @@ class AlbumsTests(APITestCase):
             data=data,
         )
 
+        # test slide with details retrieval
+        url = reverse('album-slides', kwargs={'pk': self.album4.pk, 'version': VERSION})
+        response = self.client.get(f'{url}?details=true', format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # test existence and correct content of slide
+        self.assertEqual(len(content[0]['items']), 1)
+        self.assertIn('id', content[0])
+        self.assertEqual(content[0]['items'][0]['title'], 'Homometer II')
+        self.assertEqual(content[0]['items'][0]['date'], '1976')
+        self.assertEqual(content[0]['items'][0]['artists'][0]['value'], 'VALIE EXPORT')
+
     def test_albums_permissions(self):
         """Test the retrieval of album permissions."""
 
