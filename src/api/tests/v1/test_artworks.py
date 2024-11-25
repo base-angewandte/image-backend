@@ -69,25 +69,55 @@ class ArtworkTests(APITestCase):
         self.object_does_not_exist('artwork-detail', 'get', 'Artwork')
 
     def test_artworks_image(self):
+        """Test crop/resize and default image generation."""
+
         artwork = Artwork.objects.create(
             title='Test Artwork',
             image_original=temporary_image(),
             published=True,
         )
 
-        url = reverse(
-            'artwork-image',
-            kwargs={
-                'pk': artwork.pk,
-                'height': 30,
-                'width': 30,
+        test_cases = [
+            {
                 'method': 'crop',
-                'version': VERSION,
+                'expected_status': status.HTTP_302_FOUND,
+                'expected_suffix': '-crop-c0-5__0-5-30x30-92.jpg',
             },
-        )
-        response = self.client.get(url, format='json')
+            {
+                'method': 'resize',
+                'expected_status': status.HTTP_302_FOUND,
+                'expected_suffix': '-thumbnail-30x30-92.jpg',
+            },
+            {
+                'method': 'test',
+                'expected_status': status.HTTP_400_BAD_REQUEST,
+                'expected_suffix': None,
+            },
+        ]
 
-        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+        for case in test_cases:
+            url = reverse(
+                'artwork-image',
+                kwargs={
+                    'pk': artwork.pk,
+                    'height': 30,
+                    'width': 30,
+                    'method': case['method'],
+                    'version': VERSION,
+                },
+            )
+            response = self.client.get(url, format='json')
+
+            self.assertEqual(
+                response.status_code,
+                case['expected_status'],
+            )
+
+            if case['expected_suffix']:
+                self.assertIn('Location', response.headers)
+                self.assertTrue(
+                    response.headers['Location'].endswith(case['expected_suffix']),
+                )
 
         # test retrieving artwork, when artwork does not exist
         self.object_does_not_exist('artwork-detail', 'get', 'Artwork')
