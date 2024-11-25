@@ -349,7 +349,7 @@ class APITestCase(RestFrameworkAPITestCase):
         else:
             self.assertEqual(len(content), 1)
 
-    def artwork_does_not_exist(self, view_name, http_method, object_type, data=None):
+    def object_does_not_exist(self, view_name, http_method, object_type, data=None):
         # test the retrieval of an artwork, when artwork doesn't exist
         url = reverse(view_name, kwargs={'pk': 11111, 'version': 'v1'})
         response = getattr(self.client, http_method)(url, data=data, format='json')
