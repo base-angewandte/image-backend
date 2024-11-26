@@ -2,13 +2,15 @@ import io
 import json
 import zipfile
 
+import shortuuid
 from rest_framework import status
 
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from artworks.models import Album, Artwork, Person
+from artworks.models import Album, Artwork, PermissionsRelation, Person
 
 from .. import APITestCase, temporary_image
 from . import VERSION
@@ -145,6 +147,7 @@ class ArtworkTests(APITestCase):
         to."""
 
         Artwork.objects.create(title='Test Artwork', image_original=temporary_image())
+
         album = Album.objects.create(title='Test Album1', user=self.user)
 
         url = reverse('album-list', kwargs={'version': VERSION})
@@ -154,6 +157,86 @@ class ArtworkTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(content['total'], 4)
         self.assertEqual(content['results'][3]['id'], album.id)
+
+        # Create another test artwork and albums
+        aw1 = Artwork.objects.create(
+            title='Test Artwork 1',
+            image_original=temporary_image(),
+            published=True,
+        )
+
+        lecturer_album = Album.objects.create(
+            title='Test Album2',
+            user=get_user_model().objects.get(username='p0001234'),
+            slides=[
+                {
+                    'id': shortuuid.uuid(),
+                    'items': [{'id': aw1.pk}],
+                },
+            ],
+        )
+        user_album = Album.objects.create(title='Test Album3', user=self.user)
+
+        # in order for the self.user to append the artwork to the album,
+        # we need to provide them with an EDIT permission.
+        # After the artwork is appended to the lecturer's album, we remove the PermissionsRelation
+        PermissionsRelation.objects.create(
+            user=self.user,
+            album=lecturer_album,
+            permissions='EDIT',
+        )
+
+        # append the artwork to lecturer's album
+        url_post_lecturer = reverse(
+            'album-append-artwork',
+            kwargs={'pk': lecturer_album.pk, 'version': VERSION},
+        )
+        data = {'id': aw1.pk}
+        response = self.client.post(url_post_lecturer, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # append the artwork to self.user's album
+        url = reverse(
+            'album-append-artwork',
+            kwargs={'pk': user_album.pk, 'version': VERSION},
+        )
+        data = {'id': aw1.pk}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # test retrieval of albums that contain the artwork
+        url = reverse(
+            'artwork-retrieve-albums',
+            kwargs={'pk': aw1.pk, 'version': VERSION},
+        )
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = response.json()
+        self.assertEqual(len(content), 2)
+
+        # test retrieval with 'permissions=EDIT'
+        response = self.client.get(f'{url}?permissions=EDIT', format='json')
+        content = json.loads(response.content)
+
+        # test that lecturer's album is retrieved where the self.user has an EDIT permission set
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # both albums are retrieved (as the self.user per default has EDIT permissions on own album)
+        self.assertEqual(len(content), 2)
+        self.assertEqual(content[0]['title'], 'Test Album2')
+
+        # remove the permission to show that only owned album is retrieved
+        # (because when EDIT is set, self.user has owner rights)
+        PermissionsRelation.objects.filter(
+            user=self.user,
+            album=lecturer_album,
+            permissions='EDIT',
+        ).delete()
+
+        # test retrieval with 'owner=true'
+        response = self.client.get(f'{url}?owner=true', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = response.json()
+        self.assertEqual(len(content), 1)
 
         # test retrieving artwork, when artwork does not exist
         self.object_does_not_exist('artwork-detail', 'get', 'Artwork')
