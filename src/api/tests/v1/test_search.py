@@ -136,6 +136,59 @@ class SearchTests(APITestCase):
             'kw test arch + profan',
         )
 
+    def test_search_title(self):
+        """Test search for titles."""
+
+        url = reverse('search-list', kwargs={'version': VERSION})
+        data = {
+            'filters': [
+                {
+                    'id': 'title',
+                    'filter_values': ['Lucretia'],
+                },
+            ],
+        }
+        response = self.client.post(
+            url,
+            data,
+            format='json',
+        )
+        content = json.loads(response.content)
+
+        # test searching with title de
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            content['results'][0]['title'],
+            'Lucretia',
+        )
+
+        # test searching with id
+        aw1 = Artwork.objects.create(
+            title='Test title id 1',
+            image_original=temporary_image(),
+            published=True,
+        )
+        data = {
+            'filters': [
+                {
+                    'id': 'title',
+                    'filter_values': [{'id': aw1.id}],
+                },
+            ],
+        }
+        response = self.client.post(
+            url,
+            data,
+            format='json',
+        )
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            content['results'][0]['title'],
+            'Test title id 1',
+        )
+
     def test_search_filters(self):
         url = reverse('search-filters', kwargs={'version': VERSION})
         response = self.client.get(url, format='json')
