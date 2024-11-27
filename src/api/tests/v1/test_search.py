@@ -210,6 +210,72 @@ class SearchTests(APITestCase):
             'Test title id 1',
         )
 
+    def test_search_date(self):
+        """Test search for dates."""
+        url = reverse('search-list', kwargs={'version': VERSION})
+
+        # Initialize base data structure with "id": "date"
+        data = {
+            'filters': [
+                {
+                    'id': 'date',
+                    'filter_values': {},
+                },
+            ],
+        }
+
+        # test missing filter values
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            content['detail'],
+            'Invalid filter_value format for date filter.',
+        )
+
+        # test invalid format of date_from and date_to (non-integer strings)
+        data['filters'][0]['filter_values'] = {
+            'date_from': 'A',
+            'date_to': 'B',
+        }
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            content['detail'],
+            'Invalid format of at least one filter_value for date filter.',
+        )
+
+        # test with float date values
+        data['filters'][0]['filter_values'] = {
+            'date_from': '2000.5',
+            'date_to': '2010.5',
+        }
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            content['detail'],
+            'Invalid format of at least one filter_value for date filter.',
+        )
+
+        # test when date_from is greater than date_to
+        data['filters'][0]['filter_values'] = {
+            'date_from': '2025',
+            'date_to': '2020',
+        }
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            content['detail'],
+            'date_from needs to be less than or equal to date_to.',
+        )
+
     def test_search_filters(self):
         url = reverse('search-filters', kwargs={'version': VERSION})
         response = self.client.get(url, format='json')
