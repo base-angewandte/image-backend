@@ -111,6 +111,31 @@ class SearchTests(APITestCase):
             'Place of Production Test Artwork',
         )
 
+    def test_search_keyword(self):
+        """Test search for keywords."""
+
+        url = reverse('search-list', kwargs={'version': VERSION})
+        data = {
+            'filters': [
+                {
+                    'id': 'keywords',
+                    'filter_values': ['Architektur'],
+                },
+            ],
+        }
+        response = self.client.post(
+            url,
+            data,
+            format='json',
+        )
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            content['results'][0]['title'],
+            'kw test arch + profan',
+        )
+
     def test_search_filters(self):
         url = reverse('search-filters', kwargs={'version': VERSION})
         response = self.client.get(url, format='json')
