@@ -53,7 +53,7 @@ from artworks.models import (
     PermissionsRelation,
 )
 
-from ..search.filters import filter_albums_for_user
+from . import filter_albums_for_user
 
 logger = logging.getLogger(__name__)
 

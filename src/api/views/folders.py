@@ -14,9 +14,9 @@ from django.utils.translation import gettext_lazy as _
 
 from artworks.models import Folder
 
-from ..search.filters import filter_albums_for_user
 from ..serializers.folders import FoldersRequestSerializer
 from ..views import album_object, check_limit, check_offset, check_sorting
+from . import filter_albums_for_user
 
 
 @extend_schema(tags=['folders'])

@@ -1,6 +1,7 @@
 from rest_framework.exceptions import ParseError
 from rest_framework.request import Request
 
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from artworks.models import Album, Artwork, PermissionsRelation
@@ -231,3 +232,21 @@ def album_object(
 
 def get_person_list(queryset):
     return [{'id': person.id, 'value': person.name} for person in queryset]
+
+
+def filter_albums_for_user(user, owner=True, permissions='EDIT'):
+    q_objects = Q()
+
+    if owner:
+        q_objects |= Q(user=user)
+
+    permissions = permissions.split(',')
+
+    if permissions:
+        q_objects |= Q(
+            pk__in=PermissionsRelation.objects.filter(
+                user=user,
+                permissions__in=permissions,
+            ).values_list('album__pk', flat=True),
+        )
+    return q_objects

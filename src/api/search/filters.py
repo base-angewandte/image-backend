@@ -1,9 +1,6 @@
-from django.db.models import Q
 from django.urls import reverse
 from django.utils.functional import lazy
 from django.utils.translation import gettext_lazy as _
-
-from artworks.models import PermissionsRelation
 
 
 def autocomplete_url(type_id):
@@ -143,21 +140,3 @@ FILTERS = {
 }
 
 FILTERS_KEYS = FILTERS.keys()
-
-
-def filter_albums_for_user(user, owner=True, permissions='EDIT'):
-    q_objects = Q()
-
-    if owner:
-        q_objects |= Q(user=user)
-
-    permissions = permissions.split(',')
-
-    if permissions:
-        q_objects |= Q(
-            pk__in=PermissionsRelation.objects.filter(
-                user=user,
-                permissions__in=permissions,
-            ).values_list('album__pk', flat=True),
-        )
-    return q_objects
