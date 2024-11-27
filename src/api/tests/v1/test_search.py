@@ -57,6 +57,27 @@ class SearchTests(APITestCase):
         self.assertEqual(content['results'][0]['title'], artwork2.title)
         self.assertEqual(content['results'][1]['artists'][0]['value'], artist.name)
 
+        # test searching with artist id
+        data = {
+            'filters': [
+                {
+                    'id': 'artists',
+                    'filter_values': [{'id': artist.id}],
+                },
+            ],
+        }
+        response = self.client.post(
+            url,
+            data,
+            format='json',
+        )
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(content['total'], 2)
+        self.assertEqual(content['results'][0]['title'], artwork1.title)
+        self.assertEqual(content['results'][1]['artists'][0]['value'], artist.name)
+
     def test_search_location(self):
         """Test search for locations, place of production."""
 
