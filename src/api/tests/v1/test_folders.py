@@ -73,3 +73,6 @@ class FoldersTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(content['title'], root_folder.title)
         self.assertEqual(content['id'], root_folder.id)
+
+        # test retrieval of non-existent folder
+        self.object_does_not_exist('folder-detail', 'get', 'Folder')
