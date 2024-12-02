@@ -120,7 +120,6 @@ INSTALLED_APPS = [
     'django_rq',
     # Project apps
     'accounts',
-    'core',
     'artworks',
     'api',
     'texts',
