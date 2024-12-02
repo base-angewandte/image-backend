@@ -55,7 +55,7 @@ class ArtworkAdminForm(forms.ModelForm):
         required=False,
     )
 
-    material = ModelMultipleChoiceField(
+    materials = ModelMultipleChoiceField(
         Material.objects.all(),
         widget=FilteredSelectMultiple(_('Material/Technique'), False),
         required=False,

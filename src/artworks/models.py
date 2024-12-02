@@ -592,7 +592,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         verbose_name=_('Keywords'),
         related_name='artworks',
     )
-    link = models.URLField(verbose_name=_('Link'), blank=True)
+    link = models.URLField(verbose_name=_('Further information'), blank=True)
     place_of_production = models.ManyToManyField(
         Location,
         verbose_name=_('Place of Production'),
