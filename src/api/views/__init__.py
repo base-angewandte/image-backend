@@ -113,9 +113,6 @@ def featured_artworks(album, request, num_artworks=4):
             artwork_id = artwork.get('id')
             if artwork_id not in artwork_ids:
                 artwork_ids.append(artwork_id)
-        if len(artwork_ids) >= num_artworks:
-            break
-    artwork_ids = artwork_ids[:num_artworks]
 
     qs = Artwork.objects.filter(id__in=artwork_ids, published=True).prefetch_related(
         'discriminatory_terms',
@@ -145,7 +142,12 @@ def featured_artworks(album, request, num_artworks=4):
             ],
         }
 
-    return [artworks[artwork_id] for artwork_id in artwork_ids]
+        if len(artworks) >= num_artworks:
+            break
+
+    return [
+        artworks[artwork_id] for artwork_id in artwork_ids if artworks.get(artwork_id)
+    ]
 
 
 def album_object(
