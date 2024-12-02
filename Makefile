@@ -17,7 +17,7 @@ start-dev:  ## start containers for local development
 		${PROJECT_NAME}-gotenberg
 
 .PHONY: update
-update: git-update init-rq init restart-gunicorn build-docs  ## update project (runs git-update init-rq init restart-gunicorn build-docs)
+update: git-update init-rq init restart-gunicorn collectstatic build-docs  ## update project (runs git-update init-rq init restart-gunicorn collectstatic build-docs)
 
 
 .PHONY: test-data
@@ -56,3 +56,14 @@ migrate-user-model:  ## migrate user model from django.contrib.auth to accounts
 .PHONY: init-rq
 init-rq:
 	docker compose exec ${PROJECT_NAME}-rq-worker bash -c "uv pip sync requirements.txt"
+
+.PHONY: init
+init:  ## init django project
+	docker compose exec ${PROJECT_NAME}-django bash -c "uv pip sync requirements.txt && python manage.py migrate"
+ifeq ($(DEBUG),True)
+	@make pre-commit-init
+endif
+
+.PHONY: collectstatic
+collectstatic:
+	docker compose exec ${PROJECT_NAME}-django python manage.py collectstatic --noinput
