@@ -333,14 +333,21 @@ LOG_DIR = BASE_DIR / '..' / 'logs'
 if not LOG_DIR.exists():
     LOG_DIR.mkdir(parents=True)
 
+DEBUG_LOG_LEVEL = env.bool('DEBUG_LOG_LEVEL', default='INFO')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
+            'format': '%(levelname)s %(asctime)s %(name)s %(filename)s:%(lineno)d %(funcName)s %(message)s',
         },
-        'simple': {'format': '%(levelname)s %(message)s'},
+        'simple': {'format': '%(levelname)s %(asctime)s %(name)s %(message)s'},
     },
     'handlers': {
         'null': {
@@ -364,8 +371,8 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
+            'filters': ['require_debug_false'],
         },
-        'stream_to_console': {'level': 'DEBUG', 'class': 'logging.StreamHandler'},
         'rq_file': {
             'level': 'DEBUG',
             'class': 'concurrent_log_handler.ConcurrentTimedRotatingFileHandler',
@@ -379,30 +386,21 @@ LOGGING = {
     'loggers': {
         '': {
             'handlers': ['console', 'file', 'mail_admins'],
+            'level': DEBUG_LOG_LEVEL if DEBUG else 'INFO',
             'propagate': True,
-            'level': 'INFO',
         },
         'django': {
             'handlers': ['console', 'file', 'mail_admins'],
-            'propagate': True,
-            'level': 'INFO',
+            'level': DEBUG_LOG_LEVEL if DEBUG else 'INFO',
+            'propagate': False,
         },
-        'django.request': {
-            'handlers': ['console', 'file', 'mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
+        'rq': {
+            'handlers': ['console', 'rq_file', 'mail_admins'],
+            'level': DEBUG_LOG_LEVEL if DEBUG else 'INFO',
+            'propagate': False,
         },
     },
 }
-
-LOG_DB_BACKEND = env.bool('LOG_DB_BACKEND', default=False)
-
-if LOG_DB_BACKEND:
-    LOGGING['loggers']['django.db.backends'] = {
-        'handlers': ['console'],
-        'level': 'DEBUG',
-        'propagate': False,
-    }
 
 # Cache settings
 CACHES = {
@@ -442,9 +440,10 @@ RQ_QUEUES = {
     'default': {'USE_REDIS_CACHE': 'default', 'DEFAULT_TIMEOUT': 300},
 }
 
-if DEBUG or TESTING:
-    for queue_config in iter(RQ_QUEUES.values()):
-        queue_config['ASYNC'] = False
+RQ_ASYNC = env.bool('RQ_ASYNC', default=not (DEBUG or TESTING))
+
+for queue_config in iter(RQ_QUEUES.values()):
+    queue_config['ASYNC'] = RQ_ASYNC
 
 # Time (in seconds) to keep the job result in Redis
 RQ_RESULT_TTL = 500
