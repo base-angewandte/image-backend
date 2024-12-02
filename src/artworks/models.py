@@ -947,7 +947,7 @@ class DiscriminatoryTerm(models.Model):
     """Defined and extensible set of discriminatory terms that should be
     contextualised by frontend."""
 
-    term = models.CharField(max_length=255)
+    term = models.CharField(max_length=255, unique=True)
 
     class Meta:
         ordering = [Upper('term')]
