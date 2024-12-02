@@ -212,9 +212,15 @@ def post_migrate_signal(sender, **kwargs):
             # we only apply changes after the last migration has run to ensure that the
             # model is up to date
             if int(migration.name[:4]) == last_migration:
-                queue = get_queue('default')
-                queue.enqueue_in(
-                    timedelta(seconds=5),
-                    post_migrate_updates,
-                    result_ttl=settings.RQ_RESULT_TTL,
-                )
+                if settings.RQ_ASYNC:
+                    queue = get_queue('default')
+                    queue.enqueue_in(
+                        timedelta(seconds=5),
+                        post_migrate_updates,
+                        result_ttl=settings.RQ_RESULT_TTL,
+                    )
+                else:
+                    django_rq.enqueue(
+                        post_migrate_updates,
+                        result_ttl=settings.RQ_RESULT_TTL,
+                    )
