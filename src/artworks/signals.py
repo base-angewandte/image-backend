@@ -1,6 +1,8 @@
+from datetime import timedelta
 from pathlib import Path
 
 import django_rq
+from django_rq.queues import get_queue
 
 from django.conf import settings
 from django.db import connections
@@ -175,7 +177,23 @@ def delete_artwork_images(sender, instance, **kwargs):
         instance.image_fullsize.delete(save=False)
 
 
-def post_migrate_updates(sender, **kwargs):
+def post_migrate_updates():
+    for artwork in Artwork.objects.all():
+        # update search vector if there have been changes to the model
+        django_rq.enqueue(
+            artwork.update_search_vector,
+            result_ttl=settings.RQ_RESULT_TTL,
+        )
+
+        # create full size images, if they don't exist
+        if artwork.image_original and not artwork.image_fullsize:
+            django_rq.enqueue(
+                artwork.create_image_fullsize,
+                result_ttl=settings.RQ_RESULT_TTL,
+            )
+
+
+def post_migrate_signal(sender, **kwargs):
     plan = kwargs.get('plan')
 
     # check if a migration has been run and if it was forward
@@ -194,16 +212,15 @@ def post_migrate_updates(sender, **kwargs):
             # we only apply changes after the last migration has run to ensure that the
             # model is up to date
             if int(migration.name[:4]) == last_migration:
-                for artwork in Artwork.objects.all():
-                    # update search vector if there have been changes to the model
-                    django_rq.enqueue(
-                        artwork.update_search_vector,
+                if settings.RQ_ASYNC:
+                    queue = get_queue('default')
+                    queue.enqueue_in(
+                        timedelta(seconds=5),
+                        post_migrate_updates,
                         result_ttl=settings.RQ_RESULT_TTL,
                     )
-
-                    # create full size images, if they don't exist
-                    if artwork.image_original and not artwork.image_fullsize:
-                        django_rq.enqueue(
-                            artwork.create_image_fullsize,
-                            result_ttl=settings.RQ_RESULT_TTL,
-                        )
+                else:
+                    django_rq.enqueue(
+                        post_migrate_updates,
+                        result_ttl=settings.RQ_RESULT_TTL,
+                    )
