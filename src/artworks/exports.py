@@ -117,7 +117,7 @@ def album_download_as_pptx(album_id, language='en', return_raw=False):
             # Apply style 'strikethrough' to rest of the term
             add_run_to_paragraph(
                 p,
-                description[found_position : found_position + len(found_term)],
+                description[found_position + 1 : found_position + len(found_term)],
                 style='strikethrough',
             )
 
