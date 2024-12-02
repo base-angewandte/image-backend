@@ -16,6 +16,10 @@ def process_user_attributes(sender, user, created, attributes, *args, **kwargs):
     user.is_staff = False
     user.is_superuser = False
 
+    if user.username in settings.SUPERUSERS:
+        user.is_staff = True
+        user.is_superuser = True
+
     if 'administer_image' in permissions or 'edit_image' in permissions:
         user.is_staff = True
 
