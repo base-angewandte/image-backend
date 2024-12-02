@@ -1,7 +1,7 @@
 from rest_framework.exceptions import ParseError
 from rest_framework.request import Request
 
-from django.db.models import F
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from artworks.models import Album, Artwork, PermissionsRelation
@@ -69,7 +69,13 @@ def slides_with_details(album, request):
             if artwork.image_fullsize
             else None,
             'title': artwork.title,
-            'discriminatory_terms': artwork.get_discriminatory_terms_list(),
+            'discriminatory_terms': [
+                # we iterate over discriminatory_terms directly instead of using
+                # artwork.get_discriminatory_terms_list() to ensure that we are
+                # using the results already fetched with prefetch_related()
+                dt.term
+                for dt in artwork.discriminatory_terms.all()
+            ],
             'credits': artwork.credits,
             'date': artwork.date,
             'artists': [
@@ -80,6 +86,8 @@ def slides_with_details(album, request):
                 for artist in artwork.artists.all()
             ],
         }
+        if request.user.is_editor:
+            artworks[artwork.pk]['editing_link'] = artwork.editing_link
 
     for slide in album.slides:
         slide_info = {'id': slide['id'], 'items': []}
@@ -100,45 +108,47 @@ def slides_with_details(album, request):
 
 
 def featured_artworks(album, request, num_artworks=4):
-    artworks = []
-    found_ids = []
+    artwork_ids = []
     for slide in album.slides:
-        for item in slide['items']:
-            artwork_id = item.get('id')
-            # an image could be included several times in the slides, but should only be featured once
-            if artwork_id in found_ids:
-                continue
-            try:
-                artwork = Artwork.objects.get(pk=artwork_id, published=True)
-            except Artwork.DoesNotExist:
-                # TODO: for now we just drop artworks which do not exist any more from the slides
-                #   in a future feature we need to discuss whether there should be some information left, that there was
-                #   an artwork but got deleted, and whether we should retain some artwork title in that case, or just
-                #   display a blank). technically, we could add an Album.repair_slides() method which handles this
-                continue
-            found_ids.append(artwork_id)
-            artworks.append(
-                {
-                    'id': artwork.pk,
-                    'image_original': request.build_absolute_uri(
-                        artwork.image_original.url,
-                    )
-                    if artwork.image_original
-                    else None,
-                    'image_fullsize': request.build_absolute_uri(
-                        artwork.image_fullsize.url,
-                    )
-                    if artwork.image_fullsize
-                    else None,
-                    'title': artwork.title,
-                    'discriminatory_terms': artwork.get_discriminatory_terms_list(),
-                },
+        for artwork in slide['items']:
+            artwork_id = artwork.get('id')
+            if artwork_id not in artwork_ids:
+                artwork_ids.append(artwork_id)
+
+    qs = Artwork.objects.filter(id__in=artwork_ids, published=True).prefetch_related(
+        'discriminatory_terms',
+    )
+
+    artworks = {}
+    for artwork in qs:
+        artworks[artwork.pk] = {
+            'id': artwork.pk,
+            'image_original': request.build_absolute_uri(
+                artwork.image_original.url,
             )
-            if len(artworks) >= num_artworks:
-                break
+            if artwork.image_original
+            else None,
+            'image_fullsize': request.build_absolute_uri(
+                artwork.image_fullsize.url,
+            )
+            if artwork.image_fullsize
+            else None,
+            'title': artwork.title,
+            'discriminatory_terms': [
+                # we iterate over discriminatory_terms directly instead of using
+                # artwork.get_discriminatory_terms_list() to ensure that we are
+                # using the results already fetched with prefetch_related()
+                dt.term
+                for dt in artwork.discriminatory_terms.all()
+            ],
+        }
+
         if len(artworks) >= num_artworks:
             break
-    return artworks
+
+    return [
+        artworks[artwork_id] for artwork_id in artwork_ids if artworks.get(artwork_id)
+    ]
 
 
 def album_object(
@@ -170,7 +180,9 @@ def album_object(
         (default is False)
     :returns: a dict representing the album with all requested features
     """
-    permissions_qs = PermissionsRelation.objects.filter(album=album)
+    permissions_qs = PermissionsRelation.objects.filter(album=album).select_related(
+        'user',
+    )
 
     # only album owners see all permissions. users who an album is shared with see
     # either only their own permission, or - if they have EDIT permissions themselves -
@@ -221,4 +233,22 @@ def album_object(
 
 
 def get_person_list(queryset):
-    return queryset.annotate(value=F('name')).values('id', 'value')
+    return [{'id': person.id, 'value': person.name} for person in queryset]
+
+
+def filter_albums_for_user(user, owner=True, permissions='EDIT'):
+    q_objects = Q()
+
+    if owner:
+        q_objects |= Q(user=user)
+
+    permissions = permissions.split(',')
+
+    if permissions:
+        q_objects |= Q(
+            pk__in=PermissionsRelation.objects.filter(
+                user=user,
+                permissions__in=permissions,
+            ).values_list('album__pk', flat=True),
+        )
+    return q_objects

@@ -12,10 +12,11 @@ from rest_framework.response import Response
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from api.serializers.folders import FoldersRequestSerializer
-from api.views import album_object, check_limit, check_offset, check_sorting
-from api.views.search import filter_albums_for_user
 from artworks.models import Folder
+
+from ..serializers.folders import FoldersRequestSerializer
+from ..views import album_object, check_limit, check_offset, check_sorting
+from . import filter_albums_for_user
 
 
 @extend_schema(tags=['folders'])
@@ -65,7 +66,11 @@ class FoldersViewSet(viewsets.GenericViewSet):
             self.ordering_fields,
         )
 
-        results = self.queryset.filter(owner=request.user).order_by(sorting)
+        results = (
+            self.queryset.filter(owner=request.user)
+            .order_by(sorting)
+            .select_related('owner')
+        )
         results = results[offset : offset + limit]
 
         return Response(
@@ -73,7 +78,7 @@ class FoldersViewSet(viewsets.GenericViewSet):
                 {
                     'id': folder.id,
                     'title': folder.title,
-                    'owner': f'{folder.owner.first_name} {folder.owner.last_name}',
+                    'owner': folder.owner.get_full_name(),
                 }
                 for folder in results
             ],
@@ -159,9 +164,15 @@ class FoldersViewSet(viewsets.GenericViewSet):
             permissions=serializer.validated_data['permissions'],
         )
 
-        albums = folder.albums.filter(q_filters).order_by(sorting)[
-            offset : offset + limit
-        ]
+        albums = (
+            folder.albums.filter(q_filters)
+            .order_by(sorting)
+            .select_related(
+                'user',
+                'last_changed_by',
+            )[offset : offset + limit]
+        )
+
         albums_data = [
             album_object(
                 album,

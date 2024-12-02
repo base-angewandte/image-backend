@@ -67,7 +67,7 @@ services:
     depends_on:
       - image-postgres
       - image-redis
-    command: python manage.py rqworker default
+    command: python manage.py rqworker --with-scheduler default
 
   image-cron:
     image: paradoxon/alpine-cron

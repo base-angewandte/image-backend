@@ -44,7 +44,6 @@ from api.views import (
     check_sorting,
     slides_with_details,
 )
-from api.views.search import filter_albums_for_user
 from artworks.exports import ExportError, album_download_as_pptx
 from artworks.models import (
     Album,
@@ -53,6 +52,8 @@ from artworks.models import (
     FolderAlbumRelation,
     PermissionsRelation,
 )
+
+from . import filter_albums_for_user
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +117,14 @@ class AlbumsViewSet(viewsets.GenericViewSet):
             permissions=serializer.validated_data['permissions'],
         )
 
-        albums = Album.objects.filter(q_filters).order_by(sorting)
+        albums = (
+            Album.objects.filter(q_filters)
+            .order_by(sorting)
+            .select_related(
+                'user',
+                'last_changed_by',
+            )
+        )
 
         total = albums.count()
 

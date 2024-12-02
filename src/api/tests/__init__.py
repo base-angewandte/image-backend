@@ -128,7 +128,7 @@ class APITestCase(RestFrameworkAPITestCase):
             image_original=temporary_image(),
         )
         aw1.artists.add(artemisia)
-        aw1.material.add(material_canvas)
+        aw1.materials.add(material_canvas)
         aw2 = Artwork.objects.create(
             title='Die UDSSR im Aufbau [СССР на стройке] Nr. 12',  # noqa: RUF001
             title_english='The USSR in Construction [СССР на стройке] , No. 12',  # noqa: RUF001
@@ -142,7 +142,7 @@ class APITestCase(RestFrameworkAPITestCase):
             image_original=temporary_image(),
         )
         aw2.artists.add(warwara)
-        aw2.material.add(material_poster)
+        aw2.materials.add(material_poster)
         aw3 = Artwork.objects.create(
             title='Homometer II',
             title_english='Homometer II',
@@ -157,7 +157,7 @@ class APITestCase(RestFrameworkAPITestCase):
             image_original=temporary_image(),
         )
         aw3.artists.add(valie)
-        aw3.material.add(material_paper)
+        aw3.materials.add(material_paper)
         Artwork.objects.create(
             title='multiple artists test',
             published=True,

@@ -10,20 +10,29 @@ from django.conf import settings
 from django.db.models import FloatField, Q, Value
 from django.utils.translation import gettext_lazy as _
 
-from api.search.filters import FILTERS, FILTERS_KEYS
-from api.serializers.search import SearchRequestSerializer, SearchResultSerializer
-from api.views import check_limit, check_offset
-from artworks.models import Artwork, Keyword, Location, PermissionsRelation
+from artworks.models import Artwork, Keyword, Location
+
+from ..search.filters import FILTERS, FILTERS_KEYS
+from ..search.utils import websearch_transformation
+from ..serializers.search import SearchRequestSerializer, SearchResultSerializer
+from . import check_limit, check_offset
 
 
 def filter_title(filter_values):
     filters_list = []
+    exclude_list = []
     for val in filter_values:
         if isinstance(val, str):
-            filters_list.append(
-                Q(title__unaccent__icontains=val)
-                | Q(title_english__unaccent__icontains=val),
+            q_filters, q_filters_exclude = websearch_transformation(
+                val,
+                lookups=[
+                    'title__unaccent__icontains',
+                    'title_english__unaccent__icontains',
+                ],
             )
+            filters_list.append(q_filters)
+            if q_filters_exclude:
+                exclude_list.append(q_filters_exclude)
         elif isinstance(val, dict) and 'id' in val:
             filters_list.append(Q(pk=val.get('id')))
         else:
@@ -31,19 +40,31 @@ def filter_title(filter_values):
                 _('Invalid format of at least one filter_value for title filter.'),
             )
 
-    return filters_list
+    return filters_list, exclude_list
 
 
 def filter_artists(filter_values):
     filters_list = []
+    exclude_list = []
     for val in filter_values:
         if isinstance(val, str):
-            filters_list.append(
-                Q(artists__name__unaccent__icontains=val)
-                | Q(authors__name__unaccent__icontains=val)
-                | Q(photographers__name__unaccent__icontains=val)
-                | Q(graphic_designers__name__unaccent__icontains=val),
+            q_filters, q_filters_exclude = websearch_transformation(
+                val,
+                lookups=[
+                    'artists__name__unaccent__icontains',
+                    'authors__name__unaccent__icontains',
+                    'photographers__name__unaccent__icontains',
+                    'graphic_designers__name__unaccent__icontains',
+                    'artists__synonyms__icontains',
+                    'authors__synonyms__icontains',
+                    'photographers__synonyms__icontains',
+                    'graphic_designers__synonyms__icontains',
+                ],
             )
+            filters_list.append(q_filters)
+            if q_filters_exclude:
+                exclude_list.append(q_filters_exclude)
+
         elif isinstance(val, dict) and 'id' in val:
             filters_list.append(
                 Q(artists__id=val.get('id'))
@@ -51,52 +72,49 @@ def filter_artists(filter_values):
                 | Q(photographers__id=val.get('id'))
                 | Q(graphic_designers__id=val.get('id')),
             )
+
         else:
             raise ParseError(
                 _('Invalid format of at least one filter_value for artists filter.'),
             )
 
-    return filters_list
-
-
-def filter_albums_for_user(user, owner=True, permissions='EDIT'):
-    q_objects = Q()
-
-    if owner:
-        q_objects |= Q(user=user)
-
-    permissions = permissions.split(',')
-
-    if permissions:
-        q_objects |= Q(
-            pk__in=PermissionsRelation.objects.filter(
-                user=user,
-                permissions__in=permissions,
-            ).values_list('album__pk', flat=True),
-        )
-    return q_objects
+    return filters_list, exclude_list
 
 
 def filter_mptt_model(filter_values, model, search_field):
     """Helper function for other filters, to filter a MPTT model based
     field."""
     filters_list = []
+    exclude_list = []
     for val in filter_values:
         if isinstance(val, str):
-            filters_list.append(
-                Q(**{f'{search_field}__name__unaccent__icontains': val})
-                | Q(**{f'{search_field}__name_en__unaccent__icontains': val}),
+            lookups = [
+                f'{search_field}__name__unaccent__icontains',
+                f'{search_field}__name_en__unaccent__icontains',
+            ]
+
+            if search_field in ('place_of_production', 'location'):
+                lookups.append(f'{search_field}__synonyms__icontains')
+
+            q_filters, q_filters_exclude = websearch_transformation(
+                val,
+                lookups=lookups,
             )
+            filters_list.append(q_filters)
+            if q_filters_exclude:
+                exclude_list.append(q_filters_exclude)
+
         elif isinstance(val, dict) and 'id' in val:
             entries = model.objects.filter(pk=val.get('id')).get_descendants(
                 include_self=True,
             )
             filters_list.append(Q(**{f'{search_field}__in': entries}))
+
         else:
             raise ParseError(
                 f'Invalid format of at least one filter_value for {search_field} filter.',
             )
-    return filters_list
+    return filters_list, exclude_list
 
 
 def filter_place_of_production(filter_values):
@@ -139,13 +157,15 @@ def filter_date(filter_values):
 
     # in case only date_from is provided, all dates in its future should be found
     if date_to is None:
-        return [Q(date_year_from__gte=date_from) | Q(date_year_to__gte=date_from)]
+        q_filters = [Q(date_year_from__gte=date_from) | Q(date_year_to__gte=date_from)]
+
     # in case only date_to is provided, all dates past this date should be found
     elif date_from is None:
-        return [Q(date_year_from__lte=date_to) | Q(date_year_to__lte=date_to)]
+        q_filters = [Q(date_year_from__lte=date_to) | Q(date_year_to__lte=date_to)]
+
     # if both parameters are provided, we search within the given date range
     else:
-        return [
+        q_filters = [
             Q(date_year_from__range=[date_from, date_to])
             | Q(date_year_to__range=[date_from, date_to])
             | Q(
@@ -153,6 +173,8 @@ def filter_date(filter_values):
                 date_year_to__gte=date_to,
             ),
         ]
+
+    return q_filters, []
 
 
 # maps filter_id to corresponding filter_* function defined above
@@ -240,9 +262,11 @@ class SearchViewSet(viewsets.GenericViewSet):
             for f in filters:
                 if f['id'] not in FILTERS_KEYS:
                     raise ParseError(f'Invalid filter id {repr(f["id"])}')
-                filters_list = FILTERS_MAP[f['id']](f['filter_values'])
+                filters_list, exclude_list = FILTERS_MAP[f['id']](f['filter_values'])
                 for filter_item in filters_list:
                     subq = subq.filter(filter_item)
+                for exclude_item in exclude_list:
+                    subq = subq.exclude(exclude_item)
 
         # we need to remove the previously set ordering to be able to use
         # distinct only on id field
@@ -275,30 +299,37 @@ class SearchViewSet(viewsets.GenericViewSet):
             # iteration even though the value is the same for all results
             total = artwork.total_count
 
-            results.append(
-                {
-                    'id': artwork.id,
-                    'image_original': request.build_absolute_uri(
-                        artwork.image_original.url,
-                    )
-                    if artwork.image_original
-                    else None,
-                    'image_fullsize': request.build_absolute_uri(
-                        artwork.image_fullsize.url,
-                    )
-                    if artwork.image_fullsize
-                    else None,
-                    'credits': artwork.credits,
-                    'title': artwork.title,
-                    'discriminatory_terms': artwork.get_discriminatory_terms_list(),
-                    'date': artwork.date,
-                    'artists': [
-                        {'value': artist.name, 'id': artist.id}
-                        for artist in artwork.artists.all()
-                    ],
-                    'score': artwork.rank,
-                },
-            )
+            artwork_serialized = {
+                'id': artwork.id,
+                'image_original': request.build_absolute_uri(
+                    artwork.image_original.url,
+                )
+                if artwork.image_original
+                else None,
+                'image_fullsize': request.build_absolute_uri(
+                    artwork.image_fullsize.url,
+                )
+                if artwork.image_fullsize
+                else None,
+                'credits': artwork.credits,
+                'title': artwork.title,
+                'discriminatory_terms': [
+                    # we iterate over discriminatory_terms directly instead of using
+                    # artwork.get_discriminatory_terms_list() to ensure that we are
+                    # using the results already fetched with prefetch_related()
+                    dt.term
+                    for dt in artwork.discriminatory_terms.all()
+                ],
+                'date': artwork.date,
+                'artists': [
+                    {'value': artist.name, 'id': artist.id}
+                    for artist in artwork.artists.all()
+                ],
+                'score': artwork.rank,
+            }
+            if request.user.is_editor:
+                artwork_serialized['editing_link'] = artwork.editing_link
+            results.append(artwork_serialized)
 
         return Response({'total': total, 'results': results})
 
