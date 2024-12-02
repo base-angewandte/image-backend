@@ -86,6 +86,8 @@ if DJANGO_ADMINS:
     ADMINS = getaddresses([DJANGO_ADMINS])
     MANAGERS = ADMINS
 
+SUPERUSERS = env.tuple('DJANGO_SUPERUSERS', default=())
+
 
 # Application definition
 
