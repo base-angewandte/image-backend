@@ -121,7 +121,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'date_created',
         'date_changed',
     )
-    change_list_template = 'admin/artworks/change_list.html'
+    change_list_template = 'admin/artworks/change_list_artworks.html'
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
