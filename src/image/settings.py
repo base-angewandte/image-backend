@@ -312,6 +312,8 @@ MEDIA_ROOT_PATH = Path(MEDIA_ROOT)
 
 MEDIA_ROOT_TESTS = MEDIA_ROOT_PATH / '__tests__'
 
+FILE_UPLOAD_PERMISSIONS = 0o644
+
 # config of VersatileImageField used in Artwork model
 VERSATILEIMAGEFIELD_SETTINGS = {
     # The amount of time, in seconds, that references to created images
