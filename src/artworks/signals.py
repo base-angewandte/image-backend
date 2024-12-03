@@ -64,39 +64,45 @@ def update_images_pre_save(sender, instance, *args, **kwargs):
             instance.create_image_fullsize(save=False)
 
 
+def update_image_original_path(instance):
+    image_original_path = Path(instance.image_original.path)
+
+    old_name = image_original_path.name
+
+    relative_path = instance.image_original.storage.get_available_name(
+        get_path_to_original_file(instance, old_name),
+        max_length=Artwork._meta.get_field('image_original').max_length,
+    )
+    absolute_path = settings.MEDIA_ROOT_PATH / relative_path
+
+    if not absolute_path.exists():
+        absolute_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # move the uploaded image
+    image_original_path.rename(absolute_path)
+
+    instance.image_original.name = relative_path
+
+
 @receiver(post_save, sender=Artwork)
 def update_images_post_save(sender, instance, created, **kwargs):
-    """Move image_original after an Artwork instance has been created and
-    create image_fullsize."""
+    """Change image_original path and create image_fullsize if necessary."""
 
-    if created and instance.image_original:
-        update_fields = ['image_fullsize']
+    update_fields = []
 
-        # path is already correct if the Artwork has been created
-        # via .create(), so we check if the pk is already in
-        # image_original.name
+    if instance.image_original:
+        # update image original directory if it is not already correct
         if instance.pk not in instance.image_original.name:
-            old_name = Path(instance.image_original.name).name
-
-            relative_path = instance.image_original.storage.get_available_name(
-                get_path_to_original_file(instance, old_name),
-                max_length=sender._meta.get_field('image_original').max_length,
-            )
-            absolute_path = settings.MEDIA_ROOT_PATH / relative_path
-
-            if not absolute_path.exists():
-                absolute_path.parent.mkdir(parents=True, exist_ok=True)
-
-            # move the uploaded image
-            Path(instance.image_original.path).rename(absolute_path)
-
-            instance.image_original.name = relative_path
-
+            update_image_original_path(instance)
             update_fields.append('image_original')
 
-        instance.create_image_fullsize(save=False)
+        # create image fullsize if it doesn't exist yet
+        if not instance.image_fullsize:
+            instance.create_image_fullsize(save=False)
+            update_fields.append('image_fullsize')
 
-        instance.save(update_fields=update_fields)
+        if update_fields:
+            instance.save(update_fields=update_fields)
 
 
 @receiver(post_save, sender=Artwork)
