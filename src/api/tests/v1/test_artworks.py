@@ -139,8 +139,43 @@ class ArtworkTests(APITestCase):
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # test specific labels
         self.assertEqual(content['title'], _('Title'))
         self.assertEqual(content['keywords'], _('Keywords'))
+        self.assertEqual(content['comments'], _('Comments'))
+        self.assertEqual(
+            content['material_description'],
+            _('Material/Technique description'),
+        )
+        self.assertEqual(content['license'], Artwork.get_license_label())
+        self.assertEqual(content['comments_de'], _('Comments (DE)'))
+        self.assertEqual(content['comments_en'], _('Comments (EN)'))
+        self.assertEqual(
+            content['material_description_de'],
+            _('Material/Technique description (DE)'),
+        )
+        self.assertEqual(
+            content['material_description_en'],
+            _('Material/Technique description (EN)'),
+        )
+
+        # test that excluded fields are not present
+        excluded_fields = [
+            'id',
+            'archive_id',
+            'checked',
+            'published',
+            'date_created',
+            'date_changed',
+            'search_persons',
+            'search_locations',
+            'search_keywords',
+            'search_materials',
+            'search_vector',
+        ]
+        for field in excluded_fields:
+            self.assertNotIn(field, content)
 
     def test_artworks_retrieve_albums(self):
         """Test the retrieval of the albums current user has added this artwork
