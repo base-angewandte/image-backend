@@ -76,7 +76,7 @@ def update_images_post_save(sender, instance, created, **kwargs):
         # via .create(), so we check if the pk is already in
         # image_original.name
         if instance.pk not in instance.image_original.name:
-            old_name = instance.image_original.name
+            old_name = Path(instance.image_original.name).name
 
             relative_path = instance.image_original.storage.get_available_name(
                 get_path_to_original_file(instance, old_name),
