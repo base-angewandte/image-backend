@@ -80,11 +80,14 @@ DJANGO_ADMIN_PATH = env.str('DJANGO_ADMIN_PATH', default='editing')
 
 DJANGO_ADMIN_TITLE = _('Image Admin')
 
-ADMINS = getaddresses(
-    [env('DJANGO_ADMINS', default='Philipp Mayer <philipp.mayer@uni-ak.ac.at>')],
-)
+DJANGO_ADMINS = env('DJANGO_ADMINS', default=None)
 
-MANAGERS = ADMINS
+if DJANGO_ADMINS:
+    ADMINS = getaddresses([DJANGO_ADMINS])
+    MANAGERS = ADMINS
+
+SUPERUSERS = env.tuple('DJANGO_SUPERUSERS', default=())
+
 
 # Application definition
 
@@ -308,6 +311,8 @@ MEDIA_ROOT = '{}{}'.format(
 MEDIA_ROOT_PATH = Path(MEDIA_ROOT)
 
 MEDIA_ROOT_TESTS = MEDIA_ROOT_PATH / '__tests__'
+
+FILE_UPLOAD_PERMISSIONS = 0o644
 
 # config of VersatileImageField used in Artwork model
 VERSATILEIMAGEFIELD_SETTINGS = {

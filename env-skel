@@ -38,6 +38,9 @@ SITE_URL=
 ## Set up admin notifications here
 # DJANGO_ADMINS=Full Name <email-with-name@example.com>,anotheremailwithoutname@example.com
 
+## Set users, which are allowed to access the Django admin with superuser rights here
+# DJANGO_SUPERUSERS=(username1,username2)
+
 ## The base url for the CAS server, e.g. https://your.base.domain/cas/
 ## default: f'{SITE_URL}cas/'
 # CAS_SERVER=

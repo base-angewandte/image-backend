@@ -6,15 +6,45 @@ from django.dispatch import receiver
 
 
 @receiver(cas_user_authenticated, dispatch_uid='process_user_attributes')
-def process_user_attributes(sender, user, created, attributes, *args, **kwargs):
+def process_user_attributes(
+    sender,
+    user,
+    created,
+    attributes,
+    ticket,
+    service,
+    request,
+    *args,
+    **kwargs,
+):
     if not user or not attributes:
         return
 
+    # ensure permissions and groups are always a list
     permissions = attributes.get('permissions')
-    permissions = permissions if permissions else []
+    groups = attributes.get('groups')
+
+    if permissions is None:
+        permissions = []
+    elif isinstance(permissions, str):
+        permissions = [permissions]
+
+    if groups is None:
+        groups = []
+    elif isinstance(groups, str):
+        groups = [groups]
+
+    attributes['permissions'] = permissions
+    attributes['groups'] = groups
+
+    request.session['attributes'] = attributes
 
     user.is_staff = False
     user.is_superuser = False
+
+    if user.username in settings.SUPERUSERS:
+        user.is_staff = True
+        user.is_superuser = True
 
     if 'administer_image' in permissions or 'edit_image' in permissions:
         user.is_staff = True

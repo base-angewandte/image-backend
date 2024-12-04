@@ -806,6 +806,33 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         if save:
             self.save(update_fields=['image_fullsize'])
 
+    def update_image_original_path(self, save=True):
+        image_original_path = Path(self.image_original.path)
+
+        old_name = image_original_path.name
+
+        path = get_path_to_original_file(self, old_name)
+
+        if image_original_path != settings.MEDIA_ROOT_PATH / path:
+            logger.info(f'Changing path of image_original for Artwork {self.pk}')
+
+            relative_path = self.image_original.storage.get_available_name(
+                path,
+                max_length=Artwork._meta.get_field('image_original').max_length,
+            )
+            absolute_path = settings.MEDIA_ROOT_PATH / relative_path
+
+            if not absolute_path.exists():
+                absolute_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # move the uploaded image
+            image_original_path.rename(absolute_path)
+
+            self.image_original.name = relative_path
+
+            if save:
+                self.save(update_fields=['image_original'])
+
 
 class Album(AbstractBaseModel):
     """Specific users can create their own collections of artworks."""
