@@ -17,7 +17,7 @@ services:
   # Mounting the Gotenberg port of the container to your localhost
   #image-gotenberg:
   #  ports:
-  #    - "127.0.0.1:${GOTENBERG_PORT:-5000}:5000"
+  #    - "127.0.0.1:${GOTENBERG_PORT:-4000}:4000"
 
   # Using the dev target of for the image-django container and mounting
   # the port of the Django dev server to your localhost
