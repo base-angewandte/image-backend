@@ -574,7 +574,7 @@ WIKIDATA_LABEL = 'Wikidata'
 REQUESTS_TIMEOUT = env.int('REQUESTS_TIMEOUT', default=5)
 
 GOTENBERG_SERVER_NAME = f'{PROJECT_NAME}-gotenberg' if DOCKER else 'localhost'
-GOTENBERG_PORT = env.int('GOTENBERG_PORT', default=3000)
+GOTENBERG_PORT = env.int('GOTENBERG_PORT', default=5000)
 GOTENBERG_API_URL = (
     f'http://{GOTENBERG_SERVER_NAME}:{GOTENBERG_PORT}/forms/libreoffice/convert'
 )
