@@ -1,5 +1,4 @@
 from datetime import timedelta
-from pathlib import Path
 
 import django_rq
 from django_rq.queues import get_queue
@@ -17,7 +16,6 @@ from .models import (
     Location,
     Material,
     Person,
-    get_path_to_original_file,
 )
 from .utils import remove_non_printable_characters
 
@@ -64,26 +62,6 @@ def update_images_pre_save(sender, instance, *args, **kwargs):
             instance.create_image_fullsize(save=False)
 
 
-def update_image_original_path(instance):
-    image_original_path = Path(instance.image_original.path)
-
-    old_name = image_original_path.name
-
-    relative_path = instance.image_original.storage.get_available_name(
-        get_path_to_original_file(instance, old_name),
-        max_length=Artwork._meta.get_field('image_original').max_length,
-    )
-    absolute_path = settings.MEDIA_ROOT_PATH / relative_path
-
-    if not absolute_path.exists():
-        absolute_path.parent.mkdir(parents=True, exist_ok=True)
-
-    # move the uploaded image
-    image_original_path.rename(absolute_path)
-
-    instance.image_original.name = relative_path
-
-
 @receiver(post_save, sender=Artwork)
 def update_images_post_save(sender, instance, created, **kwargs):
     """Change image_original path and create image_fullsize if necessary."""
@@ -93,7 +71,7 @@ def update_images_post_save(sender, instance, created, **kwargs):
     if instance.image_original:
         # update image original directory if it is not already correct
         if instance.pk not in instance.image_original.name:
-            update_image_original_path(instance)
+            instance.update_image_original_path(save=False)
             update_fields.append('image_original')
 
         # create image fullsize if it doesn't exist yet
