@@ -8,6 +8,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for artwork in Artwork.objects.all():
-            artwork.update_image_original_path()
+            if artwork.image_original:
+                artwork.update_image_original_path()
+            else:
+                self.stdout.write(
+                    self.style.WARNING(f'Artwork {artwork.pk} has no image_original'),
+                )
 
         self.stdout.write(self.style.SUCCESS('DONE'))
