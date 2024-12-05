@@ -100,5 +100,5 @@ REQUESTS_TIMEOUT=5
 # DEBUG_LOG_LEVEL=INFO
 
 ## If you want to run RQ jobs synchronously set this to False (this is the default
-value for DEBUG=True and TESTING, otherwise the default value is True)
+## value for DEBUG=True and TESTING, otherwise the default value is True)
 # RQ_ASYNC=True
