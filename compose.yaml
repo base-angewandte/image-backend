@@ -28,7 +28,7 @@ services:
     container_name: image-gotenberg
     command: ["gotenberg", "--api-port", "4000"]
     expose:
-      - 5550
+      - 4000
     networks:
       - imagenet
     restart: always
