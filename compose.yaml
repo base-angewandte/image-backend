@@ -26,9 +26,10 @@ services:
   image-gotenberg:
     image: gotenberg/gotenberg
     container_name: image-gotenberg
-    command: ["gotenberg", "--api-port", "4000"]
+    environment:
+      - GOTENBERG_PORT=${GOTENBERG_PORT:-4000}
     expose:
-      - 4000
+      - ${GOTENBERG_PORT:-4000}
     networks:
       - imagenet
     restart: always
