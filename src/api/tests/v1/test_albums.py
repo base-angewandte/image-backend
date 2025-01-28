@@ -75,7 +75,7 @@ class AlbumsTests(APITestCase):
         self.assertEqual(content['permissions'], [])
 
         # test retrieving non-existent album
-        self.album_does_not_exist(
+        self.check_for_nonexistent_object(
             view_name='album-detail',
             http_method='get',
             object_type='Album',
@@ -93,7 +93,7 @@ class AlbumsTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # test updating non-existing album
-        self.album_does_not_exist(
+        self.check_for_nonexistent_object(
             view_name='album-detail',
             http_method='put',
             object_type='Album',
@@ -117,7 +117,7 @@ class AlbumsTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # test destroying non-existing album
-        self.album_does_not_exist(
+        self.check_for_nonexistent_object(
             view_name='album-detail',
             http_method='delete',
             object_type='Album',
@@ -180,7 +180,7 @@ class AlbumsTests(APITestCase):
         self.assertEqual(content['detail'], 'Artwork does not exist')
 
         # test appending non-existent album
-        self.album_does_not_exist(
+        self.check_for_nonexistent_object(
             view_name='album-append-artwork',
             http_method='post',
             object_type='Album',
@@ -218,7 +218,7 @@ class AlbumsTests(APITestCase):
         self.assertEqual(slides[1]['items'][0]['id'], 3)
 
         # test retrieval of a slide of non-existing album
-        self.album_does_not_exist(
+        self.check_for_nonexistent_object(
             view_name='album-slides',
             http_method='get',
             object_type='Album',
@@ -297,7 +297,7 @@ class AlbumsTests(APITestCase):
         self.assertEqual(content['detail'], 'Artwork does not exist')
 
         # test creating slides with non-existent album
-        self.album_does_not_exist(
+        self.check_for_nonexistent_object(
             view_name='album-slides',
             http_method='post',
             object_type='Album',
@@ -333,7 +333,7 @@ class AlbumsTests(APITestCase):
         self.assertEqual(content[0]['permissions'][0]['id'], 'VIEW')
 
         # test retrieving album permissions of non-existent album
-        self.album_does_not_exist(
+        self.check_for_nonexistent_object(
             view_name='album-permissions',
             http_method='get',
             object_type='Album',
@@ -405,7 +405,7 @@ class AlbumsTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # test destroying album permissions of non-existing album
-        self.album_does_not_exist(
+        self.check_for_nonexistent_object(
             view_name='album-permissions',
             http_method='delete',
             object_type='Album',
@@ -508,7 +508,7 @@ class AlbumsTests(APITestCase):
         )
 
         # test downloading non-existing album
-        self.album_does_not_exist(
+        self.check_for_nonexistent_object(
             view_name='album-download',
             http_method='get',
             object_type='Album',
