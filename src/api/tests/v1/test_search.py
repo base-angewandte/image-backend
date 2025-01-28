@@ -234,6 +234,18 @@ class SearchTests(APITestCase):
             'Invalid filter_value format for date filter.',
         )
 
+        # test date search with correct date_from, date_to provided
+        data['filters'][0]['filter_values'] = {
+            'date_from': '1642',
+            'date_to': '1643',
+        }
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(content['total'], 1)
+        self.assertEqual(content['results'][0]['date'], '1642/1643')
+
         # test invalid format of date_from and date_to (non-integer strings)
         data['filters'][0]['filter_values'] = {
             'date_from': 'A',
