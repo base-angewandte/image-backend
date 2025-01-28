@@ -56,7 +56,7 @@ class FoldersTests(APITestCase):
             parent=root_folder,
         )
 
-        # test retrieval or child folder
+        # test retrieval of child folder
         url = reverse('folder-detail', kwargs={'pk': folder.pk, 'version': VERSION})
         response = self.client.get(url, format='json')
         content = json.loads(response.content)
@@ -75,4 +75,4 @@ class FoldersTests(APITestCase):
         self.assertEqual(content['id'], root_folder.id)
 
         # test retrieval of non-existent folder
-        self.object_does_not_exist('folder-detail', 'get', 'Folder')
+        self.check_for_nonexistent_object('folder-detail', 'get', 'Folder')
