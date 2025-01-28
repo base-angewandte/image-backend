@@ -10,7 +10,13 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from artworks.models import Album, Artwork, PermissionsRelation, Person
+from artworks.models import (
+    Album,
+    Artwork,
+    DiscriminatoryTerm,
+    PermissionsRelation,
+    Person,
+)
 
 from .. import APITestCase, temporary_image
 from . import VERSION
@@ -281,10 +287,14 @@ class ArtworkTests(APITestCase):
 
         # create artwork
         artwork = Artwork.objects.create(
-            title='Test Artwork',
+            title='Test Artwork discrimination',
             image_original=temporary_image(),
             published=True,
         )
+
+        # Create a discriminatory term and add it to the artwork
+        discriminatory_term = DiscriminatoryTerm.objects.create(term='discrimination')
+        artwork.discriminatory_terms.add(discriminatory_term)
 
         # create person and add as artist
         artist = Person.objects.create(name='TestArtist')
@@ -312,20 +322,13 @@ class ArtworkTests(APITestCase):
 
             with zip_file.open(metadata_file) as f:
                 metadata_content = f.read().decode('utf-8')
-                self.assertIn(artwork.title, metadata_content)
-                self.assertIn(artist.name, metadata_content)
-
-        # test apply_strikethrough functionality to a string
-        discriminatory_terms = ['discrimination']
-        title_with_dt = 'This is a discrimination example.'
-        for term in discriminatory_terms:
-            if term in title_with_dt:
-                strikethrough_term = term[0] + ''.join(
+                # Expected strikethrough version of the title and test for title (as the same field is tested)
+                term = 'discrimination'
+                struck_through_title = term[0] + ''.join(
                     [char + '\u0336' for char in term[1:]],
                 )
-                title_with_dt = title_with_dt.replace(term, strikethrough_term)
-        expected_result = 'This is a di\u0336s\u0336c\u0336r\u0336i\u0336m\u0336i\u0336n\u0336a\u0336t\u0336i\u0336o\u0336n\u0336 example.'
-        self.assertEqual(title_with_dt, expected_result)
+                self.assertIn(struck_through_title, metadata_content)
+                self.assertIn(artist.name, metadata_content)
 
         # test retrieving artwork, when artwork does not exist
         self.check_for_nonexistent_object('artwork-detail', 'get', 'Artwork')
