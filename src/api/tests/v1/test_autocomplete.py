@@ -251,9 +251,9 @@ class AutocompleteTests(APITestCase):
 
     def test_user_permissions_albums(self):
         # retrieve student and lecturer
-        user = get_user_model()
-        lecturer = user.objects.get(username='p0001234')
-        student = user.objects.get(username='s1234567')
+        User = get_user_model()  # noqa: N806
+        lecturer = User.objects.get(username='p0001234')
+        student = User.objects.get(username='s1234567')
         lecturer_album1 = Album.objects.get(title='Lecturer album 1', user=lecturer)
         student_album1 = Album.objects.get(title='Student album 1', user=student)
 
