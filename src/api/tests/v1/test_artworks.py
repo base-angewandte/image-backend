@@ -221,7 +221,7 @@ class ArtworkTests(APITestCase):
         # in order for the self.user to append the artwork to the album,
         # we need to provide them with an EDIT permission.
         # After the artwork is appended to the lecturer's album, we remove the PermissionsRelation
-        PermissionsRelation.objects.create(
+        album_permission_edit = PermissionsRelation.objects.create(
             user=self.user,
             album=lecturer_album,
             permissions='EDIT',
@@ -267,17 +267,29 @@ class ArtworkTests(APITestCase):
 
         # remove the permission to show that only owned album is retrieved
         # (because when EDIT is set, self.user has owner rights)
-        PermissionsRelation.objects.filter(
-            user=self.user,
-            album=lecturer_album,
-            permissions='EDIT',
-        ).delete()
+        album_permission_edit.delete()
 
         # test retrieval with 'owner=true'
         response = self.client.get(f'{url}?owner=true', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = response.json()
         self.assertEqual(len(content), 1)
+
+        # test appending artwork to other person's album when Permission is set only to VIEW
+        PermissionsRelation.objects.create(
+            user=self.user,
+            album=lecturer_album,
+            permissions='VIEW',
+        )
+
+        # append the artwork to lecturer's album
+        url_post_lecturer = reverse(
+            'album-append-artwork',
+            kwargs={'pk': lecturer_album.pk, 'version': VERSION},
+        )
+        data = {'id': aw1.pk}
+        response = self.client.post(url_post_lecturer, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # test retrieving artwork, when artwork does not exist
         self.check_for_nonexistent_object('artwork-detail', 'get', 'Artwork')
