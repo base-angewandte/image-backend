@@ -68,7 +68,7 @@ class ArtworkTests(APITestCase):
         self.assertEqual(content['artists'], [])
 
         # test retrieving artwork, when artwork does not exist
-        self.object_does_not_exist('artwork-detail', 'get', 'Artwork')
+        self.check_for_nonexistent_object('artwork-detail', 'get', 'Artwork')
 
     def test_artworks_image(self):
         """Test crop/resize and default image generation."""
@@ -122,7 +122,7 @@ class ArtworkTests(APITestCase):
                 )
 
         # test retrieving artwork, when artwork does not exist
-        self.object_does_not_exist('artwork-detail', 'get', 'Artwork')
+        self.check_for_nonexistent_object('artwork-detail', 'get', 'Artwork')
 
     def test_labels_list(self):
         """Test the retrieval of artwork labels."""
@@ -274,7 +274,7 @@ class ArtworkTests(APITestCase):
         self.assertEqual(len(content), 1)
 
         # test retrieving artwork, when artwork does not exist
-        self.object_does_not_exist('artwork-detail', 'get', 'Artwork')
+        self.check_for_nonexistent_object('artwork-detail', 'get', 'Artwork')
 
     def test_artworks_download(self):
         """Test the download of an artwork + metadata."""
@@ -328,4 +328,4 @@ class ArtworkTests(APITestCase):
         self.assertEqual(title_with_dt, expected_result)
 
         # test retrieving artwork, when artwork does not exist
-        self.object_does_not_exist('artwork-detail', 'get', 'Artwork')
+        self.check_for_nonexistent_object('artwork-detail', 'get', 'Artwork')
