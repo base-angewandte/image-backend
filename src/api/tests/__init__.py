@@ -2,6 +2,7 @@ import json
 import shutil
 from io import BytesIO
 
+import shortuuid
 from PIL import Image
 from rest_framework import status
 from rest_framework.test import APITestCase as RestFrameworkAPITestCase
@@ -254,6 +255,17 @@ class APITestCase(RestFrameworkAPITestCase):
         Album.objects.create(title='Student album 1', user=student)
         Album.objects.create(title='Student album 2', user=student)
         # TODO: set slides and add permissions here, when the album endpoint tests are extended
+
+        # add slides
+        self.album4 = Album.objects.create(title='My own album 4', user=self.user)
+        slides = [
+            {
+                'id': shortuuid.uuid(),
+                'items': [{'id': aw3.id}],
+            },
+        ]
+        self.album4.slides = slides
+        self.album4.save()
 
         # No test folders, as currently only a root folder is implemented,
         # which should be created on demand.

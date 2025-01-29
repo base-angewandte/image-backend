@@ -22,17 +22,18 @@ from django.utils.html import strip_tags
 from django.utils.text import slugify
 from django.utils.translation import get_language, gettext_lazy as _
 
-from api.serializers.artworks import (
+from artworks.models import Album, Artwork, PermissionsRelation
+from texts.models import Text
+
+from ..serializers.artworks import (
     ArtworksAlbumsRequestSerializer,
     ArtworksImageRequestSerializer,
 )
-from api.views import (
+from ..views import (
     check_limit,
     check_offset,
     get_person_list,
 )
-from artworks.models import Album, Artwork, PermissionsRelation
-from texts.models import Text
 
 logger = logging.getLogger(__name__)
 

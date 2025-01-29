@@ -12,10 +12,11 @@ from rest_framework.response import Response
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from api.serializers.folders import FoldersRequestSerializer
-from api.views import album_object, check_limit, check_offset, check_sorting
-from api.views.search import filter_albums_for_user
 from artworks.models import Folder
+
+from ..serializers.folders import FoldersRequestSerializer
+from ..views import album_object, check_limit, check_offset, check_sorting
+from . import filter_albums_for_user
 
 
 @extend_schema(tags=['folders'])

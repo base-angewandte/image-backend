@@ -194,10 +194,9 @@ class ArtworkTests(APITestCase):
         url = reverse('album-list', kwargs={'version': VERSION})
         response = self.client.get(url, format='json')
         content = json.loads(response.content)
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(content['total'], 4)
-        self.assertEqual(content['results'][3]['id'], album.id)
+        self.assertEqual(content['total'], 5)
+        self.assertEqual(content['results'][4]['id'], album.id)
 
         # Create another test artwork and albums
         aw1 = Artwork.objects.create(
