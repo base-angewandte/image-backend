@@ -2,6 +2,7 @@ import json
 import shutil
 from io import BytesIO
 
+import shortuuid
 from PIL import Image
 from rest_framework import status
 from rest_framework.test import APITestCase as RestFrameworkAPITestCase
@@ -10,6 +11,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
+from django.urls import reverse
 
 from artworks.models import Album, Artwork, Keyword, Location, Material, Person
 
@@ -254,6 +256,17 @@ class APITestCase(RestFrameworkAPITestCase):
         Album.objects.create(title='Student album 2', user=student)
         # TODO: set slides and add permissions here, when the album endpoint tests are extended
 
+        # add slides
+        self.album4 = Album.objects.create(title='My own album 4', user=self.user)
+        slides = [
+            {
+                'id': shortuuid.uuid(),
+                'items': [{'id': aw3.id}],
+            },
+        ]
+        self.album4.slides = slides
+        self.album4.save()
+
         # No test folders, as currently only a root folder is implemented,
         # which should be created on demand.
 
@@ -347,6 +360,21 @@ class APITestCase(RestFrameworkAPITestCase):
             self.assertEqual(len(content['results']), 1)
         else:
             self.assertEqual(len(content), 1)
+
+    def check_for_nonexistent_object(
+        self,
+        view_name,
+        http_method,
+        object_type,
+        data=None,
+    ):
+        # test the retrieval/deletion/updating/etc of an album, when album doesn't exist
+        url = reverse(view_name, kwargs={'pk': 11111, 'version': 'v1'})
+        response = getattr(self.client, http_method)(url, data=data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(content['detail'], f'{object_type} does not exist')
 
     def tearDown(self):
         # delete temporary files again
