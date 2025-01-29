@@ -38,6 +38,9 @@ SITE_URL=
 ## Set up admin notifications here
 # DJANGO_ADMINS=Full Name <email-with-name@example.com>,anotheremailwithoutname@example.com
 
+## Set users, which are allowed to access the Django admin with superuser rights here
+# DJANGO_SUPERUSERS=(username1,username2)
+
 ## The base url for the CAS server, e.g. https://your.base.domain/cas/
 ## default: f'{SITE_URL}cas/'
 # CAS_SERVER=
@@ -90,8 +93,11 @@ REQUESTS_TIMEOUT=5
 # SENTRY_PROFILES_SAMPLE_RATE=0.2
 
 ## Set port of Gotenberg service that is used to convert a .pptx to a .pdf
-## You need to use an override file to change the port of the container
-# GOTENBERG_PORT=3000
+# GOTENBERG_PORT=4000
 
-## If you want to activate additional logging set this to True
-# LOG_DB_BACKEND=False
+## If you want to activate additional logging during development set this to DEBUG
+# DEBUG_LOG_LEVEL=INFO
+
+## If you want to run RQ jobs synchronously set this to False (this is the default
+## value for DEBUG=True and TESTING, otherwise the default value is True)
+# RQ_ASYNC=True
