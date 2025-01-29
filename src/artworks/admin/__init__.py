@@ -50,8 +50,8 @@ class ArtworkAdmin(admin.ModelAdmin):
         'graphic_designers__name',
         'graphic_designers__synonyms',
         'date',
-        'material__name',
-        'material__name_en',
+        'materials__name',
+        'materials__name_en',
         'material_description_de',
         'material_description_en',
         'dimensions_display',
@@ -121,7 +121,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'date_created',
         'date_changed',
     )
-    change_list_template = 'admin/artworks/change_list.html'
+    change_list_template = 'admin/artworks/change_list_artworks.html'
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

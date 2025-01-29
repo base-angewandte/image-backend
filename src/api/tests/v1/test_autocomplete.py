@@ -2,9 +2,10 @@ import json
 
 from rest_framework import status
 
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from artworks.models import Artwork
+from artworks.models import Album, Artwork, PermissionsRelation
 
 from .. import APITestCase, temporary_image
 from . import VERSION
@@ -247,3 +248,56 @@ class AutocompleteTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(fist_result), 3)
         self.assertEqual(fist_result['label'], 'loc test aut')
+
+    def test_user_permissions_albums(self):
+        # retrieve student and lecturer
+        User = get_user_model()  # noqa: N806
+        lecturer = User.objects.get(username='p0001234')
+        student = User.objects.get(username='s1234567')
+        lecturer_album1 = Album.objects.get(title='Lecturer album 1', user=lecturer)
+        student_album1 = Album.objects.get(title='Student album 1', user=student)
+
+        # provide rights to user
+        PermissionsRelation.objects.create(
+            user=self.user,
+            album=lecturer_album1,
+            permissions='VIEW',
+        )
+        PermissionsRelation.objects.create(
+            user=self.user,
+            album=student_album1,
+            permissions='EDIT',
+        )
+
+        url = reverse('autocomplete', kwargs={'version': VERSION})
+        response = self.client.get(
+            f'{url}?q=album&type=user_albums_editable',
+            format='json',
+        )
+        content = response.json()
+
+        self.assertEqual(response.status_code, 200)
+
+        # extract returned ids of albums
+        album_ids = [item['id'] for item in content]
+
+        # test if user can see their own albums
+        own_albums = Album.objects.filter(user=self.user).values_list('id', flat=True)
+        for album_id in own_albums:
+            self.assertIn(album_id, album_ids)
+
+        # test if user can see albums with EDIT permissions
+        editable_albums = PermissionsRelation.objects.filter(
+            user=self.user,
+            permissions='EDIT',
+        ).values_list('album__id', flat=True)
+        for album_id in editable_albums:
+            self.assertIn(album_id, album_ids)
+
+        # test if user can not see albums with VIEW permissions
+        not_viewable_albums = PermissionsRelation.objects.filter(
+            user=self.user,
+            permissions='VIEW',
+        ).values_list('album__id', flat=True)
+        for album_id in not_viewable_albums:
+            self.assertNotIn(album_id, album_ids)

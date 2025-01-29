@@ -1,0 +1,6 @@
+[run]
+omit =
+    */migrations/*
+    */wsgi.py
+    manage.py
+    gunicorn_conf.py
