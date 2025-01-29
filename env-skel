@@ -93,7 +93,6 @@ REQUESTS_TIMEOUT=5
 # SENTRY_PROFILES_SAMPLE_RATE=0.2
 
 ## Set port of Gotenberg service that is used to convert a .pptx to a .pdf
-## You need to use an override file to change the port of the container
 # GOTENBERG_PORT=4000
 
 ## If you want to activate additional logging during development set this to DEBUG

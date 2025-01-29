@@ -32,6 +32,7 @@ services:
       - ${GOTENBERG_PORT:-4000}
     networks:
       - imagenet
+    command: ["gotenberg", "--api-port-from-env", "GOTENBERG_PORT"]
     restart: always
 
   image-django:
