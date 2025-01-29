@@ -368,7 +368,7 @@ class APITestCase(RestFrameworkAPITestCase):
         object_type,
         data=None,
     ):
-        # test the retrieval/deletion/updating/etc of an album, when album doesn't exist
+        # test the retrieval of an artwork, when artwork doesn't exist
         url = reverse(view_name, kwargs={'pk': 11111, 'version': 'v1'})
         response = getattr(self.client, http_method)(url, data=data, format='json')
         content = json.loads(response.content)
