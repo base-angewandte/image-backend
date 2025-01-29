@@ -339,7 +339,10 @@ class ArtworkTests(APITestCase):
                 struck_through_title = term[0] + ''.join(
                     [char + '\u0336' for char in term[1:]],
                 )
-                self.assertIn(struck_through_title, metadata_content)
+                self.assertIn(
+                    f'Title: Test Artwork {struck_through_title}\n',
+                    metadata_content,
+                )
                 self.assertIn(artist.name, metadata_content)
 
         # test retrieving artwork, when artwork does not exist
