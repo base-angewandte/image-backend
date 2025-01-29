@@ -45,8 +45,18 @@ class FoldersTests(APITestCase):
     def test_folder_retrieve(self):
         """Test the retrieval of an album."""
 
-        folder = Folder.objects.create(title='Test Folder', owner=self.user)
+        root_folder = Folder.objects.create(
+            title='Root Folder',
+            owner=self.user,
+            parent=None,
+        )
+        folder = Folder.objects.create(
+            title='Test Folder',
+            owner=self.user,
+            parent=root_folder,
+        )
 
+        # test retrieval of child folder
         url = reverse('folder-detail', kwargs={'pk': folder.pk, 'version': VERSION})
         response = self.client.get(url, format='json')
         content = json.loads(response.content)
@@ -54,3 +64,15 @@ class FoldersTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(content['title'], folder.title)
         self.assertEqual(content['id'], folder.id)
+
+        # test retrieval of root folder
+        url = reverse('folder-detail', kwargs={'pk': 'root', 'version': VERSION})
+        response = self.client.get(url, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(content['title'], root_folder.title)
+        self.assertEqual(content['id'], root_folder.id)
+
+        # test retrieval of non-existent folder
+        self.check_for_nonexistent_object('folder-detail', 'get', 'Folder')

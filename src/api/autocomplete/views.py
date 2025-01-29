@@ -1,5 +1,4 @@
-import operator
-from functools import reduce
+import logging
 
 from drf_spectacular.utils import (
     OpenApiExample,
@@ -27,6 +26,7 @@ from artworks.models import (
     Person,
 )
 
+from ..search.utils import websearch_transformation
 from .serializers import (
     SOURCES,
     AutocompleteRequestSerializer,
@@ -35,6 +35,8 @@ from .serializers import (
     AutocompleteResponseItemSerializer,
     AutocompleteResponseSerializer,
 )
+
+logger = logging.getLogger(__name__)
 
 MODEL_MAP = {
     'user_albums_editable': Album,
@@ -143,101 +145,142 @@ def autocomplete(request, *args, **kwargs):
             'data': [],
         }
 
-        if t == 'users':
-            query = (
-                MODEL_MAP[t]
-                .objects.annotate(
-                    name=Concat('first_name', Value(' '), 'last_name'),
+        match t:
+            case 'users':
+                query = (
+                    MODEL_MAP[t]
+                    .objects.annotate(
+                        name=Concat('first_name', Value(' '), 'last_name'),
+                    )
+                    .annotate(
+                        similarity=TrigramWordSimilarity(
+                            q_param,
+                            'name__unaccent',
+                        ),
+                    )
+                    .filter(similarity__gte=0.6)
+                    .order_by('-similarity')
                 )
-                .annotate(
-                    similarity=TrigramWordSimilarity(
-                        q_param,
-                        'name__unaccent',
-                    ),
+                for user in query:
+                    d['data'].append(
+                        {
+                            'id': user.username,
+                            'label': user.get_full_name(),
+                        },
+                    )
+            case 'user_albums_editable':
+                q_filters = Q(user=request.user) | Q(
+                    pk__in=PermissionsRelation.objects.filter(
+                        user=request.user,
+                        permissions='EDIT',
+                    ).values_list('album__pk', flat=True),
                 )
-                .filter(similarity__gte=0.6)
-                .order_by('-similarity')
-            )
-            for user in query:
-                d['data'].append(
-                    {
-                        'id': user.username,
-                        'label': user.get_full_name(),
-                    },
-                )
-        elif t == 'user_albums_editable':
-            q_filters = Q(user=request.user) | Q(
-                pk__in=PermissionsRelation.objects.filter(
-                    user=request.user,
-                    permissions='EDIT',
-                ).values_list('album__pk', flat=True),
-            )
-            query = (
-                MODEL_MAP[t]
-                .objects.filter(q_filters)
-                .filter(title__unaccent__icontains=q_param)
-                .annotate(label=F('title'))[:limit]
-            )
-
-            d['data'] = query.values('id', 'label')
-
-        elif t == 'titles':
-            q_filters = Q(title__unaccent__icontains=q_param) | Q(
-                title_english__unaccent__icontains=q_param,
-            )
-            query = (
-                MODEL_MAP[t]
-                .objects.filter(q_filters, published=True)
-                .prefetch_related('discriminatory_terms')[:limit]
-            )
-
-            for artwork in query:
-                d['data'].append(
-                    {
-                        'id': artwork.id,
-                        'label': artwork.title,
-                        'discriminatory_terms': [
-                            # we iterate over discriminatory_terms directly instead of using
-                            # artwork.get_discriminatory_terms_list() to ensure that we are
-                            # using the results already fetched with prefetch_related()
-                            dt.term
-                            for dt in artwork.discriminatory_terms.all()
-                        ],
-                    },
+                query = (
+                    MODEL_MAP[t]
+                    .objects.filter(q_filters)
+                    .filter(title__icontains=q_param)
+                    .annotate(label=F('title'))[:limit]
                 )
 
-        elif t == 'artists':
-            q_filters = Q(name__unaccent__icontains=q_param) | Q(
-                synonyms__icontains=q_param,
-            )
-            query = (
-                MODEL_MAP[t].objects.filter(q_filters).annotate(label=F('name'))[:limit]
-            )
-            d['data'] = query.values('id', 'label')
-
-        else:
-            # In the else clause only locations and keywords are queried.
-            # All other types are in the else-if statements.
-            q_filters_list = [
-                {'name__unaccent__icontains': q_param},
-                {'name_en__unaccent__icontains': q_param},
-            ]
-
-            if t == 'locations':
-                q_filters_list.append(
-                    {'synonyms__icontains': q_param},
+                d['data'] = query.values('id', 'label')
+            case 'titles':
+                q_filters, q_filters_exclude = websearch_transformation(
+                    q_param,
+                    lookups=[
+                        'title__unaccent__icontains',
+                        'title_english__unaccent__icontains',
+                    ],
                 )
 
-            q_filters = reduce(operator.or_, (Q(**x) for x in q_filters_list))
+                query = MODEL_MAP[t].objects.filter(q_filters, published=True)
 
-            query = MODEL_MAP[t].objects.filter(q_filters)[:limit]
-            for item in query:
-                d['data'].append(
-                    {
-                        'id': item.id,
-                        'label': item.name_localized,
-                    },
+                if q_filters_exclude:
+                    query = query.exclude(q_filters_exclude)
+
+                query = query.prefetch_related('discriminatory_terms')[:limit]
+
+                for artwork in query:
+                    d['data'].append(
+                        {
+                            'id': artwork.id,
+                            'label': artwork.title,
+                            'discriminatory_terms': [
+                                # we iterate over discriminatory_terms directly instead of using
+                                # artwork.get_discriminatory_terms_list() to ensure that we are
+                                # using the results already fetched with prefetch_related()
+                                dt.term
+                                for dt in artwork.discriminatory_terms.all()
+                            ],
+                        },
+                    )
+            case 'artists':
+                q_filters, q_filters_exclude = websearch_transformation(
+                    q_param,
+                    lookups=[
+                        'name__unaccent__icontains',
+                        'synonyms__icontains',
+                    ],
                 )
+
+                query = MODEL_MAP[t].objects.filter(q_filters)
+
+                if q_filters_exclude:
+                    query = query.exclude(q_filters_exclude)
+
+                query = query.annotate(label=F('name'))[:limit]
+
+                d['data'] = query.values('id', 'label')
+            case 'locations':
+                q_filters, q_filters_exclude = websearch_transformation(
+                    q_param,
+                    lookups=[
+                        'name__unaccent__icontains',
+                        'name_en__unaccent__icontains',
+                        'synonyms__icontains',
+                    ],
+                )
+
+                query = MODEL_MAP[t].objects.filter(q_filters)
+
+                if q_filters_exclude:
+                    query = query.exclude(q_filters_exclude)
+
+                query = query[:limit]
+
+                for item in query:
+                    d['data'].append(
+                        {
+                            'id': item.id,
+                            'label': item.name_localized,
+                        },
+                    )
+
+            case 'keywords':
+                q_filters, q_filters_exclude = websearch_transformation(
+                    q_param,
+                    lookups=[
+                        'name__unaccent__icontains',
+                        'name_en__unaccent__icontains',
+                    ],
+                )
+
+                query = MODEL_MAP[t].objects.filter(q_filters)
+
+                if q_filters_exclude:
+                    query = query.exclude(q_filters_exclude)
+
+                query = query[:limit]
+
+                for item in query:
+                    d['data'].append(
+                        {
+                            'id': item.id,
+                            'label': item.name_localized,
+                        },
+                    )
+            case _:
+                logger.error(f'No autocomplete implementation for type {repr(t)}')
+
         ret.append(d)
 
     if len(ret) == 1:

@@ -9,7 +9,7 @@ from django.db.models import F, Q
 
 class ArtworkManager(models.Manager):
     def search(self, text):
-        search_query = SearchQuery(text)
+        search_query = SearchQuery(text, search_type='websearch')
         search_rank = SearchRank(F('search_vector'), search_query, normalization=32)
         trigram_word_similarity_title = TrigramWordSimilarity(
             text,

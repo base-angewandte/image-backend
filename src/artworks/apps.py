@@ -37,7 +37,7 @@ class ArtworksConfig(AppConfig):
         # import signal handlers
         from . import signals
 
-        post_migrate.connect(signals.post_migrate_updates, sender=self)
+        post_migrate.connect(signals.post_migrate_signal, sender=self)
 
         if settings.DEBUG:
             monkeypatch_versatile_image_field()
