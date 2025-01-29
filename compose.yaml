@@ -26,10 +26,13 @@ services:
   image-gotenberg:
     image: gotenberg/gotenberg
     container_name: image-gotenberg
+    environment:
+      - GOTENBERG_PORT=${GOTENBERG_PORT:-4000}
     expose:
-      - 3000
+      - ${GOTENBERG_PORT:-4000}
     networks:
       - imagenet
+    command: ["gotenberg", "--api-port-from-env", "GOTENBERG_PORT"]
     restart: always
 
   image-django:
