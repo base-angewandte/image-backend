@@ -604,3 +604,5 @@ for extension, img_format in Image.registered_extensions().items():
     if img_format not in PIL_VALID_EXTENSIONS:
         PIL_VALID_EXTENSIONS[img_format] = []
     PIL_VALID_EXTENSIONS[img_format].append(extension.lower())
+
+PREFIX = env.str('PREFIX', default='/api/')
