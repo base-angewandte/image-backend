@@ -8,8 +8,6 @@ class CustomLanguageMiddleware:
         self.api_prefix = settings.PREFIX
 
     def __call__(self, request):
-        response = self.get_response(request)
-
         if request.path.startswith(self.api_prefix):
             accept_language = request.headers.get('accept-language')
 
@@ -18,13 +16,18 @@ class CustomLanguageMiddleware:
                 if accept_language
                 else settings.LANGUAGE_CODE
             )
+
             if language_code in settings.LANGUAGES_DICT:
                 activate(language_code)
+                request.LANGUAGE_CODE = language_code
 
-                response.set_cookie(
-                    settings.LANGUAGE_COOKIE_NAME,
-                    language_code,
-                    max_age=settings.LANGUAGE_COOKIE_AGE,
-                )
+        response = self.get_response(request)
+
+        if request.path.startswith(self.api_prefix):
+            response.set_cookie(
+                settings.LANGUAGE_COOKIE_NAME,
+                request.LANGUAGE_CODE,
+                max_age=settings.LANGUAGE_COOKIE_AGE,
+            )
 
         return response
