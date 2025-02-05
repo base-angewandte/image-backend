@@ -186,7 +186,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'api.middleware.custom_local_middleware.CustomLanguageMiddleware',
+    'api.middleware.locale.LocaleMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -605,4 +605,4 @@ for extension, img_format in Image.registered_extensions().items():
         PIL_VALID_EXTENSIONS[img_format] = []
     PIL_VALID_EXTENSIONS[img_format].append(extension.lower())
 
-PREFIX = env.str('PREFIX', default='/api/')
+API_PREFIX = env.str('API_PREFIX', default='/api/')

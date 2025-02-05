@@ -2,10 +2,10 @@ from django.conf import settings
 from django.utils.translation import activate
 
 
-class CustomLanguageMiddleware:
+class LocaleMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        self.api_prefix = settings.PREFIX
+        self.api_prefix = settings.API_PREFIX
 
     def __call__(self, request):
         if request.path.startswith(self.api_prefix):
