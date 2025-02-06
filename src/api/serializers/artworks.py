@@ -26,8 +26,8 @@ class ArtworksAlbumsRequestSerializer(serializers.Serializer):
 
 class ArtworksImageRequestSerializer(serializers.Serializer):
     method = serializers.CharField()
-    width = serializers.IntegerField(min_value=1)
-    height = serializers.IntegerField(min_value=1)
+    width = serializers.IntegerField(min_value=1, max_value=7068)
+    height = serializers.IntegerField(min_value=1, max_value=7068)
 
     def validate_method(self, value):
         if value not in ['crop', 'resize']:
