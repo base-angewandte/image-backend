@@ -1,7 +1,13 @@
 from django.conf import settings
 
 
-class LocaleMiddleware:
+class LanguageHeaderMiddleware:
+    """A custom middleware implementation that overwrites the language cookie.
+
+    Overwriting takes place for requests made by the API and when the
+    Language Header differs from the cookie set in the request.
+    """
+
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -14,9 +20,9 @@ class LocaleMiddleware:
         cookie_change = None
 
         if request.path.startswith(self.api_prefix):
-            current_set_cookie = request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME)
+            request_cookie = request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME)
 
-            if current_set_cookie:
+            if request_cookie:
                 accept_language_header = request.headers.get('accept-language')
                 language_code = (
                     accept_language_header
@@ -26,7 +32,7 @@ class LocaleMiddleware:
 
                 if (
                     accept_language_header in settings.LANGUAGES_DICT
-                    and current_set_cookie != accept_language_header
+                    and request_cookie != language_code
                 ):
                     request.COOKIES[settings.LANGUAGE_COOKIE_NAME] = language_code
                     cookie_change = language_code

@@ -36,7 +36,7 @@ urlpatterns = [
         name='index',
     ),
     # api
-    path('api/', include('api.urls')),
+    path(f'{settings.API_PREFIX}', include('api.urls')),
     # django admin
     path(f'{settings.DJANGO_ADMIN_PATH}/', include('massadmin.urls')),
     path(f'{settings.DJANGO_ADMIN_PATH}/', admin.site.urls),
