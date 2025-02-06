@@ -103,4 +103,4 @@ REQUESTS_TIMEOUT=5
 # RQ_ASYNC=True
 
 # API base path prefix (Used for custom LocaleMiddleware class)
-API_PREFIX=/api/
+API_PREFIX=api/
