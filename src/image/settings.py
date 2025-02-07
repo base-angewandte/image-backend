@@ -603,3 +603,5 @@ for extension, img_format in Image.registered_extensions().items():
     if img_format not in PIL_VALID_EXTENSIONS:
         PIL_VALID_EXTENSIONS[img_format] = []
     PIL_VALID_EXTENSIONS[img_format].append(extension.lower())
+
+CROP_RESIZE_MAX = env.int('CROP_RESIZE_MAX', default=7680)

@@ -101,3 +101,7 @@ REQUESTS_TIMEOUT=5
 ## If you want to run RQ jobs synchronously set this to False (this is the default
 ## value for DEBUG=True and TESTING, otherwise the default value is True)
 # RQ_ASYNC=True
+
+## Configure max value of height / width, when resizing or cropping images
+## The default is 7680
+CROP_RESIZE_MAX=7680
