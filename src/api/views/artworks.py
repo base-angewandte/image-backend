@@ -200,13 +200,13 @@ class ArtworksViewSet(viewsets.GenericViewSet):
                 name='width',
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                required=True,
+                description=f'The width parameter has a minimum value of 1 and a maximum value of {settings.CROP_RESIZE_MAX}.',
             ),
             OpenApiParameter(
                 name='height',
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                required=True,
+                description=f'The height parameter has a minimum value of 1 and a maximum value of {settings.CROP_RESIZE_MAX}.',
             ),
         ],
         responses={
