@@ -185,6 +185,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'base_common_drf.middleware.LanguageHeaderMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -603,5 +604,7 @@ for extension, img_format in Image.registered_extensions().items():
     if img_format not in PIL_VALID_EXTENSIONS:
         PIL_VALID_EXTENSIONS[img_format] = []
     PIL_VALID_EXTENSIONS[img_format].append(extension.lower())
+
+API_PREFIX = env.str('API_PREFIX', default='api/')
 
 CROP_RESIZE_MAX = env.int('CROP_RESIZE_MAX', default=7680)

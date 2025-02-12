@@ -102,6 +102,9 @@ REQUESTS_TIMEOUT=5
 ## value for DEBUG=True and TESTING, otherwise the default value is True)
 # RQ_ASYNC=True
 
+## API base path prefix (Used for custom LanguageHeaderMiddleware class & dynamically affects URLs in image/urls.py)
+# API_PREFIX=api/
+
 ## Configure max value of height / width, when resizing or cropping images
 ## The default is 7680
 CROP_RESIZE_MAX=7680

@@ -8,9 +8,9 @@ attrs==24.2.0
     # via
     #   jsonschema
     #   referencing
-base-common==0.3
+base-common==0.4
     # via -r src/requirements.in
-base-common-drf==0.4
+base-common-drf==0.5
     # via -r src/requirements.in
 brotli==1.1.0
     # via whitenoise
