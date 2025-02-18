@@ -118,9 +118,9 @@ subsections.
   python manage.py loaddata artworks/fixtures/locations.json
   python manage.py loaddata artworks/fixtures/discriminatory_terms.json
   python manage.py loaddata artworks/fixtures/artworks.json
-  cd ..
-  cp test-data/*.png src/assets/media
-  docker compose exec -T image-postgres psql -U django_image django_image < test-data/set-placeholder-images.sql
+  cp ../test-data/image-placeholder-*.png assets/media
+  python manage.py load_test_images
+  rm assets/media/image-placeholder-*.png
   ```
 
   If you also want to include a test data set with artworks containing
