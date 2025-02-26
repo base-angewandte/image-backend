@@ -43,7 +43,6 @@ services:
       - .env
     volumes:
       - ./src:/django
-      - ./src/assets/static:/django/assets/static
       - $MEDIA_DIR:/django/assets/media
       - ./logs:/logs
     networks:
