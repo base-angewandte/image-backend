@@ -182,6 +182,7 @@ if SITE_URL.startswith('https'):
 X_FRAME_OPTIONS = 'DENY'
 
 MIDDLEWARE = [
+    'base_common.middleware.HealthCheckMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
