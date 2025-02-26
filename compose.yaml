@@ -41,8 +41,6 @@ services:
     container_name: image-django
     env_file:
       - .env
-    expose:
-      - 8300
     volumes:
       - ./src:/django
       - ./src/assets/static:/django/assets/static
