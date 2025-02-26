@@ -60,14 +60,17 @@ services:
     networks:
       - imagenet
     restart: always
-    depends_on:
-      - image-postgres
-      - image-redis
-      - image-gotenberg
     healthcheck:
       test: [ "CMD-SHELL", "curl --fail http://localhost:8300/health || exit 1" ]
       start_period: 60s
       interval: 60s
+    depends_on: &depends_on
+      image-postgres:
+        condition: service_healthy
+      image-redis:
+        condition: service_healthy
+      image-gotenberg:
+        condition: service_healthy
 
   image-rq-worker:
     build: ./src
@@ -80,9 +83,7 @@ services:
     networks:
       - imagenet
     restart: always
-    depends_on:
-      - image-postgres
-      - image-redis
+    depends_on: *depends_on
     command: python manage.py rqworker --with-scheduler default
 
   image-cron:
