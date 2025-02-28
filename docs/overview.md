@@ -1,4 +1,4 @@
-# Overview (reduced version)
+# Overview
 
 [Image](https://imageplus.at/about-image) is a image database used as a platform for open art education.
 Technically it is a web application developed with Django.
