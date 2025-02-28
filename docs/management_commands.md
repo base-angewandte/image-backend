@@ -27,7 +27,7 @@ This command generates an `image_fullsize` for every artwork, by converting the 
 
 This command maps identifiers from external sources (e.g., GND, Getty, Wikidata) for `Persons`, `Locations` and `Keywords` via CSV files, and updates corresponding entries in the database with external data. For more information, please refer to [Affected fields](external_metadata.md#affected-fields) section in the "External Metadata" chapter.
 
-- It's important to note that the (`gnd_overwrite` flag)[] is set a bit differently:
+- It's important to note that the [`gnd_overwrite`-flag](external_metadata.md#overwrite-mechanism) is set a bit differently:
   - By default the flag will be turned on.
   - In case of a name mismatch between the database entry and the fetched GND data, all data will be overwritten, except for the `name` field and the overwrite flag will be turned off.
   - The differing name retrieved from the GND response is added to the first index of the `synonyms` field instead.
