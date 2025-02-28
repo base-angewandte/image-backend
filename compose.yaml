@@ -43,7 +43,7 @@ services:
     command: ["gotenberg", "--api-port-from-env", "GOTENBERG_PORT"]
     restart: always
     healthcheck:
-      test: [ "CMD-SHELL", "curl --fail http://localhost:$GOTENBERG_PORT/health || exit 1" ]
+      test: [ "CMD-SHELL", "curl --fail http://localhost:$$GOTENBERG_PORT/health || exit 1" ]
       start_period: 60s
       interval: 60s
 
