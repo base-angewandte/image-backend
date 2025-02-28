@@ -1,6 +1,6 @@
 # Overview
 
-[Image](https://imageplus.at/about-image) is a image database used as a platform for open art education.
+[Image](https://imageplus.at/about-image) is an image database used as a platform for open art education.
 Technically it is a web application developed with Django.
 
 At the core of Image are artworks, which are image files with some additional metadata (title, material, etc.). An artwork can be associated with one or more persons (who can have the following roles: artists, photographers, authors, graphic designers), keywords and locations.
