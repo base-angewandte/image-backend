@@ -13,7 +13,7 @@ In certain error cases a warning will be issued:
 
 ### `clean_empty_media_folders`
 
-This command deletes empty media folders in the folder configured in `MEDIA_DIR` (the media directory that gets mounted into Django, set in the `.env` file).
+This command deletes empty media folders. The media directory can be found in `./src/assets/media`, or for a docker based setup it's the directory configured as `MEDIA_DIR` in the `.env` file.
 
 ### `clear_artwork_fields`
 
@@ -25,7 +25,7 @@ This command generates an `image_fullsize` for every artwork, by converting the 
 
 ### `import_external_metadata`
 
-This command maps identifiers from external sources (e.g., GND, Getty, Wikidata) for `Persons`, `Locations` and `Keywords` via CSV files, and updates corresponding entries in the database with external data. For more information, please refer to [Affected fields](external_metadata.md#affected-fields) section in the "External Metadata" chapter.
+This command maps identifiers from external sources (e.g., GND, Getty, Wikidata) for `Persons`, `Locations` and `Keywords` via CSV files, and updates corresponding entries in the database with external data. For more information, please read the [](external_metadata.md) documentation.
 
 - It's important to note that the [`gnd_overwrite`-flag](external_metadata.md#overwrite-mechanism) is set a bit differently:
   - By default the flag will be turned on.
