@@ -59,6 +59,8 @@
 }
 </style>
 
+{% if BASE_HEADER is not None %}
+
 {# styles for base header #}
 {% if not form.username and not form.password %}
 <style>
@@ -93,22 +95,36 @@ body{
 }
 </style>
 {% endif %}
+
+{% endif %}
 {% endblock %}
 
 {% block branding %}
-  {% if not form.username and not form.password %}
-    {% include 'base_header/base_header.html' %}
-  {% else %}
-    <div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header }}</a></div>
+  {% if BASE_HEADER is not None %}
+    {% if not form.username and not form.password %}
+      {% include 'base_header/base_header.html' %}
+    {% else %}
+      <div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header }}</a></div>
+    {% endif %}
   {% endif %}
 {% endblock %}
 
-{% block usertools %}{% endblock %}
-{% block nav-global %}{% endblock %}
+{% block usertools %}
+  {% if BASE_HEADER is None %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+{% block nav-global %}
+  {% if BASE_HEADER is None %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
 
 {% block footer %}
-  {% if not form.username and not form.password %}
-    {% comment %}{% include 'base_header/base_footer.html' %}{% endcomment %}
-    {% include 'base_header/base_header_script.html' with active='image-admin' %}
+  {% if BASE_HEADER is not None %}
+    {% if not form.username and not form.password %}
+      {% comment %}{% include 'base_header/base_footer.html' %}{% endcomment %}
+      {% include 'base_header/base_header_script.html' with active='image-admin' %}
+    {% endif %}
   {% endif %}
 {% endblock %}

@@ -12,6 +12,7 @@ Before deployment please see
 https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 """
 
+import contextlib
 import os
 import sys
 from email.utils import getaddresses
@@ -459,12 +460,20 @@ RQ = {
 }
 
 # base Header
-BASE_HEADER_SITE_URL = env.str('BASE_HEADER_SITE_URL', SITE_URL)
-BASE_HEADER_JSON = f'{BASE_HEADER_SITE_URL}bs/base-header.json'
-BASE_HEADER = '{}{}'.format(
-    BASE_HEADER_SITE_URL,
-    requests.get(BASE_HEADER_JSON, timeout=60).json()['latest'],
+BASE_HEADER = None
+BASE_HEADER_SITE_URL = env.str(
+    'BASE_HEADER_SITE_URL',
+    default=SITE_URL if 'uni-ak.ac.at' in SITE_URL else None,
 )
+
+if BASE_HEADER_SITE_URL is not None:
+    BASE_HEADER_JSON = f'{BASE_HEADER_SITE_URL}bs/base-header.json'
+
+    with contextlib.suppress(requests.RequestException, KeyError):
+        BASE_HEADER = '{}{}'.format(
+            BASE_HEADER_SITE_URL,
+            requests.get(BASE_HEADER_JSON, timeout=60).json()['latest'],
+        )
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
