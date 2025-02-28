@@ -1,12 +1,16 @@
 services:
   image-redis:
-    image: redis:4.0.11-alpine
+    image: redis:7-alpine
     container_name: image-redis
     volumes:
       - ./dockerdata/redis/data:/data
     networks:
       - imagenet
     restart: always
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      start_period: 60s
+      interval: 60s
     command: redis-server --appendonly yes
 
   image-postgres:
@@ -22,6 +26,10 @@ services:
     networks:
       - imagenet
     restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      start_period: 60s
+      interval: 60s
 
   image-gotenberg:
     image: gotenberg/gotenberg
@@ -34,6 +42,10 @@ services:
       - imagenet
     command: ["gotenberg", "--api-port-from-env", "GOTENBERG_PORT"]
     restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost:$$GOTENBERG_PORT/health || exit 1" ]
+      start_period: 60s
+      interval: 60s
 
   image-django:
     build: ./src
@@ -41,20 +53,24 @@ services:
     container_name: image-django
     env_file:
       - .env
-    expose:
-      - 8300
     volumes:
       - ./src:/django
-      - ./src/assets/static:/django/assets/static
-      - $MEDIA_DIR:/django/assets/media
       - ./logs:/logs
+      - $MEDIA_DIR:/django/assets/media
     networks:
       - imagenet
     restart: always
-    depends_on:
-      - image-postgres
-      - image-redis
-      - image-gotenberg
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost:8300/health || exit 1" ]
+      start_period: 60s
+      interval: 60s
+    depends_on: &depends_on
+      image-postgres:
+        condition: service_healthy
+      image-redis:
+        condition: service_healthy
+      image-gotenberg:
+        condition: service_healthy
 
   image-rq-worker:
     build: ./src
@@ -67,9 +83,7 @@ services:
     networks:
       - imagenet
     restart: always
-    depends_on:
-      - image-postgres
-      - image-redis
+    depends_on: *depends_on
     command: python manage.py rqworker --with-scheduler default
 
   image-cron:
