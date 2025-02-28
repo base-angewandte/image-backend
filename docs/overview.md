@@ -5,7 +5,7 @@ Technically it is a web application developed with Django.
 
 At the core of Image are artworks, which are image files with some additional metadata (title, material, etc.). An artwork can be associated with one or more persons (who can have the following roles: artists, photographers, authors, graphic designers), keywords and locations.
 Users can create albums. Artworks can be added to one or more albums. Artworks can be added multiple times to albums. The user can provide `VIEW` and `EDIT` rights to other users, who then in turn can view or add/remove artworks to said album.
-Users can sort the artworks inside their own albums to put them into a particular order. Users can export an album as a Powerpoint presentation (.pptx) or a PDF file (.pdf). If the user wants to show two artworks on one single slide, they can _connect_ two artworks inside the album.
+Users can sort the artworks inside their own albums to put them into a particular order. Users can export an album as a Powerpoint presentation (.pptx) or a PDF file (.pdf). If the user wants to show two artworks on one single slide, they can _connect_ two artworks inside the album.  
 A user can search for a specific artwork either with a full-text search or an advanced search. Within the advanced search the user can search by title, artist, place of production, location, keywords and date of creation.
 
 ## Historical Background
