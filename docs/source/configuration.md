@@ -87,8 +87,5 @@ https://base.uni-ak.ac.at/cas/).
 
 ### BASE_HEADER_SITE_URL
 
-The base header is the old header row with links to other base applications next
-to image. This will be deprecated soon, as for image 2.0 we are developing a
-separate frontend that will be responsible for loading the base header. Until
-then, if you want to have the base header included in image's root page, set
-this some site with available base header, e.g. https://***REMOVED***/
+If you want to use the base Header in the Django admin, set this to the url where
+your base Header is hosted.

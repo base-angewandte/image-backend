@@ -13,6 +13,8 @@ Welcome to base Image's documentation!
    overview
    install
    configuration
+   management_commands
+   external_metadata
 
 
 .. Indices and tables

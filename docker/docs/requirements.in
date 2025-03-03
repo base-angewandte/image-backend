@@ -1,5 +1,5 @@
 # compile this file with 'uv pip compile requirements.in -o requirements.txt'
-myst-parser==0.17.2
-sphinx==4.5.0
-sphinx-rtd-theme==1.0.0
-sphinx-rtd-dark-mode==1.2.4
+furo
+myst-parser
+sphinx
+sphinx-copybutton

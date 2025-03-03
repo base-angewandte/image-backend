@@ -14,18 +14,18 @@ There are two supported ways to start the development server:
 
 In both cases there are some common steps to follow:
 
-- Install docker with compose plugin for your system
+- Install [docker](https://docs.docker.com/get-started/get-docker/) with compose plugin for your system
 
 - Clone git repository and checkout branch `develop`:
 
   ```bash
-  git clone https://***REMOVED***/image.git
-  cd image
+  git clone https://github.com/base-angewandte/image-backend.git
+  cd image-backend
   git checkout develop
   ```
 
 - Check and adapt settings (if you need more details on the single settings, than the comments in the skeleton env
-  file give you, take a look at the [](./configuration.md) section) :
+  file give you, take a look at the [](configuration.md) section) :
 
   ```bash
   cp env-skel .env
@@ -80,14 +80,16 @@ subsections.
 
 ### The full developer setup
 
-- Install the latest python 3.11 and create virtualenv e.g. via `pyenv` and `pyenv-virtualenv`.
+- Install the latest python 3.11 and create virtualenv e.g. via [`pyenv`](https://github.com/pyenv/pyenv) and [`pyenv-virtualenv`](https://github.com/pyenv/pyenv-virtualenv).
 
-- Install uv and requirements in your virtualenv:
+- Install [uv](https://github.com/astral-sh/uv) and requirements in your virtualenv:
 
   ```bash
   pip install uv
   uv pip sync src/requirements-dev.txt
   ```
+
+- Ensure `DOCKER=False` in your `.env` file.
 
 - Check the _compose.override.dev.yaml_ file you created before from the template
   and uncomment the port mounts for Redis and Postgres, so your local Django can access them.
@@ -154,22 +156,21 @@ or `python manage.py migrate` steps above
   sudo apt-get update
   ```
 
-- Install docker with compose plugin
+- Install [docker](https://docs.docker.com/engine/install/) with compose plugin
 
-- Change to user `base`
+- Create and change to user `base`
 
-- Change to `/opt/base`
+- Create and change to `/opt/base`
 
-- Clone git repository and checkout branch `main` for production or
-  `develop` for development:
+- Clone git repository and checkout branch `main`:
 
   ```bash
-  git clone https://***REMOVED***/image.git
-  cd image
-  git checkout <develop|main>
+  git clone https://github.com/base-angewandte/image-backend.git
+  cd image-backend
+  git checkout main
   ```
 
-- Check and adapt settings:
+- Check and adapt settings (see [](configuration.md) for further details about the configuration possibilities):
 
   ```bash
   cp env-skel .env
@@ -181,3 +182,5 @@ or `python manage.py migrate` steps above
   ```bash
   make start init init-static restart-gunicorn
   ```
+
+- Install nginx and configure it accordingly
