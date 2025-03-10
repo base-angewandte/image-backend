@@ -465,9 +465,13 @@ BASE_HEADER_SITE_URL = env.str(
     'BASE_HEADER_SITE_URL',
     default=SITE_URL if 'uni-ak.ac.at' in SITE_URL else None,
 )
+BASE_HEADER_JSON_PATH = env.str(
+    'BASE_HEADER_JSON_PATH',
+    default='bs/base-header.json',
+)
 
 if BASE_HEADER_SITE_URL is not None:
-    BASE_HEADER_JSON = f'{BASE_HEADER_SITE_URL}bs/base-header.json'
+    BASE_HEADER_JSON = f'{BASE_HEADER_SITE_URL}{BASE_HEADER_JSON_PATH}'
 
     with contextlib.suppress(requests.RequestException, KeyError):
         BASE_HEADER = '{}{}'.format(
