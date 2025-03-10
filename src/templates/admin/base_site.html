@@ -59,10 +59,8 @@
 }
 </style>
 
-{% if BASE_HEADER %}
-
 {# styles for base header #}
-{% if not form.username and not form.password %}
+{% if BASE_HEADER and not form.username and not form.password %}
 <style>
 body{
   background-color: #f0f0f0;
@@ -94,8 +92,6 @@ body{
   }
 }
 </style>
-{% endif %}
-
 {% endif %}
 {% endblock %}
 
