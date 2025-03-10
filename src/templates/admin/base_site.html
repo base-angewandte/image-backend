@@ -120,10 +120,8 @@ body{
 {% endblock %}
 
 {% block footer %}
-  {% if BASE_HEADER %}
-    {% if not form.username and not form.password %}
-      {% comment %}{% include 'base_header/base_footer.html' %}{% endcomment %}
-      {% include 'base_header/base_header_script.html' with active='image-admin' %}
-    {% endif %}
+  {% if BASE_HEADER and not form.username and not form.password %}
+    {% comment %}{% include 'base_header/base_footer.html' %}{% endcomment %}
+    {% include 'base_header/base_header_script.html' with active='image-admin' %}
   {% endif %}
 {% endblock %}
