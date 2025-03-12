@@ -12,6 +12,7 @@ Before deployment please see
 https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 """
 
+import contextlib
 import os
 import sys
 from email.utils import getaddresses
@@ -182,9 +183,11 @@ if SITE_URL.startswith('https'):
 X_FRAME_OPTIONS = 'DENY'
 
 MIDDLEWARE = [
+    'base_common.middleware.HealthCheckMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'base_common_drf.middleware.LanguageHeaderMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -457,12 +460,24 @@ RQ = {
 }
 
 # base Header
-BASE_HEADER_SITE_URL = env.str('BASE_HEADER_SITE_URL', SITE_URL)
-BASE_HEADER_JSON = f'{BASE_HEADER_SITE_URL}bs/base-header.json'
-BASE_HEADER = '{}{}'.format(
-    BASE_HEADER_SITE_URL,
-    requests.get(BASE_HEADER_JSON, timeout=60).json()['latest'],
+BASE_HEADER = None
+BASE_HEADER_SITE_URL = env.str(
+    'BASE_HEADER_SITE_URL',
+    default=SITE_URL if 'uni-ak.ac.at' in SITE_URL else None,
 )
+BASE_HEADER_JSON_PATH = env.str(
+    'BASE_HEADER_JSON_PATH',
+    default='bs/base-header.json',
+)
+
+if BASE_HEADER_SITE_URL is not None:
+    BASE_HEADER_JSON = f'{BASE_HEADER_SITE_URL}{BASE_HEADER_JSON_PATH}'
+
+    with contextlib.suppress(requests.RequestException, KeyError):
+        BASE_HEADER = '{}{}'.format(
+            BASE_HEADER_SITE_URL,
+            requests.get(BASE_HEADER_JSON, timeout=60).json()['latest'],
+        )
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -576,7 +591,7 @@ WIKIDATA_LABEL = 'Wikidata'
 REQUESTS_TIMEOUT = env.int('REQUESTS_TIMEOUT', default=5)
 
 GOTENBERG_SERVER_NAME = f'{PROJECT_NAME}-gotenberg' if DOCKER else 'localhost'
-GOTENBERG_PORT = env.int('GOTENBERG_PORT', default=3000)
+GOTENBERG_PORT = env.int('GOTENBERG_PORT', default=4000)
 GOTENBERG_API_URL = (
     f'http://{GOTENBERG_SERVER_NAME}:{GOTENBERG_PORT}/forms/libreoffice/convert'
 )
@@ -603,3 +618,7 @@ for extension, img_format in Image.registered_extensions().items():
     if img_format not in PIL_VALID_EXTENSIONS:
         PIL_VALID_EXTENSIONS[img_format] = []
     PIL_VALID_EXTENSIONS[img_format].append(extension.lower())
+
+API_PREFIX = env.str('API_PREFIX', default='api/')
+
+CROP_RESIZE_MAX = env.int('CROP_RESIZE_MAX', default=7680)

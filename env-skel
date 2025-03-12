@@ -69,9 +69,11 @@ SITE_URL=
 # CORS_EXPOSE_HEADERS=
 # CSRF_TRUSTED_ORIGINS=
 
-## The URL where the base header can be loaded from (defaults to SITE_URL).
+## The URL where the base header can be loaded from (defaults to SITE_URL for uni-ak servers and None otherwise).
 ## For local development you might want to point to a prod or staging site here.
 # BASE_HEADER_SITE_URL=
+# The path to the base header json defining the latest version to use.
+# BASE_HEADER_JSON_PATH=bs/base-header.json
 
 ## Permissions default for autocomplete search, type permissions. Can be True or False
 PERMISSIONS_DEFAULT_VIEW=True
@@ -93,12 +95,18 @@ REQUESTS_TIMEOUT=5
 # SENTRY_PROFILES_SAMPLE_RATE=0.2
 
 ## Set port of Gotenberg service that is used to convert a .pptx to a .pdf
-## You need to use an override file to change the port of the container
-# GOTENBERG_PORT=3000
+# GOTENBERG_PORT=4000
 
 ## If you want to activate additional logging during development set this to DEBUG
 # DEBUG_LOG_LEVEL=INFO
 
 ## If you want to run RQ jobs synchronously set this to False (this is the default
-value for DEBUG=True and TESTING, otherwise the default value is True)
+## value for DEBUG=True and TESTING, otherwise the default value is True)
 # RQ_ASYNC=True
+
+## API base path prefix (Used for custom LanguageHeaderMiddleware class & dynamically affects URLs in image/urls.py)
+# API_PREFIX=api/
+
+## Configure max value of height / width, when resizing or cropping images
+## The default is 7680
+CROP_RESIZE_MAX=7680

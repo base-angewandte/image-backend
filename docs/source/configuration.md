@@ -85,10 +85,7 @@ to `CORS_EXPOSE_HEADERS`.
 The `CAS_SERVER` points to the base path of your authentication server (e.g.
 https://base.uni-ak.ac.at/cas/).
 
-### BASE_HEADER_SITE_URL
+### BASE_HEADER\_\*
 
-The base header is the old header row with links to other base applications next
-to image. This will be deprecated soon, as for image 2.0 we are developing a
-separate frontend that will be responsible for loading the base header. Until
-then, if you want to have the base header included in image's root page, set
-this some site with available base header, e.g. https://***REMOVED***/
+The URL and path where the base header and the base header json can be loaded from.
+For local development you might want to point to a prod or staging site here.

@@ -31,7 +31,7 @@ class AlbumsTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        num_results = 5
+        num_results = 6
         self.assertEqual(content['total'], num_results)
         self.assertEqual(len(content['results']), num_results)
         self.limit_test(url, 5, num_results)
@@ -74,6 +74,13 @@ class AlbumsTests(APITestCase):
         self.assertEqual(content['owner']['id'], self.user.username)
         self.assertEqual(content['permissions'], [])
 
+        # test retrieving non-existent album
+        self.check_for_nonexistent_object(
+            view_name='album-detail',
+            http_method='get',
+            object_type='Album',
+        )
+
     def test_albums_update(self):
         """Test the updating of an album."""
 
@@ -84,6 +91,14 @@ class AlbumsTests(APITestCase):
         response = self.client.put(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # test updating non-existing album
+        self.check_for_nonexistent_object(
+            view_name='album-detail',
+            http_method='put',
+            object_type='Album',
+            data=data,
+        )
 
         # TODO: these old tests rely on no other available test data at all and don't
         #   seem to be very useful in a more elaborated test scenario. Therefore
@@ -100,6 +115,13 @@ class AlbumsTests(APITestCase):
         response = self.client.delete(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # test destroying non-existing album
+        self.check_for_nonexistent_object(
+            view_name='album-detail',
+            http_method='delete',
+            object_type='Album',
+        )
 
     def test_albums_append_artwork(self):
         """Test the appending of artworks to album slides."""
@@ -157,6 +179,14 @@ class AlbumsTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(content['detail'], 'Artwork does not exist')
 
+        # test appending non-existent album
+        self.check_for_nonexistent_object(
+            view_name='album-append-artwork',
+            http_method='post',
+            object_type='Album',
+            data=data,
+        )
+
     def test_albums_slides(self):
         """Test the retrieval of album slides."""
 
@@ -186,6 +216,27 @@ class AlbumsTests(APITestCase):
         self.assertEqual(slides[0]['items'][0]['id'], 1)
         self.assertEqual(slides[0]['items'][1]['id'], 2)
         self.assertEqual(slides[1]['items'][0]['id'], 3)
+
+        # test retrieval of a slide of non-existing album
+        self.check_for_nonexistent_object(
+            view_name='album-slides',
+            http_method='get',
+            object_type='Album',
+        )
+
+        # test slide with details retrieval
+        url = reverse('album-slides', kwargs={'pk': self.album4.pk, 'version': VERSION})
+        response = self.client.get(f'{url}?details=true', format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # test existence and correct content of slide
+        self.assertEqual(len(content[0]['items']), 1)
+        self.assertIn('id', content[0])
+        self.assertEqual(content[0]['items'][0]['title'], 'Homometer II')
+        self.assertEqual(content[0]['items'][0]['date'], '1976')
+        self.assertEqual(content[0]['items'][0]['artists'][0]['value'], 'VALIE EXPORT')
 
     def test_albums_create_slides(self):
         """Test the creation of album slides."""
@@ -245,19 +296,69 @@ class AlbumsTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(content['detail'], 'Artwork does not exist')
 
+        # test creating slides with non-existent album
+        self.check_for_nonexistent_object(
+            view_name='album-slides',
+            http_method='post',
+            object_type='Album',
+            data=data,
+        )
+
+        # test slide with details retrieval
+        url = reverse('album-slides', kwargs={'pk': self.album4.pk, 'version': VERSION})
+        response = self.client.get(f'{url}?details=true', format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # test existence and correct content of slide
+        self.assertEqual(len(content[0]['items']), 1)
+        self.assertIn('id', content[0])
+        self.assertEqual(content[0]['items'][0]['title'], 'Homometer II')
+        self.assertEqual(content[0]['items'][0]['date'], '1976')
+        self.assertEqual(content[0]['items'][0]['artists'][0]['value'], 'VALIE EXPORT')
+
     def test_albums_permissions(self):
         """Test the retrieval of album permissions."""
 
         album = Album.objects.create(title='Test Album', user=self.user)
         user = User.objects.create(username='abc1def2')
         PermissionsRelation.objects.create(album=album, user=user)
-
         url = reverse('album-permissions', kwargs={'pk': album.pk, 'version': VERSION})
         response = self.client.get(url, format='json')
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(content[0]['user']['id'], user.username)
+        self.assertEqual(content[0]['permissions'][0]['id'], 'VIEW')
+
+        # test retrieving album permissions of non-existent album
+        self.check_for_nonexistent_object(
+            view_name='album-permissions',
+            http_method='get',
+            object_type='Album',
+        )
+
+        # test if the user is not the owner of the album, only return the permissions of this user
+        lecturer = get_user_model().objects.get(username='p0001234')
+        foreign_album = Album.objects.create(title='Foreign Album', user=lecturer)
+
+        # provide permissions to self.user on lecturer's album
+        PermissionsRelation.objects.create(
+            user=self.user,
+            album=foreign_album,
+            permissions='VIEW',
+        )
+
+        url = reverse(
+            'album-permissions',
+            kwargs={'pk': foreign_album.pk, 'version': VERSION},
+        )
+        response = self.client.get(url, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(content[0]['user']['id'], self.user.username)
         self.assertEqual(content[0]['permissions'][0]['id'], 'VIEW')
 
     def test_albums_create_permissions(self):
@@ -275,6 +376,24 @@ class AlbumsTests(APITestCase):
         self.assertEqual(content[0]['permissions'][0]['id'], 'VIEW')
         self.assertEqual(content[0]['user']['id'], new_user.username)
 
+        # test permission assignment when user is already the owner of the album
+        url = reverse('album-permissions', kwargs={'pk': album.pk, 'version': VERSION})
+        data = [{'user': f'{self.user.username}', 'permissions': [{'id': 'VIEW'}]}]
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['detail'], 'User is already the owner of album.')
+
+        # test permission assignment when user does not exist
+        url = reverse('album-permissions', kwargs={'pk': album.pk, 'version': VERSION})
+        data = [{'user': 'user-does-not-exist-test', 'permissions': [{'id': 'VIEW'}]}]
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['detail'], 'User does not exist')
+
     def test_albums_destroy_permissions(self):
         """Test the deletion of album permissions."""
 
@@ -284,6 +403,54 @@ class AlbumsTests(APITestCase):
         response = self.client.delete(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # test destroying album permissions of non-existing album
+        self.check_for_nonexistent_object(
+            view_name='album-permissions',
+            http_method='delete',
+            object_type='Album',
+        )
+
+        # test deleting all permissions on an album,
+        # when the user is not the owner and gets only their permissions removed
+        other_user = get_user_model().objects.get(username='p0001234')
+        other_user_album = Album.objects.create(title='Foreign Album', user=other_user)
+
+        # provide permissions to self.user on owner's album
+        PermissionsRelation.objects.create(
+            user=self.user,
+            album=other_user_album,
+            permissions='EDIT',
+        )
+        # assert existence of the permission
+        self.assertTrue(
+            PermissionsRelation.objects.filter(
+                user=self.user,
+                album=other_user_album,
+            ).exists(),
+        )
+
+        # perform the DELETE request
+        url = reverse(
+            'album-permissions',
+            kwargs={'pk': other_user_album.pk, 'version': VERSION},
+        )
+        response = self.client.delete(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # assert non-existence of the permission
+        self.assertFalse(
+            PermissionsRelation.objects.filter(
+                user=self.user,
+                album=other_user_album,
+            ).exists(),
+        )
+
+        # test that the album itself still exists after deletion of permissions for self.user
+        album = Album.objects.get(pk=other_user_album.pk)
+        self.assertTrue(
+            Album.objects.filter(pk=album.pk).exists(),
+        )
 
     def test_albums_download(self):
         """Test the download of an album."""
@@ -328,3 +495,21 @@ class AlbumsTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(type(response.content), bytes)
+
+        # test album pdf download
+        url = reverse('album-download', kwargs={'pk': album.pk, 'version': VERSION})
+        response = self.client.get(f'{url}?download_format=pdf', format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # assert the content type is a PDF
+        self.assertEqual(
+            response.headers['Content-Type'],
+            'application/pdf',
+        )
+
+        # test downloading non-existing album
+        self.check_for_nonexistent_object(
+            view_name='album-download',
+            http_method='get',
+            object_type='Album',
+        )

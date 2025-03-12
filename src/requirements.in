@@ -2,8 +2,8 @@
 # sync environment with 'uv pip sync requirements.txt'
 # to update all packages run 'uv pip compile requirements.in -o requirements.txt --upgrade'
 
-base-common==0.3
-base-common-drf==0.4
+base-common==0.4
+base-common-drf==0.5
 concurrent-log-handler==0.9.25
 django~=4.2
 django-autocomplete-light==3.11.0
