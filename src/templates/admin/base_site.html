@@ -60,7 +60,7 @@
 </style>
 
 {# styles for base header #}
-{% if not form.username and not form.password %}
+{% if BASE_HEADER and not form.username and not form.password %}
 <style>
 body{
   background-color: #f0f0f0;
@@ -96,18 +96,27 @@ body{
 {% endblock %}
 
 {% block branding %}
-  {% if not form.username and not form.password %}
+  {% if BASE_HEADER and not form.username and not form.password %}
     {% include 'base_header/base_header.html' %}
   {% else %}
     <div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header }}</a></div>
   {% endif %}
 {% endblock %}
 
-{% block usertools %}{% endblock %}
-{% block nav-global %}{% endblock %}
+{% block usertools %}
+  {% if not BASE_HEADER %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block nav-global %}
+  {% if not BASE_HEADER %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
 
 {% block footer %}
-  {% if not form.username and not form.password %}
+  {% if BASE_HEADER and not form.username and not form.password %}
     {% comment %}{% include 'base_header/base_footer.html' %}{% endcomment %}
     {% include 'base_header/base_header_script.html' with active='image-admin' %}
   {% endif %}

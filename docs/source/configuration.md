@@ -85,7 +85,7 @@ to `CORS_EXPOSE_HEADERS`.
 The `CAS_SERVER` points to the base path of your authentication server (e.g.
 https://base.uni-ak.ac.at/cas/).
 
-### BASE_HEADER_SITE_URL
+### BASE_HEADER\_\*
 
-If you want to use the base Header in the Django admin, set this to the url where
-your base Header is hosted.
+The URL and path where the base header and the base header json can be loaded from.
+For local development you might want to point to a prod or staging site here.
