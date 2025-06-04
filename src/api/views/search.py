@@ -289,8 +289,10 @@ class SearchViewSet(viewsets.GenericViewSet):
             'discriminatory_terms',
         )
 
-        total = 0
         results = []
+        qs_list = list(qs)
+
+        total = qs_list[0].total_count if qs_list else subq.count()
 
         for artwork in qs:
             # for performance reasons we get the total results count via
