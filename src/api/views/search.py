@@ -289,10 +289,8 @@ class SearchViewSet(viewsets.GenericViewSet):
             'discriminatory_terms',
         )
 
+        total = 0
         results = []
-        qs_list = list(qs)
-
-        total = qs_list[0].total_count if qs_list else subq.count()
 
         for artwork in qs:
             # for performance reasons we get the total results count via
@@ -332,6 +330,9 @@ class SearchViewSet(viewsets.GenericViewSet):
             if request.user.is_editor:
                 artwork_serialized['editing_link'] = artwork.editing_link
             results.append(artwork_serialized)
+
+        if total == 0 and offset > 0:
+            total = subq.count()
 
         return Response({'total': total, 'results': results})
 
