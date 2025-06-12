@@ -78,6 +78,19 @@ class SearchTests(APITestCase):
         self.assertEqual(content['results'][0]['title'], artwork1.title)
         self.assertEqual(content['results'][1]['artists'][0]['value'], artist.name)
 
+        # test searching when offset higher then total
+        data = {
+            'limit': 15,
+            'offset': 15,
+            'exclude': [],
+            'q': 'test',
+        }
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(content['total'], 14)
+        self.assertEqual(len(content['results']), 0)
+
     def test_search_location(self):
         """Test search for locations, place of production."""
 
