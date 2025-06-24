@@ -331,6 +331,10 @@ class SearchViewSet(viewsets.GenericViewSet):
                 artwork_serialized['editing_link'] = artwork.editing_link
             results.append(artwork_serialized)
 
+        # Ensure total reflects the full number of artworks, even if the offset exceeds the available results
+        if total == 0 and offset > 0:
+            total = subq.count()
+
         return Response({'total': total, 'results': results})
 
     @extend_schema(
