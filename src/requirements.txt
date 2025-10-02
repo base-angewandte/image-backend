@@ -24,7 +24,7 @@ click==8.1.7
     # via rq
 concurrent-log-handler==0.9.25
     # via -r src/requirements.in
-django==4.2.16
+django==4.2.25
     # via
     #   -r src/requirements.in
     #   base-common
