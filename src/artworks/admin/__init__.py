@@ -144,7 +144,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         i18n_file = (
             (f'admin/js/vendor/select2/i18n/{i18n_name}.js',) if i18n_name else ()
         )
-        return Media(
+        return super().media + Media(
             js=(
                 f'admin/js/vendor/jquery/jquery{extra}.js',
                 f'admin/js/vendor/select2/select2.full{extra}.js',
