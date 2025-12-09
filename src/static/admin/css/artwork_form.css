@@ -2,3 +2,26 @@
     height: auto !important;
     min-height: 75px;
 }
+
+/*
+ * AdminURLFieldWidget and the fact that this field is a fieldset don't interact well.
+ * The widget template puts a line break between the current value and the change
+ * input to ensure that for long current values, the change input will be visible on
+ * the next line.
+ *
+ * But as a fieldset, the widget gets wrapped in a div.flex-container, turning the
+ * line break element into just another thing to arrange in the same flex row.
+ *
+ * As a result, without the following code, if the current filename is too long, the
+ * flex container overflows (since it also doesn't wrap), leading to the change input
+ * no longer being visible.
+ *
+ * So, we force the flex container to wrap. That way, if the current value is too long,
+ * it will simply push the following elements (including the change input) to the next
+ * line.
+ *
+ * It won't necessarily be pretty, but at least the change button will be visible.
+*/
+.field-image_original .flex-container {
+    flex-wrap: wrap;
+}
