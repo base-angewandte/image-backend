@@ -144,12 +144,19 @@ class ArtworkAdmin(admin.ModelAdmin):
         i18n_file = (
             (f'admin/js/vendor/select2/i18n/{i18n_name}.js',) if i18n_name else ()
         )
-        return Media(
+        return super().media + Media(
             js=(
-                f'admin/js/vendor/jquery/jquery{extra}.js',
+                # Some of the entries here seem like they could be removed as they are
+                # already provided by the base media object - but they need to be there
+                # so that things get loaded in the right order.
+                # select2 and the i18n file need to get loaded after jQuery, but before
+                # jQuery gets initialized and renamed.
+                # Removing these files won't seem to break, but there will be errors in
+                # the JS console, and probably subtle breakage.
+                f'admin/js/vendor/jquery/jquery{extra}.js',  # for ordering
                 f'admin/js/vendor/select2/select2.full{extra}.js',
                 *i18n_file,
-                'admin/js/jquery.init.js',
+                'admin/js/jquery.init.js',  # for ordering
                 'admin/js/artwork_form.js',
             ),
             css={
