@@ -30,6 +30,8 @@ python-pptx==1.0.2
 requests==2.32.5
 sentry-sdk[django]==2.52.0
 whitenoise[brotli]==6.11.0
+sorl-thumbnail==12.9.0
+wand
 
 # Server
 gunicorn==23.0.0

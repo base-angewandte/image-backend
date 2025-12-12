@@ -175,6 +175,8 @@ shortuuid==1.0.13
     # via base-common
 six==1.17.0
     # via python-dateutil
+sorl-thumbnail==12.9.0
+    # via -r src/requirements.in
 sqlparse==0.5.5
     # via django
 typing-extensions==4.15.0
@@ -190,6 +192,8 @@ urllib3==2.6.3
     #   sentry-sdk
 virtualenv==20.36.1
     # via pre-commit
+wand==0.6.13
+    # via -r src/requirements.in
 whitenoise==6.11.0
     # via -r src/requirements.in
 xlsxwriter==3.2.9
