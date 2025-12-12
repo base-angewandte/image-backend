@@ -109,6 +109,7 @@ INSTALLED_APPS = [
     'base_common_drf',
     # Third-party apps
     'rest_framework',
+    'sorl.thumbnail',
     'versatileimagefield',
     'django_cleanup',
     'django_cas_ng',

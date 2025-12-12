@@ -9,7 +9,6 @@ from base_common.models import AbstractBaseModel
 from django_jsonform.models.fields import ArrayField
 from mptt.models import MPTTModel, TreeForeignKey
 from PIL import Image
-from versatileimagefield.fields import VersatileImageField
 
 from django.conf import settings
 from django.contrib.postgres.search import SearchVector, SearchVectorField
@@ -473,9 +472,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
     id = ShortUUIDField(primary_key=True)
     archive_id = models.BigIntegerField(null=True)
 
-    # VersatileImageField allows to create resized versions of the
-    # image (renditions) on demand
-    image_original = VersatileImageField(
+    image_original = models.ImageField(
         verbose_name=_('Original Image'),
         max_length=255,
         null=False,
@@ -484,7 +481,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         validators=[validate_image_original],
     )
 
-    image_fullsize = VersatileImageField(
+    image_fullsize = models.ImageField(
         verbose_name=_('Fullsize Image'),
         max_length=255,
         null=False,
@@ -779,7 +776,9 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
     def create_image_fullsize(self, save=True):
         # cleanup before creation
         if self.image_fullsize:
-            self.image_fullsize.delete_all_created_images()
+            from sorl.thumbnail import delete
+
+            delete(self.image_fullsize)
             self.image_fullsize.delete(save=False)
 
         img_io = BytesIO()

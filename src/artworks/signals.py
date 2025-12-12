@@ -2,6 +2,7 @@ from datetime import timedelta
 
 import django_rq
 from django_rq.queues import get_queue
+from sorl.thumbnail import delete
 
 from django.conf import settings
 from django.db import connections
@@ -48,13 +49,15 @@ def update_images_pre_save(sender, instance, *args, **kwargs):
         image_original_deleted = (
             not instance.image_original and old_instance.image_original
         )
-
+        # TODO: We will use Sorl thumbnail delete, instead of delete_all_created_images,
+        #  rq worker will be implemented at a later date, if we still need it.
+        #  We will try using the django.image ImageField, instead of the sorl-thumbnail one.
         # cleanup
         if image_original_deleted or image_original_changed:
-            old_instance.image_original.delete_all_created_images()
+            delete(old_instance.image_original)
 
         if image_original_deleted and old_instance.image_fullsize:
-            old_instance.image_fullsize.delete_all_created_images()
+            delete(old_instance.image_fullsize)
             instance.image_fullsize.delete(save=False)
 
         # create or update image_fullsize
@@ -154,10 +157,11 @@ def update_search_vector_person(sender, instance, created, *args, **kwargs):
 @receiver(post_delete, sender=Artwork)
 def delete_artwork_images(sender, instance, **kwargs):
     """Delete Artwork's originalImage and all renditions on post_delete."""
-    instance.image_original.delete_all_created_images()
+    delete(instance.image_original)
+
     instance.image_original.delete(save=False)
     if instance.image_fullsize:
-        instance.image_fullsize.delete_all_created_images()
+        delete(instance.image_fullsize)
         instance.image_fullsize.delete(save=False)
 
 
