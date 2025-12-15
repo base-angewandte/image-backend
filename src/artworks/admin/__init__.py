@@ -122,6 +122,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'date_changed',
     )
     change_list_template = 'admin/artworks/change_list_artworks.html'
+    list_per_page = 20
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
