@@ -8,7 +8,10 @@ from base_common.fields import ShortUUIDField
 from base_common.models import AbstractBaseModel
 from django_jsonform.models.fields import ArrayField
 from mptt.models import MPTTModel, TreeForeignKey
-from PIL import Image
+
+# from PIL import Image
+from sorl.thumbnail import delete
+from wand.image import Image
 
 from django.conf import settings
 from django.contrib.postgres.search import SearchVector, SearchVectorField
@@ -776,21 +779,16 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
     def create_image_fullsize(self, save=True):
         # cleanup before creation
         if self.image_fullsize:
-            from sorl.thumbnail import delete
-
             delete(self.image_fullsize)
-            self.image_fullsize.delete(save=False)
 
-        img_io = BytesIO()
-        with Image.open(self.image_original) as img:
-            # check if image contains transparency:
-            if img.mode in ['LA', 'RGBA', 'RGBa']:
-                bg_color = (255, 255, 255)
-                img_new = Image.new('RGB', img.size, bg_color)
-                img_new.paste(img, (0, 0), img)
-            else:
-                img_new = img.convert('RGB')
-            img_new.save(img_io, format='JPEG', subsampling=0, quality=95)
+        original_file = self.image_original
+
+        # Reset pointer so Django can save normally later
+        original_file.seek(0)
+
+        with Image(file=original_file).convert('jpeg') as converted:
+            converted.compression_quality = 95
+            img_io = BytesIO(converted.make_blob())
 
         original_name = Path(self.image_original.name).stem
         fullsize_name = urlsafe_base64_encode(
@@ -802,6 +800,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
 
         # Save the image to the image_fullsize field
         self.image_fullsize.save(f'{fullsize_name}.jpg', File(img_io), save=False)
+
         if save:
             self.save(update_fields=['image_fullsize'])
 
