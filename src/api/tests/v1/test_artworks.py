@@ -80,9 +80,6 @@ class ArtworkTests(APITestCase):
 
     def test_artworks_image(self):
         """Test crop/resize and default image generation."""
-        import ipdb
-
-        ipdb.set_trace()
 
         artwork = Artwork.objects.create(
             title='Test Artwork',
