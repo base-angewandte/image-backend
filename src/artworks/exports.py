@@ -8,6 +8,7 @@ from pptx.enum.dml import MSO_THEME_COLOR
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR
 from pptx.util import Pt
+from sorl.thumbnail import get_thumbnail
 
 from django.conf import settings
 from django.http import HttpResponse
@@ -183,10 +184,13 @@ def album_download_as_pptx(album_id, language='en', return_raw=False):
             thumbnail_size = '1880x933'  # 1920-20-20 = 1880
 
             artwork = artworks[0]
+            thumb = get_thumbnail(
+                artwork.image_fullsize,
+                thumbnail_size,
+            )
 
-            img_relative_path = artwork.image_fullsize.thumbnail[thumbnail_size].name
-            img_path = settings.MEDIA_ROOT_PATH / img_relative_path
-
+            img_relative_path = thumb.name
+            img_path = Path(settings.MEDIA_ROOT) / img_relative_path
             slide = get_new_slide()
 
             add_picture_to_slide(slide, img_path, padding, 'center')
@@ -202,15 +206,21 @@ def album_download_as_pptx(album_id, language='en', return_raw=False):
             artwork_left = artworks[0]
             artwork_right = artworks[1]
 
-            img_relative_path_left = artwork_left.image_fullsize.thumbnail[
-                thumbnail_size
-            ].name
-            img_path_left = settings.MEDIA_ROOT_PATH / img_relative_path_left
+            thumb_left = get_thumbnail(
+                artwork_left.image_fullsize,
+                thumbnail_size,
+            )
 
-            img_relative_path_right = artwork_right.image_fullsize.thumbnail[
-                thumbnail_size
-            ].name
-            img_path_right = settings.MEDIA_ROOT_PATH / img_relative_path_right
+            img_relative_path_left = thumb_left.name
+            img_path_left = Path(settings.MEDIA_ROOT) / img_relative_path_left
+
+            thumb_right = get_thumbnail(
+                artwork_right.image_fullsize,
+                thumbnail_size,
+            )
+
+            img_relative_path_right = thumb_right.name
+            img_path_right = Path(settings.MEDIA_ROOT) / img_relative_path_right
 
             slide = get_new_slide()
 
