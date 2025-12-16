@@ -430,6 +430,8 @@ CACHES = {
     },
 }
 
+THUMBNAIL_REDIS_TIMEOUT = 60 * 60 * 24 * 365
+
 # Session settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'sessions'
