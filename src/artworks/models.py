@@ -8,8 +8,6 @@ from base_common.fields import ShortUUIDField
 from base_common.models import AbstractBaseModel
 from django_jsonform.models.fields import ArrayField
 from mptt.models import MPTTModel, TreeForeignKey
-
-# from PIL import Image
 from sorl.thumbnail import delete
 from wand.image import Image
 
