@@ -22,7 +22,6 @@ django-ordered-model==3.7.4
 django-redis==6.0.0
 django-rq==3.2.2
 django-tinymce==5.0.0
-django-versatileimagefield==3.1
 djangorestframework==3.16.1
 drf-spectacular[sidecar]==0.29.0
 psycopg[binary]==3.2.13
@@ -31,7 +30,7 @@ requests==2.32.5
 sentry-sdk[django]==2.52.0
 whitenoise[brotli]==6.11.0
 sorl-thumbnail==12.9.0
-wand
+wand==0.6.13
 
 # Server
 gunicorn==23.0.0

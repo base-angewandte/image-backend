@@ -4,8 +4,7 @@ import artworks.models
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import versatileimagefield.fields
-
+from django.db import models
 
 class Migration(migrations.Migration):
 
@@ -31,7 +30,7 @@ class Migration(migrations.Migration):
             name='Artwork',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('imageOriginal', versatileimagefield.fields.VersatileImageField(blank=True, max_length=127, upload_to=artworks.models.get_path_to_original_file)),
+                ('imageOriginal', models.ImageField(blank=True, max_length=127, upload_to=artworks.models.get_path_to_original_file)),
                 ('title', models.CharField(blank=True, max_length=255)),
                 ('date', models.CharField(blank=True, max_length=255)),
                 ('dateFrom', models.DateField(blank=True, null=True)),

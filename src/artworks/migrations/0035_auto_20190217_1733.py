@@ -5,7 +5,6 @@ from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
 import mptt.fields
-import versatileimagefield.fields
 
 
 class Migration(migrations.Migration):
@@ -73,7 +72,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='artwork',
             name='image_original',
-            field=versatileimagefield.fields.VersatileImageField(blank=True, max_length=127, upload_to=artworks.models.get_path_to_original_file, verbose_name='Original Image'),
+            field=models.ImageField(blank=True, max_length=127, upload_to=artworks.models.get_path_to_original_file, verbose_name='Original Image'),
         ),
         migrations.AlterField(
             model_name='artwork',
