@@ -110,7 +110,6 @@ INSTALLED_APPS = [
     # Third-party apps
     'rest_framework',
     'sorl.thumbnail',
-    'versatileimagefield',
     'django_cleanup',
     'django_cas_ng',
     'django_extensions',
@@ -317,23 +316,6 @@ MEDIA_ROOT_PATH = Path(MEDIA_ROOT)
 MEDIA_ROOT_TESTS = MEDIA_ROOT_PATH / '__tests__'
 
 FILE_UPLOAD_PERMISSIONS = 0o644
-
-# config of VersatileImageField used in Artwork model
-VERSATILEIMAGEFIELD_SETTINGS = {
-    # The amount of time, in seconds, that references to created images
-    # should be stored in the cache. Defaults to `2592000` (30 days)
-    'cache_length': 2592000,
-    # The save quality of modified JPEG images. More info here:
-    # https://pillow.readthedocs.io/en/latest/handbook/image-file-formats.html#jpeg
-    'jpeg_resize_quality': 92,
-    # Whether or not to create new images on-the-fly. Set this to `False` for
-    # speedy performance but don't forget to 'pre-warm' to ensure they're
-    # created and available at the appropriate URL.
-    'create_images_on_demand': True,
-    # Whether to create progressive JPEGs. Read more about progressive JPEGs
-    # here: https://optimus.io/support/progressive-jpeg/
-    'progressive_jpeg': False,
-}
 
 # Logging
 LOG_DIR = BASE_DIR / '..' / 'logs'
