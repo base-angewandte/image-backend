@@ -16,12 +16,13 @@
  * flex container overflows (since it also doesn't wrap), leading to the change input
  * no longer being visible.
  *
- * So, we force the flex container to wrap. That way, if the current value is too long,
- * it will simply push the following elements (including the change input) to the next
- * line.
+ * We can avoid the link taking up too much space by not allowing it to overflow, and
+ * make it clear that we're cutting off part of the filename with
+ * text-overflow: ellipsis.
  *
- * It won't necessarily be pretty, but at least the change button will be visible.
+ * See also: https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/text-overflow
 */
-.field-image_original .flex-container {
-    flex-wrap: wrap;
+.field-image_original .flex-container a {
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
