@@ -1,11 +1,10 @@
 import json
 import shutil
-from io import BytesIO
 
 import shortuuid
-from PIL import Image
 from rest_framework import status
 from rest_framework.test import APITestCase as RestFrameworkAPITestCase
+from wand.image import Image
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -16,11 +15,14 @@ from django.urls import reverse
 from artworks.models import Album, Artwork, Keyword, Location, Material, Person
 
 
-def temporary_image():  # from https://stackoverflow.com/a/67611074
-    bts = BytesIO()
-    img = Image.new('RGB', (100, 100))
-    img.save(bts, 'jpeg')
-    return SimpleUploadedFile('test.jpg', bts.getvalue())
+def temporary_image():
+    with Image(width=100, height=100) as img:
+        img.format = 'jpeg'
+        return SimpleUploadedFile(
+            'test.jpg',
+            img.make_blob(),
+            content_type='image/jpeg',
+        )
 
 
 @override_settings(
