@@ -189,8 +189,7 @@ def album_download_as_pptx(album_id, language='en', return_raw=False):
                 thumbnail_size,
             )
 
-            img_relative_path = thumb.name
-            img_path = Path(settings.MEDIA_ROOT) / img_relative_path
+            img_path = Path(settings.MEDIA_ROOT) / thumb.name
             slide = get_new_slide()
 
             add_picture_to_slide(slide, img_path, padding, 'center')
@@ -211,16 +210,14 @@ def album_download_as_pptx(album_id, language='en', return_raw=False):
                 thumbnail_size,
             )
 
-            img_relative_path_left = thumb_left.name
-            img_path_left = Path(settings.MEDIA_ROOT) / img_relative_path_left
+            img_path_left = Path(settings.MEDIA_ROOT) / thumb_left.name
 
             thumb_right = get_thumbnail(
                 artwork_right.image_fullsize,
                 thumbnail_size,
             )
 
-            img_relative_path_right = thumb_right.name
-            img_path_right = Path(settings.MEDIA_ROOT) / img_relative_path_right
+            img_path_right = Path(settings.MEDIA_ROOT) / thumb_right.name
 
             slide = get_new_slide()
 
