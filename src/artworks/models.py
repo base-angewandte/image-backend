@@ -781,7 +781,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
 
         original_file = self.image_original
 
-        # Reset pointer so Django can save normally later
+        # Reset file pointer for conversion to JPEG
         original_file.seek(0)
 
         with Image(file=original_file).convert('jpeg') as converted:
