@@ -23,6 +23,7 @@ import environ
 import requests
 from drf_spectacular.utils import OpenApiParameter
 from PIL import Image
+from sorl.thumbnail.conf.defaults import THUMBNAIL_UPSCALE
 
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
@@ -412,7 +413,10 @@ CACHES = {
     },
 }
 
+THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.wand_engine.Engine'
 THUMBNAIL_REDIS_TIMEOUT = 60 * 60 * 24 * 365
+THUMBNAIL_CACHE_TIMEOUT = THUMBNAIL_REDIS_TIMEOUT
+THUMBNAIL_UPSCALE = False  # noqa: F811
 
 # Session settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
