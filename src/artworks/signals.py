@@ -49,7 +49,7 @@ def update_images_pre_save(sender, instance, *args, **kwargs):
         image_original_deleted = (
             not instance.image_original and old_instance.image_original
         )
-        # TODO: We will use Sorl thumbnail delete, instead of delete_all_created_images,
+        #  We will use Sorl thumbnail delete, instead of delete_all_created_images,
         #  rq worker will be implemented at a later date, if we still need it.
         #  We will try using the django.image ImageField, instead of the sorl-thumbnail one.
         # cleanup
