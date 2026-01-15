@@ -108,14 +108,14 @@ class ArtworkTests(APITestCase):
             },
         ]
 
-        for case in test_cases:
+        for img in test_cases:
             url = reverse(
                 'artwork-image',
                 kwargs={
                     'pk': artwork.pk,
                     'height': 30,
                     'width': 30,
-                    'method': case['method'],
+                    'method': img['method'],
                     'version': VERSION,
                 },
             )
@@ -123,17 +123,17 @@ class ArtworkTests(APITestCase):
 
             self.assertEqual(
                 response.status_code,
-                case['expected_status'],
+                img['expected_status'],
             )
 
-            if case['expected_dimensions']:
+            if img['expected_dimensions']:
                 self.assertIn('Location', response.headers)
 
                 file_name = media_url_to_file_path(self, response.url)
 
                 with Image(filename=file_name) as image:
                     self.assertEqual(
-                        case['expected_dimensions'],
+                        img['expected_dimensions'],
                         (image.width, image.height),
                     )
 
