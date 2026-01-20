@@ -18,9 +18,8 @@ from artworks.models import (
     PermissionsRelation,
     Person,
 )
-from artworks.utils import media_url_to_file_path
 
-from .. import APITestCase, temporary_image
+from .. import APITestCase, media_url_to_file_path, temporary_image
 from . import VERSION
 
 
