@@ -116,9 +116,7 @@ nodeenv==1.10.0
 packaging==26.0
     # via gunicorn
 pillow==12.1.1
-    # via
-    #   django-versatileimagefield
-    #   python-pptx
+    # via python-pptx
 platformdirs==4.5.1
     # via virtualenv
 portalocker==3.2.0
@@ -135,8 +133,6 @@ python-cas==1.7.1
     # via django-cas-ng
 python-dateutil==2.9.0.post0
     # via croniter
-python-magic==0.4.27
-    # via django-versatileimagefield
 python-pptx==1.0.2
     # via -r src/requirements.in
 pytz==2025.2
