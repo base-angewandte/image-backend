@@ -325,6 +325,18 @@ class SearchViewSet(viewsets.GenericViewSet):
                     {'value': artist.name, 'id': artist.id}
                     for artist in artwork.artists.all()
                 ],
+                'authors': [
+                    {'value': author.name, 'id': author.id}
+                    for author in artwork.authors.all()
+                ],
+                'photographers': [
+                    {'value': photographer.name, 'id': photographer.id}
+                    for photographer in artwork.photographers.all()
+                ],
+                'graphic_designers': [
+                    {'value': graphic_designers.name, 'id': graphic_designers.id}
+                    for graphic_designers in artwork.graphic_designers.all()
+                ],
                 'score': artwork.rank,
             }
             if request.user.is_editor:
