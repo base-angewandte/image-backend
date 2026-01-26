@@ -308,3 +308,45 @@ class SearchTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(content, FILTERS)
+
+    def test_search_returns_roles_in_preview(self):
+        """Test search for roles in preview."""
+
+        author = Person.objects.create(name='TestAuthor')
+
+        aw = Artwork.objects.create(
+            title='Author Only Artwork',
+            image_original=temporary_image(),
+            published=True,
+        )
+        aw.authors.add(author)
+        aw.save()
+
+        url = reverse('search-list', kwargs={'version': VERSION})
+        data = {
+            'filters': [
+                {
+                    'id': 'artists',
+                    'filter_values': ['author'],
+                },
+            ],
+        }
+
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(content['total'], 1)
+
+        # test existing field
+        self.assertEqual(content['results'][0]['artists'], [])
+
+        # test new role-based fields
+        self.assertIn('authors', content['results'][0])
+        self.assertEqual(content['results'][0]['authors'][0]['value'], author.name)
+
+        # explicitly assert presence of empty role keys
+        self.assertIn('photographers', content['results'][0])
+        self.assertIn('graphic_designers', content['results'][0])
+        self.assertEqual(content['results'][0]['photographers'], [])
+        self.assertEqual(content['results'][0]['graphic_designers'], [])
