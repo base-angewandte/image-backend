@@ -8,6 +8,21 @@ class SearchArtistsSerializer(serializers.Serializer):
     value = serializers.CharField()
 
 
+class SearchAuthorsSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    value = serializers.CharField()
+
+
+class SearchPhotographersSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    value = serializers.CharField()
+
+
+class SearchGraphicDesignersSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    value = serializers.CharField()
+
+
 class SearchFilterSerializer(serializers.Serializer):
     id = serializers.CharField(
         help_text='id of the filter as obtained from the /search/filters endpoint',
@@ -24,7 +39,9 @@ class SearchItemSerializer(serializers.Serializer):
     title = serializers.CharField()
     date = serializers.CharField()
     artists = SearchArtistsSerializer(many=True)
-
+    authors = SearchAuthorsSerializer(many=True)
+    photographers = SearchPhotographersSerializer(many=True)
+    graphic_designers = SearchGraphicDesignersSerializer(many=True)
     score = serializers.FloatField()
 
 
