@@ -91,19 +91,16 @@ class ArtworkTests(APITestCase):
                 'method': 'crop',
                 'expected_status': status.HTTP_302_FOUND,
                 'expected_dimensions': (30, 30),
-                # 'expected_suffix': '-crop-c0-5__0-5-30x30-92.jpg',
             },
             {
                 'method': 'resize',
                 'expected_status': status.HTTP_302_FOUND,
                 'expected_dimensions': (30, 30),
-                # 'expected_suffix': '-thumbnail-30x30-92.jpg',
             },
             {
                 'method': 'test',
                 'expected_status': status.HTTP_400_BAD_REQUEST,
                 'expected_dimensions': None,
-                # 'expected_suffix': None,
             },
         ]
 
