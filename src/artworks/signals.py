@@ -49,6 +49,7 @@ def update_images_pre_save(sender, instance, *args, **kwargs):
         image_original_deleted = (
             not instance.image_original and old_instance.image_original
         )
+        # Note: We decided to use Django's native Imagefield in order not to have third-party fields in our migrations.
 
         # We also considered to use a RQ worker to periodically clean up
         # unused thumbnails in order not to rely on signals for this, and may still do that in the future.
