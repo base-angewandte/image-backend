@@ -473,6 +473,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
     id = ShortUUIDField(primary_key=True)
     archive_id = models.BigIntegerField(null=True)
 
+    # Note: We decided to use Django's native Imagefield in order not to have third-party fields in our migrations.
     image_original = models.ImageField(
         verbose_name=_('Original Image'),
         max_length=255,
