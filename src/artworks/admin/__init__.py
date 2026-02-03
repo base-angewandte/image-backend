@@ -177,7 +177,7 @@ class ArtworkAdmin(admin.ModelAdmin):
     def thumbnail_image(self, obj):
         if obj.image_fullsize:
             return format_html(
-                '<img src="{url}" />'.format(
+                '<img src="{url}" style="max-width:180px; max-height:180px;" />'.format(
                     url=get_thumbnail(
                         obj.image_fullsize,
                         '360x360',
