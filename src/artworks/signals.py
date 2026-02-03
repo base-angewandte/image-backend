@@ -59,7 +59,6 @@ def update_images_pre_save(sender, instance, *args, **kwargs):
 
         if image_original_deleted and old_instance.image_fullsize:
             delete(old_instance.image_fullsize)
-            instance.image_fullsize.delete(save=False)
 
         # create or update image_fullsize
         if image_original_created or image_original_changed:
@@ -160,10 +159,8 @@ def delete_artwork_images(sender, instance, **kwargs):
     """Delete Artwork's originalImage and all renditions on post_delete."""
     delete(instance.image_original)
 
-    instance.image_original.delete(save=False)
     if instance.image_fullsize:
         delete(instance.image_fullsize)
-        instance.image_fullsize.delete(save=False)
 
 
 def post_migrate_updates():
