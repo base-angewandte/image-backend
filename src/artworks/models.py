@@ -9,6 +9,7 @@ from base_common.models import AbstractBaseModel
 from django_jsonform.models.fields import ArrayField
 from mptt.models import MPTTModel, TreeForeignKey
 from sorl.thumbnail import delete
+from wand.color import Color
 from wand.image import Image
 
 from django.conf import settings
@@ -784,9 +785,13 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         # Reset file pointer for conversion to JPEG
         original_file.seek(0)
 
-        with Image(file=original_file).convert('jpeg') as converted:
-            converted.compression_quality = 95
-            img_io = BytesIO(converted.make_blob())
+        with Image(file=original_file) as img:
+            img.background_color = Color('white')
+            img.alpha_channel = 'remove'
+
+            with img.convert('jpeg') as converted:
+                converted.compression_quality = 95
+                img_io = BytesIO(converted.make_blob())
 
         original_name = Path(self.image_original.name).stem
         fullsize_name = urlsafe_base64_encode(
