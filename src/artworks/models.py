@@ -786,12 +786,10 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         original_file.seek(0)
 
         with Image(file=original_file) as img:
+            img.format = 'jpeg'
             img.background_color = Color('white')
             img.alpha_channel = 'remove'
-
-            with img.convert('jpeg') as converted:
-                converted.compression_quality = 95
-                img_bytes = converted.make_blob()
+            img_bytes = img.make_blob()
 
         original_name = Path(self.image_original.name).stem
         fullsize_name = urlsafe_base64_encode(
