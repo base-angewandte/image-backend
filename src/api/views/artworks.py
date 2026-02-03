@@ -241,18 +241,16 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         match method:
             case 'resize':
-                thumb = get_thumbnail(
+                url = get_thumbnail(
                     artwork.image_fullsize,
                     size,
-                )
-                url = thumb.url
+                ).url
             case 'crop':
-                thumb = get_thumbnail(
+                url = get_thumbnail(
                     artwork.image_fullsize,
                     size,
                     crop='center',
-                )
-                url = thumb.url
+                ).url
             case _:
                 url = artwork.image_fullsize.url
 
