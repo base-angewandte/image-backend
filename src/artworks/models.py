@@ -1,7 +1,6 @@
 import hashlib
 import logging
 import re
-from io import BytesIO
 from pathlib import Path
 
 from base_common.fields import ShortUUIDField
@@ -15,7 +14,7 @@ from wand.image import Image
 from django.conf import settings
 from django.contrib.postgres.search import SearchVector, SearchVectorField
 from django.core.exceptions import ValidationError
-from django.core.files import File
+from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import JSONField
 from django.db.models.functions import Length, Upper
@@ -791,7 +790,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
 
             with img.convert('jpeg') as converted:
                 converted.compression_quality = 95
-                img_io = BytesIO(converted.make_blob())
+                img_bytes = converted.make_blob()
 
         original_name = Path(self.image_original.name).stem
         fullsize_name = urlsafe_base64_encode(
@@ -802,7 +801,11 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         )
 
         # Save the image to the image_fullsize field
-        self.image_fullsize.save(f'{fullsize_name}.jpg', File(img_io), save=False)
+        self.image_fullsize.save(
+            f'{fullsize_name}.jpg',
+            ContentFile(img_bytes),
+            save=False,
+        )
 
         if save:
             self.save(update_fields=['image_fullsize'])
