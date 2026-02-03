@@ -50,7 +50,7 @@ def update_images_pre_save(sender, instance, *args, **kwargs):
             not instance.image_original and old_instance.image_original
         )
 
-        # We also considered to use a RQ worker to periodically clean up
+        # We considered to use a RQ worker to periodically clean up
         # unused thumbnails in order not to rely on signals for this, and may still do that in the future.
 
         # cleanup
