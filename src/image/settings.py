@@ -607,6 +607,15 @@ for extension, img_format in Image.registered_extensions().items():
         PIL_VALID_EXTENSIONS[img_format] = []
     PIL_VALID_EXTENSIONS[img_format].append(extension.lower())
 
+IM_ALLOWED_MIME_TYPES = {
+    'image/jpeg',
+    'image/gif',
+    'image/png',
+    'image/webp',
+    'image/tiff',
+    'image/heif',
+}
+
 API_PREFIX = env.str('API_PREFIX', default='api/')
 
 CROP_RESIZE_MAX = env.int('CROP_RESIZE_MAX', default=7680)
