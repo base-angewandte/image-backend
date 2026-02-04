@@ -8,7 +8,7 @@ services:
       - imagenet
     restart: always
     healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
       start_period: 60s
       interval: 60s
     command: redis-server --appendonly yes
@@ -27,7 +27,7 @@ services:
       - imagenet
     restart: always
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       start_period: 60s
       interval: 60s
 
@@ -43,7 +43,11 @@ services:
     command: ["gotenberg", "--api-port-from-env", "GOTENBERG_PORT"]
     restart: always
     healthcheck:
-      test: [ "CMD-SHELL", "curl --fail http://localhost:$$GOTENBERG_PORT/health || exit 1" ]
+      test:
+        [
+          "CMD-SHELL",
+          "curl --fail http://localhost:$$GOTENBERG_PORT/health || exit 1",
+        ]
       start_period: 60s
       interval: 60s
 
@@ -61,7 +65,7 @@ services:
       - imagenet
     restart: always
     healthcheck:
-      test: [ "CMD-SHELL", "curl --fail http://localhost:8300/health || exit 1" ]
+      test: ["CMD-SHELL", "curl --fail http://localhost:8300/health || exit 1"]
       start_period: 60s
       interval: 60s
     depends_on: &depends_on
