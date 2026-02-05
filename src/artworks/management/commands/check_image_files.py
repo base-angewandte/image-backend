@@ -1,6 +1,9 @@
+import mimetypes
 from pathlib import Path
 
-from PIL import Image, UnidentifiedImageError
+import magic
+from wand.exceptions import WandException
+from wand.image import Image
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -30,20 +33,32 @@ class Command(BaseCommand):
                 image_not_found.append(artwork.id)
                 continue
             try:
-                with Image.open(image_path) as img:
-                    img.verify()
-                    pil_verified_images.append(image_path)
-                    img_format = img.format
-            except UnidentifiedImageError:
+                # Detect MIME using python-magic
+                with image_path.open('rb') as f:
+                    mime_type = magic.from_buffer(f.read(2048), mime=True)
+
+                if mime_type not in settings.IM_ALLOWED_MIME_TYPES:
+                    pil_not_verified_images.append((artwork.id, image_path))
+                    continue
+
+                # Validate image using Wand
+                with Image(filename=str(image_path)) as img:
+                    img.make_blob()
+
+                pil_verified_images.append(image_path)
+
+            except WandException:
                 pil_not_verified_images.append((artwork.id, image_path))
                 continue
             except Exception:
                 error_loading_images.append((artwork.id, image_path))
                 continue
 
-            if file_extension not in settings.PIL_VALID_EXTENSIONS[img_format]:
+            valid_extensions = mimetypes.guess_all_extensions(mime_type, strict=True)
+
+            if valid_extensions and file_extension not in valid_extensions:
                 new_image_path = image_path.with_suffix(
-                    settings.PIL_VALID_EXTENSIONS[img_format][0],
+                    valid_extensions[0],
                 )
                 image_path.rename(new_image_path)
                 renamed_images.append((artwork.id, image_path, new_image_path))
