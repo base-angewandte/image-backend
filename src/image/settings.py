@@ -22,7 +22,6 @@ from urllib.parse import urlparse
 import environ
 import requests
 from drf_spectacular.utils import OpenApiParameter
-from PIL import Image
 
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
@@ -600,12 +599,6 @@ TINYMCE_DEFAULT_CONFIG = {
     'relative_urls': False,
     'document_base_url': f'{SITE_URL.rstrip("/")}{FORCE_SCRIPT_NAME}/',
 }
-
-PIL_VALID_EXTENSIONS = {}
-for extension, img_format in Image.registered_extensions().items():
-    if img_format not in PIL_VALID_EXTENSIONS:
-        PIL_VALID_EXTENSIONS[img_format] = []
-    PIL_VALID_EXTENSIONS[img_format].append(extension.lower())
 
 IM_ALLOWED_MIME_TYPES = {
     'image/jpeg',
