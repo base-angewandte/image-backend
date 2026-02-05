@@ -47,7 +47,6 @@ This command maps identifiers from external sources (e.g., GND, Getty, Wikidata)
 - `type`
 
   The type of data to be imported. Must be one of:
-
   - `artist`
   - `location`
   - `keyword`

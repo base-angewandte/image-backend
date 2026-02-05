@@ -1,6 +1,6 @@
 .selector select {
-    height: auto !important;
-    min-height: 75px;
+  height: auto !important;
+  min-height: 75px;
 }
 
 /*
@@ -23,6 +23,6 @@
  * See also: https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/text-overflow
 */
 .field-image_original .flex-container a {
-    text-overflow: ellipsis;
-    overflow: hidden;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
