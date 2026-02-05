@@ -17,8 +17,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         image_not_found = []
-        pil_verified_images = []
-        pil_not_verified_images = []
+        wand_verified_images = []
+        wand_not_verified_images = []
         error_loading_images = []
         renamed_images = []
 
@@ -38,17 +38,17 @@ class Command(BaseCommand):
                     mime_type = magic.from_buffer(f.read(2048), mime=True)
 
                 if mime_type not in settings.IM_ALLOWED_MIME_TYPES:
-                    pil_not_verified_images.append((artwork.id, image_path))
+                    wand_not_verified_images.append((artwork.id, image_path))
                     continue
 
                 # Validate image using Wand
                 with Image(filename=str(image_path)) as img:
                     img.make_blob()
 
-                pil_verified_images.append(image_path)
+                wand_verified_images.append(image_path)
 
             except WandException:
-                pil_not_verified_images.append((artwork.id, image_path))
+                wand_not_verified_images.append((artwork.id, image_path))
                 continue
             except Exception:
                 error_loading_images.append((artwork.id, image_path))
@@ -78,13 +78,13 @@ class Command(BaseCommand):
             for artwork_id in image_not_found:
                 self.stdout.write(f'Artwork ID {artwork_id}')
 
-        if pil_not_verified_images:
+        if wand_not_verified_images:
             self.stdout.write(
                 self.style.WARNING(
-                    f'Detected unverified image formats in {len(pil_not_verified_images)} cases:',
+                    f'Detected unverified image formats in {len(wand_not_verified_images)} cases:',
                 ),
             )
-            for artwork_id, path in pil_not_verified_images:
+            for artwork_id, path in wand_not_verified_images:
                 self.stdout.write(f'Artwork {artwork_id}: {path}')
 
         if error_loading_images:
