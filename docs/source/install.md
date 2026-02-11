@@ -80,7 +80,7 @@ subsections.
 
 ### The full developer setup
 
-- Install the latest python 3.11 and create virtualenv e.g. via [`pyenv`](https://github.com/pyenv/pyenv) and [`pyenv-virtualenv`](https://github.com/pyenv/pyenv-virtualenv).
+- Install the latest python 3.12 and create virtualenv e.g. via [`pyenv`](https://github.com/pyenv/pyenv) and [`pyenv-virtualenv`](https://github.com/pyenv/pyenv-virtualenv).
 
 - Install [uv](https://github.com/astral-sh/uv) and requirements in your virtualenv:
 
