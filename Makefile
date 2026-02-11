@@ -51,7 +51,7 @@ migrate-postgres:  ## migrate data from old PostgreSQL database to new one
 
 .PHONY: migrate-user-model
 migrate-user-model:  ## migrate user model from django.contrib.auth to accounts
-	@bash scripts/migrate-user-model.sh
+	docker compose exec ${PROJECT_NAME}-django bash -c "python manage.py initialize_custom_user_model"
 
 .PHONY: init-rq
 init-rq:  ## init rq worker
