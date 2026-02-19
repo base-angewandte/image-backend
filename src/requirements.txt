@@ -104,9 +104,7 @@ lxml==6.0.2
 packaging==26.0
     # via gunicorn
 pillow==12.1.1
-    # via
-    #   django-versatileimagefield
-    #   python-pptx
+    # via python-pptx
 portalocker==3.2.0
     # via concurrent-log-handler
 psutil==7.2.2
@@ -119,8 +117,6 @@ python-cas==1.7.1
     # via django-cas-ng
 python-dateutil==2.9.0.post0
     # via croniter
-python-magic==0.4.27
-    # via django-versatileimagefield
 python-pptx==1.0.2
     # via -r src/requirements.in
 pytz==2025.2
@@ -169,9 +165,9 @@ urllib3==2.6.3
     # via
     #   requests
     #   sentry-sdk
-whitenoise==6.11.0
-    # via -r src/requirements.in
 wand==0.6.13
+    # via -r src/requirements.in
+whitenoise==6.11.0
     # via -r src/requirements.in
 xlsxwriter==3.2.9
     # via python-pptx
