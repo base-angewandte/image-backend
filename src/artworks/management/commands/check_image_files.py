@@ -21,6 +21,7 @@ class Command(BaseCommand):
         wand_not_verified_images = []
         error_loading_images = []
         renamed_images = []
+        not_allowed_mime_types = []
 
         # Loop through all Artwork objects
         for artwork in Artwork.objects.all():
@@ -37,7 +38,7 @@ class Command(BaseCommand):
                     mime_type = magic.from_buffer(f.read(2048), mime=True)
 
                 if mime_type not in settings.IM_ALLOWED_MIME_TYPES:
-                    wand_not_verified_images.append((artwork.id, image_path))
+                    not_allowed_mime_types.append((artwork.id, image_path))
                     continue
 
                 # Validate image using Wand
@@ -84,6 +85,15 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.WARNING(
                     f'Detected unverified image formats in {len(wand_not_verified_images)} cases:',
+                ),
+            )
+            for artwork_id, path in wand_not_verified_images:
+                self.stdout.write(f'Artwork {artwork_id}: {path}')
+
+        if not_allowed_mime_types:
+            self.stdout.write(
+                self.style.WARNING(
+                    f'Detected unverified mime types in {len(wand_not_verified_images)} cases:',
                 ),
             )
             for artwork_id, path in wand_not_verified_images:
