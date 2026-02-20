@@ -6,7 +6,6 @@ from wand.exceptions import WandException
 from wand.image import Image
 
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 
 from artworks.models import Artwork
@@ -29,7 +28,7 @@ class Command(BaseCommand):
                 # Get the path to the image file
                 image_path = Path(artwork.image_original.path)
                 # Extract the file extension
-            except (ObjectDoesNotExist, ValueError):
+            except ValueError:
                 image_not_found.append(artwork.id)
                 continue
             try:
