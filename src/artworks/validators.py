@@ -33,7 +33,7 @@ def validate_image_original(value):
 
         if mime_type not in settings.IM_ALLOWED_MIME_TYPES:
             raise ValidationError(
-                _('Unsupported image type: %(mime)s.') % {'mime': mime_type},
+                _('Unsupported image type: {mime}.').format(mime=mime_type),
             )
 
         with Image(file=value) as img:
@@ -45,14 +45,13 @@ def validate_image_original(value):
         if valid_extensions and file_extension not in valid_extensions:
             raise ValidationError(
                 _(
-                    "The file extension %(file_extension)s does not match the detected MIME type '%(mime_type)s'. "
-                    'Valid extensions are: %(valid_extensions)s.',
-                )
-                % {
-                    'file_extension': file_extension,
-                    'mime_type': mime_type,
-                    'valid_extensions': ', '.join(valid_extensions),
-                },
+                    "The file extension {file_extension} does not match the detected MIME type '{mime_type}'. "
+                    'Valid extensions are: {valid_extensions}.',
+                ).format(
+                    file_extension=file_extension,
+                    mime_type=mime_type,
+                    valid_extensions=', '.join(valid_extensions),
+                ),
             )
 
     except WandException as e:
