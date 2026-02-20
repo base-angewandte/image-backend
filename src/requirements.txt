@@ -117,6 +117,8 @@ python-cas==1.7.1
     # via django-cas-ng
 python-dateutil==2.9.0.post0
     # via croniter
+python-magic==0.4.27
+    # via -r src/requirements.in
 python-pptx==1.0.2
     # via -r src/requirements.in
 pytz==2025.2
