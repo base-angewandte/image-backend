@@ -49,8 +49,10 @@ class Command(BaseCommand):
             except WandException:
                 wand_not_verified_images.append((artwork.id, image_path))
                 continue
-            except Exception:
-                error_loading_images.append((artwork.id, image_path))
+            except Exception as e:
+                error_loading_images.append(
+                    (artwork.id, image_path, type(e).__name__, str(e)),
+                )
                 continue
 
             valid_extensions = mimetypes.guess_all_extensions(mime_type, strict=True)
@@ -93,8 +95,10 @@ class Command(BaseCommand):
                     f'Detected unverified image errors in {len(error_loading_images)} cases:',
                 ),
             )
-            for artwork_id, path in error_loading_images:
-                self.stdout.write(f'Artwork {artwork_id}: {path}')
+            for artwork_id, path, exc_type, exc_msg in error_loading_images:
+                self.stdout.write(
+                    f'Artwork {artwork_id}: {path} -> {exc_type}: {exc_msg}',
+                )
 
         if renamed_images:
             self.stdout.write(
