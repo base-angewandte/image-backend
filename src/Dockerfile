@@ -18,7 +18,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagickwand-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install pip==23.3.1
 COPY requirements.txt .
 RUN uv pip sync requirements.txt
 
