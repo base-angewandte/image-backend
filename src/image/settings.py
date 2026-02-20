@@ -607,6 +607,7 @@ IM_ALLOWED_MIME_TYPES = {
     'image/webp',
     'image/tiff',
     'image/heif',
+    'image/heic',
 }
 
 API_PREFIX = env.str('API_PREFIX', default='api/')
