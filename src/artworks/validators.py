@@ -37,6 +37,8 @@ def validate_image_original(value):
         raise ValidationError(
             _('Unsupported image type: {mime}.').format(mime=mime_type),
         )
+    # we aren't using sorl-thumbnail's ImageField, but Django's built-in one.
+    # so we need to perform this step manually
     try:
         with Image(file=value) as img:
             img.size  # noqa: B018
