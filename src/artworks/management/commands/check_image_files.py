@@ -15,6 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         image_not_found = []
+        image_no_file = []
         wand_verified_images = []
         wand_not_verified_images = []
         error_loading_images = []
@@ -44,6 +45,9 @@ class Command(BaseCommand):
                     # reset FP, as we just read from the file for magical reasons
                     f.seek(0)
                     ivi = default.engine.is_valid_image(f.read())
+            except FileNotFoundError:
+                image_no_file.append((artwork.id, image_path))
+                continue
             except Exception as e:
                 error_loading_images.append(
                     (artwork.id, image_path, type(e).__name__, str(e)),
@@ -79,6 +83,15 @@ class Command(BaseCommand):
             )
             for artwork_id in image_not_found:
                 self.stdout.write(f'Artwork ID {artwork_id}')
+
+        if image_no_file:
+            self.stdout.write(
+                self.style.WARNING(
+                    f"Image didn't exist at expected path for {len(image_no_file)} artworks:",
+                ),
+            )
+            for artwork_id, image_path in image_no_file:
+                self.stdout.write(f'Artwork ID {artwork_id} (expected at {image_path})')
 
         if wand_not_verified_images:
             self.stdout.write(
