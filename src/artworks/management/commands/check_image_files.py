@@ -3,6 +3,7 @@ from pathlib import Path
 
 import magic
 from sorl.thumbnail import default
+from wand.exceptions import BaseError as WandError
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -41,7 +42,12 @@ class Command(BaseCommand):
                         continue
                     # reset FP, as we just read from the file for magical reasons
                     f.seek(0)
-                    ivi = default.engine.is_valid_image(f.read())
+                    try:
+                        # this can apparently fail so catastrophically that it goes
+                        # boom instead of returning False, so we catch that, too
+                        ivi = default.engine.is_valid_image(f.read())
+                    except WandError:
+                        ivi = False
             except FileNotFoundError:
                 image_no_file.append((artwork.id, image_path))
                 continue
