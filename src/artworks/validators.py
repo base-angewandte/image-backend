@@ -40,6 +40,8 @@ def validate_image_original(value):
     # so we need to perform this step manually
     if not default.engine.is_valid_image(value.read()):
         raise ValidationError('Uploaded file is not a valid image.')
+    # reset FP after validating image
+    seek(0)
 
     valid_extensions = mimetypes.guess_all_extensions(mime_type, strict=True)
     file_extension = Path(value.name).suffix.lower()
@@ -55,5 +57,3 @@ def validate_image_original(value):
                 valid_extensions=', '.join(valid_extensions),
             ),
         )
-    # reset FP after validating image
-    seek(0)
