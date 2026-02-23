@@ -4,7 +4,7 @@ from pathlib import Path
 
 import magic
 from sorl.thumbnail import default
-from wand.exceptions import BaseError as WandError
+from wand.exceptions import WandException
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -43,7 +43,7 @@ def validate_image_original(value):
         # this can apparently fail so catastrophically that it goes
         # boom instead of returning False, so we catch that, too
         ivi = default.engine.is_valid_image(value.read())
-    except WandError:
+    except WandException:
         ivi = False
 
     # reset FP after getting image data for validation
