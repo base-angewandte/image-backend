@@ -103,10 +103,10 @@ class Command(BaseCommand):
         if not_allowed_mime_types:
             self.stdout.write(
                 self.style.WARNING(
-                    f'Detected unverified mime types in {len(wand_not_verified_images)} cases:',
+                    f'Detected unverified mime types in {len(not_allowed_mime_types)} cases:',
                 ),
             )
-            for artwork_id, path in wand_not_verified_images:
+            for artwork_id, path in not_allowed_mime_types:
                 self.stdout.write(f'Artwork {artwork_id}: {path}')
 
         if error_loading_images:
