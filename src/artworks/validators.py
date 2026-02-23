@@ -38,10 +38,11 @@ def validate_image_original(value):
         )
     # we aren't using sorl-thumbnail's ImageField, but Django's built-in one.
     # so we need to perform this step manually
-    if not default.engine.is_valid_image(value.read()):
-        raise ValidationError('Uploaded file is not a valid image.')
-    # reset FP after validating image
+    ivi = default.engine.is_valid_image(value.read())
+    # reset FP after getting image data for validation
     seek(0)
+    if not ivi:
+        raise ValidationError('Uploaded file is not a valid image.')
 
     valid_extensions = mimetypes.guess_all_extensions(mime_type, strict=True)
     file_extension = Path(value.name).suffix.lower()
