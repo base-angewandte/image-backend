@@ -34,7 +34,7 @@ def validate_image_original(value):
     seek(0)
     if mime_type not in settings.IM_ALLOWED_MIME_TYPES:
         raise ValidationError(
-            _('Unsupported image type: {mime}.').format(mime=mime_type),
+            _('Unsupported image type: %(mime).') % {'mime': mime_type},
         )
     # we aren't using sorl-thumbnail's ImageField, but Django's built-in one.
     # so we need to perform this step manually
@@ -50,11 +50,12 @@ def validate_image_original(value):
     if valid_extensions and file_extension not in valid_extensions:
         raise ValidationError(
             _(
-                "The file extension {file_extension} does not match the detected MIME type '{mime_type}'. "
-                'Valid extensions are: {valid_extensions}.',
-            ).format(
-                file_extension=file_extension,
-                mime_type=mime_type,
-                valid_extensions=', '.join(valid_extensions),
-            ),
+                "The file extension %(file_extension) does not match the detected MIME type '%(mime_type)'. "
+                'Valid extensions are: %(valid_extensions).',
+            )
+            % {
+                'file_extension': file_extension,
+                'mime_type': mime_type,
+                'valid_extensions': ', '.join(valid_extensions),
+            },
         )
