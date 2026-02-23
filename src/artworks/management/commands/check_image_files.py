@@ -27,7 +27,6 @@ class Command(BaseCommand):
             try:
                 # Get the path to the image file
                 image_path = Path(artwork.image_original.path)
-                # Extract the file extension
             except ValueError:
                 image_not_found.append(artwork.id)
                 continue
@@ -61,6 +60,7 @@ class Command(BaseCommand):
 
             valid_extensions = mimetypes.guess_all_extensions(mime_type, strict=True)
 
+            # Extract the file extension
             file_extension = image_path.suffix.lower()
             if valid_extensions and file_extension not in valid_extensions:
                 new_image_path = image_path.with_suffix(
