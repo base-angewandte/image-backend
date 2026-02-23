@@ -13,6 +13,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
+from sorl.thumbnail import get_thumbnail
 
 from django.conf import settings
 from django.db.models import Q
@@ -240,9 +241,16 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         match method:
             case 'resize':
-                url = artwork.image_fullsize.thumbnail[size].url
+                url = get_thumbnail(
+                    artwork.image_fullsize,
+                    size,
+                ).url
             case 'crop':
-                url = artwork.image_fullsize.crop[size].url
+                url = get_thumbnail(
+                    artwork.image_fullsize,
+                    size,
+                    crop='center',
+                ).url
             case _:
                 url = artwork.image_fullsize.url
 

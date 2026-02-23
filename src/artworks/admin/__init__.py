@@ -1,4 +1,5 @@
 from mptt.admin import MPTTModelAdmin
+from sorl.thumbnail import get_thumbnail
 
 from django.conf import settings
 from django.contrib import admin
@@ -176,8 +177,11 @@ class ArtworkAdmin(admin.ModelAdmin):
     def thumbnail_image(self, obj):
         if obj.image_fullsize:
             return format_html(
-                '<img src="{url}" />'.format(
-                    url=obj.image_fullsize.thumbnail['180x180'],
+                '<img src="{url}" style="max-width:180px; max-height:180px;" />'.format(
+                    url=get_thumbnail(
+                        obj.image_fullsize,
+                        '360x360',
+                    ).url,
                 ),
             )
         else:

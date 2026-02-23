@@ -14,6 +14,10 @@ WORKDIR /django
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libmagickwand-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
 RUN uv pip sync requirements.txt
 
