@@ -4,6 +4,7 @@ from pathlib import Path
 
 import magic
 from sorl.thumbnail import default
+from wand.exceptions import BaseError as WandError
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -38,7 +39,13 @@ def validate_image_original(value):
         )
     # we aren't using sorl-thumbnail's ImageField, but Django's built-in one.
     # so we need to perform this step manually
-    ivi = default.engine.is_valid_image(value.read())
+    try:
+        # this can apparently fail so catastrophically that it goes
+        # boom instead of returning False, so we catch that, too
+        ivi = default.engine.is_valid_image(value.read())
+    except WandError:
+        ivi = False
+
     # reset FP after getting image data for validation
     seek(0)
     if not ivi:
