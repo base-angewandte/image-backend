@@ -3,8 +3,7 @@ import re
 from pathlib import Path
 
 import magic
-from wand.exceptions import WandException
-from wand.image import Image
+from sorl.thumbnail import default
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -39,11 +38,8 @@ def validate_image_original(value):
         )
     # we aren't using sorl-thumbnail's ImageField, but Django's built-in one.
     # so we need to perform this step manually
-    try:
-        with Image(file=value) as img:
-            img.size  # noqa: B018
-    except WandException as e:
-        raise ValidationError('Uploaded file is not a valid image.') from e
+    if not default.engine.is_valid_image(value.read()):
+        raise ValidationError('Uploaded file is not a valid image.')
 
     valid_extensions = mimetypes.guess_all_extensions(mime_type, strict=True)
     file_extension = Path(value.name).suffix.lower()
