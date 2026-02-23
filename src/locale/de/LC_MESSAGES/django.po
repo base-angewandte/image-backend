@@ -472,7 +472,7 @@ msgstr "Ungültiges %(label)s ID Format."
 
 #: artworks/validators.py:37
 msgid "Unsupported image type: %(mime)."
-msgstr "Bildformat nicht unterstützt: %(mime)."
+msgstr "Bildformat wird nicht unterstützt: %(mime)."
 
 #: artworks/validators.py:53
 msgid ""
