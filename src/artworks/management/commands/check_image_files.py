@@ -14,7 +14,7 @@ class Command(BaseCommand):
     help = 'Check all Artwork image files and repair incorrect file extensions.'
 
     def handle(self, *args, **kwargs):
-        image_not_found = []
+        image_not_uploaded = []
         image_no_file = []
         wand_verified_images = []
         wand_not_verified_images = []
@@ -24,12 +24,10 @@ class Command(BaseCommand):
 
         # Loop through all Artwork objects
         for artwork in Artwork.objects.all():
-            try:
-                # Get the path to the image file
-                image_path = Path(artwork.image_original.path)
-            except ValueError:
-                image_not_found.append(artwork.id)
+            if not artwork.image_original:
+                image_not_uploaded.append(artwork.id)
                 continue
+            image_path = Path(artwork.image_original.path)
             try:
                 # checks based on file data
                 with image_path.open('rb') as f:
@@ -75,13 +73,13 @@ class Command(BaseCommand):
                 )
                 artwork.save(update_fields=['image_original'])
 
-        if image_not_found:
+        if image_not_uploaded:
             self.stdout.write(
                 self.style.WARNING(
-                    f'No image found for {len(image_not_found)} artworks:',
+                    f'No image uploaded for {len(image_not_uploaded)} artworks:',
                 ),
             )
-            for artwork_id in image_not_found:
+            for artwork_id in image_not_uploaded:
                 self.stdout.write(f'Artwork ID {artwork_id}')
 
         if image_no_file:
@@ -90,8 +88,8 @@ class Command(BaseCommand):
                     f"Image didn't exist at expected path for {len(image_no_file)} artworks:",
                 ),
             )
-            for artwork_id, image_path in image_no_file:
-                self.stdout.write(f'Artwork ID {artwork_id} (expected at {image_path})')
+            for artwork_id, path in image_no_file:
+                self.stdout.write(f'Artwork ID {artwork_id}: {path}')
 
         if wand_not_verified_images:
             self.stdout.write(
