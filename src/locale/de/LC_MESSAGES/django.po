@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-20 13:00+0100\n"
+"POT-Creation-Date: 2026-02-23 14:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -465,24 +465,23 @@ msgstr ""
 msgid "Albums"
 msgstr "Alben"
 
-#: artworks/validators.py:17
+#: artworks/validators.py:15
 #, python-format
 msgid "Invalid %(label)s ID format."
 msgstr "Ungültiges %(label)s ID Format."
 
-#: artworks/validators.py:36
-#, python-brace-format
-msgid "Unsupported image type: {mime}."
+#: artworks/validators.py:37
+msgid "Unsupported image type: %(mime)."
 msgstr ""
 
-#: artworks/validators.py:48
-#, fuzzy, python-brace-format
+#: artworks/validators.py:53
+#, fuzzy
 #| msgid ""
 #| "The file extension %(file_extension)s does not match the image format '%"
 #| "(img_format)'. Valid extensions are: %(valid_extensions)s."
 msgid ""
-"The file extension {file_extension} does not match the detected MIME type "
-"'{mime_type}'. Valid extensions are: {valid_extensions}."
+"The file extension %(file_extension) does not match the detected MIME type '%"
+"(mime_type)'. Valid extensions are: %(valid_extensions)."
 msgstr ""
 "Die Dateiendung %(file_extension)s entspricht nicht dem Bildformat '%"
 "(img_format)'. Gültige Endungen sind: %(valid_extensions)s."
