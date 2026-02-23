@@ -2,8 +2,7 @@ import mimetypes
 from pathlib import Path
 
 import magic
-from wand.exceptions import WandException
-from wand.image import Image
+from sorl.thumbnail import default
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -32,27 +31,28 @@ class Command(BaseCommand):
                 image_not_found.append(artwork.id)
                 continue
             try:
-                # Detect MIME using python-magic
+                # checks based on file data
                 with image_path.open('rb') as f:
+                    # Detect MIME using python-magic
                     mime_type = magic.from_buffer(f.read(2048), mime=True)
-
-                if mime_type not in settings.IM_ALLOWED_MIME_TYPES:
-                    not_allowed_mime_types.append((artwork.id, image_path))
-                    continue
-
-                # Validate image using Wand
-                with Image(filename=str(image_path)) as img:
-                    img.make_blob()
-
-                wand_verified_images.append(image_path)
-
-            except WandException:
-                wand_not_verified_images.append((artwork.id, image_path))
-                continue
+                    # even though we don't need f here and this wouldn't need to be in
+                    # the context block, perform this check before validating the file,
+                    # as the latter is way more expensive
+                    if mime_type not in settings.IM_ALLOWED_MIME_TYPES:
+                        not_allowed_mime_types.append((artwork.id, image_path))
+                        continue
+                    # reset FP, as we just read from the file for magical reasons
+                    f.seek(0)
+                    ivi = default.engine.is_valid_image(f.read())
             except Exception as e:
                 error_loading_images.append(
                     (artwork.id, image_path, type(e).__name__, str(e)),
                 )
+                continue
+            if ivi:
+                wand_verified_images.append(image_path)
+            else:
+                wand_not_verified_images.append((artwork.id, image_path))
                 continue
 
             valid_extensions = mimetypes.guess_all_extensions(mime_type, strict=True)
