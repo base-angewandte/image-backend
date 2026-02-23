@@ -472,19 +472,15 @@ msgstr "Ungültiges %(label)s ID Format."
 
 #: artworks/validators.py:37
 msgid "Unsupported image type: %(mime)."
-msgstr ""
+msgstr "Bildformat nicht unterstützt: %(mime)."
 
 #: artworks/validators.py:53
-#, fuzzy
-#| msgid ""
-#| "The file extension %(file_extension)s does not match the image format '%"
-#| "(img_format)'. Valid extensions are: %(valid_extensions)s."
 msgid ""
 "The file extension %(file_extension) does not match the detected MIME type '%"
 "(mime_type)'. Valid extensions are: %(valid_extensions)."
 msgstr ""
-"Die Dateiendung %(file_extension)s entspricht nicht dem Bildformat '%"
-"(img_format)'. Gültige Endungen sind: %(valid_extensions)s."
+"Die Dateiendung %(file_extension)s entspricht nicht dem MIME-Type "
+"'%(mime_type)'. Gültige Endungen sind: %(valid_extensions)s."
 
 #: image/settings.py:81
 msgid "Image Admin"
