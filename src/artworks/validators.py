@@ -25,9 +25,13 @@ def validate_getty_id(getty_id):
 
 
 def validate_image_original(value):
+    # don't catch exception, this should never happen, and if it does, it
+    # should be logged
     seek = value.seek
+    # make sure the FP is pointing to the start of the file
     seek(0)
     mime_type = magic.from_buffer(value.read(2048), mime=True)
+    # reset FP after read for mime_type
     seek(0)
     if mime_type not in settings.IM_ALLOWED_MIME_TYPES:
         raise ValidationError(
@@ -53,4 +57,5 @@ def validate_image_original(value):
                 valid_extensions=', '.join(valid_extensions),
             ),
         )
+    # reset FP after validating image
     seek(0)
