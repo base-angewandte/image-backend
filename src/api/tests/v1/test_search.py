@@ -308,3 +308,180 @@ class SearchTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(content, FILTERS)
+
+    def test_search_returns_roles_in_preview(self):
+        """Test search for roles in preview."""
+
+        author_only = Person.objects.create(name='TestAuthor')
+        photographer_only = Person.objects.create(name='TestPhotographer')
+        both_roles = Person.objects.create(name='TestBothRoles')
+        unrelated = Person.objects.create(name='UnrelatedPerson')
+
+        aw_author = Artwork.objects.create(
+            title='Author Only Artwork',
+            image_original=temporary_image(),
+            published=True,
+        )
+        aw_author.authors.add(author_only)
+        aw_author.save()
+
+        aw_photographer = Artwork.objects.create(
+            title='Photographer Only Artwork',
+            image_original=temporary_image(),
+            published=True,
+        )
+        aw_photographer.photographers.add(photographer_only)
+        aw_photographer.save()
+
+        aw_both = Artwork.objects.create(
+            title='Both Roles Artwork',
+            image_original=temporary_image(),
+            published=True,
+        )
+        aw_both.authors.add(both_roles)
+        aw_both.photographers.add(both_roles)
+        aw_both.save()
+
+        aw_mixed = Artwork.objects.create(
+            title='Mixed Roles Artwork',
+            image_original=temporary_image(),
+            published=True,
+        )
+        aw_mixed.authors.add(author_only)
+        aw_mixed.photographers.add(photographer_only)
+        aw_mixed.artists.add(unrelated)
+        aw_mixed.save()
+
+        url = reverse('search-list', kwargs={'version': VERSION})
+
+        # test author search returns author-only artwork and mixed artwork
+        data = {
+            'filters': [
+                {
+                    'id': 'artists',
+                    'filter_values': ['author'],
+                },
+            ],
+        }
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(content['total'], 2)
+
+        titles = {r['title'] for r in content['results']}
+        self.assertIn('Author Only Artwork', titles)
+        self.assertIn('Mixed Roles Artwork', titles)
+        self.assertNotIn('Photographer Only Artwork', titles)
+        self.assertNotIn('Both Roles Artwork', titles)
+
+        # test payload contract (role keys exist even if empty)
+        for result in content['results']:
+            self.assertIn('artists', result)
+            self.assertIn('authors', result)
+            self.assertIn('photographers', result)
+            self.assertIn('graphic_designers', result)
+
+        # test existing field artist stays empty for author-only results
+        author_only_result = next(
+            r for r in content['results'] if r['title'] == 'Author Only Artwork'
+        )
+        self.assertEqual(author_only_result['artists'], [])
+        self.assertEqual(author_only_result['authors'][0]['value'], author_only.name)
+        self.assertEqual(author_only_result['photographers'], [])
+        self.assertEqual(author_only_result['graphic_designers'], [])
+
+        # test if user is an author, search for photographer,but the user isn't a photographer
+        data = {
+            'filters': [
+                {
+                    'id': 'artists',
+                    'filter_values': ['author'],
+                },
+            ],
+        }
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+        self.assertNotIn(
+            'Photographer Only Artwork',
+            {r['title'] for r in content['results']},
+        )
+
+        # test with second user, only one of the two matches the criteria
+        data = {
+            'filters': [
+                {
+                    'id': 'artists',
+                    'filter_values': ['unrelated'],
+                },
+            ],
+        }
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(content['total'], 1)
+        self.assertEqual(content['results'][0]['title'], 'Mixed Roles Artwork')
+
+        # test photographer-only + mixed
+        data = {
+            'filters': [
+                {
+                    'id': 'artists',
+                    'filter_values': ['photographer'],
+                },
+            ],
+        }
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(content['total'], 2)
+
+        titles = {r['title'] for r in content['results']}
+        self.assertIn('Photographer Only Artwork', titles)
+        self.assertIn('Mixed Roles Artwork', titles)
+        self.assertNotIn('Author Only Artwork', titles)
+        self.assertNotIn('Both Roles Artwork', titles)
+
+        # test person is author and photographer
+        data = {
+            'filters': [
+                {
+                    'id': 'artists',
+                    'filter_values': ['bothroles'],
+                },
+            ],
+        }
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(content['total'], 1)
+        self.assertEqual(content['results'][0]['title'], 'Both Roles Artwork')
+        self.assertEqual(content['results'][0]['artists'], [])
+        self.assertEqual(content['results'][0]['authors'][0]['value'], both_roles.name)
+        self.assertEqual(
+            content['results'][0]['photographers'][0]['value'],
+            both_roles.name,
+        )
+        self.assertIn('graphic_designers', content['results'][0])
+        self.assertEqual(content['results'][0]['graphic_designers'], [])
+
+        # test search by id
+        data = {
+            'filters': [
+                {
+                    'id': 'artists',
+                    'filter_values': [{'id': author_only.id}],
+                },
+            ],
+        }
+        response = self.client.post(url, data, format='json')
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(content['total'], 2)
+        titles = {r['title'] for r in content['results']}
+        self.assertIn('Author Only Artwork', titles)
+        self.assertIn('Mixed Roles Artwork', titles)
