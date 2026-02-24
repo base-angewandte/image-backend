@@ -7,7 +7,7 @@ class Command(BaseCommand):
     help = 'Repair image_original path for all artworks'
 
     def handle(self, *args, **options):
-        for artwork in Artwork.objects.all():
+        for artwork in Artwork.objects.iterator():
             if artwork.image_original:
                 artwork.update_image_original_path()
             else:

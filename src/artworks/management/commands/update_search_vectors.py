@@ -7,7 +7,7 @@ class Command(BaseCommand):
     help = 'Update search vector for all artworks'
 
     def handle(self, *args, **options):
-        for artwork in Artwork.objects.all():
+        for artwork in Artwork.objects.iterator():
             artwork.update_search_vector()
 
         self.stdout.write(self.style.SUCCESS('DONE'))
