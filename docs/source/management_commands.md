@@ -15,7 +15,7 @@ In certain error cases a warning will be issued:
 
 This command deletes empty media folders. The media directory can be found in `./src/assets/media`, or for a docker based setup it's the directory configured as `MEDIA_DIR` in the `.env` file.
 
-### `clear_artwork_fields`
+### `clean_artwork_fields`
 
 This command checks the fields `title` & `title_en` of the `Artwork` model and if present removes [non-printable characters](<https://docs.python.org/3/library/stdtypes.html#:~:text=str.isprintable()>) by replacing them with spaces.
 
