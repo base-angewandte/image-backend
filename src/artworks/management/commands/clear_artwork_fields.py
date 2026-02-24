@@ -1,3 +1,6 @@
+from rich.progress import track
+
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from artworks.models import Artwork
@@ -12,7 +15,11 @@ class Command(BaseCommand):
 
         cleaned = {f: [] for f in fields}
 
-        for artwork in Artwork.objects.iterator():
+        for artwork in track(
+            Artwork.objects.iterator(),
+            description='Cleaning fields...',
+            complete_style=settings.PROGRESS_STYLES['complete'],
+        ):
             changed = False
             for f in fields:
                 value = getattr(artwork, f)
