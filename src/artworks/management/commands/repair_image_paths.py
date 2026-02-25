@@ -14,6 +14,7 @@ class Command(BaseCommand):
             Artwork.objects.iterator(),
             description='Repairing paths...',
             complete_style=settings.PROGRESS_STYLES['complete'],
+            total=Artwork.objects.count(),
         ):
             if artwork.image_original:
                 artwork.update_image_original_path()

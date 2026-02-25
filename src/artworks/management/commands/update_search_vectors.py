@@ -14,6 +14,7 @@ class Command(BaseCommand):
             Artwork.objects.iterator(),
             description='Updating search vectors...',
             complete_style=settings.PROGRESS_STYLES['complete'],
+            total=Artwork.objects.count(),
         ):
             artwork.update_search_vector()
 

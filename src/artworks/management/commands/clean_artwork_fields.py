@@ -19,6 +19,7 @@ class Command(BaseCommand):
             Artwork.objects.iterator(),
             description='Cleaning fields...',
             complete_style=settings.PROGRESS_STYLES['complete'],
+            total=Artwork.objects.count(),
         ):
             changed = False
             for f in fields:

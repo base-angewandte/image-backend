@@ -29,6 +29,7 @@ class Command(BaseCommand):
             Artwork.objects.iterator(),
             description='Checking images...',
             complete_style=settings.PROGRESS_STYLES['complete'],
+            total=Artwork.objects.count(),
         ):
             if not artwork.image_original:
                 image_not_uploaded.append(artwork.id)
