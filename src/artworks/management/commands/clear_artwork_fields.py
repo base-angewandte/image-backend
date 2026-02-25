@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
         cleaned = {f: [] for f in fields}
 
-        for artwork in Artwork.objects.all():
+        for artwork in Artwork.objects.iterator():
             changed = False
             for f in fields:
                 value = getattr(artwork, f)

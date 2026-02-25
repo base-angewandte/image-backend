@@ -164,7 +164,7 @@ def delete_artwork_images(sender, instance, **kwargs):
 
 
 def post_migrate_updates():
-    for artwork in Artwork.objects.all():
+    for artwork in Artwork.objects.iterator():
         # update search vector if there have been changes to the model
         django_rq.enqueue(
             artwork.update_search_vector,

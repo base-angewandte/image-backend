@@ -24,7 +24,7 @@ class Command(BaseCommand):
         not_allowed_mime_types = []
 
         # Loop through all Artwork objects
-        for artwork in Artwork.objects.all():
+        for artwork in Artwork.objects.iterator():
             if not artwork.image_original:
                 image_not_uploaded.append(artwork.id)
                 continue

@@ -7,7 +7,7 @@ def change_place_of_production_to_many(apps, schema_editor):
     """Migrate data from ForeignKey place_of_production to ManyToManyField place_of_production_new."""
     Artwork = apps.get_model('artworks', 'Artwork')
 
-    for artwork in Artwork.objects.all():
+    for artwork in Artwork.objects.iterator():
         if artwork.place_of_production:
             # Migrate data from FK to M2M
             artwork.place_of_production_new.add(artwork.place_of_production)
@@ -15,7 +15,8 @@ def change_place_of_production_to_many(apps, schema_editor):
 def change_place_of_production_to_one(apps, schema_editor):
     """Migrate data from ManyToManyField place_of_production_new to ForeignKey place_of_production."""
     Artwork = apps.get_model('artworks', 'Artwork')
-    for artwork in Artwork.objects.all():
+
+    for artwork in Artwork.objects.iterator():
         if artwork.place_of_production_new.count() > 0:
             # as there is no defined requirement, which location to take when
             # migrating back, we just take the first one the manager gives us
