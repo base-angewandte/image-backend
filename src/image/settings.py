@@ -322,7 +322,11 @@ LOG_DIR = BASE_DIR / '..' / 'logs'
 if not LOG_DIR.exists():
     LOG_DIR.mkdir(parents=True)
 
-DEBUG_LOG_LEVEL = env.bool('DEBUG_LOG_LEVEL', default='INFO')
+DEBUG_LOG_LEVEL = env.str('DEBUG_LOG_LEVEL', default='INFO')
+
+SUPPRESS_REQUEST_WARNINGS = env.bool('SUPPRESS_REQUEST_WARNINGS', default=False)
+
+_DEFAULT_LOG_LEVEL = DEBUG_LOG_LEVEL if DEBUG else 'INFO'
 
 LOGGING = {
     'version': 1,
@@ -375,17 +379,22 @@ LOGGING = {
     'loggers': {
         '': {
             'handlers': ['console', 'file', 'mail_admins'],
-            'level': DEBUG_LOG_LEVEL if DEBUG else 'INFO',
+            'level': _DEFAULT_LOG_LEVEL,
             'propagate': True,
         },
         'django': {
             'handlers': ['console', 'file', 'mail_admins'],
-            'level': DEBUG_LOG_LEVEL if DEBUG else 'INFO',
+            'level': _DEFAULT_LOG_LEVEL,
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console', 'file', 'mail_admins'],
+            'level': 'ERROR' if SUPPRESS_REQUEST_WARNINGS else _DEFAULT_LOG_LEVEL,
             'propagate': False,
         },
         'rq': {
             'handlers': ['console', 'rq_file', 'mail_admins'],
-            'level': DEBUG_LOG_LEVEL if DEBUG else 'INFO',
+            'level': _DEFAULT_LOG_LEVEL,
             'propagate': False,
         },
     },
