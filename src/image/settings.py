@@ -324,6 +324,8 @@ if not LOG_DIR.exists():
 
 DEBUG_LOG_LEVEL = env.str('DEBUG_LOG_LEVEL', default='INFO')
 
+_DEFAULT_LOG_LEVEL = DEBUG_LOG_LEVEL if DEBUG else 'INFO'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -375,17 +377,17 @@ LOGGING = {
     'loggers': {
         '': {
             'handlers': ['console', 'file', 'mail_admins'],
-            'level': DEBUG_LOG_LEVEL if DEBUG else 'INFO',
+            'level': _DEFAULT_LOG_LEVEL,
             'propagate': True,
         },
         'django': {
             'handlers': ['console', 'file', 'mail_admins'],
-            'level': DEBUG_LOG_LEVEL if DEBUG else 'INFO',
+            'level': _DEFAULT_LOG_LEVEL,
             'propagate': False,
         },
         'rq': {
             'handlers': ['console', 'rq_file', 'mail_admins'],
-            'level': DEBUG_LOG_LEVEL if DEBUG else 'INFO',
+            'level': _DEFAULT_LOG_LEVEL,
             'propagate': False,
         },
     },
