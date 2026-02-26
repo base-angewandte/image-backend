@@ -2,6 +2,7 @@ import mimetypes
 from pathlib import Path
 
 import magic
+from rich.progress import track
 from sorl.thumbnail import default
 from wand.exceptions import WandException
 
@@ -24,7 +25,12 @@ class Command(BaseCommand):
         not_allowed_mime_types = []
 
         # Loop through all Artwork objects
-        for artwork in Artwork.objects.iterator():
+        for artwork in track(
+            Artwork.objects.iterator(),
+            description='Checking images...',
+            complete_style=settings.PROGRESS_STYLES['complete'],
+            total=Artwork.objects.count(),
+        ):
             if not artwork.image_original:
                 image_not_uploaded.append(artwork.id)
                 continue

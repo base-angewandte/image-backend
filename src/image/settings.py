@@ -613,3 +613,7 @@ IM_ALLOWED_MIME_TYPES = {
 API_PREFIX = env.str('API_PREFIX', default='api/')
 
 CROP_RESIZE_MAX = env.int('CROP_RESIZE_MAX', default=7680)
+
+PROGRESS_STYLES = {
+    'complete': 'dark_violet',
+}
