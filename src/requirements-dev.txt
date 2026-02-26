@@ -183,10 +183,7 @@ sorl-thumbnail==12.11.0
 sqlparse==0.5.5
     # via django
 typing-extensions==4.15.0
-    # via
-    #   psycopg
-    #   python-pptx
-    #   referencing
+    # via python-pptx
 uritemplate==4.2.0
     # via drf-spectacular
 urllib3==2.6.3
