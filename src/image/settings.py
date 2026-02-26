@@ -324,6 +324,8 @@ if not LOG_DIR.exists():
 
 DEBUG_LOG_LEVEL = env.str('DEBUG_LOG_LEVEL', default='INFO')
 
+SUPPRESS_REQUEST_WARNINGS = env.bool('SUPPRESS_REQUEST_WARNINGS', default=False)
+
 _DEFAULT_LOG_LEVEL = DEBUG_LOG_LEVEL if DEBUG else 'INFO'
 
 LOGGING = {
@@ -383,6 +385,11 @@ LOGGING = {
         'django': {
             'handlers': ['console', 'file', 'mail_admins'],
             'level': _DEFAULT_LOG_LEVEL,
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console', 'file', 'mail_admins'],
+            'level': 'ERROR' if SUPPRESS_REQUEST_WARNINGS else _DEFAULT_LOG_LEVEL,
             'propagate': False,
         },
         'rq': {
