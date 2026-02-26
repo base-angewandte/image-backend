@@ -322,7 +322,7 @@ LOG_DIR = BASE_DIR / '..' / 'logs'
 if not LOG_DIR.exists():
     LOG_DIR.mkdir(parents=True)
 
-DEBUG_LOG_LEVEL = env.bool('DEBUG_LOG_LEVEL', default='INFO')
+DEBUG_LOG_LEVEL = env.str('DEBUG_LOG_LEVEL', default='INFO')
 
 LOGGING = {
     'version': 1,
