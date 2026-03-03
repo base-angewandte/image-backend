@@ -108,5 +108,4 @@ REQUESTS_TIMEOUT=5
 # API_PREFIX=api/
 
 ## Configure max value of height / width, when resizing or cropping images
-## The default is 7680
-CROP_RESIZE_MAX=7680
+# CROP_RESIZE_MAX=7680
