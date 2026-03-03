@@ -429,6 +429,7 @@ IM_ALLOWED_MIME_TYPES = {
     'image/heif',
     'image/heic',
 }
+IM_COMPRESSION_QUALITY = env.int('IM_COMPRESSION_QUALITY', default=90)
 CROP_RESIZE_MAX = env.int('CROP_RESIZE_MAX', default=7680)
 
 THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.wand_engine.Engine'
