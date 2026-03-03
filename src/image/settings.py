@@ -436,6 +436,7 @@ THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.wand_engine.Engine'
 THUMBNAIL_REDIS_TIMEOUT = 60 * 60 * 24 * 365
 THUMBNAIL_CACHE_TIMEOUT = THUMBNAIL_REDIS_TIMEOUT
 THUMBNAIL_UPSCALE = False
+THUMBNAIL_QUALITY = IM_COMPRESSION_QUALITY
 
 # Session settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
