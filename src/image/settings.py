@@ -626,3 +626,5 @@ CROP_RESIZE_MAX = env.int('CROP_RESIZE_MAX', default=7680)
 PROGRESS_STYLES = {
     'complete': 'dark_violet',
 }
+
+TEST_RUNNER = 'image.test_runner.Runner'
