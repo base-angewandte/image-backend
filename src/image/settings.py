@@ -420,10 +420,23 @@ CACHES = {
     },
 }
 
+IM_ALLOWED_MIME_TYPES = {
+    'image/jpeg',
+    'image/gif',
+    'image/png',
+    'image/webp',
+    'image/tiff',
+    'image/heif',
+    'image/heic',
+}
+IM_COMPRESSION_QUALITY = env.int('IM_COMPRESSION_QUALITY', default=90)
+CROP_RESIZE_MAX = env.int('CROP_RESIZE_MAX', default=7680)
+
 THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.wand_engine.Engine'
 THUMBNAIL_REDIS_TIMEOUT = 60 * 60 * 24 * 365
 THUMBNAIL_CACHE_TIMEOUT = THUMBNAIL_REDIS_TIMEOUT
 THUMBNAIL_UPSCALE = False
+THUMBNAIL_QUALITY = IM_COMPRESSION_QUALITY
 
 # Session settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
@@ -609,19 +622,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'document_base_url': f'{SITE_URL.rstrip("/")}{FORCE_SCRIPT_NAME}/',
 }
 
-IM_ALLOWED_MIME_TYPES = {
-    'image/jpeg',
-    'image/gif',
-    'image/png',
-    'image/webp',
-    'image/tiff',
-    'image/heif',
-    'image/heic',
-}
-
 API_PREFIX = env.str('API_PREFIX', default='api/')
-
-CROP_RESIZE_MAX = env.int('CROP_RESIZE_MAX', default=7680)
 
 PROGRESS_STYLES = {
     'complete': 'dark_violet',

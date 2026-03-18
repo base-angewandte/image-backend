@@ -107,6 +107,8 @@ REQUESTS_TIMEOUT=5
 ## API base path prefix (Used for custom LanguageHeaderMiddleware class & dynamically affects URLs in image/urls.py)
 # API_PREFIX=api/
 
+## Compression quality for Wand and sorl-thumbnail
+# IM_COMPRESSION_QUALITY=90
+
 ## Configure max value of height / width, when resizing or cropping images
-## The default is 7680
-CROP_RESIZE_MAX=7680
+# CROP_RESIZE_MAX=7680

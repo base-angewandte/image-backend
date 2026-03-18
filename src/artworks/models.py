@@ -789,6 +789,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
             img.format = 'jpeg'
             img.background_color = Color('white')
             img.alpha_channel = 'remove'
+            img.compression_quality = settings.IM_COMPRESSION_QUALITY
             img_bytes = img.make_blob()
 
         original_name = Path(self.image_original.name).stem
