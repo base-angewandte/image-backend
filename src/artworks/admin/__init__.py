@@ -1,4 +1,5 @@
 from mptt.admin import MPTTModelAdmin
+from sorl.thumbnail import get_thumbnail
 
 from django.conf import settings
 from django.contrib import admin
@@ -78,7 +79,6 @@ class ArtworkAdmin(admin.ModelAdmin):
         'title_english',
         'title_comment_de',
         'title_comment_en',
-        'discriminatory_terms',
         'artists',
         'photographers',
         'authors',
@@ -96,6 +96,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'keywords',
         'place_of_production',
         'location',
+        'discriminatory_terms',
         'comments_de',
         'comments_en',
         'credits',
@@ -122,6 +123,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'date_changed',
     )
     change_list_template = 'admin/artworks/change_list_artworks.html'
+    list_per_page = 20
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -144,12 +146,19 @@ class ArtworkAdmin(admin.ModelAdmin):
         i18n_file = (
             (f'admin/js/vendor/select2/i18n/{i18n_name}.js',) if i18n_name else ()
         )
-        return Media(
+        return super().media + Media(
             js=(
-                f'admin/js/vendor/jquery/jquery{extra}.js',
+                # Some of the entries here seem like they could be removed as they are
+                # already provided by the base media object - but they need to be there
+                # so that things get loaded in the right order.
+                # select2 and the i18n file need to get loaded after jQuery, but before
+                # jQuery gets initialized and renamed.
+                # Removing these files won't seem to break, but there will be errors in
+                # the JS console, and probably subtle breakage.
+                f'admin/js/vendor/jquery/jquery{extra}.js',  # for ordering
                 f'admin/js/vendor/select2/select2.full{extra}.js',
                 *i18n_file,
-                'admin/js/jquery.init.js',
+                'admin/js/jquery.init.js',  # for ordering
                 'admin/js/artwork_form.js',
             ),
             css={
@@ -168,8 +177,11 @@ class ArtworkAdmin(admin.ModelAdmin):
     def thumbnail_image(self, obj):
         if obj.image_fullsize:
             return format_html(
-                '<img src="{url}" />'.format(
-                    url=obj.image_fullsize.thumbnail['180x180'],
+                '<img src="{url}" style="max-width:180px; max-height:180px;" />'.format(
+                    url=get_thumbnail(
+                        obj.image_fullsize,
+                        '360x360',
+                    ).url,
                 ),
             )
         else:

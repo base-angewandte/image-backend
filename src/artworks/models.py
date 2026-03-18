@@ -1,20 +1,20 @@
 import hashlib
 import logging
 import re
-from io import BytesIO
 from pathlib import Path
 
 from base_common.fields import ShortUUIDField
 from base_common.models import AbstractBaseModel
 from django_jsonform.models.fields import ArrayField
 from mptt.models import MPTTModel, TreeForeignKey
-from PIL import Image
-from versatileimagefield.fields import VersatileImageField
+from sorl.thumbnail import delete
+from wand.color import Color
+from wand.image import Image
 
 from django.conf import settings
 from django.contrib.postgres.search import SearchVector, SearchVectorField
 from django.core.exceptions import ValidationError
-from django.core.files import File
+from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import JSONField
 from django.db.models.functions import Length, Upper
@@ -473,9 +473,8 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
     id = ShortUUIDField(primary_key=True)
     archive_id = models.BigIntegerField(null=True)
 
-    # VersatileImageField allows to create resized versions of the
-    # image (renditions) on demand
-    image_original = VersatileImageField(
+    # Note: We decided to use Django's native Imagefield in order not to have third-party fields in our migrations.
+    image_original = models.ImageField(
         verbose_name=_('Original Image'),
         max_length=255,
         null=False,
@@ -484,7 +483,7 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         validators=[validate_image_original],
     )
 
-    image_fullsize = VersatileImageField(
+    image_fullsize = models.ImageField(
         verbose_name=_('Fullsize Image'),
         max_length=255,
         null=False,
@@ -779,19 +778,19 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
     def create_image_fullsize(self, save=True):
         # cleanup before creation
         if self.image_fullsize:
-            self.image_fullsize.delete_all_created_images()
-            self.image_fullsize.delete(save=False)
+            delete(self.image_fullsize)
 
-        img_io = BytesIO()
-        with Image.open(self.image_original) as img:
-            # check if image contains transparency:
-            if img.mode in ['LA', 'RGBA', 'RGBa']:
-                bg_color = (255, 255, 255)
-                img_new = Image.new('RGB', img.size, bg_color)
-                img_new.paste(img, (0, 0), img)
-            else:
-                img_new = img.convert('RGB')
-            img_new.save(img_io, format='JPEG', subsampling=0, quality=95)
+        original_file = self.image_original
+
+        # Reset file pointer for conversion to JPEG
+        original_file.seek(0)
+
+        with Image(file=original_file) as img:
+            img.format = 'jpeg'
+            img.background_color = Color('white')
+            img.alpha_channel = 'remove'
+            img.compression_quality = settings.IM_COMPRESSION_QUALITY
+            img_bytes = img.make_blob()
 
         original_name = Path(self.image_original.name).stem
         fullsize_name = urlsafe_base64_encode(
@@ -802,7 +801,12 @@ class Artwork(AbstractBaseModel, LocalizationMixin):
         )
 
         # Save the image to the image_fullsize field
-        self.image_fullsize.save(f'{fullsize_name}.jpg', File(img_io), save=False)
+        self.image_fullsize.save(
+            f'{fullsize_name}.jpg',
+            ContentFile(img_bytes),
+            save=False,
+        )
+
         if save:
             self.save(update_fields=['image_fullsize'])
 

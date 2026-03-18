@@ -3,8 +3,6 @@
 import artworks.models
 import artworks.validators
 from django.db import migrations, models
-import versatileimagefield.fields
-
 
 class Migration(migrations.Migration):
 
@@ -16,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='artwork',
             name='image_original',
-            field=versatileimagefield.fields.VersatileImageField(max_length=255, upload_to=artworks.models.get_path_to_original_file, validators=[artworks.validators.validate_image_original], verbose_name='Original Image'),
+            field=models.ImageField(max_length=255, upload_to=artworks.models.get_path_to_original_file, validators=[artworks.validators.validate_image_original], verbose_name='Original Image'),
         ),
         migrations.AlterField(
             model_name='artwork',

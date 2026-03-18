@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.conf import settings
 
 
-class SearchArtistsSerializer(serializers.Serializer):
+class SearchRolesSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     value = serializers.CharField()
 
@@ -23,8 +23,10 @@ class SearchItemSerializer(serializers.Serializer):
     credits = serializers.CharField()
     title = serializers.CharField()
     date = serializers.CharField()
-    artists = SearchArtistsSerializer(many=True)
-
+    artists = SearchRolesSerializer(many=True)
+    authors = SearchRolesSerializer(many=True)
+    photographers = SearchRolesSerializer(many=True)
+    graphic_designers = SearchRolesSerializer(many=True)
     score = serializers.FloatField()
 
 

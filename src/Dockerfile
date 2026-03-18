@@ -1,25 +1,25 @@
-FROM python:3.11 AS base
+FROM python:3.12 AS base
 
 ENV TZ="Europe/Vienna"
 
 ENV PYTHONUNBUFFERED=1
-ENV PIP_NO_CACHE_DIR=1
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-ENV PIP_QUIET=2
-ENV PIP_USER=1
 ENV UV_NO_CACHE=1
 ENV UV_SYSTEM_PYTHON=1
-ENV PYTHONUSERBASE=/djangoenv
-ENV PATH="$PYTHONUSERBASE/bin:$PATH"
+ENV UV_COMPILE_BYTECODE=1
 
 RUN mkdir /logs
 VOLUME /logs
 
 WORKDIR /django
 
-RUN pip install pip==23.3.1
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libmagickwand-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN uv pip sync requirements.txt
 
 EXPOSE 8300
 

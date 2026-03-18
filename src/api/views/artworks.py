@@ -13,6 +13,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
+from sorl.thumbnail import get_thumbnail
 
 from django.conf import settings
 from django.db.models import Q
@@ -151,8 +152,8 @@ class ArtworksViewSet(viewsets.GenericViewSet):
             'title_comment': artwork.title_comment_localized,
             'discriminatory_terms': artwork.get_discriminatory_terms_list(),
             'date': artwork.date,
-            'material': artwork.material_description_localized,
-            'dimensions': artwork.dimensions_display,
+            'material_description': artwork.material_description_localized,
+            'dimensions_display': artwork.dimensions_display,
             'comments': artwork.comments_localized,
             'credits': artwork.credits,
             'credits_link': artwork.credits_link,
@@ -240,9 +241,16 @@ class ArtworksViewSet(viewsets.GenericViewSet):
 
         match method:
             case 'resize':
-                url = artwork.image_fullsize.thumbnail[size].url
+                url = get_thumbnail(
+                    artwork.image_fullsize,
+                    size,
+                ).url
             case 'crop':
-                url = artwork.image_fullsize.crop[size].url
+                url = get_thumbnail(
+                    artwork.image_fullsize,
+                    size,
+                    crop='center',
+                ).url
             case _:
                 url = artwork.image_fullsize.url
 
@@ -417,12 +425,12 @@ class ArtworksViewSet(viewsets.GenericViewSet):
         metadata_content = (
             f'{artwork._meta.get_field("title").verbose_name}: {apply_strikethrough(artwork.title)}\n'
             f'{artwork._meta.get_field("title_english").verbose_name}: {apply_strikethrough(artwork.title_english)}\n'
-            f'{artwork._meta.get_field("title_comment_"+lang_label).verbose_name}: {apply_strikethrough(artwork.title_comment_localized)}\n'
+            f'{artwork._meta.get_field("title_comment_" + lang_label).verbose_name}: {apply_strikethrough(artwork.title_comment_localized)}\n'
             f'{metadata_persons}'
             f'{artwork._meta.get_field("date").verbose_name}: {artwork.date}\n'
-            f'{artwork._meta.get_field("material_description_"+lang_label).verbose_name}: {artwork.material_description_localized}\n'
+            f'{artwork._meta.get_field("material_description_" + lang_label).verbose_name}: {artwork.material_description_localized}\n'
             f'{artwork._meta.get_field("dimensions_display").verbose_name}: {artwork.dimensions_display}\n'
-            f'{artwork._meta.get_field("comments_"+lang_label).verbose_name}: {apply_strikethrough(artwork.comments_localized)}\n'
+            f'{artwork._meta.get_field("comments_" + lang_label).verbose_name}: {apply_strikethrough(artwork.comments_localized)}\n'
             f'{artwork._meta.get_field("credits").verbose_name}: {apply_strikethrough(artwork.credits)}\n'
             f'{artwork._meta.get_field("credits_link").verbose_name}: {artwork.credits_link}\n'
             f'{artwork._meta.get_field("link").verbose_name}: {artwork.link}\n'

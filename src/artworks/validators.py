@@ -1,7 +1,10 @@
+import mimetypes
 import re
 from pathlib import Path
 
-from PIL import Image, UnidentifiedImageError
+import magic
+from sorl.thumbnail import default
+from wand.exceptions import WandException
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -22,27 +25,44 @@ def validate_getty_id(getty_id):
 
 
 def validate_image_original(value):
+    # don't catch exception, this should never happen, and if it does, it
+    # should be logged
+    seek = value.seek
+    # make sure the FP is pointing to the start of the file
+    seek(0)
+    mime_type = magic.from_buffer(value.read(2048), mime=True)
+    # reset FP after read for mime_type
+    seek(0)
+    if mime_type not in settings.IM_ALLOWED_MIME_TYPES:
+        raise ValidationError(
+            _('Unsupported image type: %(mime).') % {'mime': mime_type},
+        )
+    # we aren't using sorl-thumbnail's ImageField, but Django's built-in one.
+    # so we need to perform this step manually
     try:
-        img = Image.open(value)
-        img.verify()
-        img_format = img.format
-    except UnidentifiedImageError as e:
-        raise ValidationError('Uploaded file is not a valid image.') from e
-    except Exception as e:
-        raise ValidationError(f'Error processing image: {e}') from e
+        # this can apparently fail so catastrophically that it goes
+        # boom instead of returning False, so we catch that, too
+        ivi = default.engine.is_valid_image(value.read())
+    except WandException:
+        ivi = False
 
-    valid_extensions = settings.PIL_VALID_EXTENSIONS.get(img_format, [])
+    # reset FP after getting image data for validation
+    seek(0)
+    if not ivi:
+        raise ValidationError('Uploaded file is not a valid image.')
+
+    valid_extensions = mimetypes.guess_all_extensions(mime_type, strict=True)
     file_extension = Path(value.name).suffix.lower()
 
-    if file_extension not in valid_extensions:
+    if valid_extensions and file_extension not in valid_extensions:
         raise ValidationError(
             _(
-                "The file extension %(file_extension)s does not match the image format '%(img_format)'. "
-                'Valid extensions are: %(valid_extensions)s.',
+                "The file extension %(file_extension) does not match the detected MIME type '%(mime_type)'. "
+                'Valid extensions are: %(valid_extensions).',
             )
             % {
                 'file_extension': file_extension,
-                'img_format': img_format,
+                'mime_type': mime_type,
                 'valid_extensions': ', '.join(valid_extensions),
             },
         )

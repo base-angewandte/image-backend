@@ -1,4 +1,28 @@
 .selector select {
-    height: auto !important;
-    min-height: 75px;
+  height: auto !important;
+  min-height: 75px;
+}
+
+/*
+ * AdminURLFieldWidget and the fact that this field is a fieldset don't interact well.
+ * The widget template puts a line break between the current value and the change
+ * input to ensure that for long current values, the change input will be visible on
+ * the next line.
+ *
+ * But as a fieldset, the widget gets wrapped in a div.flex-container, turning the
+ * line break element into just another thing to arrange in the same flex row.
+ *
+ * As a result, without the following code, if the current filename is too long, the
+ * flex container overflows (since it also doesn't wrap), leading to the change input
+ * no longer being visible.
+ *
+ * We can avoid the link taking up too much space by not allowing it to overflow, and
+ * make it clear that we're cutting off part of the filename with
+ * text-overflow: ellipsis.
+ *
+ * See also: https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/text-overflow
+*/
+.field-image_original .flex-container a {
+  text-overflow: ellipsis;
+  overflow: hidden;
 }

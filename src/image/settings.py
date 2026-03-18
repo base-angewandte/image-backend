@@ -22,7 +22,6 @@ from urllib.parse import urlparse
 import environ
 import requests
 from drf_spectacular.utils import OpenApiParameter
-from PIL import Image
 
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
@@ -109,7 +108,7 @@ INSTALLED_APPS = [
     'base_common_drf',
     # Third-party apps
     'rest_framework',
-    'versatileimagefield',
+    'sorl.thumbnail',
     'django_cleanup',
     'django_cas_ng',
     'django_extensions',
@@ -317,30 +316,17 @@ MEDIA_ROOT_TESTS = MEDIA_ROOT_PATH / '__tests__'
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 
-# config of VersatileImageField used in Artwork model
-VERSATILEIMAGEFIELD_SETTINGS = {
-    # The amount of time, in seconds, that references to created images
-    # should be stored in the cache. Defaults to `2592000` (30 days)
-    'cache_length': 2592000,
-    # The save quality of modified JPEG images. More info here:
-    # https://pillow.readthedocs.io/en/latest/handbook/image-file-formats.html#jpeg
-    'jpeg_resize_quality': 92,
-    # Whether or not to create new images on-the-fly. Set this to `False` for
-    # speedy performance but don't forget to 'pre-warm' to ensure they're
-    # created and available at the appropriate URL.
-    'create_images_on_demand': True,
-    # Whether to create progressive JPEGs. Read more about progressive JPEGs
-    # here: https://optimus.io/support/progressive-jpeg/
-    'progressive_jpeg': False,
-}
-
 # Logging
 LOG_DIR = BASE_DIR / '..' / 'logs'
 
 if not LOG_DIR.exists():
     LOG_DIR.mkdir(parents=True)
 
-DEBUG_LOG_LEVEL = env.bool('DEBUG_LOG_LEVEL', default='INFO')
+DEBUG_LOG_LEVEL = env.str('DEBUG_LOG_LEVEL', default='INFO')
+
+SUPPRESS_REQUEST_WARNINGS = env.bool('SUPPRESS_REQUEST_WARNINGS', default=False)
+
+_DEFAULT_LOG_LEVEL = DEBUG_LOG_LEVEL if DEBUG else 'INFO'
 
 LOGGING = {
     'version': 1,
@@ -393,17 +379,22 @@ LOGGING = {
     'loggers': {
         '': {
             'handlers': ['console', 'file', 'mail_admins'],
-            'level': DEBUG_LOG_LEVEL if DEBUG else 'INFO',
+            'level': _DEFAULT_LOG_LEVEL,
             'propagate': True,
         },
         'django': {
             'handlers': ['console', 'file', 'mail_admins'],
-            'level': DEBUG_LOG_LEVEL if DEBUG else 'INFO',
+            'level': _DEFAULT_LOG_LEVEL,
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console', 'file', 'mail_admins'],
+            'level': 'ERROR' if SUPPRESS_REQUEST_WARNINGS else _DEFAULT_LOG_LEVEL,
             'propagate': False,
         },
         'rq': {
             'handlers': ['console', 'rq_file', 'mail_admins'],
-            'level': DEBUG_LOG_LEVEL if DEBUG else 'INFO',
+            'level': _DEFAULT_LOG_LEVEL,
             'propagate': False,
         },
     },
@@ -428,6 +419,24 @@ CACHES = {
         'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
     },
 }
+
+IM_ALLOWED_MIME_TYPES = {
+    'image/jpeg',
+    'image/gif',
+    'image/png',
+    'image/webp',
+    'image/tiff',
+    'image/heif',
+    'image/heic',
+}
+IM_COMPRESSION_QUALITY = env.int('IM_COMPRESSION_QUALITY', default=90)
+CROP_RESIZE_MAX = env.int('CROP_RESIZE_MAX', default=7680)
+
+THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.wand_engine.Engine'
+THUMBNAIL_REDIS_TIMEOUT = 60 * 60 * 24 * 365
+THUMBNAIL_CACHE_TIMEOUT = THUMBNAIL_REDIS_TIMEOUT
+THUMBNAIL_UPSCALE = False
+THUMBNAIL_QUALITY = IM_COMPRESSION_QUALITY
 
 # Session settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
@@ -613,12 +622,10 @@ TINYMCE_DEFAULT_CONFIG = {
     'document_base_url': f'{SITE_URL.rstrip("/")}{FORCE_SCRIPT_NAME}/',
 }
 
-PIL_VALID_EXTENSIONS = {}
-for extension, img_format in Image.registered_extensions().items():
-    if img_format not in PIL_VALID_EXTENSIONS:
-        PIL_VALID_EXTENSIONS[img_format] = []
-    PIL_VALID_EXTENSIONS[img_format].append(extension.lower())
-
 API_PREFIX = env.str('API_PREFIX', default='api/')
 
-CROP_RESIZE_MAX = env.int('CROP_RESIZE_MAX', default=7680)
+PROGRESS_STYLES = {
+    'complete': 'dark_violet',
+}
+
+TEST_RUNNER = 'image.test_runner.Runner'

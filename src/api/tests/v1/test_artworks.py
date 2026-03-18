@@ -4,6 +4,7 @@ import zipfile
 
 import shortuuid
 from rest_framework import status
+from wand.image import Image
 
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -18,7 +19,7 @@ from artworks.models import (
     Person,
 )
 
-from .. import APITestCase, temporary_image
+from .. import APITestCase, media_url_to_file_path, temporary_image
 from . import VERSION
 
 
@@ -89,28 +90,28 @@ class ArtworkTests(APITestCase):
             {
                 'method': 'crop',
                 'expected_status': status.HTTP_302_FOUND,
-                'expected_suffix': '-crop-c0-5__0-5-30x30-92.jpg',
+                'expected_dimensions': (30, 30),
             },
             {
                 'method': 'resize',
                 'expected_status': status.HTTP_302_FOUND,
-                'expected_suffix': '-thumbnail-30x30-92.jpg',
+                'expected_dimensions': (30, 30),
             },
             {
                 'method': 'test',
                 'expected_status': status.HTTP_400_BAD_REQUEST,
-                'expected_suffix': None,
+                'expected_dimensions': None,
             },
         ]
 
-        for case in test_cases:
+        for test_case in test_cases:
             url = reverse(
                 'artwork-image',
                 kwargs={
                     'pk': artwork.pk,
                     'height': 30,
                     'width': 30,
-                    'method': case['method'],
+                    'method': test_case['method'],
                     'version': VERSION,
                 },
             )
@@ -118,14 +119,19 @@ class ArtworkTests(APITestCase):
 
             self.assertEqual(
                 response.status_code,
-                case['expected_status'],
+                test_case['expected_status'],
             )
 
-            if case['expected_suffix']:
+            if test_case['expected_dimensions']:
                 self.assertIn('Location', response.headers)
-                self.assertTrue(
-                    response.headers['Location'].endswith(case['expected_suffix']),
-                )
+
+                file_name = media_url_to_file_path(self, response.url)
+
+                with Image(filename=file_name) as image:
+                    self.assertEqual(
+                        test_case['expected_dimensions'],
+                        (image.width, image.height),
+                    )
 
         # test retrieving artwork, when artwork does not exist
         self.check_for_nonexistent_object('artwork-detail', 'get', 'Artwork')

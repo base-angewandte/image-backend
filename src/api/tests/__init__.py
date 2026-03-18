@@ -1,11 +1,10 @@
 import json
 import shutil
-from io import BytesIO
 
 import shortuuid
-from PIL import Image
 from rest_framework import status
 from rest_framework.test import APITestCase as RestFrameworkAPITestCase
+from wand.image import Image
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -16,11 +15,24 @@ from django.urls import reverse
 from artworks.models import Album, Artwork, Keyword, Location, Material, Person
 
 
-def temporary_image():  # from https://stackoverflow.com/a/67611074
-    bts = BytesIO()
-    img = Image.new('RGB', (100, 100))
-    img.save(bts, 'jpeg')
-    return SimpleUploadedFile('test.jpg', bts.getvalue())
+def temporary_image():
+    with Image(width=100, height=100) as img:
+        img.format = 'jpeg'
+        return SimpleUploadedFile(
+            'test.jpg',
+            img.make_blob(),
+            content_type='image/jpeg',
+        )
+
+
+def media_url_to_file_path(instance, url: str):
+    """Derive local filesystem path from a response URL."""
+
+    client_hostname = instance.client._base_environ()['SERVER_NAME']
+    media_path = url.split(
+        f'{client_hostname}{settings.MEDIA_URL}',
+    )[1]
+    return f'{settings.MEDIA_ROOT}/{media_path}'
 
 
 @override_settings(
